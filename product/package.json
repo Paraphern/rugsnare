@@ -20,8 +20,8 @@
     "supply-chain", "ci"
   ],
   "scripts": {
-    "test": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js",
-    "prepack": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js"
+    "test": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js",
+    "prepack": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js"
   }
 }
 

@@ -51,6 +51,26 @@ export function commandDisplay(server) {
   return [server.cmd.command, ...server.cmd.args].join(' ');
 }
 
+/**
+ * Cross-server tool shadowing: the same tool name exposed by more than one
+ * pinned server. The client's (often undocumented) resolution order decides
+ * which implementation the agent actually calls — that collision is the
+ * finding, we do not pick a winner.
+ */
+export function detectShadows(pins) {
+  const byTool = new Map();
+  for (const [serverName, sp] of Object.entries(pins.servers ?? {})) {
+    for (const toolName of Object.keys(sp.tools ?? {})) {
+      const list = byTool.get(toolName) ?? [];
+      list.push(serverName);
+      byTool.set(toolName, list);
+    }
+  }
+  return [...byTool.entries()]
+    .filter(([, servers]) => servers.length > 1)
+    .map(([tool, servers]) => ({ tool, servers }));
+}
+
 export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
   const now = new Date().toISOString();
   const existing = serverPin.tools[tool.name];

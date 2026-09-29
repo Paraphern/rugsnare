@@ -77,6 +77,13 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         } else if (v.status === 'DRIFT') {
           alert('DRIFT', v.tool.name, { oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
         }
+        // Cross-server shadow: tool name also pinned under a different server
+        const otherServer = Object.keys(pins.servers ?? {}).find(
+          (other) => other !== name && pins.servers[other]?.tools?.[v.tool.name]
+        );
+        if (otherServer) {
+          alert('SHADOW', v.tool.name, { alsoIn: otherServer, note: 'client resolution order decides which implementation runs' });
+        }
       }
       if (pinsDirty) {
         savePins(pins, cwd);

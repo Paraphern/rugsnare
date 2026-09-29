@@ -5,13 +5,14 @@ import { toolHash, short } from './hash.js';
 import { discoverConfigs, serverCommand } from './discovery.js';
 import { fetchTools } from './rpc.js';
 import {
-  loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay,
+  loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay, detectShadows,
 } from './pins.js';
 import { loadConfig, saveConfig } from './alerts.js';
 import { logEvent } from './events.js';
 import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
 import { readJsonFile } from './jsonfile.js';
+import { buildSarif } from './sarif.js';
 
 /**
  * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):
@@ -51,6 +52,7 @@ function parseArgs(argv) {
     if (a === '--config') flags.config = argv[++i];
     else if (a === '--server') flags.server = argv[++i];
     else if (a === '--json') flags.json = true;
+    else if (a === '--sarif') flags.sarif = true;
     else if (a === '--version') flags.version = argv[++i];
     else if (a === '--contract') flags.contract = argv[++i];
     else if (a === '--chain') flags.chain = argv[++i];
@@ -125,6 +127,11 @@ async function cmdScan(flags) {
     }
   }
   savePins(pins);
+  const shadows = detectShadows(pins);
+  for (const s of shadows) {
+    console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
+    logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
+  }
   process.exit(failed > 0 ? 2 : 0);
 }
 
@@ -139,6 +146,11 @@ async function cmdDiff(flags) {
   if (names.length === 0) { console.error('No pinned servers. Run `rugsnare scan` first.'); process.exit(2); }
 
   let driftCount = 0;
+  const shadows = detectShadows(pins).filter((s) => !flags.server || s.servers.includes(flags.server));
+  driftCount += shadows.length;
+  for (const s of shadows) {
+    logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
+  }
   const report = [];
   for (const name of names) {
     const sp = pins.servers[name];
@@ -163,7 +175,13 @@ async function cmdDiff(flags) {
       driftCount++;
     }
   }
-  if (flags.json) console.log(JSON.stringify(report, null, 2));
+  if (flags.sarif) {
+    console.log(JSON.stringify(buildSarif(report, shadows), null, 2));
+  } else if (!flags.json) {
+    for (const s of shadows) {
+      console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')}`);
+    }
+  }
   const verdict = driftCount === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s))`;
   console.error(`rugsnare diff: ${verdict}`);
   process.exit(driftCount === 0 ? 0 : 1);

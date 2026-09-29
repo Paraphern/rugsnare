@@ -65,7 +65,8 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 |---|---|---|
 | Tool description rewritten after approval (hidden instructions to the agent) | ✅ caught | — |
 | inputSchema mutated (hidden required `session` params, enum narrowing) | ✅ caught — see corpus 02 | — |
-| New tool appears / approved tool disappears post-approval | ✅ caught (cross-server shadowing lands in v0.2.x) | — |
+| New tool appears / approved tool disappears post-approval | ✅ caught | — |
+| Cross-server tool shadowing (same name on two servers) | ✅ caught in `scan`, `diff` (breaks CI) and the live proxy — the client's undocumented resolution order is the risk | — |
 | Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
 | Toxic data inside call arguments or responses | ❌ logged today, not inspected | call inspection & egress policies — on our roadmap (v0.3) |
@@ -98,6 +99,8 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
       config: .mcp.json          # your MCP config
       working-directory: .       # where the config and committed .rugsnare/pins.json live
   ```
+
+- **v0.2.1 (done):** cross-server **shadow detection** (same tool name on multiple servers — the client's resolution order decides which runs; caught in scan, diff and the live proxy) + **SARIF output** (`rugsnare diff --sarif`) for GitHub code scanning and other SARIF consumers.
 
 - **v0.2:** live stdio proxy (observe → enforce quarantine) — catches **mid-session** description changes on already-connected agents, not just between sessions; webhook alerts, per-call audit.
 - **v0.3:** declarative call policies, PII egress checks on tool arguments.
