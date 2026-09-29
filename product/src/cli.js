@@ -13,6 +13,7 @@ import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
 import { readJsonFile } from './jsonfile.js';
 import { buildSarif } from './sarif.js';
+import { scanToolsForAdvisories } from './advisory.js';
 
 /**
  * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):
@@ -121,6 +122,14 @@ async function cmdScan(flags) {
       const tools = await fetchTools({ command, args, env, cwd: process.cwd() });
       const serverPin = ensureServer(pins, name, { command, args });
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
+
+      // advisory signals: catch suspicious descriptions even on first contact
+      const advisories = scanToolsForAdvisories(tools);
+      for (const adv of advisories) {
+        console.error(`  [ADVISORY] ${name}/${adv.tool} — score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
+        logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
+      }
+
       console.log(`  pinned ${name}: ${tools.length} tool(s) -> ${tools.map((t) => t.name).join(', ')}`);
       logEvent({ kind: 'scan', server: name, tools: tools.length });
     } catch (err) {
