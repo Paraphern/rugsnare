@@ -47,6 +47,14 @@ We take our own medicine:
 
 Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) — 7 short questions, findings published.
 
+## FAQ
+
+**How is this different from MCP Inspector / Glama Inspector?**
+Inspectors (including the official one) are interactive debugging tools: they *show* you tool descriptions while you're looking. RugSnare *watches* them when you're not: approved definitions are hash-pinned, and any later change — across sessions or mid-session via the proxy — trips an alert and fails CI. Complementary tools: inspect before you approve, pin after.
+
+**Is this another MCP scanner?**
+No. Scanners (snyk agent-scan, ex-mcp-scan) run at install time. RugSnare runs after approval, forever.
+
 ## Status & roadmap
 
 - **v0.1 (done):** CI gate — pin / diff / approve, on-chain verify, attack corpus, CI dogfooding its own corpus.

@@ -10,6 +10,7 @@ import {
 import { loadConfig, saveConfig } from './alerts.js';
 import { logEvent } from './events.js';
 import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
+import { createProxy } from './proxy.js';
 
 /**
  * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):
@@ -53,6 +54,8 @@ function parseArgs(argv) {
     else if (a === '--contract') flags.contract = argv[++i];
     else if (a === '--chain') flags.chain = argv[++i];
     else if (a === '--rpc') flags.rpc = argv[++i];
+    else if (a === '--name') flags.name = argv[++i];
+    else if (a === '--mode') flags.mode = argv[++i];
     else flags._.push(a);
   }
   return flags;
@@ -225,6 +228,50 @@ async function cmdVerify(flags) {
   }
 }
 
+/**
+ * rugsnare run --name <server> [--mode observe|enforce] -- <command> [args...]
+ * Wraps a stdio MCP server with the live integrity proxy. Spawn logic lives
+ * in ./spawn-server.js (created by the repo owner once — see setup card);
+ * loaded lazily so the rest of the CLI works without it.
+ */
+async function cmdRun(flags) {
+  const name = flags.name;
+  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const dashdash = flags._.indexOf('--');
+  const argv = dashdash >= 0 ? flags._.slice(dashdash + 1) : flags._;
+  const command = argv[0];
+  const args = argv.slice(1).map(String);
+  if (!name || !command) {
+    console.error('Usage: rugsnare run --name <server> [--mode observe|enforce] -- <command> [args...]');
+    process.exit(2);
+  }
+  let spawnServer;
+  try {
+    ({ spawnServer } = await import('./spawn-server.js'));
+  } catch {
+    console.error('Missing src/spawn-server.js — it is created by the repo owner (see docs/SETUP-run.md).');
+    process.exit(2);
+  }
+  const config = loadConfig();
+  const child = spawnServer({
+    command, args, env: {}, cwd: process.cwd(),
+    onStdout: () => {},
+    onStderr: () => {},
+    onExit: () => {},
+  });
+  const streams = {
+    clientIn: process.stdin,
+    server: {
+      stdin: { write: (chunk) => child.stdin.write(chunk) },
+      stdout: { on: (ev, cb) => child.stdout.on(ev, cb) },
+      stderr: { on: (ev, cb) => child.stderr.on(ev, cb) },
+      on: (ev, cb) => child.on(ev, cb),
+    },
+  };
+  console.error(`[rugsnare] proxying "${name}" in ${mode} mode (Ctrl+C to stop)`);
+  createProxy({ name, streams, mode, config, cwd: process.cwd() });
+}
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const flags = parseArgs(rest);
@@ -234,6 +281,7 @@ async function main() {
     case 'diff': return cmdDiff(flags);
     case 'approve': return cmdApprove(flags, flags._[0]);
     case 'verify': return cmdVerify(flags);
+    case 'run': return cmdRun(flags);
     case undefined:
     case '--help':
     case 'help': console.log(HELP); return;
