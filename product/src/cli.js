@@ -259,15 +259,9 @@ async function cmdRun(flags) {
     onStderr: () => {},
     onExit: () => {},
   });
-  const streams = {
-    clientIn: process.stdin,
-    server: {
-      stdin: { write: (chunk) => child.stdin.write(chunk) },
-      stdout: { on: (ev, cb) => child.stdout.on(ev, cb) },
-      stderr: { on: (ev, cb) => child.stderr.on(ev, cb) },
-      on: (ev, cb) => child.on(ev, cb),
-    },
-  };
+  // the child process object itself carries real stdin/stdout/stderr streams
+  // and exit/error handlers — the proxy consumes exactly that shape
+  const streams = { clientIn: process.stdin, server: child };
   console.error(`[rugsnare] proxying "${name}" in ${mode} mode (Ctrl+C to stop)`);
   createProxy({ name, streams, mode, config, cwd: process.cwd() });
 }
