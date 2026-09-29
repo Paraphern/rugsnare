@@ -34,6 +34,7 @@ Usage:
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json]
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
+  rugsnare report [--live] [--json]   fleet inventory (never exits 1)
 
 verify: checks a local release artifact against the on-chain ReleaseLog pin
         (https only; non-public RPC hosts are refused).
@@ -53,6 +54,7 @@ function parseArgs(argv) {
     else if (a === '--server') flags.server = argv[++i];
     else if (a === '--json') flags.json = true;
     else if (a === '--sarif') flags.sarif = true;
+    else if (a === '--live') flags.live = true;
     else if (a === '--version') flags.version = argv[++i];
     else if (a === '--contract') flags.contract = argv[++i];
     else if (a === '--chain') flags.chain = argv[++i];
@@ -287,6 +289,66 @@ async function cmdRun(flags) {
   createProxy({ name, streams, mode, config, cwd: process.cwd() });
 }
 
+/**
+ * rugsnare report — human-readable inventory of the pinned MCP server fleet.
+ * For compliance, audits, and the natural entry into the hosted panel.
+ * Use --live to also check each server against its pins (like diff, but never exits 1).
+ */
+async function cmdReport(flags) {
+  const pins = loadPins();
+  const names = Object.keys(pins.servers).filter((n) => pins.servers[n].tools && Object.keys(pins.servers[n].tools).length > 0);
+  if (names.length === 0) { console.error('No pinned servers. Run `rugsnare scan` first.'); process.exit(2); }
+
+  const shadows = detectShadows(pins);
+  const json = { servers: [], shadows };
+
+  console.log('RugSnare fleet report');
+  console.log('=====================');
+  console.log('');
+
+  for (const name of names) {
+    const sp = pins.servers[name];
+    const toolCount = Object.keys(sp.tools).length;
+    const approvedCount = Object.values(sp.tools).filter((t) => t.approved).length;
+    const lastPinned = Object.values(sp.tools).reduce((latest, t) => (t.pinnedAt > latest ? t.pinnedAt : latest), '—');
+
+    let liveStatus = '';
+    if (flags.live && sp.cmd) {
+      try {
+        const tools = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: 15000 });
+        const verdicts = compareTools(sp, tools, toolHash);
+        const bad = badVerdicts(verdicts);
+        liveStatus = bad.length === 0 ? ' ✓ live' : ` ⚠ ${bad.length} finding(s)`;
+        json.servers.push({ name, tools: toolCount, approved: approvedCount, lastPinned, live: badVerdicts(verdicts) });
+      } catch (err) {
+        liveStatus = ` ✗ unreachable`;
+        json.servers.push({ name, tools: toolCount, approved: approvedCount, lastPinned, live: [{ tool: '(server)', status: 'UNREACHABLE' }] });
+      }
+    } else {
+      json.servers.push({ name, tools: toolCount, approved: approvedCount, lastPinned, live: null });
+    }
+
+    console.log(`  ${name}${liveStatus}`);
+    console.log(`    tools: ${toolCount} (${approvedCount} approved) | last pin: ${lastPinned.slice(0, 10)}`);
+    console.log(`    command: ${commandDisplay(sp)}`);
+    console.log('');
+  }
+
+  if (shadows.length > 0) {
+    console.log('Cross-server tool shadowing:');
+    for (const s of shadows) {
+      console.log(`  [SHADOW] "${s.tool}" → ${s.servers.join(', ')}`);
+    }
+  } else {
+    console.log('Cross-server tool shadowing: none ✓');
+  }
+  console.log('');
+
+  if (flags.json) console.log(JSON.stringify(json, null, 2));
+  console.log(`Fleet: ${names.length} server(s), ${names.reduce((acc, n) => acc + Object.keys(pins.servers[n].tools).length, 0)} tool(s), ${shadows.length} shadow(s)`);
+  process.exit(0); // report never fails — it informs
+}
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const flags = parseArgs(rest);
@@ -297,6 +359,7 @@ async function main() {
     case 'approve': return cmdApprove(flags, flags._[0]);
     case 'verify': return cmdVerify(flags);
     case 'run': return cmdRun(flags);
+    case 'report': return cmdReport(flags);
     case undefined:
     case '--help':
     case 'help': console.log(HELP); return;
