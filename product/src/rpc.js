@@ -18,11 +18,15 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
     let buffer = '';
     let settled = false;
     const pending = new Map(); // id -> {resolve}
+    const timers = new Set(); // per-request timeout handles — all cleared at finish
 
     const finish = (fn, value) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      for (const t of timers) clearTimeout(t);
+      timers.clear();
+      try { child.stdin.end(); } catch { /* already closed */ }
       try { child.kill(); } catch { /* already gone */ }
       fn(value);
     };
@@ -48,8 +52,9 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
           continue; // server noise on stdout — forward nothing, stay strict
         }
         if (msg.id !== undefined && pending.has(msg.id)) {
-          const { resolve: ok } = pending.get(msg.id);
+          const { resolve: ok, timer: t } = pending.get(msg.id);
           pending.delete(msg.id);
+          clearTimeout(t);
           ok(msg);
         }
       }
@@ -65,11 +70,15 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
     const request = (method, params) =>
       new Promise((ok, fail) => {
         const id = request.seq = (request.seq ?? 0) + 1;
-        pending.set(id, { resolve: ok });
-        send({ jsonrpc: '2.0', id, method, params });
-        setTimeout(() => {
-          if (pending.has(id)) { pending.delete(id); fail(new Error(`No response to ${method}`)); }
+        const t = setTimeout(() => {
+          if (pending.has(id)) {
+            pending.delete(id);
+            fail(new Error(`No response to ${method}`));
+          }
         }, timeoutMs);
+        timers.add(t);
+        pending.set(id, { resolve: ok, timer: t });
+        send({ jsonrpc: '2.0', id, method, params });
       });
     request.seq = 0;
 

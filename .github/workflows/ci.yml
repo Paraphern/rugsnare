@@ -18,7 +18,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Unit tests (zero deps, no install step by design)
         working-directory: product
-        run: node --test
+        run: npm test
 
   dogfood:
     runs-on: ubuntu-latest

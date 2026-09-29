@@ -20,8 +20,8 @@
     "supply-chain", "ci"
   ],
   "scripts": {
-    "test": "node --test",
-    "prepack": "node --test"
+    "test": "node --test \"test/*.test.js\"",
+    "prepack": "node --test \"test/*.test.js\""
   }
 }
 
