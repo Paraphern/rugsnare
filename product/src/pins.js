@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { readJsonFile } from './jsonfile.js';
 
 /**
  * Pin store: `.rugsnare/pins.json`
@@ -22,7 +23,7 @@ export function pinsPath(cwd = process.cwd()) {
 
 export function loadPins(cwd = process.cwd()) {
   try {
-    return JSON.parse(fs.readFileSync(pinsPath(cwd), 'utf8'));
+    return readJsonFile(pinsPath(cwd));
   } catch {
     return { version: 1, servers: {} };
   }

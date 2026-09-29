@@ -86,9 +86,19 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
       const init = await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'rugsnare', version: '0.1.0' } });
       if (init.error) throw new Error(`initialize failed: ${JSON.stringify(init.error)}`);
       send({ jsonrpc: '2.0', method: 'notifications/initialized' });
-      const list = await request('tools/list', {});
-      if (list.error) throw new Error(`tools/list failed: ${JSON.stringify(list.error)}`);
-      const tools = list.result?.tools ?? [];
+      // tools/list may be paginated (nextCursor per the MCP spec) — a missing
+      // page would silently produce an incomplete baseline, so we follow the
+      // cursor to the end (with a hard cap against malicious loops).
+      const tools = [];
+      let cursor;
+      let pages = 0;
+      do {
+        const list = await request('tools/list', cursor === undefined ? {} : { cursor });
+        if (list.error) throw new Error(`tools/list failed: ${JSON.stringify(list.error)}`);
+        const r = list.result ?? {};
+        if (Array.isArray(r.tools)) tools.push(...r.tools);
+        cursor = typeof r.nextCursor === 'string' && r.nextCursor ? r.nextCursor : undefined;
+      } while (cursor !== undefined && ++pages < 100);
       finish(resolve, tools);
     })().catch((err) => finish(reject, err));
   });

@@ -39,3 +39,31 @@ test('edge: silent server (no tools/list response) hits the RPC timeout and reje
     /timed out|No response/i
   );
 });
+
+test('edge: paginated tools/list (nextCursor) is followed to the last page', async () => {
+  const tools = await fetchTools({ command: 'node', args: [fixture('edge-paged.js')], timeoutMs: 15000 });
+  assert.deepEqual(
+    tools.map((t) => t.name),
+    ['page_one_a', 'page_one_b', 'page_two_a', 'page_two_b'],
+    'both pages must be collected — a missing page would silently weaken the baseline'
+  );
+});
+
+test('edge: UTF-8 BOM in config files (Windows Notepad) does not break parsing', async () => {
+  const { execFile } = await import('node:child_process');
+  const os = await import('node:os');
+  const fs = (await import('node:fs')).default;
+  const path = (await import('node:path')).default;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-bom-'));
+  try {
+    const cfg = path.join(dir, 'mcp.json');
+    const json = JSON.stringify({ mcpServers: { paged: { command: 'node', args: [fixture('edge-paged.js')] } } });
+    fs.writeFileSync(cfg, '\uFEFF' + json, 'utf8'); // with BOM
+    const out = await new Promise((resolve, reject) => {
+      execFile('node', [path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js'), 'scan', '--config', cfg], { cwd: dir, timeout: 60000 }, (err, stdout) => err ? reject(err) : resolve(stdout));
+    });
+    assert.match(out, /pinned paged: 4 tool/, 'BOM-prefixed config must scan fine and see all paginated tools');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

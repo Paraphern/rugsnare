@@ -73,7 +73,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         if (v.status === 'NEW' && !v.pin) {
           pinTool(serverPin, v.tool, v.hash, { approved: false });
           pinsDirty = true;
-          if (mode !== 'enforce') alert('NEW', v.tool.name, { hash: v.hash });
+          alert('NEW', v.tool.name, { hash: v.hash }); // alert in every mode: enforce quarantines, but the human must still hear it
         } else if (v.status === 'DRIFT') {
           alert('DRIFT', v.tool.name, { oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
         }

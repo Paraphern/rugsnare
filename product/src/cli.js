@@ -11,6 +11,7 @@ import { loadConfig, saveConfig } from './alerts.js';
 import { logEvent } from './events.js';
 import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
+import { readJsonFile } from './jsonfile.js';
 
 /**
  * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):
@@ -62,7 +63,7 @@ function parseArgs(argv) {
 }
 
 function readServersFromConfigFile(file) {
-  const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const json = readJsonFile(file);
   const servers = json.mcpServers ?? {};
   return Object.fromEntries(Object.entries(servers).filter(([, v]) => v && typeof v.command === 'string'));
 }
@@ -151,8 +152,10 @@ async function cmdDiff(flags) {
       }
       const bad = badVerdicts(verdicts);
       driftCount += bad.length;
-      if (!flags.json) console.log(`${name}  (${[cmd.command, ...cmd.args].join(' ')})`);
-      printVerdict(name, verdicts, flags.json);
+      if (!flags.json) {
+        console.log(`${name}  (${[cmd.command, ...cmd.args].join(' ')})`);
+        printVerdict(name, verdicts, false);
+      }
       report.push({ server: name, verdicts });
     } catch (err) {
       console.error(`${name}: FAILED to reach server: ${err.message}`);
@@ -249,7 +252,7 @@ async function cmdRun(flags) {
   try {
     ({ spawnServer } = await import('./spawn-server.js'));
   } catch {
-    console.error('Missing src/spawn-server.js — it is created by the repo owner (see docs/SETUP-run.md).');
+    console.error('Missing src/spawn-server.js — the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
   const config = loadConfig();

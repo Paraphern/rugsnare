@@ -29,3 +29,12 @@ test('selector() returns 0x-prefixed 4-byte hex', () => {
   const s = selector('getRelease(bytes32)');
   assert.match(s, /^0x[0-9a-f]{8}$/);
 });
+
+test('keccak256 matches the canonical ERC-20 transfer selector', () => {
+  // the most cross-checked 4 bytes in the industry: transfer(address,uint256)
+  assert.equal(selector('transfer(address,uint256)'), '0xa9059cbb');
+});
+
+test('keccak256 matches the canonical balanceOf selector', () => {
+  assert.equal(selector('balanceOf(address)'), '0x70a08231');
+});

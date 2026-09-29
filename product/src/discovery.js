@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { readJsonFile } from './jsonfile.js';
 
 /**
  * Find MCP client configs known today. Read-only: we never rewrite your
@@ -18,20 +19,15 @@ const CANDIDATES = [
 ];
 
 function readMcpServers(filePath) {
-  let raw;
+  let json;
   try {
-    raw = fs.readFileSync(filePath, 'utf8');
-  } catch {
-    return null; // no file
+    json = readJsonFile(filePath);
+  } catch (err) {
+    return err.code === 'ENOENT' ? null : 'unparseable';
   }
-  try {
-    const json = JSON.parse(raw);
-    const servers = json.mcpServers ?? null;
-    if (!servers || typeof servers !== 'object') return null;
-    return servers;
-  } catch {
-    return 'unparseable';
-  }
+  const servers = json.mcpServers ?? null;
+  if (!servers || typeof servers !== 'object') return null;
+  return servers;
 }
 
 export function discoverConfigs() {

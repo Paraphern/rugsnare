@@ -70,6 +70,7 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
 | Toxic data inside call arguments or responses | ❌ logged today, not inspected | call inspection & egress policies — on our roadmap (v0.3) |
 | Compromised MCP client or host | ❌ | host security |
+| Attacker with write access to `.rugsnare/pins.json` (e.g. a compromised CI runner) | ⚠️ trust boundary | commit pins to the repo and protect the branch — pins are only as trustworthy as the place you store them; signed pins are on the roadmap |
 
 If an attacker changes the code but not the contract, no description hash can see it — that's a different layer's job. Defense in depth means layers; this tool owns the contract layer completely.
 

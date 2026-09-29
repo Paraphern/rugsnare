@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { rugsnareDir } from './pins.js';
+import { readJsonFile } from './jsonfile.js';
 
 /**
  * Alerts: webhook (raw JSON) or Slack incoming webhook (formatted).
@@ -12,7 +13,7 @@ const DEFAULT_CONFIG = { mode: 'observe', alertWebhook: null, logCallArgs: false
 
 export function loadConfig(cwd = process.cwd()) {
   try {
-    const raw = JSON.parse(fs.readFileSync(path.join(rugsnareDir(cwd), 'config.json'), 'utf8'));
+    const raw = readJsonFile(path.join(rugsnareDir(cwd), 'config.json'));
     return { ...DEFAULT_CONFIG, ...raw };
   } catch {
     return { ...DEFAULT_CONFIG };
