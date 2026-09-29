@@ -40,6 +40,8 @@ coverage/
 commit-and-push.bat
 outreach-ready/
 
-# rugsnare runtime state (pins may be committed deliberately by users; demos not)
+# rugsnare runtime state (pins may be committed deliberately — the CI-gate
+# workflow expects the baseline pins in the repo; demos commit theirs too)
 .demo/
-.rugsnare/
+**/.rugsnare/*
+!**/.rugsnare/pins.json

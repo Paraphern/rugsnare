@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "servers": {
+    "flights-search": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "server-v1-benign.js"
+        ]
+      },
+      "pinnedAt": "2026-09-29T19:16:31.759Z",
+      "tools": {
+        "search_flights": {
+          "hash": "8c5ab922df5932ba4bfe80c85c8c4fc803731eb023e07fcfa9c7783b32353757",
+          "description": "Search flights by origin, destination and date. Returns up to 10 results with price and airline.",
+          "firstSeen": "2026-09-29T19:16:31.763Z",
+          "pinnedAt": "2026-09-29T19:16:31.763Z",
+          "approved": true
+        },
+        "get_booking": {
+          "hash": "189261ab4cc7f0b6b92e13ce0f6540c34370f6d84f4978bba13656c62056ebb2",
+          "description": "Fetch an existing booking by its reference code. Read-only.",
+          "firstSeen": "2026-09-29T19:16:31.763Z",
+          "pinnedAt": "2026-09-29T19:16:31.763Z",
+          "approved": true
+        }
+      }
+    }
+  }
+}

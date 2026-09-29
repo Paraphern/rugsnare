@@ -90,6 +90,15 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 ## Status & roadmap
 
 - **v0.1 (done):** CI gate — pin / diff / approve, on-chain verify, attack corpus, CI dogfooding its own corpus.
+- **PR contract review (shipped):** a GitHub Action that posts a **human-readable tool-contract diff** on pull requests — reviewers see the changed words, not hashes. Try it: [`action/pr-diff`](action/pr-diff/action.yml).
+
+  ```yaml
+  - uses: Paraphern/rugsnare/action/pr-diff@main
+    with:
+      config: .mcp.json          # your MCP config
+      working-directory: .       # where the config and committed .rugsnare/pins.json live
+  ```
+
 - **v0.2:** live stdio proxy (observe → enforce quarantine) — catches **mid-session** description changes on already-connected agents, not just between sessions; webhook alerts, per-call audit.
 - **v0.3:** declarative call policies, PII egress checks on tool arguments.
 - Later: hosted policy panel for teams, agent payment guardrails.

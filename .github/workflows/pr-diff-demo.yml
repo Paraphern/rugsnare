@@ -1,0 +1,23 @@
+name: pr-diff (tool contract review)
+on:
+  pull_request:
+    paths:
+      - 'corpus/01-rugpull-flights/**'
+      - 'action/pr-diff/**'
+      - '.github/workflows/pr-diff-demo.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  contract-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: RugSnare tool-contract diff on this PR
+        uses: ./action/pr-diff
+        with:
+          use-workspace: 'true'
+          config: ci-mcp.json
+          working-directory: corpus/01-rugpull-flights

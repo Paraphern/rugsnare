@@ -70,7 +70,17 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
     const pin = serverPin.tools[tool.name];
     const hash = toolHashFn(tool);
     if (!pin) result.push({ tool: tool.name, status: 'NEW', hash });
-    else if (pin.hash !== hash) result.push({ tool: tool.name, status: 'DRIFT', oldHash: pin.hash, hash });
+    else if (pin.hash !== hash) {
+      result.push({
+        tool: tool.name,
+        status: 'DRIFT',
+        oldHash: pin.hash,
+        hash,
+        // human-readable contract diff (for PR comments / reports)
+        oldDescription: pin.description ?? '',
+        newDescription: tool.description ?? '',
+      });
+    }
     else result.push({ tool: tool.name, status: 'UNCHANGED', hash });
   }
   const liveNames = new Set(liveTools.map((t) => t.name));
