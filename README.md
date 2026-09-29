@@ -100,6 +100,8 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
       working-directory: .       # where the config and committed .rugsnare/pins.json live
   ```
 
+- **v0.2.2 (done):** prompts & resources pinning (the full MCP surface — tools, prompt templates, resource definitions — all hash-pinned and diffed) + **drift-feed**: daily automated canary scanning of the most popular MCP servers on npm, with a public append-only log of every contract change ([drift-feed/](drift-feed/)). The MCP ecosystem's first continuous contract-integrity monitor.
+
 - **v0.2.1 (done):** cross-server **shadow detection** (same tool name on multiple servers — the client's resolution order decides which runs; caught in scan, diff and the live proxy) + **SARIF output** (`rugsnare diff --sarif`) for GitHub code scanning and other SARIF consumers + **`rugsnare report --live`** — human-readable fleet inventory (server list, tool counts, shadows) for compliance and audits; never exits 1.
 
 - **v0.2:** live stdio proxy (observe → enforce quarantine) — catches **mid-session** description changes on already-connected agents, not just between sessions; webhook alerts, per-call audit.

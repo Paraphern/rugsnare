@@ -1,0 +1,36 @@
+name: drift-feed
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily at 06:00 UTC
+  workflow_dispatch: {}   # manual trigger
+
+permissions:
+  contents: write          # to commit the feed
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run drift feed scan
+        working-directory: product
+        run: node src/driftfeed.mjs
+        env:
+          DRIFT_FEED_DIR: ${{ github.workspace }}/drift-feed
+
+      - name: Commit feed changes
+        run: |
+          git config user.name "rugsnare-bot"
+          git config user.email "releases@rugsnare.com"
+          git add drift-feed/
+          if git diff --staged --quiet; then
+            echo "No changes detected — feed is stable"
+          else
+            git commit -m "drift-feed: $(date -u +%Y-%m-%d) scan results"
+            git push
+          fi
