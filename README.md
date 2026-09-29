@@ -55,6 +55,13 @@ Inspectors (including the official one) are interactive debugging tools: they *s
 **Is this another MCP scanner?**
 No. Scanners (snyk agent-scan, ex-mcp-scan) run at install time. RugSnare runs after approval, forever.
 
+## Field-tested
+
+Beyond the bundled attack corpus, RugSnare is validated against real packages:
+
+- **Compatibility:** the official `@modelcontextprotocol/server-filesystem` (2026.8.31, 14 real tools) — scanned, pinned, re-diffed clean.
+- **Real drift caught:** pinned 2026.8.31, silently swapped to 2026.1.14 — `diff` flagged exactly one tool whose description genuinely changed between those releases (`read_media_file`), with 13 unchanged tools untouched. That's the precision bar: no crying wolf on version bumps, only behavioral changes.
+
 ## Status & roadmap
 
 - **v0.1 (done):** CI gate — pin / diff / approve, on-chain verify, attack corpus, CI dogfooding its own corpus.
