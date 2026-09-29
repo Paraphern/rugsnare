@@ -32,3 +32,13 @@ jobs:
         run: |
           node ../../product/src/cli.js scan --config ci-mcp.json
           node ../../product/src/cli.js diff --config ci-mcp.json
+
+  field-repro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Reproduce the README field-test claim (real drift between official releases)
+        run: bash repro/field-drift.sh

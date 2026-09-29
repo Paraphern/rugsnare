@@ -57,12 +57,34 @@ Inspectors (including the official one) are interactive debugging tools: they *s
 **Is this another MCP scanner?**
 No. Scanners (snyk agent-scan, ex-mcp-scan) run at install time. RugSnare runs after approval, forever.
 
+## Threat model — what this covers, honestly
+
+RugSnare pins the **contract** your agent obeys — `{ name, description, inputSchema }` of every approved tool — and detects any silent change to it, between sessions (CI diff) and mid-session (live proxy). It does not inspect implementations.
+
+| Attack | RugSnare | The layer that owns it |
+|---|---|---|
+| Tool description rewritten after approval (hidden instructions to the agent) | ✅ caught | — |
+| inputSchema mutated (hidden required `session` params, enum narrowing) | ✅ caught — see corpus 02 | — |
+| New tool appears / approved tool disappears post-approval | ✅ caught (cross-server shadowing lands in v0.2.x) | — |
+| Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
+| Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
+| Toxic data inside call arguments or responses | ❌ logged today, not inspected | call inspection & egress policies — on our roadmap (v0.3) |
+| Compromised MCP client or host | ❌ | host security |
+
+If an attacker changes the code but not the contract, no description hash can see it — that's a different layer's job. Defense in depth means layers; this tool owns the contract layer completely.
+
 ## Field-tested
 
 Beyond the bundled attack corpus, RugSnare is validated against real packages:
 
 - **Compatibility:** the official `@modelcontextprotocol/server-filesystem` (2026.8.31, 14 real tools) — scanned, pinned, re-diffed clean.
 - **Real drift caught:** pinned 2026.8.31, silently swapped to 2026.1.14 — `diff` flagged exactly one tool whose description genuinely changed between those releases (`read_media_file`), with 13 unchanged tools untouched. That's the precision bar: no crying wolf on version bumps, only behavioral changes.
+
+Don't take our word for it — reproduce the field test yourself:
+
+```bash
+bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift is found
+```
 
 ## Status & roadmap
 
