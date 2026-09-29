@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "flights-search": {
+      "command": "node",
+      "args": ["server-v1-benign.js"]
+    }
+  }
+}

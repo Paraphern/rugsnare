@@ -1,0 +1,34 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Unit tests (zero deps, no install step by design)
+        working-directory: product
+        run: node --test
+
+  dogfood:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: RugSnare pins its own corpus (benign baseline must be clean)
+        working-directory: corpus/01-rugpull-flights
+        run: |
+          node ../../product/src/cli.js scan --config ci-mcp.json
+          node ../../product/src/cli.js diff --config ci-mcp.json

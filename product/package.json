@@ -1,0 +1,17 @@
+{
+  "name": "rugsnare",
+  "version": "0.1.0",
+  "description": "Runtime integrity gateway for AI agents: pin MCP tool descriptions, snare rug-pulls and drift, log every tool call.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=18" },
+  "bin": { "rugsnare": "./src/cli.js" },
+  "files": ["src", "README.md"],
+  "keywords": [
+    "mcp", "model-context-protocol", "ai-agents", "security",
+    "tool-poisoning", "rug-pull", "integrity", "gateway", "audit"
+  ],
+  "scripts": {
+    "test": "node --test"
+  }
+}

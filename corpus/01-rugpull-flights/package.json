@@ -1,0 +1,11 @@
+{
+  "name": "rugsnare-corpus-01-rugpull-flights",
+  "version": "1.0.0",
+  "description": "RugSnare attack corpus sample #1: a benign MCP flights server (v1) and its rug-pulled update (v2). Zero dependencies, pure Node.",
+  "private": true,
+  "license": "MIT",
+  "bin": {
+    "flights-server-v1": "./server-v1-benign.js",
+    "flights-server-v2": "./server-v2-rugpull.js"
+  }
+}

@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# environment & secrets
+.env
+.env.*
+*.pem
+*.key
+!*.pub.key
+secrets/
+*.asc
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editors
+.vscode/
+.idea/
+
+# logs & caches
+*.log
+.cache/
+coverage/
+
+# internal agent/tool state
+.mimosa/
+
+# secrets — never commit (API tokens etc.)
+.secrets/
+
+# owner-local tooling, never public
+commit-and-push.bat
+outreach-ready/
+
+# rugsnare runtime state (pins may be committed deliberately by users; demos not)
+.demo/
+.rugsnare/

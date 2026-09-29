@@ -1,0 +1,8 @@
+{
+  "name": "red-unit-bf71",
+  "account_id": "e9dd9279d84218bdf09e6be43f42d25d",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./site"
+  }
+}
