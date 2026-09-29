@@ -26,11 +26,31 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 | `site/` | landing page source |
 | `SECURITY.md` | release signing key, verification instructions, key rotation policy |
 
-## Quick start
+## Install
+
+**npm (recommended — landing October 2, 2026):**
 
 ```bash
-rugsnare init                     # scaffold .rugsnare/, discover MCP configs (Claude Code, Cursor)
-rugsnare scan --config .mcp.json  # baseline: pin current tool descriptions
+npx rugsnare init
+```
+
+**From GitHub (works right now):**
+
+```bash
+git clone https://github.com/Paraphern/rugsnare.git
+cd rugsnare/product
+node src/cli.js init
+```
+
+Zero dependencies, no `npm install` needed — just Node.js ≥ 18.
+
+## Quick start
+
+After install (use `node src/cli.js` instead of `rugsnare` if installing from GitHub):
+
+```bash
+rugsnare init                     # discover MCP configs (Claude Code, Cursor, Windsurf, VS Code, Zed, ZCode, 9 clients)
+rugsnare scan --config .mcp.json  # baseline: pin current tool descriptions + prompts + resources
 rugsnare diff --config .mcp.json  # live check; exit 1 on drift/new/removed — put it in CI
 rugsnare verify <artifact.tgz> --version <v>   # check an artifact against the on-chain ReleaseLog pin
 ```
