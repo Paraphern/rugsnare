@@ -1,5 +1,7 @@
 # RugSnare
 
+![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)
+
 > **Runtime integrity for MCP tool descriptions.** Scanners check MCP servers *before* you connect them. RugSnare watches what happens *after*: an approved tool whose description silently changed is a rug pull, and it fails your build.
 
 ```
