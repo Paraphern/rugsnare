@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { toolHash, short } from './hash.js';
-import { discoverConfigs, serverCommand } from './discovery.js';
+import { discoverConfigs, discoverZCodePlugins, serverCommand } from './discovery.js';
 import { fetchTools } from './rpc.js';
 import {
   loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay, detectShadows,
@@ -223,6 +223,12 @@ function cmdInit() {
   for (const c of discoverConfigs()) {
     const count = c.servers ? Object.keys(c.servers).length : 0;
     console.log(`  ${c.app}/${c.scope}: ${c.file} ${c.exists ? (count ? `(${count} server(s))` : c.error ? '(unparseable)' : '(no mcpServers)') : '(not found)'}`);
+  }
+  // ZCode plugins (per-plugin .mcp.json)
+  const zcodePlugins = discoverZCodePlugins();
+  for (const z of zcodePlugins) {
+    const count = Object.keys(z.servers).length;
+    console.log(`  zcode/${z.scope}: ${z.file} (${count} server(s))`);
   }
   console.log('\nNext: rugsnare scan   -> baseline pins\n     rugsnare diff    -> check for drift (exit 1 = fail the build)');
 }
