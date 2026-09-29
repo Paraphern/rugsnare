@@ -8,18 +8,18 @@ import { toolHash } from '../src/hash.js';
 const fixture = (name) => path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', name);
 
 test('edge: non-JSON noise on stdout is skipped, unicode descriptions hashed stably', async () => {
-  const tools = await fetchTools({ command: 'node', args: [fixture('edge-garbage.js')], timeoutMs: 15000 });
+  const { tools } = await fetchTools({ command: 'node', args: [fixture('edge-garbage.js')], timeoutMs: 15000 });
   assert.equal(tools.length, 2, 'must see through boot/debug/progress noise');
   assert.equal(tools[0].name, 'héllo_wörld');
   // stable hash across two runs (unicode determinism)
   const first = toolHash(tools[0]);
-  const again = await fetchTools({ command: 'node', args: [fixture('edge-garbage.js')], timeoutMs: 15000 });
+  const { tools: again } = await fetchTools({ command: 'node', args: [fixture('edge-garbage.js')], timeoutMs: 15000 });
   assert.equal(toolHash(again[0]), first, 'unicode descriptions must hash identically across runs');
 });
 
 test('edge: 120 tools pinned and hashed fast', async () => {
   const t0 = Date.now();
-  const tools = await fetchTools({ command: 'node', args: [fixture('edge-many.js')], timeoutMs: 15000 });
+  const { tools } = await fetchTools({ command: 'node', args: [fixture('edge-many.js')], timeoutMs: 15000 });
   const elapsed = Date.now() - t0;
   assert.equal(tools.length, 120);
   for (const t of tools) toolHash(t);
@@ -41,7 +41,7 @@ test('edge: silent server (no tools/list response) hits the RPC timeout and reje
 });
 
 test('edge: paginated tools/list (nextCursor) is followed to the last page', async () => {
-  const tools = await fetchTools({ command: 'node', args: [fixture('edge-paged.js')], timeoutMs: 15000 });
+  const { tools } = await fetchTools({ command: 'node', args: [fixture('edge-paged.js')], timeoutMs: 15000 });
   assert.deepEqual(
     tools.map((t) => t.name),
     ['page_one_a', 'page_one_b', 'page_two_a', 'page_two_b'],

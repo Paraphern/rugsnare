@@ -99,7 +99,20 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
         if (Array.isArray(r.tools)) tools.push(...r.tools);
         cursor = typeof r.nextCursor === 'string' && r.nextCursor ? r.nextCursor : undefined;
       } while (cursor !== undefined && ++pages < 100);
-      finish(resolve, tools);
+
+      // also fetch prompts and resources (may not be supported by all servers)
+      let prompts = [];
+      let resources = [];
+      try {
+        const pr = await request('prompts/list', {});
+        if (pr?.result?.prompts) prompts = pr.result.prompts;
+      } catch { /* server doesn't support prompts — fine */ }
+      try {
+        const rr = await request('resources/list', {});
+        if (rr?.result?.resources) resources = rr.result.resources;
+      } catch { /* server doesn't support resources — fine */ }
+
+      finish(resolve, { tools, prompts, resources });
     })().catch((err) => finish(reject, err));
   });
 }

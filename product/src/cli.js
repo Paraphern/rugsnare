@@ -119,9 +119,22 @@ async function cmdScan(flags) {
     if (!entry) { console.error(`  Server not found in sources: ${name}`); failed++; continue; }
     try {
       const { command, args, env } = serverCommand(entry);
-      const tools = await fetchTools({ command, args, env, cwd: process.cwd() });
+      const { tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd() });
       const serverPin = ensureServer(pins, name, { command, args });
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
+
+      // pin prompts and resources too (if the server exposes them)
+      if (!serverPin.prompts) serverPin.prompts = {};
+      for (const p of prompts ?? []) {
+        const { promptHash } = await import('./prompts.js');
+        serverPin.prompts[p.name] = { hash: promptHash(p), description: p.description ?? '', firstSeen: new Date().toISOString() };
+      }
+      if (!serverPin.resources) serverPin.resources = {};
+      for (const r of resources ?? []) {
+        const { resourceHash } = await import('./prompts.js');
+        const key = r.name ?? r.uri ?? '(unnamed)';
+        serverPin.resources[key] = { hash: resourceHash(r), description: r.description ?? '', firstSeen: new Date().toISOString() };
+      }
 
       // advisory signals: catch suspicious descriptions even on first contact
       const advisories = scanToolsForAdvisories(tools);
@@ -167,8 +180,16 @@ async function cmdDiff(flags) {
     const sp = pins.servers[name];
     const cmd = configServers?.[name] ? serverCommand(configServers[name]) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
     try {
-      const tools = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+      const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
       const verdicts = compareTools(sp, tools, toolHash);
+      // also compare prompts and resources if pinned
+      const { promptHash, resourceHash, comparePinned } = await import('./prompts.js');
+      if (sp.prompts && Object.keys(sp.prompts).length > 0) {
+        // re-fetch prompts for comparison
+      }
+      const { prompts: livePrompts = [], resources: liveResources = [] } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+      if (sp.prompts) verdicts.push(...comparePinned('prompt', sp.prompts, livePrompts, promptHash));
+      if (sp.resources) verdicts.push(...comparePinned('resource', sp.resources, liveResources, resourceHash));
       for (const v of verdicts) {
         if (v.status === 'DRIFT') logEvent({ kind: 'drift', server: name, tool: v.tool, oldHash: v.oldHash, hash: v.hash });
         if (v.status === 'NEW') logEvent({ kind: 'new-tool', server: name, tool: v.tool, hash: v.hash });
@@ -205,7 +226,7 @@ async function cmdApprove(flags, serverName) {
   const configEntry = flags.config ? readServersFromConfigFile(flags.config)[serverName] : null;
   if (!sp?.cmd && !configEntry) { console.error(`No pinned server named "${serverName}". Run \`rugsnare scan\` first.`); process.exit(2); }
   const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
-  const tools = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+  const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
   const serverPin = ensureServer(pins, serverName, { command: cmd.command, args: cmd.args });
   for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
   savePins(pins);
@@ -330,7 +351,7 @@ async function cmdReport(flags) {
     let liveStatus = '';
     if (flags.live && sp.cmd) {
       try {
-        const tools = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: 15000 });
+        const { tools } = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: 15000 });
         const verdicts = compareTools(sp, tools, toolHash);
         const bad = badVerdicts(verdicts);
         liveStatus = bad.length === 0 ? ' ✓ live' : ` ⚠ ${bad.length} finding(s)`;

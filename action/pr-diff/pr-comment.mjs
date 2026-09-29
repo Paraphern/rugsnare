@@ -44,20 +44,21 @@ const servers = Object.fromEntries(
   Object.entries(config.mcpServers ?? {}).filter(([, v]) => v && typeof v.command === 'string')
 );
 
-const report = [];
-for (const [name, entry] of Object.entries(servers)) {
-  const pin = pins.servers[name];
-  if (!pin?.cmd) {
-    report.push({ server: name, verdicts: [{ tool: '(all)', status: 'NEW', note: 'not pinned yet — run rugsnare scan on main first' }] });
-    continue;
+  const tools = [];
+  for (const [name, entry] of Object.entries(servers)) {
+    const pin = pins.servers[name];
+    if (!pin?.cmd) {
+      report.push({ server: name, verdicts: [{ tool: '(all)', status: 'NEW', note: 'not pinned yet — run rugsnare scan on main first' }] });
+      continue;
+    }
+    const liveFromConfig = servers[name];
+    const cmd = liveFromConfig?.command === pin.cmd.command && JSON.stringify(liveFromConfig.args ?? []) === JSON.stringify(pin.cmd.args)
+      ? { command: pin.cmd.command, args: pin.cmd.args }
+      : { command: liveFromConfig.command, args: liveFromConfig.args ?? [] }; // config changed → check what it NOW runs
+    const { tools: serverTools } = await fetchTools({ command: cmd.command, args: cmd.args, env: entry.env ?? {}, cwd, timeoutMs: 20000 });
+    tools.push(...serverTools);
+    report.push({ server: name, verdicts: compareTools(pin, serverTools, toolHash) });
   }
-  const liveFromConfig = servers[name];
-  const cmd = liveFromConfig?.command === pin.cmd.command && JSON.stringify(liveFromConfig.args ?? []) === JSON.stringify(pin.cmd.args)
-    ? { command: pin.cmd.command, args: pin.cmd.args }
-    : { command: liveFromConfig.command, args: liveFromConfig.args ?? [] }; // config changed → check what it NOW runs
-  const tools = await fetchTools({ command: cmd.command, args: cmd.args, env: entry.env ?? {}, cwd, timeoutMs: 20000 });
-  report.push({ server: name, verdicts: compareTools(pin, tools, toolHash) });
-}
 
 // ---- 2. render markdown ----
 const clip = (s, n = 700) => (s.length > n ? s.slice(0, n) + ' …[truncated]' : s || '(empty)');
