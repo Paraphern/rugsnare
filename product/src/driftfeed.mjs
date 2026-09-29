@@ -12,6 +12,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { toolHash } from './hash.js';
@@ -105,7 +106,7 @@ async function main() {
   const prevSnapshot = fs.existsSync(snapshotFile) ? JSON.parse(fs.readFileSync(snapshotFile, 'utf8')) : null;
 
   fs.mkdirSync(feedDir, { recursive: true });
-  const tmpDir = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'rugsnare-feed-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-feed-'));
 
   const currentSnapshot = {};
   const allChanges = [];
