@@ -1,0 +1,311 @@
+{
+  "server-filesystem": {
+    "server": "server-filesystem",
+    "package": "@modelcontextprotocol/server-filesystem",
+    "version": "2026.8.31",
+    "tools": [
+      {
+        "name": "read_file",
+        "hash": "1a19f9c66da8234489eca4a46359ff2adbaed9b04b273e25135123764dbdb991",
+        "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+        "advisory": false
+      },
+      {
+        "name": "read_text_file",
+        "hash": "1d8b2b6ca5e1073726f4f41ba61ac8c888d2867157d6cf12547c55051c7f482a",
+        "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "read_media_file",
+        "hash": "661d2d1d9e2a555058c3d0b708ef64c27fcd6ad573432a2890106c818b3c4b17",
+        "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "read_multiple_files",
+        "hash": "4c8a0ffe6571a32fd912099c90ded68dd23a05daa2604004330fcd5076ea6e9e",
+        "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "write_file",
+        "hash": "7b912840bf28bc44ce107f55630d64b645ad78ed92be02185b7ca9143bb0b917",
+        "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "edit_file",
+        "hash": "fcbcdc0249981d411ac04fddf7b390b674d502fd5ad0cb0c37c9c23f74089b14",
+        "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "create_directory",
+        "hash": "2d7848f9113d21f55f60e177430ba1dda372354fd94075d52bccde5c6f5637e2",
+        "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "list_directory",
+        "hash": "488944e6d821c9e6bc6cdc1347c5d01edaa3c1ed633f3b87dbccb3880dfd5702",
+        "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "list_directory_with_sizes",
+        "hash": "6a88e86c3c59f13f5b3602e162746cd7f970554d0f8e5c7193eb5c88f150dd14",
+        "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "directory_tree",
+        "hash": "25f83f24b499219f8e9e6d6f25bb8546b8a318084d98cdc56a7b4753f956ced5",
+        "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "move_file",
+        "hash": "ccd3a2f3e87121650767bc135408da868b67f6fc140d77ab75e3d6ea0b71ee66",
+        "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "search_files",
+        "hash": "41f144836f5e786009e2173256759e37b687add572cfba808e24bebb9a04ce96",
+        "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "get_file_info",
+        "hash": "6ff64b49d487d69c8743ec6c81fe5bb0cf7459267b6146b522d565e405a66ae8",
+        "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
+        "name": "list_allowed_directories",
+        "hash": "fe7d40d713a335fa54765eb86288cdd59c2a8eedc121f6156f45f9c96271c0e4",
+        "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+        "advisory": false
+      }
+    ],
+    "prompts": [],
+    "resources": []
+  },
+  "server-memory": {
+    "server": "server-memory",
+    "package": "@modelcontextprotocol/server-memory",
+    "version": "2026.8.31",
+    "tools": [
+      {
+        "name": "create_entities",
+        "hash": "6ce7dc5b45d4e6c256bb20feed616343e011b6929d7d3d36439df4ce10a3231d",
+        "description": "Create multiple new entities in the knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "create_relations",
+        "hash": "9618aebf22f9736ab47a333971d03c827bbd63e86e11b3ca2d361d34d5dd1438",
+        "description": "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice",
+        "advisory": false
+      },
+      {
+        "name": "add_observations",
+        "hash": "20a69b24a5f88cdfc1cdb6f99f54e1862b86093559b4489f03bcf7de9a334ef8",
+        "description": "Add new observations to existing entities in the knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "delete_entities",
+        "hash": "8732851d4c21195d8897cd73fc21a2872d909f417dc5ce9ba4b1627d7aa41a46",
+        "description": "Delete multiple entities and their associated relations from the knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "delete_observations",
+        "hash": "af8caf807674837f3f384863e76fe3af3cadceba068fa4564a19d147a2fdea95",
+        "description": "Delete specific observations from entities in the knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "delete_relations",
+        "hash": "b5df204cc87e52c33ec7e709e2c384f6a1bcdfc5e200847713b73784a1bb36d6",
+        "description": "Delete multiple relations from the knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "read_graph",
+        "hash": "c0c21cc9552b694d4128f62a4e0e353ea15da9c690ddee4ae46485f280fd1a40",
+        "description": "Read the entire knowledge graph",
+        "advisory": false
+      },
+      {
+        "name": "search_nodes",
+        "hash": "f931cc8a5ae4584a576b253acf24e2473dbb823cc6c9d253e65ad4ef7282aae0",
+        "description": "Search for nodes in the knowledge graph based on a query",
+        "advisory": false
+      },
+      {
+        "name": "open_nodes",
+        "hash": "b7c053613513ee0d46a5db261c81377546df01e739ce1911e71dbdd86e191310",
+        "description": "Open specific nodes in the knowledge graph by their names",
+        "advisory": false
+      }
+    ],
+    "prompts": [],
+    "resources": [
+      {
+        "name": "knowledge-graph",
+        "hash": "d3039de2064186adc60212ae826909ca264bda571f1faa819ca0bfb54cdb11a0"
+      }
+    ]
+  },
+  "server-everything": {
+    "server": "server-everything",
+    "package": "@modelcontextprotocol/server-everything",
+    "version": "2026.8.31",
+    "tools": [
+      {
+        "name": "echo",
+        "hash": "87a6b5c343ddeeed1922f71fdce50c470e5f572d675ad848b1e3781e01463abe",
+        "description": "Echoes back the input string",
+        "advisory": false
+      },
+      {
+        "name": "get-annotated-message",
+        "hash": "e2dc5dd6b859e8246fb25583d4fbce6bfc210ae8afaef6701e3d0a7f251b93e8",
+        "description": "Demonstrates how annotations can be used to provide metadata about content.",
+        "advisory": false
+      },
+      {
+        "name": "get-env",
+        "hash": "95de105e967bcf1fd5060892121192d6725149d42be8031464799e186bc3d6a5",
+        "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+        "advisory": false
+      },
+      {
+        "name": "get-resource-links",
+        "hash": "f9febf0e0f7ef468c08bfcaab44108f8d0ecedd2248f0dc6b7b282e70157f6c8",
+        "description": "Returns up to ten resource links that reference different types of resources",
+        "advisory": false
+      },
+      {
+        "name": "get-resource-reference",
+        "hash": "5e3b65b8d495e8350f7e52b3cd82b622d4d8e1ea82479eef15741d296d1d2345",
+        "description": "Returns a resource reference that can be used by MCP clients",
+        "advisory": false
+      },
+      {
+        "name": "get-structured-content",
+        "hash": "24fd310fc318335d22160e7652f6061a5bd25789133bce62e0f07eb858e85b13",
+        "description": "Returns structured content along with an output schema for client data validation",
+        "advisory": false
+      },
+      {
+        "name": "get-sum",
+        "hash": "090e34d8f6e1cb4c079f4d9cc62e4c105d67fa629dc3af18c2aba2bba5891489",
+        "description": "Returns the sum of two numbers",
+        "advisory": false
+      },
+      {
+        "name": "get-tiny-image",
+        "hash": "945e15749abef23ba3a1cbf4f22caddfaed882a65a6fd109f2bd9ae40beeb945",
+        "description": "Returns a tiny MCP logo image.",
+        "advisory": false
+      },
+      {
+        "name": "gzip-file-as-resource",
+        "hash": "ecf41b3e2d4f69333bf6f1f3c26387923005722e50fc53abd0274d2f3b34a1b9",
+        "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+        "advisory": false
+      },
+      {
+        "name": "toggle-simulated-logging",
+        "hash": "cbe3245cd4d770b26c9643f2ef726bff083802c1f3b619d6a0bf1dcdaed6fff0",
+        "description": "Toggles simulated, random-leveled logging on or off.",
+        "advisory": false
+      },
+      {
+        "name": "toggle-subscriber-updates",
+        "hash": "d383d176f3fe178244980d05e402f6e3750cf91177f444155cf89661a63c6de3",
+        "description": "Toggles simulated resource subscription updates on or off.",
+        "advisory": false
+      },
+      {
+        "name": "trigger-long-running-operation",
+        "hash": "7efbac46cf0b694fa8e4d07440e16b14900fd884527a065317edd85b8625162b",
+        "description": "Demonstrates a long running operation with progress updates.",
+        "advisory": false
+      },
+      {
+        "name": "simulate-research-query",
+        "hash": "048a7f704c1efd20baa40df316ec000e3e6830435fce117db553172f89d39b7a",
+        "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+        "advisory": false
+      }
+    ],
+    "prompts": [
+      {
+        "name": "simple-prompt",
+        "hash": "cf7ff079d9c0929b7da9e2f0acc04020adf0c27626c3c48568ae5c22621a5c3d"
+      },
+      {
+        "name": "args-prompt",
+        "hash": "55ede49d9079e4fe38e6e0d22432194dd4aca8380a1ebdc2360d44232c75db6b"
+      },
+      {
+        "name": "completable-prompt",
+        "hash": "cb5275973d39cb526b34290cd3d5b3c3d6e1419fa0868d07d4a77e3dfac1966b"
+      },
+      {
+        "name": "resource-prompt",
+        "hash": "f12d0e2427f3c67f7d04efefd3547708d1f3164c9ba962bdcb2085deb898750a"
+      }
+    ],
+    "resources": [
+      {
+        "name": "architecture.md",
+        "hash": "2c20d670559c5f8e5c1fdc5083748904ff777a50f5923037e69f796b988e1285"
+      },
+      {
+        "name": "extension.md",
+        "hash": "47ef1bd632531fe13787c5932c560955438255e453704f6323c39409df651b6a"
+      },
+      {
+        "name": "features.md",
+        "hash": "a08e8c87acd23077793275612cade06c10232b5fd1bf002d64c9799653d45ce8"
+      },
+      {
+        "name": "how-it-works.md",
+        "hash": "ce967617e2adb7bb0d791e555900c0a2b75a3dfda0530b01457f72f5ccd733f0"
+      },
+      {
+        "name": "instructions.md",
+        "hash": "1c195708b086444f539cda90255b565d69cf06149598e32b8c924a67baad654f"
+      },
+      {
+        "name": "startup.md",
+        "hash": "224e8dc0f1250a1c218d51d4ace93b5fb4ef08c06f9b7bec4eef23a166455039"
+      },
+      {
+        "name": "structure.md",
+        "hash": "85cf6cdfbb158db69d51a7a9af2b3611828145416ddaadf9dffe2a96d2d7868f"
+      }
+    ]
+  },
+  "server-sequential-thinking": {
+    "server": "server-sequential-thinking",
+    "package": "@modelcontextprotocol/server-sequential-thinking",
+    "version": "2026.8.31",
+    "tools": [
+      {
+        "name": "sequentialthinking",
+        "hash": "f1cad252b87bcdadf90a2523e350cad45bcf636f559c5435ee76c7a79f195e0c",
+        "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations where irrelevant information needs to be filtered out\n\nKey features:\n- You can adjust total_thoughts up or down as you progress\n- You can question or revise previous thoughts\n- You can add more thoughts even after reaching what seemed like the end\n- You can express uncertainty and explore alternative approaches\n- Not every thought needs to build linearly - you can branch or backtrack\n- Generates a solution hypothesis\n- Verifies the hypothesis based on the Chain of Thought steps\n- Repeats the process until satisfied\n- Provides a correct answer\n\nParameters explained:\n- thought: Your current thinking step, which can include:\n  * Regular analytical steps\n  * Revisions of previous thoughts\n  * Questions about previous decisions\n  * Realizations about needing more analysis\n  * Changes in approach\n  * Hypothesis generation\n  * Hypothesis verification\n- nextThoughtNeeded: True if you need more thinking, even if at what seemed like the end\n- thoughtNumber: Current number in sequence (can go beyond initial total if needed)\n- totalThoughts: Current estimate of thoughts needed (can be adjusted up/down)\n- isRevision: A boolean indicating if this thought revises previous thinking\n- revisesThought: If is_revision is true, which thought number is being reconsidered\n- branchFromThought: If branching, which thought number is the branching point\n- branchId: Identifier for the current branch (if any)\n- needsMoreThoughts: If reaching end but realizing more thoughts needed\n\nYou should:\n1. Start with an initial estimate of needed thoughts, but be ready to adjust\n2. Feel free to question or revise previous thoughts\n3. Don't hesitate to add more thoughts if needed, even at the \"end\"\n4. Express uncertainty when present\n5. Mark thoughts that revise previous thinking or branch into new paths\n6. Ignore information that is irrelevant to the current step\n7. Generate a solution hypothesis when appropriate\n8. Verify the hypothesis based on the Chain of Thought steps\n9. Repeat the process until satisfied with the solution\n10. Provide a single, ideally correct answer as the final output\n11. Only set nextThoughtNeeded to false when truly done and a satisfactory answer is reached",
+        "advisory": false
+      }
+    ],
+    "prompts": [],
+    "resources": []
+  }
+}

@@ -1,0 +1,6 @@
+{"ts":"2026-09-29T20:31:50.771Z","server":"server-filesystem","type":"FIRST_SCAN","detail":"v2026.8.31, 14 tools"}
+{"ts":"2026-09-29T20:31:53.303Z","server":"server-memory","type":"FIRST_SCAN","detail":"v2026.8.31, 9 tools"}
+{"ts":"2026-09-29T20:31:53.587Z","server":"server-fetch","type":"ERROR","detail":"Command failed: npm view @modelcontextprotocol/server-fetch version\nnpm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@modelcontextprotocol%2fserver-fetch - Not found\nnpm er"}
+{"ts":"2026-09-29T20:31:56.508Z","server":"server-everything","type":"FIRST_SCAN","detail":"v2026.8.31, 13 tools"}
+{"ts":"2026-09-29T20:31:59.593Z","server":"server-sequential-thinking","type":"FIRST_SCAN","detail":"v2026.8.31, 1 tools"}
+{"ts":"2026-09-29T20:31:59.887Z","server":"server-git","type":"ERROR","detail":"Command failed: npm view @modelcontextprotocol/server-git version\nnpm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@modelcontextprotocol%2fserver-git - Not found\nnpm error "}
