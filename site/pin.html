@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RugSnare — pin release v0.1.0 on-chain</title>
+<style>
+  body{background:#0b0e14;color:#dbe2f0;font:16px/1.65 system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
+  .card{background:#11151f;border:1px solid #232a3b;border-radius:14px;padding:32px;max-width:560px;margin:20px}
+  h1{font-size:22px;margin:0 0 10px}
+  p{color:#8b95ab;font-size:14.5px;margin:8px 0}
+  code{font-family:ui-monospace,Consolas,monospace;color:#4fd6a0;font-size:13px;word-break:break-all}
+  button{font:600 17px/1 system-ui;background:#ffb454;color:#0b0e14;border:0;border-radius:10px;padding:18px 28px;margin-top:18px;cursor:pointer;width:100%}
+  button:disabled{background:#3a4152;color:#8b95ab;cursor:wait}
+  .ok{color:#4fd6a0}.err{color:#ff6b6b}
+  a{color:#4fd6a0}
+  .small{font-size:12.5px;color:#5a6478}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>RugSnare — pin release <code>v0.1.0</code></h1>
+  <p>This sends one transaction to the <b>ReleaseLog</b> contract on Base Sepolia. It writes the release artifact hash into the blockchain — after this, the hash is immutable.</p>
+  <p>artifact sha256: <code>565ce194…a96b1e</code></p>
+  <p id="status" class="small">Connect MetaMask (account 0x24d0…, network Base Sepolia — switched automatically).</p>
+  <button id="pin" onclick="pin()">PIN v0.1.0 ON-CHAIN</button>
+  <p class="small">MetaMask will show a confirmation with the exact data — you stay in control.</p>
+</div>
+<script>
+const CONTRACT = '0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e';
+const DATA = '0x8e5f2db8aa7cdbe2cce2ec7b606b0e199ddd9b264a6e645e767fb8479a7917dcd1b8693f565ce19428d852bae2ed3634f069cab3a7246383b51bb0d70df5ee2997a96b1e00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000005302e312e30000000000000000000000000000000000000000000000000000000';
+const CHAIN_ID = '0x14a34'; // Base Sepolia 84532
+const $ = (s) => document.getElementById(s);
+async function pin() {
+  const btn = $('pin');
+  try {
+    btn.disabled = true;
+    if (!window.ethereum) throw new Error('MetaMask not found — open this page in the browser where MetaMask is installed');
+    $('status').textContent = 'Requesting accounts…';
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const from = accounts[0];
+    $('status').textContent = 'Account: ' + from + ' — switching to Base Sepolia…';
+    try {
+      await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_ID }] });
+    } catch (e) {
+      if (e.code === 4902) {
+        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{
+          chainId: CHAIN_ID, chainName: 'Base Sepolia',
+          rpcUrls: ['https://sepolia.base.org'], nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+          blockExplorerUrls: ['https://sepolia.basescan.org']
+        }]});
+      } else throw e;
+    }
+    $('status').textContent = 'Sending transaction — confirm in MetaMask…';
+    const tx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: CONTRACT, value: '0x0', data: DATA }] });
+    $('status').innerHTML = '<span class="ok">Pinned! Tx: <a href="https://sepolia.basescan.org/tx/' + tx + '" target="_blank" rel="noopener">' + tx.slice(0, 18) + '…</a></span><br>Tell the agent "запиннено".';
+    btn.textContent = 'DONE ✔';
+  } catch (e) {
+    $('status').innerHTML = '<span class="err">' + (e.message || e) + '</span>';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

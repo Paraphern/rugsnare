@@ -92,7 +92,8 @@ export async function fetchRelease({ rpc, contract, version }) {
   const hex = json.result;
   if (typeof hex !== 'string' || hex.length < 2 + 128) throw new Error('unexpected RPC result shape');
   const artifactHash = hex.slice(2, 66);
-  const timestamp = Number(BigInt(hex.slice(66, 130) || '0'));
+  const tsHex = hex.slice(66, 130);
+  const timestamp = tsHex ? Number(BigInt('0x' + tsHex)) : 0;
   return { artifactHash, timestamp };
 }
 
