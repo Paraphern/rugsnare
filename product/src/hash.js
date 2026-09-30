@@ -26,4 +26,27 @@ export function toolHash(tool) {
   return crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
 }
 
+/**
+ * Hash what actually matters for agent behavior:
+ * - toolHash: combined hash over name + description + inputSchema
+ * - schemaHash: structural hash over name + inputSchema (breaking changes)
+ * - proseHash: description-only hash (cosmetic changes, version strings)
+ *
+ * Split hash design from community feedback:
+ * "a structural hash on name plus inputSchema is the one I'd actually enforce on.
+ *  prose drift can stay alert-only forever." — u/QuanTradin
+ */
+
+export function schemaHash(tool) {
+  const canonical = stable({
+    name: tool?.name ?? '',
+    inputSchema: tool?.inputSchema ?? {},
+  });
+  return crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+}
+
+export function proseHash(tool) {
+  return crypto.createHash('sha256').update(stable(tool?.description ?? '')).digest('hex');
+}
+
 export const short = (h) => String(h).slice(0, 16);

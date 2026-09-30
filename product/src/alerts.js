@@ -50,3 +50,43 @@ export async function sendAlert(config, alert) {
     return false; // best-effort by design
   }
 }
+
+// Debounced alert: collects alerts for 500ms then sends one summary
+// (instead of spamming N individual alerts when N tools drift simultaneously)
+const alertBuffer = new Map(); // server -> alerts[]
+let debounceTimer = null;
+
+export function queueAlert(config, alert, cwd) {
+  const server = alert.server ?? 'unknown';
+  if (!alertBuffer.has(server)) alertBuffer.set(server, []);
+  alertBuffer.get(server).push(alert);
+
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    const allAlerts = [...alertBuffer.values()].flat();
+    alertBuffer.clear();
+
+    if (allAlerts.length === 1) {
+      await sendAlert(config, allAlerts[0]);
+      return;
+    }
+
+    // Aggregated summary
+    const breaking = allAlerts.filter((a) => a.status === 'DRIFT' && a.driftType === 'BREAKING');
+    const cosmetic = allAlerts.filter((a) => a.status === 'DRIFT' && a.driftType === 'COSMETIC');
+    const news = allAlerts.filter((a) => a.status === 'NEW');
+    const servers = [...new Set(allAlerts.map((a) => a.server))];
+
+    const summary = {
+      kind: 'rugsnare.summary',
+      total: allAlerts.length,
+      breaking: breaking.length,
+      cosmetic: cosmetic.length,
+      newTools: news.length,
+      servers: servers,
+      tools: allAlerts.map((a) => `${a.server}/${a.tool} (${a.status}${a.driftType ? ' ' + a.driftType : ''})`),
+      note: `${allAlerts.length} finding(s) — run rugsnare diff for details`,
+    };
+    await sendAlert(config, summary);
+  }, 500);
+}

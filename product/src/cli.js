@@ -65,6 +65,8 @@ function parseArgs(argv) {
     else if (a === '--name') flags.name = argv[++i];
     else if (a === '--mode') flags.mode = argv[++i];
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
+    else if (a === '--schema-only') flags.schemaOnly = true;
+    else if (a === '--prose-only') flags.proseOnly = true;
     else flags._.push(a);
   }
   return flags;
@@ -93,7 +95,7 @@ function collectServers(flags) {
   return { source: 'pins', servers: fromPins };
 }
 
-const STATUS_ICON = { UNCHANGED: 'ok ', DRIFT: 'DRIFT', NEW: 'NEW ', REMOVED: 'GONE' };
+const STATUS_ICON = { UNCHANGED: 'ok ', DRIFT: 'DRIFT', NEW: 'NEW ', REMOVED: 'GONE', BREAKING: 'BRK ', COSMETIC: 'COS ' };
 
 function printVerdict(server, verdicts, json) {
   if (json) {
@@ -102,12 +104,18 @@ function printVerdict(server, verdicts, json) {
   }
   for (const v of verdicts) {
     const hashes = v.oldHash ? ` ${short(v.oldHash)} -> ${short(v.hash)}` : v.hash ? ` ${short(v.hash)}` : '';
-    console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${v.tool}${hashes}`);
+    const driftLabel = v.driftType ? ` (${v.driftType})` : '';
+    console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${v.tool}${driftLabel}${hashes}`);
   }
 }
 
-function badVerdicts(verdicts) {
-  return verdicts.filter((v) => v.status !== 'UNCHANGED');
+function badVerdicts(verdicts, flags) {
+  let bad = verdicts.filter((v) => v.status !== 'UNCHANGED');
+  // Schema-only: only BREAKING drift (schema changes) blocks the build
+  if (flags?.schemaOnly) bad = bad.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING');
+  // Prose-only: only COSMETIC drift (description changes) blocks
+  if (flags?.proseOnly) bad = bad.filter((v) => v.status !== 'DRIFT' || v.driftType === 'COSMETIC');
+  return bad;
 }
 
 async function cmdScan(flags) {
@@ -197,7 +205,13 @@ async function cmdDiff(flags) {
     const cmd = configServers?.[name] ? serverCommand(configServers[name]) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
     try {
       const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
-      const verdicts = compareTools(sp, tools, toolHash);
+      const allVerdicts = compareTools(sp, tools, toolHash);
+      // Filter display based on --schema-only / --prose-only
+      const verdicts = flags.schemaOnly
+        ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING')
+        : flags.proseOnly
+          ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'COSMETIC')
+          : allVerdicts;
       // also compare prompts and resources if pinned
       const { promptHash, resourceHash, comparePinned } = await import('./prompts.js');
       if (sp.prompts && Object.keys(sp.prompts).length > 0) {

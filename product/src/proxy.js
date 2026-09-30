@@ -44,7 +44,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     await sendAlert(config, payload);
   };
 
-  // ---- client -> server: log tool calls + evaluate policies ----
+  // ---- client -> server: log tool calls + evaluate policies + fail-open ----
   const clientIn = readline.createInterface({ input: streams.clientIn });
   clientIn.on('line', (line) => {
     let shouldForward = true;
@@ -103,11 +103,18 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           logEvent({ kind: 'pii-detected', server: name, tool: msg.params.name, hits: policyResult.pii.hits }, cwd);
         }
       }
-    } catch {
-      // not JSON — forward untouched
+    } catch (proxyErr) {
+      // Fail-open: proxy internal error → forward anyway, log the failure
+      logEvent({ kind: 'proxy-fail-open', server: name, reason: String(proxyErr).slice(0, 200) }, cwd);
+      writeErr(`[rugsnare] proxy error (fail-open, forwarding): ${String(proxyErr).slice(0, 100)}`);
     }
     if (shouldForward) {
-      streams.server.stdin.write(line + '\n');
+      try {
+        streams.server.stdin.write(line + '\n');
+      } catch (writeErr) {
+        // Server pipe broken → fail-open: log and let the client handle reconnection
+        logEvent({ kind: 'proxy-write-fail', server: name, reason: String(writeErr).slice(0, 200) }, cwd);
+      }
     }
   });
 

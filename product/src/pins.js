@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { readJsonFile } from './jsonfile.js';
+import { schemaHash as computeSchemaHash, proseHash as computeProseHash } from './hash.js';
 
 /**
  * Pin store: `.rugsnare/pins.json`
@@ -76,6 +77,8 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
   const existing = serverPin.tools[tool.name];
   serverPin.tools[tool.name] = {
     hash,
+    schemaHash: computeSchemaHash(tool),
+    proseHash: computeProseHash(tool),
     description: tool.description ?? '',
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
@@ -91,12 +94,18 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
     const hash = toolHashFn(tool);
     if (!pin) result.push({ tool: tool.name, status: 'NEW', hash });
     else if (pin.hash !== hash) {
+      const liveSchemaHash = computeSchemaHash(tool);
+      const liveProseHash = computeProseHash(tool);
+      const schemaChanged = pin.schemaHash !== liveSchemaHash;
+      const proseChanged = pin.proseHash !== liveProseHash;
       result.push({
         tool: tool.name,
         status: 'DRIFT',
+        driftType: schemaChanged ? 'BREAKING' : 'COSMETIC',
         oldHash: pin.hash,
         hash,
-        // human-readable contract diff (for PR comments / reports)
+        schemaChanged,
+        proseChanged,
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });
