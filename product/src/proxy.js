@@ -2,7 +2,7 @@ import readline from 'node:readline';
 import { toolHash, short } from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
 import { logEvent } from './events.js';
-import { sendAlert } from './alerts.js';
+import { sendAlert, queueAlert } from './alerts.js';
 import { evaluateCall, DEFAULT_POLICIES, validate as validatePolicies } from './policies.js';
 import { readJsonFile } from './jsonfile.js';
 import fs from 'node:fs';
@@ -41,7 +41,8 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     const payload = { kind: 'rugsnare.alert', status, server: name, tool, mode, ...extra };
     writeErr(`[rugsnare] ${status}: ${name}/${tool}${extra.oldHash ? ` ${short(extra.oldHash)} -> ${short(extra.hash)}` : ''}`);
     logEvent(payload, cwd);
-    await sendAlert(config, payload);
+    // Debounced: batches multiple alerts into one summary (500ms window)
+    queueAlert(config, payload, cwd);
   };
 
   // ---- client -> server: log tool calls + evaluate policies + fail-open ----

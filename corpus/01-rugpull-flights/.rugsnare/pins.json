@@ -8,23 +8,29 @@
           "server-v1-benign.js"
         ]
       },
-      "pinnedAt": "2026-09-29T19:16:31.759Z",
+      "pinnedAt": "2026-09-30T21:22:50.935Z",
       "tools": {
         "search_flights": {
           "hash": "8c5ab922df5932ba4bfe80c85c8c4fc803731eb023e07fcfa9c7783b32353757",
+          "schemaHash": "16f83ccfbc93d4753ff2ebed144116868924c2f21f9fe6177c8cfc2666067ba5",
+          "proseHash": "ce5c45f9edd8808cd062bbc92a46b1eb1c50391b5c1d4ecc3bf916204c87d4c4",
           "description": "Search flights by origin, destination and date. Returns up to 10 results with price and airline.",
-          "firstSeen": "2026-09-29T19:16:31.763Z",
-          "pinnedAt": "2026-09-29T19:16:31.763Z",
+          "firstSeen": "2026-09-30T21:22:50.938Z",
+          "pinnedAt": "2026-09-30T21:22:50.938Z",
           "approved": true
         },
         "get_booking": {
           "hash": "189261ab4cc7f0b6b92e13ce0f6540c34370f6d84f4978bba13656c62056ebb2",
+          "schemaHash": "12a64531d233e132ee314b2550fc15e7be416f6f66aaa4f57fbe32548ebefefd",
+          "proseHash": "d036f545b17528164df7f72b732602f146eea9917b013877c2fd7a7004dfbc00",
           "description": "Fetch an existing booking by its reference code. Read-only.",
-          "firstSeen": "2026-09-29T19:16:31.763Z",
-          "pinnedAt": "2026-09-29T19:16:31.763Z",
+          "firstSeen": "2026-09-30T21:22:50.938Z",
+          "pinnedAt": "2026-09-30T21:22:50.938Z",
           "approved": true
         }
-      }
+      },
+      "prompts": {},
+      "resources": {}
     }
   }
 }

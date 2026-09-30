@@ -34,7 +34,7 @@ const HELP = `rugsnare — runtime integrity for MCP tool descriptions
 Usage:
   rugsnare init
   rugsnare scan [--config <mcp.json>] [--server <name>]
-  rugsnare diff [--config <mcp.json>] [--server <name>] [--json]
+  rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
@@ -47,7 +47,8 @@ Files (all local, gitignore .rugsnare/ or commit pins.json deliberately):
   .rugsnare/config.json   mode + alert webhook
   .rugsnare/events.jsonl  append-only event log
 
-Exit codes: 0 = clean, 1 = drift detected, 2 = config error, 3 = infrastructure error (no drift, but couldn't reach a server).`;
+Exit codes: 0 = clean, 1 = drift detected, 2 = config error, 3 = infrastructure error (no drift, but couldn't reach a server).
+Modes: --schema-only = only BREAKING drift (schema changes) fails the build; --prose-only = only COSMETIC drift (description changes) fails. Default: both.`;
 
 function parseArgs(argv) {
   const flags = { _: [] };
@@ -381,7 +382,7 @@ async function cmdReport(flags) {
     const sp = pins.servers[name];
     const toolCount = Object.keys(sp.tools).length;
     const approvedCount = Object.values(sp.tools).filter((t) => t.approved).length;
-    const lastPinned = Object.values(sp.tools).reduce((latest, t) => (t.pinnedAt > latest ? t.pinnedAt : latest), '—');
+    const lastPinned = Object.values(sp.tools).reduce((latest, t) => (t.pinnedAt > latest ? t.pinnedAt : latest), '') || '—';
 
     let liveStatus = '';
     if (flags.live && sp.cmd) {
