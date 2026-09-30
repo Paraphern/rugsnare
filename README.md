@@ -1,6 +1,11 @@
 # RugSnare
 
-![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)
+[![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
+[![Dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
+[![Node: >=18](https://img.shields.io/badge/node-%3E%3D18-green.svg)](#)
+[![GitHub stars](https://img.shields.io/github/stars/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare/stargazers)
 
 > **Runtime integrity for MCP tool descriptions.** Scanners check MCP servers *before* you connect them. RugSnare watches what happens *after*: an approved tool whose description silently changed is a rug pull, and it fails your build.
 
