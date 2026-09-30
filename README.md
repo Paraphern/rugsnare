@@ -89,7 +89,7 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 | Cross-server tool shadowing (same name on two servers) | ✅ caught in `scan`, `diff` (breaks CI) and the live proxy — the client's undocumented resolution order is the risk | — |
 | Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
-| Toxic data inside call arguments or responses | ❌ logged today, not inspected | call inspection & egress policies — on our roadmap (v0.3) |
+| Toxic data inside call arguments or responses | ✅ caught (v0.3) — policies + PII egress checks in the live proxy | — |
 | Compromised MCP client or host | ❌ | host security |
 | Attacker with write access to `.rugsnare/pins.json` (e.g. a compromised CI runner) | ⚠️ trust boundary | commit pins to the repo and protect the branch — pins are only as trustworthy as the place you store them; signed pins are on the roadmap |
 
@@ -120,23 +120,13 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 
 ## Status & roadmap
 
-- **v0.1 (done):** CI gate — pin / diff / approve, on-chain verify, attack corpus, CI dogfooding its own corpus.
-- **PR contract review (shipped):** a GitHub Action that posts a **human-readable tool-contract diff** on pull requests — reviewers see the changed words, not hashes. Try it: [`action/pr-diff`](action/pr-diff/action.yml).
+| Version | Status | What's inside |
+|---|---|---|
+| **v0.1** | ✅ shipped | CI gate (`scan` / `diff` / `approve`), on-chain release verification, attack corpus, zero-dep |
+| **v0.2** | ✅ shipped | Live stdio proxy (`rugsnare run`) — mid-session quarantine; shadow detection; advisory signals (13 heuristics); prompts & resources pinning; SARIF output; fleet report; pre-commit hook; drift-feed (daily ecosystem monitoring); 9 AI clients |
+| **v0.3** | ✅ shipped | Call policies + PII egress checks — deny `session:object`, deny credentials in arguments, require approval for destructive tools; custom rules via `.rugsnare/policies.json`; `--timeout` flag; exit code 3 for infra errors |
+| **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
+| **v0.4 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
+| **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-  ```yaml
-  - uses: Paraphern/rugsnare/action/pr-diff@main
-    with:
-      config: .mcp.json          # your MCP config
-      working-directory: .       # where the config and committed .rugsnare/pins.json live
-  ```
-
-- **v0.2.2 (done):** prompts & resources pinning (the full MCP surface — tools, prompt templates, resource definitions — all hash-pinned and diffed) + **drift-feed**: daily automated canary scanning of the most popular MCP servers on npm, with a public append-only log of every contract change ([drift-feed/](drift-feed/)). The MCP ecosystem's first continuous contract-integrity monitor.
-- **Pre-commit hook** (`rugsnare hook install`): blocks `git commit` when tool contracts have drifted — catch it before it lands, not after CI.
-
-- **v0.2.1 (done):** cross-server **shadow detection** (same tool name on multiple servers — the client's resolution order decides which runs; caught in scan, diff and the live proxy) + **SARIF output** (`rugsnare diff --sarif`) for GitHub code scanning and other SARIF consumers + **`rugsnare report --live`** — human-readable fleet inventory (server list, tool counts, shadows) for compliance and audits; never exits 1.
-
-- **v0.2 (done):** live stdio proxy (`rugsnare run`) — catches **mid-session** description changes on already-connected agents; observe mode alerts, enforce mode quarantines; per-call audit log; shadow detection; advisory signals; SARIF output; fleet report; pre-commit hook; drift-feed; prompts & resources pinning; 9 AI clients.
-- **v0.3 (done):** declarative **call policies** + **PII egress checks** — every tool call is evaluated in the live proxy against rules: deny `session:object` params, deny credentials in arguments (API keys, AWS tokens, SSH keys, GitHub tokens), require human approval for destructive tools. Custom rules via `.rugsnare/policies.json`.
-- Later: hosted policy panel for teams, agent payment guardrails.
-
-*Early prototype. The corpus is educational — nothing in it sends data anywhere.*
+*58 tests · 9 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
