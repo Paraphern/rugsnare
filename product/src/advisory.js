@@ -32,13 +32,17 @@ const THRESHOLD = 5;
 export function scanToolDescription(description) {
   const hits = [];
   let score = 0;
+  let forceAdvisory = false;
   for (const s of SIGNALS) {
     if (s.test.test(description)) {
       hits.push({ id: s.id, weight: s.weight, desc: s.desc });
       score += s.weight;
+      // Invisible Unicode always forces advisory — it's the top vector for
+      // hiding instructions and should never slip below the threshold
+      if (s.id === 'A12' || s.id === 'A13') forceAdvisory = true;
     }
   }
-  return { score, advisory: score >= THRESHOLD, signals: hits };
+  return { score, advisory: score >= THRESHOLD || forceAdvisory, signals: hits };
 }
 
 export function scanToolsForAdvisories(tools) {

@@ -1,84 +1,49 @@
 #!/usr/bin/env node
 /**
- * RugSnare pre-commit hook — catches contract drift BEFORE the commit lands.
- *
- * Install (one time):
- *   rugsnare hook install
- *
- * Or manually:
- *   cp product/src/precommit.mjs .git/hooks/pre-commit
- *   chmod +x .git/hooks/pre-commit
- *
- * How it works:
- *   On every `git commit`, runs `rugsnare diff` (quiet mode).
- *   If drift is detected → commit is BLOCKED with a human-readable summary.
- *   If no pins exist → hook passes silently (first scan creates them).
+ * RugSnare pre-commit hook — blocks commits when MCP tool contracts have drifted.
+ * Installed by: rugsnare hook install
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const exec = promisify(execFile);
-
 const CWD = process.cwd();
-const RUGSNARE_CLI = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1')), 'cli.js');
+const __filename = fileURLToPath(import.meta.url);
+const CLI = path.join(path.dirname(__filename), 'cli.js');
+
+function findConfig() {
+  // 1. Check RUGSNARE_CONFIG env var
+  if (process.env.RUGSNARE_CONFIG) return process.env.RUGSNARE_CONFIG;
+  // 2. Check .rugsnare/config.json for a configPath
+  try {
+    const cfg = JSON.parse(fs.readFileSync(path.join(CWD, '.rugsnare', 'config.json'), 'utf8'));
+    if (cfg.configPath) return cfg.configPath;
+  } catch { /* no config or unreadable */ }
+  // 3. Common locations
+  const candidates = ['.mcp.json', '.cursor/mcp.json', '.cline/mcp.json', '.vscode/mcp.json'];
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(CWD, c))) return c;
+  }
+  return null;
+}
 
 async function main() {
-  // If no pins exist, pass silently (user hasn't run `rugsnare scan` yet)
   const pinsFile = path.join(CWD, '.rugsnare', 'pins.json');
-  if (!fs.existsSync(pinsFile)) {
-    process.exit(0);
-  }
+  if (!fs.existsSync(pinsFile)) process.exit(0); // no pins yet — nothing to check
 
-  // Find the config file
-  const configCandidates = ['.mcp.json', '.cursor/mcp.json', '.cline/mcp.json'];
-  let config = null;
-  for (const c of configCandidates) {
-    if (fs.existsSync(path.join(CWD, c))) { config = c; break; }
-  }
+  const config = findConfig();
   if (!config) {
-    // No MCP config in this repo — nothing to check
-    process.exit(0);
+    console.error('[rugsnare] no MCP config found — set RUGSNARE_CONFIG or create .mcp.json. Skipping check.');
+    process.exit(0); // warn but don't block
   }
 
-  // Run rugsnare diff quietly
   try {
-    const { stdout, stderr } = await exec('node', [RUGSNARE_CLI, 'diff', '--config', config], {
-      cwd: CWD,
-      timeout: 60000,
-      env: { ...process.env, RUGSNARE_QUIET: '1' },
-    });
-
-    // Check exit code
-    const lines = (stdout + stderr).trim().split('\n');
-    const summary = lines[lines.length - 1] ?? '';
-
-    if (summary.includes('DRIFT DETECTED')) {
-      console.error('');
-      console.error('╔═══════════════════════════════════════════════════╗');
-      console.error('║  🪤 RugSnare: COMMIT BLOCKED — tool contract drift ║');
-      console.error('╚═══════════════════════════════════════════════════╝');
-      console.error('');
-      console.error('  An MCP tool contract changed since you approved it.');
-      console.error('  Review the changes below, then either:');
-      console.error('    1. Fix the drift and try again');
-      console.error('    2. rugsnare approve <server>  (deliberately accept)');
-      console.error('    3. git commit --no-verify     (bypass — not recommended)');
-      console.error('');
-      for (const line of lines) {
-        if (line.includes('[') || line.includes('DRIFT') || line.includes('NEW') || line.includes('SHADOW')) {
-          console.error('  ' + line);
-        }
-      }
-      console.error('');
-      process.exit(1);
-    }
-
-    // Clean — pass
-    process.exit(0);
+    const { stdout, stderr } = await exec('node', [CLI, 'diff', '--config', config], { cwd: CWD, timeout: 60000 });
+    process.exit(0); // clean
   } catch (err) {
-    // If diff exits non-zero (drift), err.stdout has the output
     const output = (err.stdout ?? '') + (err.stderr ?? '');
     if (output.includes('DRIFT DETECTED')) {
       console.error('');
@@ -86,23 +51,18 @@ async function main() {
       console.error('║  🪤 RugSnare: COMMIT BLOCKED — tool contract drift ║');
       console.error('╚═══════════════════════════════════════════════════╝');
       console.error('');
-      console.error('  An MCP tool contract changed since you approved it.');
-      console.error('');
       for (const line of output.split('\n')) {
         if (line.includes('[') || line.includes('DRIFT') || line.includes('NEW') || line.includes('SHADOW')) {
           console.error('  ' + line.trim());
         }
       }
       console.error('');
-      console.error('  Options:');
-      console.error('    1. Fix the drift and try again');
-      console.error('    2. rugsnare approve <server>  (accept the change)');
-      console.error('    3. git commit --no-verify     (bypass)');
+      console.error('  Options: fix the drift, or rugsnare approve <server>');
+      console.error('  Bypass:  git commit --no-verify (not recommended)');
       console.error('');
       process.exit(1);
     }
-    // Other error (server unreachable etc.) — warn but don't block
-    console.error(`[rugsnare] warning: diff check failed (${err.message?.slice(0, 100)})`);
+    console.error(`[rugsnare] warning: diff check failed (${err.message?.slice(0, 100)}) — not blocking`);
     process.exit(0);
   }
 }

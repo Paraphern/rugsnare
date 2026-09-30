@@ -202,20 +202,22 @@ async function cmdDiff(flags) {
       }
       const bad = badVerdicts(verdicts);
       driftCount += bad.length;
-      if (!flags.json) {
+      if (!flags.json && !flags.sarif) {
         console.log(`${name}  (${[cmd.command, ...cmd.args].join(' ')})`);
         printVerdict(name, verdicts, false);
       }
       report.push({ server: name, verdicts });
     } catch (err) {
-      console.error(`${name}: FAILED to reach server: ${err.message}`);
+      if (!flags.json && !flags.sarif) console.error(`${name}: FAILED to reach server: ${err.message}`);
       report.push({ server: name, error: err.message });
       driftCount++;
     }
   }
   if (flags.sarif) {
     console.log(JSON.stringify(buildSarif(report, shadows), null, 2));
-  } else if (!flags.json) {
+  } else if (flags.json) {
+    console.log(JSON.stringify(report, null, 2));
+  } else {
     for (const s of shadows) {
       console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')}`);
     }
@@ -397,7 +399,7 @@ async function cmdReport(flags) {
 async function cmdHook(flags) {
   const action = flags._[0];
   if (action === 'install') {
-    const gitDir = path.join(CWD, '.git');
+    const gitDir = path.join(process.cwd(), '.git');
     if (!fs.existsSync(gitDir)) {
       console.error('Not a git repository (no .git directory found).');
       process.exit(2);
@@ -428,7 +430,7 @@ async function cmdHook(flags) {
     console.log('   To remove: rm .git/hooks/pre-commit');
     process.exit(0);
   } else if (action === 'uninstall') {
-    const hookPath = path.join(CWD, '.git', 'hooks', 'pre-commit');
+    const hookPath = path.join(process.cwd(), '.git', 'hooks', 'pre-commit');
     if (fs.existsSync(hookPath)) {
       const content = fs.readFileSync(hookPath, 'utf8');
       if (content.includes('rugsnare')) {

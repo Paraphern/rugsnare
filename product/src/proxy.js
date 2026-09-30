@@ -3,7 +3,20 @@ import { toolHash, short } from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert } from './alerts.js';
-import { evaluateCall } from './policies.js';
+import { evaluateCall, DEFAULT_POLICIES, validate as validatePolicies } from './policies.js';
+import { readJsonFile } from './jsonfile.js';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function loadPoliciesForProxy(cwd) {
+  const policyFile = path.join(cwd, '.rugsnare', 'policies.json');
+  try {
+    const raw = readJsonFile(policyFile);
+    return validatePolicies(raw);
+  } catch {
+    return DEFAULT_POLICIES; // file missing → use built-in defaults
+  }
+}
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
@@ -21,6 +34,7 @@ import { evaluateCall } from './policies.js';
 export function createProxy({ name, server, streams, mode = 'observe', config, cwd = process.cwd(), writeOut = (s) => process.stdout.write(s + '\n'), writeErr = (s) => process.stderr.write(s + '\n') }) {
   const pins = loadPins(cwd);
   const serverPin = ensureServer(pins, name, null);
+  const activePolicies = loadPoliciesForProxy(cwd);
   let pinsDirty = false;
 
   const alert = async (status, tool, extra = {}) => {
@@ -50,7 +64,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         const toolPin = serverPin.tools[msg.params.name];
         const policyResult = evaluateCall(
           { toolName: msg.params.name, arguments: msg.params.arguments, description: toolPin?.description ?? '' },
-          config.policies
+          activePolicies
         );
 
         if (!policyResult.allowed) {
