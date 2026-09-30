@@ -125,8 +125,8 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 
 - **v0.2.1 (done):** cross-server **shadow detection** (same tool name on multiple servers — the client's resolution order decides which runs; caught in scan, diff and the live proxy) + **SARIF output** (`rugsnare diff --sarif`) for GitHub code scanning and other SARIF consumers + **`rugsnare report --live`** — human-readable fleet inventory (server list, tool counts, shadows) for compliance and audits; never exits 1.
 
-- **v0.2:** live stdio proxy (observe → enforce quarantine) — catches **mid-session** description changes on already-connected agents, not just between sessions; webhook alerts, per-call audit.
-- **v0.3:** declarative call policies, PII egress checks on tool arguments.
+- **v0.2 (done):** live stdio proxy (`rugsnare run`) — catches **mid-session** description changes on already-connected agents; observe mode alerts, enforce mode quarantines; per-call audit log; shadow detection; advisory signals; SARIF output; fleet report; pre-commit hook; drift-feed; prompts & resources pinning; 9 AI clients.
+- **v0.3 (done):** declarative **call policies** + **PII egress checks** — every tool call is evaluated in the live proxy against rules: deny `session:object` params, deny credentials in arguments (API keys, AWS tokens, SSH keys, GitHub tokens), require human approval for destructive tools. Custom rules via `.rugsnare/policies.json`.
 - Later: hosted policy panel for teams, agent payment guardrails.
 
 *Early prototype. The corpus is educational — nothing in it sends data anywhere.*

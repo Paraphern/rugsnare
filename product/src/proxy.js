@@ -1,8 +1,9 @@
 import readline from 'node:readline';
 import { toolHash, short } from './hash.js';
-import { loadPins, pinTool, savePins, ensureServer } from './pins.js';
+import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert } from './alerts.js';
+import { evaluateCall } from './policies.js';
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
@@ -29,9 +30,10 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     await sendAlert(config, payload);
   };
 
-  // ---- client -> server: log tool calls ----
+  // ---- client -> server: log tool calls + evaluate policies ----
   const clientIn = readline.createInterface({ input: streams.clientIn });
   clientIn.on('line', (line) => {
+    let shouldForward = true;
     try {
       const msg = JSON.parse(line);
       if (msg.method === 'tools/call' && msg.params) {
@@ -43,11 +45,56 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         };
         if (config.logCallArgs) call.args = msg.params.arguments;
         logEvent(call, cwd);
+
+        // Policy evaluation: check arguments against rules
+        const toolPin = serverPin.tools[msg.params.name];
+        const policyResult = evaluateCall(
+          { toolName: msg.params.name, arguments: msg.params.arguments, description: toolPin?.description ?? '' },
+          config.policies
+        );
+
+        if (!policyResult.allowed) {
+          shouldForward = false;
+          const reasons = policyResult.blocked.map((b) => b.reason).join('; ');
+          writeErr(`[rugsnare] POLICY BLOCK: ${name}/${msg.params.name} — ${reasons}`);
+          logEvent({ kind: 'policy-block', server: name, tool: msg.params.name, blocked: policyResult.blocked, pii: policyResult.pii?.hits ?? [] }, cwd);
+
+          // Send a JSON-RPC error response back to the client (don't leave it hanging)
+          const errorResponse = {
+            jsonrpc: '2.0',
+            id: msg.id,
+            error: {
+              code: -32603,
+              message: `[RUGSNARE] Tool call blocked by policy: ${reasons}. If this is a false positive, update .rugsnare/policies.json`,
+            },
+          };
+          writeOut(JSON.stringify(errorResponse));
+        } else if (policyResult.requiresApproval.length > 0 && mode === 'enforce') {
+          // In enforce mode, require-approval rules also block (human must approve)
+          shouldForward = false;
+          const reasons = policyResult.requiresApproval.map((r) => r.reason).join('; ');
+          writeErr(`[rugsnare] POLICY APPROVAL REQUIRED: ${name}/${msg.params.name} — ${reasons}`);
+          logEvent({ kind: 'policy-approval-required', server: name, tool: msg.params.name, rules: policyResult.requiresApproval }, cwd);
+          const errorResponse = {
+            jsonrpc: '2.0',
+            id: msg.id,
+            error: {
+              code: -32603,
+              message: `[RUGSNARE] This tool requires human approval: ${reasons}. Run with --mode observe to allow with alert only.`,
+            },
+          };
+          writeOut(JSON.stringify(errorResponse));
+        } else if (policyResult.pii) {
+          // PII detected but no deny rule matched — log it
+          logEvent({ kind: 'pii-detected', server: name, tool: msg.params.name, hits: policyResult.pii.hits }, cwd);
+        }
       }
     } catch {
       // not JSON — forward untouched
     }
-    streams.server.stdin.write(line + '\n');
+    if (shouldForward) {
+      streams.server.stdin.write(line + '\n');
+    }
   });
 
   // ---- server -> client: integrity gate ----
