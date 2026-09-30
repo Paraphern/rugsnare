@@ -97,10 +97,20 @@ If an attacker changes the code but not the contract, no description hash can se
 
 ## Field-tested
 
-Beyond the bundled attack corpus, RugSnare is validated against real packages:
+**Historical backtest:** we ran RugSnare against the entire release history of the official `@modelcontextprotocol/server-filesystem` — 19 versions, 18 version pairs. Result:
 
-- **Compatibility:** the official `@modelcontextprotocol/server-filesystem` (2026.8.31, 14 real tools) — scanned, pinned, re-diffed clean.
-- **Real drift caught:** pinned 2026.8.31, silently swapped to 2026.1.14 — `diff` flagged exactly one tool whose description genuinely changed between those releases (`read_media_file`), with 13 unchanged tools untouched. That's the precision bar: no crying wolf on version bumps, only behavioral changes.
+| Metric | Value |
+|---|---|
+| Contract changes detected | **25** |
+| New tools detected | 5 |
+| Clean pairs (no changes) | 9 |
+| Pairs with drift | 9 |
+
+The most dramatic: release `2025.8.21 → 2025.11.25` changed **all 15 tool descriptions simultaneously** — a mass rewrite no human reviewer would catch. Reproduce: `bash repro/backtest-filesystem.sh`
+
+**Compatibility:** the official `@modelcontextprotocol/server-filesystem` (2026.8.31, 14 real tools) — scanned, pinned, re-diffed clean.
+
+**Real drift caught:** pinned 2026.8.31, silently swapped to 2026.1.14 — `diff` flagged exactly one tool whose description genuinely changed between those releases (`read_media_file`), with 13 unchanged tools untouched. That's the precision bar: no crying wolf on version bumps, only behavioral changes.
 
 Don't take our word for it — reproduce the field test yourself:
 
