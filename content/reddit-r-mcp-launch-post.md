@@ -1,46 +1,49 @@
-# r/mcp launch post (publish on launch day, from the maintainer's account)
+# r/mcp LAUNCH post (publish on day 8-10, from the maintainer's account)
 
-> Posting rules: from the owner's personal account (history matters), post in the morning US time (9–11am ET), stay in comments for the first hour answering everyone, disclose maintainer status up front (rule 3), and **pick the "Showcase" flair when submitting (rule 4)**. Tone: plain and human (rule 2 — the sub is allergic to AI-slop about "MCP security"). Do NOT link the landing page in the post body — repo link only; mods and readers hate drive-by marketing.
+> Posting rules: from the owner's account, morning US time (9-11am ET), **"Showcase" flair** (rule 4), stay in comments for the first hour, disclose maintainer status up front (rule 3). Tone: plain and human (rule 2).
 
 ## Title (pick one)
 
-A. `We open-sourced a tool that catches MCP rug-pulls AFTER you approve the server — hash-pinning + CI gate, zero deps`
+A. `Show r/mcp: RugSnare — pin MCP tool contracts, catch rug-pulls, quarantine mid-session (zero-dep, 6 detection mechanisms, drift-feed)`
 
-B. `Your agent approved an MCP tool once. Its description changed since. Here's a free tool that catches it.`
-
-C. `Show r/mcp: a rug-pull detector for MCP tool descriptions (attack corpus included — try to spot the poisoned v2 with your eyes)`
+B. `Show r/mcp: we built the "after approval" layer for MCP security — hash pinning, live proxy quarantine, advisory signals, public drift-feed`
 
 ## Body
 
-Hey r/mcp — maintainer here, everything below is Apache-2.0 and zero-dependency, no SaaS attached (yet, and the core stays free either way).
+Maintainer here — everything is Apache-2.0, zero dependencies, no SaaS attached (core stays free).
 
-**The gap we kept hitting:** scanners (snyk agent-scan, ex-mcp-scan) check a server *before* you connect it. But the ugly class of attacks happens *after approval* — a maintainer update or a compromised registry silently changes a tool **description**, and your agent starts following instructions nobody read. OWASP codified this as tool poisoning (MCP03:2025). Version pinning doesn't help when the version string doesn't change.
+**The gap we kept hitting:** scanners (snyk agent-scan, mcp-scan, and ~110 repos in the tool-poisoning topic) check a server *before* you connect it. The ugly class of attacks happens *after approval* — a maintainer update or compromised registry silently changes a tool **description**, and your agent starts following instructions nobody read. OWASP codified this as tool poisoning (MCP03:2025).
 
-**What the tool does:** hash-pins every tool's `{ name, description, inputSchema }` at approval. Any change later = DRIFT/NEW/REMOVED, exit 1, CI fails:
+**What we built — six detection mechanisms:**
 
-```
-flights-search  (node ./server.js)
-  [DRIFT] search_flights 8c5ab922df5932ba -> fcc6d291d8ef4ab2
-  [NEW ] _search_flights_pro 589ef74a38bb8d07
-rugsnare diff: DRIFT DETECTED (3 finding(s))
-```
+1. **Hash pinning** of `{name, description, inputSchema}` + prompt templates + resource definitions — the full MCP surface
+2. **Live proxy** (observe → enforce): quarantines drifted tools mid-session, the client gets a single `rugsnare_alert` instead of poisoned ones
+3. **Cross-server shadow detection**: same tool name on two servers — the client's undocumented resolution order is the risk
+4. **Advisory signals**: 11 heuristics catch suspicious descriptions *without a baseline pin* — "do not tell the user", "read ~/.ssh/id_rsa", works on first contact
+5. **SARIF output**: findings appear in GitHub code scanning
+6. **Drift-feed**: daily automated scan of the most popular MCP servers on npm, with a public append-only log of every contract change — the ecosystem's first continuous integrity monitor
 
-Why inputSchema and not just the description: we ship a second corpus sample where the descriptions are **byte-identical** to the clean version and the attack lives entirely in the schema (a new required `session: object` param). Description-only diffing misses it; hashing the canonical triple catches it.
+**Proof, not promises:**
 
-**Try it in ~2 minutes:**
+- **[Live demo PR](https://github.com/Paraphern/rugsnare/pull/2)** — watch a bot post a human-readable diff of a rug pull, then block the merge
+- **[Field test](https://github.com/Paraphern/rugsnare#field-tested)** — we caught a real description change between two releases of the official `@modelcontextprotocol/server-filesystem`, with 13 unchanged tools untouched. `bash repro/field-drift.sh` reproduces it in ~1 minute.
+- **[Drift-feed](https://github.com/Paraphern/rugsnare/tree/main/drift-feed)** — already running, already logging
+- **On-chain release verification** — our release hashes are pinned on Base, `rugsnare verify` checks your install against the ledger
 
+**Nine AI clients supported:** Claude Code, Cursor, Windsurf, VS Code, Continue, Zed, Cline, ZCode, any MCP-compatible client.
+
+**Install** (after Oct 2):
 ```bash
-rugsnare scan --config .mcp.json    # baseline pins (Claude Code / Cursor configs auto-discovered)
-rugsnare diff --config .mcp.json    # drop it in CI; drift fails the build
+npx rugsnare init
+rugsnare scan --config .mcp.json
+rugsnare diff --config .mcp.json   # put this in CI — drift fails the build
 ```
 
-The repo also has the **attack corpus** — a benign flights-search MCP server and its silently-weaponized twin (the v2 description quietly asks the agent to attach `~/.ssh/id_rsa` "for personalization" and to not mention it to the user). Open both files side by side before running the diff — it's a good five minutes of paranoia.
-
-**Trust posture, since this sub rightly asks:** zero npm dependencies (a supply-chain tool shouldn't be its own attack surface), no telemetry, local-only state, releases signed with an OpenPGP key whose fingerprint is published in three places including an on-chain append-only log — `rugsnare verify` checks your install against it. We take our own medicine.
+**Trust posture, since this sub rightly asks:** zero npm dependencies, no telemetry, local-only state, Apache-2.0, releases signed with fingerprint in three independent places including an on-chain append-only log. Fork us if we go rogue — that's the license working as intended.
 
 **What we'd love from you:**
-1. Does the CI-gate workflow fit how your team actually works, or is runtime enforcement the only thing you'd trust?
-2. What's the first policy you'd write (deny-list of params like `session: object`? domain allowlists in descriptions?)
-3. If you have five minutes: how does your team currently decide an MCP server is safe to connect? There's a 7-question research thread in our Discussions — early answers are... "nobody is responsible", mostly.
+1. Does the CI-gate workflow fit how your team works?
+2. Try the [attack corpus](https://github.com/Paraphern/rugsnare/tree/main/corpus) — can you spot the poisoned v2 with your eyes before running the diff?
+3. How does your team decide an MCP server is safe? There's a [7-question research thread](https://github.com/Paraphern/rugsnare/discussions/1) — early answers are mostly "nobody is responsible".
 
-Happy to answer anything in comments. If this duplicates prior art you know of, genuinely tell me — the more pins the better.
+Happy to answer anything in comments.

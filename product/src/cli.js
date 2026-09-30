@@ -391,6 +391,62 @@ async function cmdReport(flags) {
   process.exit(0); // report never fails — it informs
 }
 
+/**
+ * rugsnare hook install — sets up the pre-commit git hook.
+ */
+async function cmdHook(flags) {
+  const action = flags._[0];
+  if (action === 'install') {
+    const gitDir = path.join(CWD, '.git');
+    if (!fs.existsSync(gitDir)) {
+      console.error('Not a git repository (no .git directory found).');
+      process.exit(2);
+    }
+    const hooksDir = path.join(gitDir, 'hooks');
+    fs.mkdirSync(hooksDir, { recursive: true });
+    const hookPath = path.join(hooksDir, 'pre-commit');
+
+    if (fs.existsSync(hookPath)) {
+      const existing = fs.readFileSync(hookPath, 'utf8');
+      if (existing.includes('rugsnare')) {
+        console.log('RugSnare pre-commit hook already installed ✓');
+        process.exit(0);
+      }
+      const precommitPath = path.join(__dirname, 'precommit.mjs');
+      console.error(`A pre-commit hook already exists at ${hookPath}.`);
+      console.error('Append this line to it manually:');
+      console.error(`  node "${precommitPath}"`);
+      process.exit(2);
+    }
+
+    const precommitPath = path.join(__dirname, 'precommit.mjs');
+    const hookContent = `#!/bin/sh\n# RugSnare pre-commit hook — blocks commits on MCP tool contract drift\nexec node "${precommitPath}"\n`;
+    fs.writeFileSync(hookPath, hookContent);
+    fs.chmodSync(hookPath, 0o755);
+    console.log(`✅ Pre-commit hook installed at ${hookPath}`);
+    console.log('   Next: rugsnare scan --config <your-config>  (creates the pins it checks)');
+    console.log('   To remove: rm .git/hooks/pre-commit');
+    process.exit(0);
+  } else if (action === 'uninstall') {
+    const hookPath = path.join(CWD, '.git', 'hooks', 'pre-commit');
+    if (fs.existsSync(hookPath)) {
+      const content = fs.readFileSync(hookPath, 'utf8');
+      if (content.includes('rugsnare')) {
+        fs.unlinkSync(hookPath);
+        console.log('✅ Pre-commit hook removed');
+      } else {
+        console.log('Pre-commit hook exists but is not RugSnare\'s — leaving it alone.');
+      }
+    } else {
+      console.log('No pre-commit hook found.');
+    }
+    process.exit(0);
+  } else {
+    console.error('Usage: rugsnare hook install | rugsnare hook uninstall');
+    process.exit(2);
+  }
+}
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const flags = parseArgs(rest);
@@ -402,6 +458,7 @@ async function main() {
     case 'verify': return cmdVerify(flags);
     case 'run': return cmdRun(flags);
     case 'report': return cmdReport(flags);
+    case 'hook': return cmdHook(flags);
     case undefined:
     case '--help':
     case 'help': console.log(HELP); return;
