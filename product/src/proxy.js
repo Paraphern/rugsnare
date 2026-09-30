@@ -1,5 +1,5 @@
 import readline from 'node:readline';
-import { toolHash, short } from './hash.js';
+import { toolHash, schemaHash as computeSchemaHash, short } from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
@@ -39,9 +39,10 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
 
   const alert = async (status, tool, extra = {}) => {
     const payload = { kind: 'rugsnare.alert', status, server: name, tool, mode, ...extra };
-    writeErr(`[rugsnare] ${status}: ${name}/${tool}${extra.oldHash ? ` ${short(extra.oldHash)} -> ${short(extra.hash)}` : ''}`);
+    // Propagate driftType for debounced summary classification
+    if (extra.driftType) payload.driftType = extra.driftType;
+    writeErr(`[rugsnare] ${status}: ${name}/${tool}${extra.driftType ? ` (${extra.driftType})` : ''}${extra.oldHash ? ` ${short(extra.oldHash)} -> ${short(extra.hash)}` : ''}`);
     logEvent(payload, cwd);
-    // Debounced: batches multiple alerts into one summary (500ms window)
     queueAlert(config, payload, cwd);
   };
 
@@ -144,7 +145,9 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           pinsDirty = true;
           alert('NEW', v.tool.name, { hash: v.hash }); // alert in every mode: enforce quarantines, but the human must still hear it
         } else if (v.status === 'DRIFT') {
-          alert('DRIFT', v.tool.name, { oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
+          const liveSchemaHash = computeSchemaHash(v.tool);
+          const driftType = v.pin.schemaHash !== liveSchemaHash ? 'BREAKING' : 'COSMETIC';
+          alert('DRIFT', v.tool.name, { driftType, oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
         }
         // Cross-server shadow: tool name also pinned under a different server
         const otherServer = Object.keys(pins.servers ?? {}).find(
