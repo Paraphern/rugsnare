@@ -8,6 +8,10 @@
 # Default: @modelcontextprotocol/server-filesystem /tmp
 set -uo pipefail  # no -e: we handle errors per-step
 
+# Anchor to absolute path (relative paths break from the 2nd iteration)
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
 PKG="${1:-@modelcontextprotocol/server-filesystem}"
 ARG="${2:-/tmp}"
 CLI="$(dirname "$0")/../product/src/cli.js"
