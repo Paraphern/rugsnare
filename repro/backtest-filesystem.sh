@@ -79,6 +79,8 @@ for i in $VERSIONS; do
   rm -rf node_modules package-lock.json
   npm init -y >/dev/null 2>&1 || true
   npm install --no-audit --no-fund --silent "$PKG@$i" >/dev/null 2>&1 || true
+  # shim: some old releases have undeclared deps (zod-to-json-schema bug)
+  npm install --no-audit --no-fund --silent zod-to-json-schema >/dev/null 2>&1 || true
 
   write_config
   rm -rf .rugsnare

@@ -160,11 +160,17 @@ async function cmdScan(flags) {
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
   console.log('');
-  console.log('  ✅ Pinned. Next steps:');
-  console.log('     1. Commit .rugsnare/pins.json to your repo (this is your baseline)');
-  console.log('     2. Add to CI:  rugsnare diff --config <your-config>  (exit 1 = build fails)');
-  console.log('     3. Optional: use the PR-diff Action for human-readable contract review:');
-  console.log('        https://github.com/Paraphern/rugsnare#pr-contract-review');
+  if (failed === names.length) {
+    console.log('  ❌ All servers failed — no pins created. Check your config paths and server commands.');
+  } else if (failed > 0) {
+    console.log(`  ⚠️ Partially pinned: ${names.length - failed}/${names.length} succeeded, ${failed} failed.`);
+  } else {
+    console.log('  ✅ Pinned. Next steps:');
+    console.log('     1. Commit .rugsnare/pins.json to your repo (this is your baseline)');
+    console.log('     2. Add to CI:  rugsnare diff --config <your-config>  (exit 1 = build fails)');
+    console.log('     3. Optional: use the PR-diff Action for human-readable contract review:');
+    console.log('        https://github.com/Paraphern/rugsnare#pr-contract-review');
+  }
   process.exit(failed > 0 ? 2 : 0);
 }
 
