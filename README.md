@@ -103,8 +103,8 @@ If an attacker changes the code but not the contract, no description hash can se
 |---|---|
 | Contract changes detected | **25** |
 | New tools detected | 5 |
-| Clean pairs (no changes) | 9 |
-| Pairs with drift | 9 |
+| Clean pairs (no changes) | 12 |
+| Pairs with drift | 6 |
 
 The most dramatic: release `2025.8.21 → 2025.11.25` changed **all 15 tool descriptions simultaneously** — a mass rewrite no human reviewer would catch. Reproduce: `bash repro/backtest-filesystem.sh`
 
