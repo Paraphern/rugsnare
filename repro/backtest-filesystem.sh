@@ -14,7 +14,7 @@ cd "$ROOT"
 
 PKG="${1:-@modelcontextprotocol/server-filesystem}"
 ARG="${2:-/tmp}"
-CLI="$(dirname "$0")/../product/src/cli.js"
+CLI="$ROOT/product/src/cli.js"
 
 echo "🪤 RugSnare Historical Backtest"
 echo "   Package: $PKG"
@@ -43,7 +43,7 @@ echo "   Versions found: $VERSION_COUNT"
 echo "   Pairs to test: $((VERSION_COUNT - 1))"
 echo ""
 
-TMP="$(dirname "$0")/.backtest-tmp"
+TMP="$ROOT/repro/.backtest-tmp"
 rm -rf "$TMP"
 mkdir -p "$TMP"
 trap 'rm -rf "$TMP"' EXIT
