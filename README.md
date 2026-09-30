@@ -64,6 +64,21 @@ rugsnare verify <artifact.tgz> --version <v>   # check an artifact against the o
 
 Each tool's `{ name, description, inputSchema }` is canonicalized and hashed — so both poisoned descriptions and hidden "session" parameters in schemas trip the pin, while cosmetic reordering doesn't.
 
+### Live proxy (optional, v0.2+)
+
+```bash
+rugsnare run --name flights --mode enforce -- npx -y @modelcontextprotocol/server-filesystem /tmp
+```
+
+Wraps a stdio server: `observe` watches and alerts, `enforce` additionally quarantines drifted/new tools mid-session. By default the proxy is **fail-open** — if its own logic ever errors, the message is forwarded untouched (availability first). Strict environments can flip it:
+
+```json
+// .rugsnare/config.json
+{ "failMode": "closed" }
+```
+
+or per-run with `--fail-closed` — then a proxy internal error **blocks** the message and answers the client with a JSON-RPC error instead (integrity first, logged as `proxy-fail-closed`).
+
 ## Trust model
 
 We take our own medicine:
@@ -132,8 +147,9 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **v0.1** | ✅ shipped | CI gate (`scan` / `diff` / `approve`), on-chain release verification, attack corpus, zero-dep |
 | **v0.2** | ✅ shipped | Live stdio proxy (`rugsnare run`) — mid-session quarantine; shadow detection; advisory signals (13 heuristics); prompts & resources pinning; SARIF output; fleet report; pre-commit hook; drift-feed (daily ecosystem monitoring); 9 AI clients |
 | **v0.3** | ✅ shipped | Call policies + PII egress checks — deny `session:object`, deny credentials in arguments, require approval for destructive tools; custom rules via `.rugsnare/policies.json`; `--timeout` flag; exit code 3 for infra errors |
+| **v0.3.1** | ✅ shipped | Split hash — BREAKING (schema) vs COSMETIC (prose) drift classification (`--schema-only` / `--prose-only`); debounced summary alerts; `failMode: "closed"` option (`--fail-closed`) — proxy internal error blocks instead of forwarding, for strict environments |
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
 | **v0.4 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*58 tests · 9 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*61 tests · 9 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

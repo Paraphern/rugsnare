@@ -50,8 +50,21 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const clientIn = readline.createInterface({ input: streams.clientIn });
   clientIn.on('line', (line) => {
     let shouldForward = true;
+    let msg;
     try {
-      const msg = JSON.parse(line);
+      msg = JSON.parse(line);
+    } catch {
+      // Non-JSON line from the client (protocol noise) — forward untouched, same as server->client.
+      // Not a proxy failure: don't pollute the event log with proxy-fail-open entries.
+      logEvent({ kind: 'client-nonjson', server: name, len: line.length }, cwd);
+      try {
+        streams.server.stdin.write(line + '\n');
+      } catch (writeErr) {
+        logEvent({ kind: 'proxy-write-fail', server: name, reason: String(writeErr).slice(0, 200) }, cwd);
+      }
+      return;
+    }
+    try {
       if (msg.method === 'tools/call' && msg.params) {
         const call = {
           kind: 'call',
@@ -106,9 +119,23 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         }
       }
     } catch (proxyErr) {
-      // Fail-open: proxy internal error → forward anyway, log the failure
-      logEvent({ kind: 'proxy-fail-open', server: name, reason: String(proxyErr).slice(0, 200) }, cwd);
-      writeErr(`[rugsnare] proxy error (fail-open, forwarding): ${String(proxyErr).slice(0, 100)}`);
+      if (config?.failMode === 'closed') {
+        // Fail-closed: proxy internal error → BLOCK the message (integrity over availability)
+        shouldForward = false;
+        logEvent({ kind: 'proxy-fail-closed', server: name, reason: String(proxyErr).slice(0, 200) }, cwd);
+        writeErr(`[rugsnare] proxy error (fail-closed, BLOCKED): ${String(proxyErr).slice(0, 100)}`);
+        if (msg && msg.id !== undefined) {
+          writeOut(JSON.stringify({
+            jsonrpc: '2.0',
+            id: msg.id,
+            error: { code: -32603, message: '[RUGSNARE] Blocked in fail-closed mode: proxy internal error. Set "failMode": "open" in .rugsnare/config.json to forward on error.' },
+          }));
+        }
+      } else {
+        // Fail-open (default): proxy internal error → forward anyway, log the failure
+        logEvent({ kind: 'proxy-fail-open', server: name, reason: String(proxyErr).slice(0, 200) }, cwd);
+        writeErr(`[rugsnare] proxy error (fail-open, forwarding): ${String(proxyErr).slice(0, 100)}`);
+      }
     }
     if (shouldForward) {
       try {

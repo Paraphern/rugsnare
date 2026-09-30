@@ -123,3 +123,66 @@ test('tools/call from client is logged', () => {
     cleanup();
   }
 });
+
+// Config whose `logCallArgs` read throws — deterministic injection of a proxy
+// internal error inside the client->server try block (the proxy reads it there).
+function boomConfig(failMode) {
+  return new Proxy({ failMode }, { get(t, key) { if (key === 'logCallArgs') throw new Error('cfg-boom'); return t[key]; } });
+}
+
+function harnessWithConfig(config, cwd) {
+  const streams = makeStreams();
+  const out = [];
+  const err = [];
+  createProxy({ name: 'flights', streams, mode: 'observe', config, cwd, writeOut: (s) => out.push(s), writeErr: (s) => err.push(s) });
+  return { streams, out, err };
+}
+
+test('fail-open (default): internal error still forwards the call', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    const { streams, err } = harnessWithConfig(boomConfig('open'), dir);
+    const serverSide = [];
+    streams.server.stdin.on('data', (d) => serverSide.push(d.toString()));
+    streams.clientIn.write(JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'search_flights' } }) + '\n');
+    assert.ok(serverSide.join('').includes('tools/call'), 'fail-open must forward');
+    assert.ok(err.join('\n').includes('fail-open'), 'stderr must say fail-open');
+    assert.ok(readEvents(dir).some((e) => e.kind === 'proxy-fail-open'));
+  } finally {
+    cleanup();
+  }
+});
+
+test('fail-closed: internal error blocks the call and answers with JSON-RPC error', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    const { streams, out, err } = harnessWithConfig(boomConfig('closed'), dir);
+    const serverSide = [];
+    streams.server.stdin.on('data', (d) => serverSide.push(d.toString()));
+    streams.clientIn.write(JSON.stringify({ jsonrpc: '2.0', id: 8, method: 'tools/call', params: { name: 'search_flights' } }) + '\n');
+    assert.equal(serverSide.join(''), '', 'fail-closed must NOT forward');
+    const resp = JSON.parse(out[0]);
+    assert.equal(resp.id, 8);
+    assert.match(resp.error.message, /fail-closed/);
+    assert.ok(err.join('\n').includes('fail-closed'), 'stderr must say fail-closed');
+    assert.ok(readEvents(dir).some((e) => e.kind === 'proxy-fail-closed'));
+  } finally {
+    cleanup();
+  }
+});
+
+test('non-JSON client line forwards untouched and is NOT logged as proxy-fail-open', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    const { streams } = harnessWithConfig({}, dir);
+    const serverSide = [];
+    streams.server.stdin.on('data', (d) => serverSide.push(d.toString()));
+    streams.clientIn.write('not json at all\n');
+    assert.ok(serverSide.join('').includes('not json at all'), 'non-JSON must be forwarded');
+    const events = readEvents(dir);
+    assert.ok(events.some((e) => e.kind === 'client-nonjson'));
+    assert.ok(!events.some((e) => e.kind === 'proxy-fail-open'), 'must not be misfiled as proxy failure');
+  } finally {
+    cleanup();
+  }
+});

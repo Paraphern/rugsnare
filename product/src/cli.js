@@ -38,6 +38,8 @@ Usage:
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
+  rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
+                                                         live stdio proxy (defaults: observe, fail-open)
 
 verify: checks a local release artifact against the on-chain ReleaseLog pin
         (https only; non-public RPC hosts are refused).
@@ -68,6 +70,7 @@ function parseArgs(argv) {
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
+    else if (a === '--fail-closed') flags.failClosed = true;
     else flags._.push(a);
   }
   return flags;
@@ -324,10 +327,11 @@ async function cmdVerify(flags) {
 }
 
 /**
- * rugsnare run --name <server> [--mode observe|enforce] -- <command> [args...]
+ * rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
  * Wraps a stdio MCP server with the live integrity proxy. Spawn logic lives
  * in ./spawn-server.js (created by the repo owner once — see setup card);
  * loaded lazily so the rest of the CLI works without it.
+ * --fail-closed: on a proxy internal error, block the message instead of forwarding.
  */
 async function cmdRun(flags) {
   const name = flags.name;
@@ -337,7 +341,7 @@ async function cmdRun(flags) {
   const command = argv[0];
   const args = argv.slice(1).map(String);
   if (!name || !command) {
-    console.error('Usage: rugsnare run --name <server> [--mode observe|enforce] -- <command> [args...]');
+    console.error('Usage: rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]');
     process.exit(2);
   }
   let spawnServer;
@@ -348,6 +352,7 @@ async function cmdRun(flags) {
     process.exit(2);
   }
   const config = loadConfig();
+  if (flags.failClosed) config.failMode = 'closed';
   const child = spawnServer({
     command, args, env: {}, cwd: process.cwd(),
     onStdout: () => {},
@@ -357,7 +362,7 @@ async function cmdRun(flags) {
   // the child process object itself carries real stdin/stdout/stderr streams
   // and exit/error handlers — the proxy consumes exactly that shape
   const streams = { clientIn: process.stdin, server: child };
-  console.error(`[rugsnare] proxying "${name}" in ${mode} mode (Ctrl+C to stop)`);
+  console.error(`[rugsnare] proxying "${name}" in ${mode} mode${config.failMode === 'closed' ? ' (fail-closed)' : ''} (Ctrl+C to stop)`);
   createProxy({ name, streams, mode, config, cwd: process.cwd() });
 }
 

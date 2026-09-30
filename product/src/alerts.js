@@ -5,11 +5,13 @@ import { readJsonFile } from './jsonfile.js';
 
 /**
  * Alerts: webhook (raw JSON) or Slack incoming webhook (formatted).
- * Configured in `.rugsnare/config.json`: { "mode": "observe"|"enforce", "alertWebhook": "https://..." }
+ * Configured in `.rugsnare/config.json`: { "mode": "observe"|"enforce", "alertWebhook": "https://...", "failMode": "open"|"closed" }
+ * `failMode: "closed"` — if the proxy hits an internal error, the message is BLOCKED
+ * instead of forwarded (strict environments: integrity over availability).
  * Failures never break the proxy — alert delivery is best-effort.
  */
 
-const DEFAULT_CONFIG = { mode: 'observe', alertWebhook: null, logCallArgs: false };
+const DEFAULT_CONFIG = { mode: 'observe', alertWebhook: null, logCallArgs: false, failMode: 'open' };
 
 export function loadConfig(cwd = process.cwd()) {
   try {
