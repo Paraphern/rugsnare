@@ -46,4 +46,6 @@ rugsnare diff --config .mcp.json   # put this in CI — drift fails the build
 2. Try the [attack corpus](https://github.com/Paraphern/rugsnare/tree/main/corpus) — can you spot the poisoned v2 with your eyes before running the diff?
 3. How does your team decide an MCP server is safe? There's a [7-question research thread](https://github.com/Paraphern/rugsnare/discussions/1) — early answers are mostly "nobody is responsible".
 
+**Shaped by community feedback:** the split-hash design (schema changes block the build, description changes alert-only) came directly from [a Reddit discussion](https://www.reddit.com/r/mcp/comments/1wtdm5a/comment/pd2cjsf/) — *"nobody wants a deploy failing because someone bumped v2.1.0 to v2.1.1 in a docstring."*
+
 Happy to answer anything in comments.
