@@ -14,6 +14,8 @@ import { createProxy } from './proxy.js';
 import { readJsonFile } from './jsonfile.js';
 import { buildSarif } from './sarif.js';
 import { scanToolsForAdvisories } from './advisory.js';
+import { fileURLToPath } from 'node:url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):

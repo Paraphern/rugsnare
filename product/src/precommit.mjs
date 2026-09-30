@@ -14,15 +14,19 @@ const CWD = process.cwd();
 const __filename = fileURLToPath(import.meta.url);
 const CLI = path.join(path.dirname(__filename), 'cli.js');
 
+// BOM-tolerant JSON read (same as the main CLI uses)
+function readJson(file) {
+  let raw = fs.readFileSync(file, 'utf8');
+  if (raw.charCodeAt(0) === 0xfeff) raw = raw.slice(1);
+  return JSON.parse(raw);
+}
+
 function findConfig() {
-  // 1. Check RUGSNARE_CONFIG env var
   if (process.env.RUGSNARE_CONFIG) return process.env.RUGSNARE_CONFIG;
-  // 2. Check .rugsnare/config.json for a configPath
   try {
-    const cfg = JSON.parse(fs.readFileSync(path.join(CWD, '.rugsnare', 'config.json'), 'utf8'));
+    const cfg = readJson(path.join(CWD, '.rugsnare', 'config.json'));
     if (cfg.configPath) return cfg.configPath;
   } catch { /* no config or unreadable */ }
-  // 3. Common locations
   const candidates = ['.mcp.json', '.cursor/mcp.json', '.cline/mcp.json', '.vscode/mcp.json'];
   for (const c of candidates) {
     if (fs.existsSync(path.join(CWD, c))) return c;
