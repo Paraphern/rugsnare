@@ -7,6 +7,16 @@
  *   RS004 SHADOW  — same tool name exposed by multiple servers (error)
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const pkgPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json');
+const VERSION = (() => {
+  try { return JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version ?? '0.2.2'; }
+  catch { return '0.2.2'; }
+})();
+
 const RULES = [
   { id: 'RS001', shortDescription: { text: 'MCP tool contract changed after approval (rug pull)' } },
   { id: 'RS002', shortDescription: { text: 'Unapproved new MCP tool appeared' } },
@@ -46,7 +56,7 @@ export function buildSarif(report, shadows = []) {
           driver: {
             name: 'rugsnare',
             informationUri: 'https://rugsnare.com',
-            version: '0.2.1',
+            version: VERSION,
             rules: RULES,
           },
         },

@@ -1,8 +1,8 @@
 [
   { "name": "server-filesystem", "pkg": "@modelcontextprotocol/server-filesystem", "args": ["/tmp"] },
   { "name": "server-memory", "pkg": "@modelcontextprotocol/server-memory", "args": [] },
-  { "name": "server-fetch", "pkg": "@modelcontextprotocol/server-fetch", "args": [] },
   { "name": "server-everything", "pkg": "@modelcontextprotocol/server-everything", "args": [] },
   { "name": "server-sequential-thinking", "pkg": "@modelcontextprotocol/server-sequential-thinking", "args": [] },
-  { "name": "server-git", "pkg": "@modelcontextprotocol/server-git", "args": ["/tmp"] }
+  { "name": "notion-mcp-server", "pkg": "@notionhq/notion-mcp-server", "args": [] },
+  { "name": "chrome-devtools-mcp", "pkg": "chrome-devtools-mcp", "args": [] }
 ]

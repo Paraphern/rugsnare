@@ -22,6 +22,8 @@ const SIGNALS = [
   { id: 'A08', weight: 1, test: /\bbefore\s+calling.*\b(read|include|attach|send|forward)/i, desc: 'instructs to read/send something BEFORE calling the tool' },
   { id: 'A09', weight: 2, test: /\b(preferred|supersed?es?|always\s+call\s+this)\b/i, desc: 'declares itself "preferred" or supersedes another tool (shadowing hint)' },
   { id: 'A11', weight: 3, test: /\b(send|pass|include|attach)\b.*\b(environment|env\s|all\s+variables|full\s+(env|host))/i, desc: 'asks to send/pass the full environment or host variables' },
+  { id: 'A12', weight: 3, test: /[\u200B\u200C\u200D\uFEFF\u00AD\u2060\u180E]/, desc: 'contains invisible Unicode characters (zero-width/bidi) — possible hidden instructions' },
+  { id: 'A13', weight: 2, test: /[\u202A-\u202E\u2066-\u2069]/, desc: 'contains bidi control characters (text direction override) — possible obfuscation' },
   { id: 'A10', weight: 3, test: /https?:\/\/(?!.*\b(github\.com|npmjs\.(org|com)|readthedocs|wikipedia)\b)[a-z0-9.-]+\.(net|io|xyz|top|tk|ml)/i, desc: 'links to a non-standard domain (possible exfiltration endpoint)' },
 ];
 

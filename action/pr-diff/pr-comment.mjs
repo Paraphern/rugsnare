@@ -44,7 +44,8 @@ const servers = Object.fromEntries(
   Object.entries(config.mcpServers ?? {}).filter(([, v]) => v && typeof v.command === 'string')
 );
 
-  const tools = [];
+const report = [];
+const tools = [];
   for (const [name, entry] of Object.entries(servers)) {
     const pin = pins.servers[name];
     if (!pin?.cmd) {
