@@ -190,14 +190,14 @@ async function cmdDiff(flags) {
     const sp = pins.servers[name];
     const cmd = configServers?.[name] ? serverCommand(configServers[name]) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
     try {
-      const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+      const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
       const verdicts = compareTools(sp, tools, toolHash);
       // also compare prompts and resources if pinned
       const { promptHash, resourceHash, comparePinned } = await import('./prompts.js');
       if (sp.prompts && Object.keys(sp.prompts).length > 0) {
         // re-fetch prompts for comparison
       }
-      const { prompts: livePrompts = [], resources: liveResources = [] } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+      const { prompts: livePrompts = [], resources: liveResources = [] } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
       if (sp.prompts) verdicts.push(...comparePinned('prompt', sp.prompts, livePrompts, promptHash));
       if (sp.resources) verdicts.push(...comparePinned('resource', sp.resources, liveResources, resourceHash));
       for (const v of verdicts) {
@@ -241,7 +241,7 @@ async function cmdApprove(flags, serverName) {
   const configEntry = flags.config ? readServersFromConfigFile(flags.config)[serverName] : null;
   if (!sp?.cmd && !configEntry) { console.error(`No pinned server named "${serverName}". Run \`rugsnare scan\` first.`); process.exit(2); }
   const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
-  const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd() });
+  const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
   const serverPin = ensureServer(pins, serverName, { command: cmd.command, args: cmd.args });
   for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
   savePins(pins);
@@ -366,7 +366,7 @@ async function cmdReport(flags) {
     let liveStatus = '';
     if (flags.live && sp.cmd) {
       try {
-        const { tools } = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: 15000 });
+        const { tools } = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: flags.timeout });
         const verdicts = compareTools(sp, tools, toolHash);
         const bad = badVerdicts(verdicts);
         liveStatus = bad.length === 0 ? ' ✓ live' : ` ⚠ ${bad.length} finding(s)`;
