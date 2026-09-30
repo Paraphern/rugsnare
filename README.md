@@ -1,5 +1,7 @@
 # RugSnare
 
+<img src="docs/logo.png" alt="RugSnare logo" width="96" height="96" align="left" style="margin-right:16px;border-radius:20px">
+
 [![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
