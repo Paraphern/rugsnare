@@ -4,3 +4,5 @@
 {"ts":"2026-09-29T20:31:56.508Z","server":"server-everything","type":"FIRST_SCAN","detail":"v2026.8.31, 13 tools"}
 {"ts":"2026-09-29T20:31:59.593Z","server":"server-sequential-thinking","type":"FIRST_SCAN","detail":"v2026.8.31, 1 tools"}
 {"ts":"2026-09-29T20:31:59.887Z","server":"server-git","type":"ERROR","detail":"Command failed: npm view @modelcontextprotocol/server-git version\nnpm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@modelcontextprotocol%2fserver-git - Not found\nnpm error "}
+{"ts":"2026-09-30T11:25:57.450Z","server":"notion-mcp-server","type":"ERROR","detail":"MCP server exited early (code 1)"}
+{"ts":"2026-09-30T11:25:59.814Z","server":"chrome-devtools-mcp","type":"ERROR","detail":"MCP server exited early (code 0)"}
