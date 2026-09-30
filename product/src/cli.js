@@ -47,7 +47,7 @@ Files (all local, gitignore .rugsnare/ or commit pins.json deliberately):
   .rugsnare/config.json   mode + alert webhook
   .rugsnare/events.jsonl  append-only event log
 
-Exit codes: 0 = clean, 1 = drift detected, 2 = error.`;
+Exit codes: 0 = clean, 1 = drift detected, 2 = config error, 3 = infrastructure error (no drift, but couldn't reach a server).`;
 
 function parseArgs(argv) {
   const flags = { _: [] };
@@ -64,6 +64,7 @@ function parseArgs(argv) {
     else if (a === '--rpc') flags.rpc = argv[++i];
     else if (a === '--name') flags.name = argv[++i];
     else if (a === '--mode') flags.mode = argv[++i];
+    else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else flags._.push(a);
   }
   return flags;
@@ -121,7 +122,7 @@ async function cmdScan(flags) {
     if (!entry) { console.error(`  Server not found in sources: ${name}`); failed++; continue; }
     try {
       const { command, args, env } = serverCommand(entry);
-      const { tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd() });
+      const { tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout });
       const serverPin = ensureServer(pins, name, { command, args });
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
 
@@ -178,6 +179,7 @@ async function cmdDiff(flags) {
   if (names.length === 0) { console.error('No pinned servers. Run `rugsnare scan` first.'); process.exit(2); }
 
   let driftCount = 0;
+  let infraErrorCount = 0; // exit 3: server unreachable/timeout (not drift)
   const shadows = detectShadows(pins).filter((s) => !flags.server || s.servers.includes(flags.server));
   driftCount += shadows.length;
   for (const s of shadows) {
@@ -212,7 +214,7 @@ async function cmdDiff(flags) {
     } catch (err) {
       if (!flags.json && !flags.sarif) console.error(`${name}: FAILED to reach server: ${err.message}`);
       report.push({ server: name, error: err.message });
-      driftCount++;
+      infraErrorCount++; // infrastructure error, not drift — separate exit code
     }
   }
   if (flags.sarif) {
@@ -225,8 +227,11 @@ async function cmdDiff(flags) {
     }
   }
   const verdict = driftCount === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s))`;
-  console.error(`rugsnare diff: ${verdict}`);
-  process.exit(driftCount === 0 ? 0 : 1);
+  console.error(`rugsnare diff: ${verdict}${infraErrorCount > 0 ? ` (+${infraErrorCount} infra error(s))` : ''}`);
+  // Exit codes: 0=clean, 1=drift, 2=config error, 3=infrastructure error only (no drift detected)
+  if (driftCount > 0) process.exit(1);
+  if (infraErrorCount > 0) process.exit(3);
+  process.exit(0);
 }
 
 async function cmdApprove(flags, serverName) {
