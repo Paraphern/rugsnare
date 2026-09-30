@@ -84,9 +84,9 @@
   <div class="wrap">
     <h2><span class="n">01</span>How it works</h2>
     <div class="grid">
-      <div class="card"><span class="k">PIN</span><h3>Pin at approval</h3><p>Every tool's <code>{ name, description, inputSchema }</code> is hash-pinned the moment your team approves it. The schema is hashed too — hidden <code>session</code> parameters can't sneak in.</p></div>
-      <div class="card"><span class="k">SNARE</span><h3>Snare the drift</h3><p>A maintainer update, a compromised registry, a silent path swap — any change trips the pin. <code>rugsnare diff</code> exits 1 and your CI fails before the agent ever sees the new instructions.</p></div>
-      <div class="card"><span class="k">PROVE</span><h3>Prove &amp; audit</h3><p>Every event lands in a local append-only JSONL log. No telemetry, no cloud in the enforcement path, nothing leaves your machine.</p></div>
+      <div class="card"><span class="k">PIN</span><h3>Pin everything your agent sees</h3><p>Tools <code>{name, description, inputSchema}</code>, prompt templates, resource definitions — all hash-pinned at approval. Schema attacks (hidden <code>session</code> params) can't sneak in.</p></div>
+      <div class="card"><span class="k">SNARE</span><h3>Snare any change</h3><p>Maintainer update, compromised registry, silent path swap — <code>rugsnare diff</code> exits 1 and CI fails. The live proxy quarantines mid-session too. Shadow detection catches same-name tools across servers.</p></div>
+      <div class="card"><span class="k">ALERT</span><h3>Advisory signals, even on first contact</h3><p>11 heuristics catch suspicious descriptions <b>before</b> you've pinned anything: "do not tell the user", "read ~/.ssh/id_rsa", "base64-encode and pass verbatim". No baseline needed.</p></div>
     </div>
     <div class="term">
 <span class="cmt"># rugsnare diff — the server "updated" overnight. Same name, same version.</span><br>
@@ -105,14 +105,17 @@ rugsnare diff: <span class="drift">DRIFT DETECTED (3 finding(s))</span> &nbsp;<s
 
 <section>
   <div class="wrap">
-    <h2><span class="n">02</span>Why not just scan?</h2>
+    <h2><span class="n">02</span>Six detection mechanisms + ecosystem monitoring</h2>
     <table>
-      <tr><th>Control</th><th>Install time</th><th>After approval</th><th>Schema-only attacks</th></tr>
-      <tr><td>MCP scanners (CI)</td><td class="y">✔</td><td class="n2">✘ blind</td><td>varies</td></tr>
-      <tr><td>Version pinning packages</td><td class="y">✔</td><td class="n2">✘ version string unchanged</td><td class="n2">✘</td></tr>
-      <tr><td><b>RugSnare hash pins</b></td><td class="y">✔</td><td class="y">✔ DRIFT / NEW / REMOVED</td><td class="y">✔ hashed too</td></tr>
+      <tr><th>Mechanism</th><th>What it catches</th></tr>
+      <tr><td>Hash pinning (tools + prompts + resources)</td><td class="y">✔ any contract change after approval</td></tr>
+      <tr><td>Live proxy (observe → enforce)</td><td class="y">✔ mid-session swaps, quarantine in real-time</td></tr>
+      <tr><td>Cross-server shadow detection</td><td class="y">✔ same tool name on multiple servers</td></tr>
+      <tr><td>Advisory signals (11 heuristics)</td><td class="y">✔ suspicious descriptions on first contact</td></tr>
+      <tr><td>SARIF output</td><td class="y">✔ GitHub code scanning integration</td></tr>
+      <tr><td>Drift-feed (public canary)</td><td class="y">✔ daily monitoring of the MCP ecosystem</td></tr>
     </table>
-    <p style="color:var(--dim);margin-top:16px;font-size:14.5px">Tool poisoning is codified as <span class="mono">OWASP MCP03:2025</span>. RugSnare complements install-time scanners — it imports their verdicts as a baseline, then guards the part they can't see: everything after.</p>
+    <p style="color:var(--dim);margin-top:16px;font-size:14.5px">Nine AI clients supported: Claude Code, Cursor, Windsurf, VS Code, Continue, Zed, Cline, ZCode, and any MCP-compatible client.</p>
   </div>
 </section>
 

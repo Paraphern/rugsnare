@@ -64,7 +64,8 @@ test('edge: UTF-8 BOM in config files (Windows Notepad) does not break parsing',
     });
     assert.match(out, /pinned paged: 4 tool/, 'BOM-prefixed config must scan fine and see all paginated tools');
   } finally {
-    // Windows: freshly-killed children can hold dir handles for a moment — retry
-    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 6, retryDelay: 150 });
+    // Windows: freshly-killed children can hold dir handles — never fail the
+    // test on cleanup (the test verifies BOM parsing, not temp dir hygiene)
+    try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 }); } catch { /* best-effort */ }
   }
 });
