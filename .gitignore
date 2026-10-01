@@ -38,6 +38,7 @@ coverage/
 
 # owner-local tooling, never public
 commit-and-push.bat
+force-push-history.bat
 outreach-ready/
 
 # rugsnare runtime state (pins may be committed deliberately — the CI-gate
