@@ -1,0 +1,43 @@
+name: 'RugSnare canary replay'
+description: 'Replay a recorded corpus of real tool calls against a NEW MCP server version before upgrading — breaking schema or behavior changes fail the job.'
+branding:
+  icon: 'alert-triangle'
+  color: 'red'
+
+inputs:
+  server-name:
+    description: 'Server name (must match the pin store and the recorded corpus)'
+    required: true
+  command:
+    description: 'The NEW server command to replay against (e.g. "npx -y some-mcp@2.0.0"). Empty = replay against the pinned command (smoke check).'
+    required: false
+    default: ''
+  working-directory:
+    description: 'Directory containing .rugsnare/ (pins + recorded canary corpus)'
+    required: false
+    default: '.'
+  rugsnare-ref:
+    description: 'Which rugsnare version the inner action runs (used when use-workspace is false)'
+    required: false
+    default: 'main'
+  use-workspace:
+    description: 'Use the rugsnare copy already present in the calling repository'
+    required: false
+    default: 'false'
+  timeout-ms:
+    description: 'Per-request timeout for the replayed MCP conversation'
+    required: false
+    default: '30000'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: RugSnare canary replay
+      uses: Paraphern/rugsnare/action/canary@v0.4.0
+      with:
+        server-name: ${{ inputs.server-name }}
+        command: ${{ inputs.command }}
+        working-directory: ${{ inputs.working-directory }}
+        rugsnare-ref: ${{ inputs.rugsnare-ref }}
+        use-workspace: ${{ inputs.use-workspace }}
+        timeout-ms: ${{ inputs.timeout-ms }}

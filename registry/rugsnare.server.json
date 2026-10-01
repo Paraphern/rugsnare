@@ -1,28 +1,20 @@
 {
-  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/registry/main/schema/server.schema.json",
-  "name": "rugsnare",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Paraphern/rugsnare",
   "description": "Runtime integrity for AI agents: report which MCP servers are pinned and approved in this project, and what contract changes the public RugSnare drift-feed has detected across popular MCP servers. Read-only, zero dependencies, no telemetry.",
+  "repository": {
+    "url": "https://github.com/Paraphern/rugsnare",
+    "source": "github"
+  },
   "version": "0.4.0",
   "packages": [
     {
-      "registry_type": "npm",
-      "registry_base_url": "https://registry.npmjs.org",
+      "registryType": "npm",
       "identifier": "rugsnare",
       "version": "0.4.0",
       "transport": {
         "type": "stdio"
-      },
-      "run_time": "node"
-    }
-  ],
-  "tools": [
-    {
-      "name": "drift_feed_status",
-      "description": "Report the current versions and contract-change events of popular MCP servers, from the public RugSnare drift-feed (daily scans). Optional filter by server name."
-    },
-    {
-      "name": "pins_report",
-      "description": "Report the RugSnare pin store of this project: which MCP servers are pinned, how many tools are approved, unapproved, or shadowed across servers. Read-only."
+      }
     }
   ]
 }

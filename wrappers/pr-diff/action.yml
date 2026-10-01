@@ -1,0 +1,42 @@
+name: 'RugSnare PR diff'
+description: 'Human-readable diff of MCP tool contracts (descriptions & schemas) on pull requests — reviewers see the changed words, not hashes.'
+branding:
+  icon: 'shield'
+  color: 'orange'
+
+inputs:
+  config:
+    description: 'Path to the MCP config file (e.g. .mcp.json), relative to working-directory'
+    required: true
+  working-directory:
+    description: 'Directory containing the config and the committed .rugsnare pin store'
+    required: false
+    default: '.'
+  rugsnare-ref:
+    description: 'Which rugsnare version the inner action runs (used when use-workspace is false)'
+    required: false
+    default: 'main'
+  use-workspace:
+    description: 'Use the rugsnare copy already present in the calling repository'
+    required: false
+    default: 'false'
+  fail-on-drift:
+    description: 'Fail the check when contract drift is found (after posting the comment)'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: RugSnare PR contract diff
+      uses: Paraphern/rugsnare/action/pr-diff@v0.4.0
+      with:
+        config: ${{ inputs.config }}
+        working-directory: ${{ inputs.working-directory }}
+        rugsnare-ref: ${{ inputs.rugsnare-ref }}
+        use-workspace: ${{ inputs.use-workspace }}
+        fail-on-drift: ${{ inputs.fail-on-drift }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}

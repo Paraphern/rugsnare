@@ -11,6 +11,7 @@
   },
   "bugs": "https://github.com/Paraphern/rugsnare/issues",
   "homepage": "https://rugsnare.com",
+  "mcpName": "io.github.Paraphern/rugsnare",
   "engines": { "node": ">=18" },
   "bin": { "rugsnare": "./src/cli.js" },
   "files": ["src", "README.md", "LICENSE"],
