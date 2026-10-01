@@ -40,6 +40,8 @@ Usage:
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
   rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
                                                          live stdio proxy (defaults: observe, fail-open)
+  rugsnare canary record --name <server> -- <command>    record tool-call traces (opt-in, local file)
+  rugsnare canary replay --name <server> -- <command>    replay corpus vs new version; exit 1 = breaking
 
 verify: checks a local release artifact against the on-chain ReleaseLog pin
         (https only; non-public RPC hosts are refused).
@@ -385,6 +387,121 @@ async function cmdRun(flags) {
 }
 
 /**
+ * rugsnare canary record --name <server> [--mode observe|enforce] -- <command> [args...]
+ * Same live proxy as `run`, but with trace recording enabled FOR THIS SESSION
+ * ONLY (the config file is never touched): every tool call that passes through
+ * is written, id-correlated with its response, to .rugsnare/canary/calls.jsonl.
+ * That corpus is later replayed by `rugsnare canary replay` against a new
+ * version of the server. Local file, capped, gitignored — see src/canary.js.
+ */
+async function cmdCanaryRecord(flags) {
+  const name = flags.name;
+  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const rest = flags._.slice(1); // drop the 'record' positional
+  const dashdash = rest.indexOf('--');
+  const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
+  const command = argv[0];
+  const args = argv.slice(1).map(String);
+  if (!name || !command) {
+    console.error('Usage: rugsnare canary record --name <server> -- <command> [args...]');
+    process.exit(2);
+  }
+  let spawnServer;
+  try {
+    ({ spawnServer } = await import('./spawn-server.js'));
+  } catch {
+    console.error('Missing src/spawn-server.js — the repo owner creates this file once (see README, "What\'s inside").');
+    process.exit(2);
+  }
+  const config = { ...loadConfig(), canaryRecord: true }; // session-only override
+  const child = spawnServer({
+    command, args, env: {}, cwd: process.cwd(),
+    onStdout: () => {},
+    onStderr: () => {},
+    onExit: () => {},
+  });
+  const streams = { clientIn: process.stdin, server: child };
+  console.error(`[rugsnare] recording "${name}" to .rugsnare/canary/calls.jsonl (${mode} mode, Ctrl+C to stop)`);
+  console.error('[rugsnare] the corpus stays on this machine — delete the file any time');
+  createProxy({ name, streams, mode, config, cwd: process.cwd() });
+}
+
+/**
+ * rugsnare canary replay --name <server> [--strict] [--json] [--timeout ms] -- <command> [args...]
+ * Replays the recorded corpus against a (usually newer) server, diffs the
+ * contract (split hash) AND the behavior (response shapes, error flips) —
+ * deterministic rules only, no LLM, no crying wolf on value-only changes.
+ * Exit codes: 0 = safe, 1 = breaking findings (or cosmetic with --strict),
+ * 2 = no corpus / config error, 3 = replay infrastructure failure.
+ */
+async function cmdCanaryReplay(flags) {
+  const name = flags.name;
+  const rest = flags._.slice(1);
+  const dashdash = rest.indexOf('--');
+  const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
+  const timeoutMs = flags.timeout || 15000;
+  const pins = loadPins();
+  const serverPin = pins.servers?.[name];
+
+  let command = argv[0];
+  let args = argv.length > 1 ? argv.slice(1).map(String) : [];
+  if (!command && serverPin?.cmd) {
+    command = serverPin.cmd.command;
+    args = Array.isArray(serverPin.cmd.args) ? serverPin.cmd.args.map(String) : [];
+  }
+  if (!name || !command) {
+    console.error('Usage: rugsnare canary replay --name <server> [--strict] [--json] -- <new-command> [args...]');
+    console.error('(no -- command given: falls back to the pinned command from .rugsnare/pins.json)');
+    process.exit(2);
+  }
+
+  const traces = (await import('./canary.js')).readTraces();
+  const corpus = traces.filter((t) => t.kind === 'call-trace' && t.server === name);
+  if (corpus.length === 0) {
+    console.error(`No recorded calls for "${name}". Run: rugsnare canary record --name ${name} -- <command>`);
+    process.exit(2);
+  }
+  const recordedInfo = traces.find((t) => t.kind === 'server-info' && t.server === name);
+
+  const { replayCorpus, classifyReplay } = await import('./canary-replay.js');
+  const result = await replayCorpus({ command, args, cwd: process.cwd(), corpus, timeoutMs });
+  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
+
+  const report = classifyReplay({
+    serverPin: serverPin ?? { tools: {} },
+    liveTools: result.tools,
+    replayCalls: result.calls,
+  });
+  const summary = {
+    server: name,
+    recorded: { calls: corpus.length, serverInfo: recordedInfo?.serverInfo ?? null },
+    live: { serverInfo: result.serverInfo, tools: result.tools.length },
+    replayed: result.calls.length,
+    sameShape: report.ok,
+    findings: report.findings,
+    verdict: report.verdict,
+  };
+
+  if (flags.json) {
+    console.log(JSON.stringify(summary, null, 2));
+  } else {
+    console.log(`RugSnare canary replay — "${name}"`);
+    console.log(`recorded: ${corpus.length} call(s) against ${recordedInfo?.serverInfo?.version ?? 'unknown version'}`);
+    console.log(`live:     ${result.serverInfo?.version ?? 'unknown version'} (${result.tools.length} tool(s))`);
+    console.log('');
+    for (const f of report.findings) {
+      console.log(`  ${f.severity.padEnd(8)} ${f.where === 'call' ? `call ${f.tool}` : `${f.where} ${f.tool}`}: ${f.reason}`);
+    }
+    if (report.findings.length === 0) console.log('  (no contract or behavior changes found)');
+    console.log(`  ${report.ok}/${result.calls.length} call(s) replayed with identical shape`);
+    console.log('');
+    console.log(`verdict: ${report.verdict} (breaking: ${report.breaking}, cosmetic: ${report.cosmetic})`);
+  }
+
+  if (report.breaking > 0 || (flags.strict && report.cosmetic > 0)) process.exit(1);
+}
+
+/**
  * rugsnare report — human-readable inventory of the pinned MCP server fleet.
  * For compliance, audits, and the natural entry into the hosted panel.
  * Use --live to also check each server against its pins (like diff, but never exits 1).
@@ -510,6 +627,13 @@ async function main() {
     case 'approve': return cmdApprove(flags, flags._[0]);
     case 'verify': return cmdVerify(flags);
     case 'run': return cmdRun(flags);
+    case 'canary': {
+      const sub = flags._[0]; // main() already stripped 'canary' itself
+      if (sub === 'record') return cmdCanaryRecord(flags);
+      if (sub === 'replay') return cmdCanaryReplay(flags);
+      console.error('Usage: rugsnare canary <record|replay> --name <server> -- <command> [args...]');
+      process.exit(2);
+    }
     case 'report': return cmdReport(flags);
     case 'hook': return cmdHook(flags);
     case undefined:

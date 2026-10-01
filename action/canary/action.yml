@@ -1,0 +1,63 @@
+name: 'RugSnare canary replay'
+description: 'Replay a recorded tool-call corpus against a new MCP server version before upgrading — breaking schema or behavior changes fail the job.'
+branding:
+  icon: 'alert-triangle'
+  color: 'red'
+
+inputs:
+  server-name:
+    description: 'Server name (must match the pin store and the recorded corpus)'
+    required: true
+  command:
+    description: 'The NEW server command to replay against, e.g. "npx -y @modelcontextprotocol/server-filesystem@2026.9.1 /tmp". Leave empty to replay against the pinned command (smoke check).'
+    required: false
+    default: ''
+  working-directory:
+    description: 'Directory containing .rugsnare/ (pins + recorded canary corpus)'
+    required: false
+    default: '.'
+  rugsnare-ref:
+    description: 'Which rugsnare version to run (used when use-workspace is false)'
+    required: false
+    default: 'main'
+  use-workspace:
+    description: 'Use the rugsnare copy already present in the calling repository; default false = self-checkout'
+    required: false
+    default: 'false'
+  timeout-ms:
+    description: 'Per-request timeout for the replayed MCP conversation'
+    required: false
+    default: '30000'
+
+runs:
+  using: composite
+  steps:
+    - name: Self-checkout the rugsnare tool
+      if: ${{ inputs.use-workspace != 'true' }}
+      uses: actions/checkout@v4
+      with:
+        repository: Paraphern/rugsnare
+        ref: ${{ inputs.rugsnare-ref }}
+        path: rugsnare-tool
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Replay recorded corpus against the new server version
+      env:
+        RUGSNARE_CWD: ${{ inputs.working-directory }}
+        SERVER_NAME: ${{ inputs.server-name }}
+        NEW_COMMAND: ${{ inputs.command }}
+        TIMEOUT_MS: ${{ inputs.timeout-ms }}
+      run: |
+        set -e
+        SRC="${{ inputs.use-workspace == 'true' && format('{0}/product/src', github.workspace) || format('{0}/rugsnare-tool/product/src', github.workspace) }}"
+        cd "$RUGSNARE_CWD"
+        if [ -n "$NEW_COMMAND" ]; then
+          # shellcheck disable=SC2086 — the command input is a deliberate command line
+          node "$SRC/cli.js" canary replay --name "$SERVER_NAME" --timeout "$TIMEOUT_MS" -- $NEW_COMMAND
+        else
+          node "$SRC/cli.js" canary replay --name "$SERVER_NAME" --timeout "$TIMEOUT_MS"
+        fi
+      shell: bash

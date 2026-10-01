@@ -1,0 +1,40 @@
+# Dogfood: the canary loop runs on every push against our own attack corpus.
+# Records a corpus through the live proxy against corpus/01 v1, then replays
+# it against the SAME version — must always be SAFE (exit 0). The rug-pull
+# direction (replay vs v2 must fail) is covered by tests + repro/canary.sh.
+name: canary
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Record corpus through the live proxy (corpus/01 v1)
+        run: |
+          cd corpus/01-rugpull-flights
+          printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_flights","arguments":{"origin":"AMS","destination":"IST","date":"2026-10-02"}}}' \
+            '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_booking","arguments":{"ref":"XYZ123"}}}' \
+            | timeout 10 node ../../product/src/cli.js canary record --name flights-search -- node server-v1-benign.js || [ $? -eq 124 ]
+          test -f .rugsnare/canary/calls.jsonl
+          grep -c call-trace .rugsnare/canary/calls.jsonl
+
+      - name: Replay against the same version — must be SAFE
+        uses: ./action/canary
+        with:
+          server-name: flights-search
+          working-directory: corpus/01-rugpull-flights
+          use-workspace: 'true'
+          command: node server-v1-benign.js

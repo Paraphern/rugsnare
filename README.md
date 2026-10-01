@@ -79,7 +79,18 @@ Wraps a stdio server: `observe` watches and alerts, `enforce` additionally quara
 
 or per-run with `--fail-closed` — then a proxy internal error **blocks** the message and answers the client with a JSON-RPC error instead (integrity first, logged as `proxy-fail-closed`).
 
-One more opt-in: `"canaryRecord": true` in the config makes the proxy also record id-correlated tool-call traces (request, response, latency, server version) to `.rugsnare/canary/calls.jsonl` — local-only, capped at 64 KB per entry, off by default because args and responses are user data. The upcoming `rugsnare canary` replays this corpus against a new server version before you upgrade.
+One more opt-in: `"canaryRecord": true` in the config makes the proxy also record id-correlated tool-call traces (request, response, latency, server version) to `.rugsnare/canary/calls.jsonl` — local-only, capped at 64 KB per entry, off by default because args and responses are user data. `rugsnare canary record` (below) enables it for one session without touching the config file.
+
+### Canary: replay your real calls against a new version (v0.4)
+
+Pinning answers "what changed?" The canary answers "**can I upgrade?**". While you work, the proxy records what your tools actually return; before an upgrade, replay that corpus against the new version and get a deterministic verdict:
+
+```bash
+rugsnare canary record --name flights -- npx -y flights-mcp@1.4.2   # work as usual; traces land in .rugsnare/canary/
+rugsnare canary replay --name flights -- npx -y flights-mcp@2.0.0   # replay recorded calls against the NEW version
+```
+
+Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. Exit codes fit CI: 0 = safe, 1 = breaking findings, 2 = no corpus, 3 = replay failure. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
 
 ## Trust model
 
@@ -151,7 +162,8 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **v0.3** | ✅ shipped | Call policies + PII egress checks — deny `session:object`, deny credentials in arguments, require approval for destructive tools; custom rules via `.rugsnare/policies.json`; `--timeout` flag; exit code 3 for infra errors |
 | **v0.3.1** | ✅ shipped | Split hash — BREAKING (schema) vs COSMETIC (prose) drift classification (`--schema-only` / `--prose-only`); debounced summary alerts; `failMode: "closed"` option (`--fail-closed`) — proxy internal error blocks instead of forwarding, for strict environments |
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
-| **v0.4 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
+| **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; `init` now writes a .gitignore protecting local state |
+| **v0.5 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*67 tests · 9 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*73 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
