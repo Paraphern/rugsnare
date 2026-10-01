@@ -35,7 +35,7 @@
 | №2 | **Canary (contract replay)** | **APPLICABLE WITH CONDITIONS** — after capture layer exists | 4-6 PRs | Log size/privacy of recorded args+responses; keep default OFF, local-only, size caps | Capture layer: id-correlated request+response + sniffed `serverInfo` → `.rugsnare/canary/calls.jsonl` |
 | №5 | **Signed receipts** | **APPLICABLE WITH CONDITIONS** | 2-3 PRs | Format churn: align to IETF draft **-05** (see discrepancies), not invented fields; `node:crypto` has Ed25519 natively → zero-dep holds | Hash-chain writer over existing `events.jsonl` + `receipts verify` |
 | №3 | **Loop/stuck signal** | **APPLICABLE — trivial** | 1 PR | Crying-wolf on legit retries; needs a debounce/threshold like advisory signals already have | One heuristic: N identical (tool + args-hash) calls with no interleaving progress → advisory A14 |
-| №11 | **Client-compat matrix** | **NOT NOW — separate product** | infra project | GUI clients on CI (Claude Desktop on Windows headless) is the expensive 80%; billing decision needed | Proposal doc only (per Phase C of the brief) — no code |
+| №11 | **Client-compat matrix** | **NOT NOW — separate product** | infra project | GUI clients on CI (Claude Desktop on Windows headless) is the expensive 80%; separate decision needed | Proposal doc only (per Phase C of the brief) — no code |
 | №1 | **Verified-tool (effect checks)** | **APPLICABLE — DEFERRED** | later | Shares the exact same capture gap as №2 — the capture PR unlocks both; sister product, not a module | None until №2 ships and proves the corpus value |
 
 ## Notes per candidate
@@ -68,7 +68,7 @@
 1. **PR-1 (now): capture layer.** `product/src/canary.js` + proxy hooks: id-correlated `{tool, args, ok, result|error, ms}` entries, `serverInfo` sniffed from the `initialize` response, written to `.rugsnare/canary/calls.jsonl`, **default off** (`canaryRecord: true` to enable), per-entry result cap (~64 KB) with truncation flag. Local file, never committed, never sent anywhere.
 2. **PR-2..4: `rugsnare canary record|replay|report`** — replay against two versions, deterministic breaking/cosmetic classification reusing split hash + response diffs, exit code for CI. Acceptance: `repro/canary.sh` catches the version swap (exit 1) and is quiet on identical versions (exit 0).
 3. **PR-5: loop-signal** (rides on capture; advisory-only).
-4. **PR-6+: receipts** (independent track, paid-tier candidate, AAT -05 field mapping).
+4. **PR-6+: receipts** (independent track, team/compliance feature, AAT -05 field mapping).
 5. **mcp-matrix: proposal doc only.** №1 deferred until №2 proves corpus value.
 
 No product code was modified during this audit except this file being added. Phase A PR-1 is authorized to start by this verdict.
