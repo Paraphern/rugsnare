@@ -273,11 +273,29 @@ async function cmdApprove(flags, serverName) {
   console.log(`Re-pinned ${serverName}: ${tools.length} tool(s) approved.`);
 }
 
+function ensureGitignore() {
+  // Local rugsnare state must never leak into a repo by accident: events.jsonl
+  // (tool names), config.json (webhook URL) and canary/calls.jsonl (full call
+  // args + responses) are user data. pins.json is the deliberate exception —
+  // the CI-gate workflow expects the baseline in the repo.
+  const file = '.gitignore';
+  const block = '# rugsnare local state (pins may be committed deliberately)\n**/.rugsnare/*\n!**/.rugsnare/pins.json\n';
+  let current = '';
+  try { current = fs.readFileSync(file, 'utf8'); } catch { /* no .gitignore yet */ }
+  if (!current.includes('**/.rugsnare/*')) {
+    fs.writeFileSync(file, (current ? current.replace(/\s*$/, '\n') : '') + block);
+    return 'created/updated .gitignore (.rugsnare/ ignored, pins.json allowed)';
+  }
+  return null;
+}
+
 function cmdInit() {
   fs.mkdirSync('.rugsnare', { recursive: true });
   if (!fs.existsSync(path.join('.rugsnare', 'config.json'))) {
     saveConfig(loadConfig());
   }
+  const ignored = ensureGitignore();
+  if (ignored) console.log(ignored);
   console.log('.rugsnare/ ready (mode: observe, no webhook).');
   console.log('\nDiscovered MCP configs:');
   for (const c of discoverConfigs()) {

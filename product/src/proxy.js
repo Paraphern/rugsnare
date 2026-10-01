@@ -4,6 +4,7 @@ import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
 import { evaluateCall, DEFAULT_POLICIES, validate as validatePolicies } from './policies.js';
+import { canaryEnabled, appendTrace, capPayload, MAX_PENDING } from './canary.js';
 import { readJsonFile } from './jsonfile.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,6 +37,12 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const serverPin = ensureServer(pins, name, null);
   const activePolicies = loadPoliciesForProxy(cwd);
   let pinsDirty = false;
+
+  // Canary capture (opt-in, see src/canary.js): id-correlated request/response
+  // pairs + serverInfo sniffed from the initialize handshake.
+  const canary = canaryEnabled(config);
+  const pendingCalls = canary ? new Map() : null; // id -> { tool, args, t0 }
+  let serverInfoSeen = false;
 
   const alert = async (status, tool, extra = {}) => {
     const payload = { kind: 'rugsnare.alert', status, server: name, tool, mode, ...extra };
@@ -74,6 +81,14 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         };
         if (config.logCallArgs) call.args = msg.params.arguments;
         logEvent(call, cwd);
+
+        if (canary && msg.id !== undefined) {
+          if (pendingCalls.size >= MAX_PENDING) {
+            const oldest = pendingCalls.keys().next().value;
+            pendingCalls.delete(oldest); // safety valve: never grow unbounded
+          }
+          pendingCalls.set(msg.id, { tool: msg.params.name, args: msg.params.arguments ?? null, t0: Date.now() });
+        }
 
         // Policy evaluation: check arguments against rules
         const toolPin = serverPin.tools[msg.params.name];
@@ -159,6 +174,25 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     }
 
     const tools = msg?.result?.tools;
+
+    // Canary capture: sniff server identity, then close any pending call by id.
+    if (canary) {
+      if (!serverInfoSeen && msg?.result?.serverInfo) {
+        serverInfoSeen = true;
+        appendTrace({ kind: 'server-info', server: name, serverInfo: msg.result.serverInfo }, cwd);
+      }
+      if (msg?.id !== undefined && pendingCalls.has(msg.id)) {
+        const { tool, args, t0 } = pendingCalls.get(msg.id);
+        pendingCalls.delete(msg.id);
+        const ok = !msg.error;
+        const { payload, truncated } = capPayload(ok ? msg.result : msg.error);
+        appendTrace(
+          { kind: 'call-trace', server: name, tool, args, ok, [ok ? 'result' : 'error']: payload, truncated, ms: Date.now() - t0 },
+          cwd
+        );
+      }
+    }
+
     if (Array.isArray(tools) && tools.length > 0) {
       const verdicts = tools.map((tool) => {
         const hash = toolHash(tool);
@@ -222,6 +256,14 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   streams.server.stderr?.on('data', (chunk) => process.stderr.write(`[server] ${chunk}`));
   const onExit = (code) => {
     if (pinsDirty) savePins(pins, cwd);
+    if (canary) {
+      // Calls that never got a response before the server died — record as
+      // ok:false, error:'no-response' so the corpus stays honest.
+      for (const { tool, args, t0 } of pendingCalls.values()) {
+        appendTrace({ kind: 'call-trace', server: name, tool, args, ok: false, error: 'no-response', truncated: false, ms: Date.now() - t0 }, cwd);
+      }
+      pendingCalls.clear();
+    }
     logEvent({ kind: 'server-exit', server: name, code }, cwd);
     process.exit(code ?? 0);
   };

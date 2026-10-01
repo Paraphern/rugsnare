@@ -11,7 +11,7 @@ import { readJsonFile } from './jsonfile.js';
  * Failures never break the proxy — alert delivery is best-effort.
  */
 
-const DEFAULT_CONFIG = { mode: 'observe', alertWebhook: null, logCallArgs: false, failMode: 'open' };
+const DEFAULT_CONFIG = { mode: 'observe', alertWebhook: null, logCallArgs: false, failMode: 'open', canaryRecord: false };
 
 export function loadConfig(cwd = process.cwd()) {
   try {
