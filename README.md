@@ -90,7 +90,7 @@ rugsnare canary record --name flights -- npx -y flights-mcp@1.4.2   # work as us
 rugsnare canary replay --name flights -- npx -y flights-mcp@2.0.0   # replay recorded calls against the NEW version
 ```
 
-Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. Exit codes fit CI: 0 = safe, 1 = breaking findings, 2 = no corpus, 3 = replay failure. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
+Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. Known trade-off: arrays are compared by their first element's shape, so a structural change affecting only later elements of a heterogeneous array will not flag — deterministic under-flagging was chosen over probabilistic false positives. Exit codes fit CI: 0 = safe, 1 = breaking findings, 2 = no corpus, 3 = replay failure. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
 
 ### Signed receipts: a tamper-evident trail of what the agent did (v0.4)
 
@@ -102,7 +102,7 @@ rugsnare receipts verify    # intact — or: BROKEN: entry #7 modified after sig
 rugsnare receipts export    # auditor dossier (markdown + JSON), fields aligned to IETF draft-sharif-agent-audit-trail-05
 ```
 
-Keys live in `.rugsnare/keys/` (gitignored). `verify --pub <pem>` checks a receipt file against an exported public key — an auditor can confirm your trail without ever seeing a private key. Also in v0.4: a **loop detector** — the proxy notices when the same tool is called repeatedly with identical arguments and no other tool in between (a stuck agent burning credits) and raises a one-time `loop-suspected` advisory; it never blocks anything.
+Keys live in `.rugsnare/keys/` (gitignored). `verify --pub <pem>` checks a receipt file against an exported public key — an auditor can confirm your trail without ever seeing a private key. One honest limit: the chain catches edits, insertions, deletions, and reordering **inside** it, but not a silent truncation of its tail (dropping the last N entries leaves a valid shorter chain). That is what the **chain head** printed by `sign`/`export` is for — anchor it somewhere the log writer cannot quietly rewrite (a commit, a message to the auditor) and compare. Also in v0.4: a **loop detector** — the proxy notices when the same tool is called repeatedly with identical arguments and no other tool in between (a stuck agent burning credits) and raises a one-time `loop-suspected` advisory; it never blocks anything.
 
 ## Trust model
 
