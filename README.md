@@ -90,7 +90,7 @@ rugsnare canary record --name flights -- npx -y flights-mcp@1.4.2   # work as us
 rugsnare canary replay --name flights -- npx -y flights-mcp@2.0.0   # replay recorded calls against the NEW version
 ```
 
-Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. Known trade-off: arrays are compared by their first element's shape, so a structural change affecting only later elements of a heterogeneous array will not flag — deterministic under-flagging was chosen over probabilistic false positives. Exit codes fit CI: 0 = safe, 1 = breaking findings, 2 = no corpus, 3 = replay failure. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
+Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. **Replay is read-only by default**: only read-like tool calls are re-executed; write-class and destructive-looking calls are skipped with a loud SKIPPED note (`--include <tool>` opts specific tools in, `--all-calls` lifts the write-class skip for sandboxes — destructive names always require explicit `--include`). Point replay at a dev instance, not production. Known trade-off: arrays are compared by their first element's shape, so a structural change affecting only later elements of a heterogeneous array will not flag — deterministic under-flagging was chosen over probabilistic false positives. Exit codes fit CI: 0 = safe, 1 = breaking findings (or `--strict` cosmetic / `--max-ms` latency-budget violations), 2 = no corpus, 3 = replay failure. Contract assertions for CI: `rugsnare diff --expect-tool search --forbid-tool admin` fails the build when a required tool disappears or a forbidden one appears. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
 
 ### Signed receipts: a tamper-evident trail of what the agent did (v0.4)
 
@@ -124,7 +124,7 @@ We take our own medicine:
 - **On-chain `ReleaseLog`** — release hashes pinned append-only on Base (testnet live now); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
 - **Apache-2.0.** If we ever go rogue — fork us. That's the license working as intended.
 
-Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) — 7 short questions, findings published.
+Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) — 7 short questions, findings published. Author: [@SergeyDruzhba on X](https://x.com/SergeyDruzhba).
 
 ## FAQ
 
@@ -145,6 +145,7 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 | New tool appears / approved tool disappears post-approval | ✅ caught | — |
 | Cross-server tool shadowing (same name on two servers) | ✅ caught in `scan`, `diff` (breaks CI) and the live proxy — the client's undocumented resolution order is the risk | — |
 | Chameleon server (clean contract for inspection tools, poisoned for real clients) | ✅ caught by `rugsnare scan --chameleon` — re-lists tools identifying as claude-desktop/cursor and compares hashes; any per-client difference exits 1 | — |
+| Behavioral hint flip (`readOnlyHint: true → false` / adds `destructiveHint`) with byte-identical text+schema | ✅ caught — annotations are pinned separately from the hash (v0.4.1); a flip is DRIFT/ANNOTATION in `diff`, CI and the live proxy | — |
 | Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
 | Toxic data inside call arguments or responses | ✅ caught (v0.3) — policies + PII egress checks in the live proxy | — |
@@ -191,4 +192,4 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*92 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*99 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

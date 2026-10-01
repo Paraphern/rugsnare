@@ -1,7 +1,7 @@
 import readline from 'node:readline';
 import crypto from 'node:crypto';
 import { toolHash, schemaHash as computeSchemaHash, short, stable } from './hash.js';
-import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
+import { loadPins, pinTool, savePins, ensureServer, detectShadows, annotationsEqual } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
 import { evaluateCall, DEFAULT_POLICIES, validate as validatePolicies } from './policies.js';
@@ -220,7 +220,10 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
       const verdicts = tools.map((tool) => {
         const hash = toolHash(tool);
         const pin = serverPin.tools[tool.name];
-        return { tool, hash, pin, status: !pin ? 'NEW' : pin.hash !== hash ? 'DRIFT' : 'UNCHANGED' };
+        // annotation flip with an identical hash: text+schema unchanged, but the
+        // behavioral hints changed (e.g. readOnlyHint:true -> destructive) — still drift
+        const annFlip = Boolean(pin) && pin.hash === hash && pin.annotations !== undefined && !annotationsEqual(pin.annotations, tool.annotations);
+        return { tool, hash, pin, annFlip, status: !pin ? 'NEW' : pin.hash !== hash ? 'DRIFT' : annFlip ? 'DRIFT' : 'UNCHANGED' };
       });
 
       for (const v of verdicts) {
@@ -229,9 +232,13 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           pinsDirty = true;
           alert('NEW', v.tool.name, { hash: v.hash }); // alert in every mode: enforce quarantines, but the human must still hear it
         } else if (v.status === 'DRIFT') {
-          const liveSchemaHash = computeSchemaHash(v.tool);
-          const driftType = v.pin.schemaHash !== liveSchemaHash ? 'BREAKING' : 'COSMETIC';
-          alert('DRIFT', v.tool.name, { driftType, oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
+          if (v.annFlip) {
+            alert('DRIFT', v.tool.name, { driftType: 'ANNOTATION', oldHash: v.pin.hash, hash: v.hash, oldAnnotations: v.pin.annotations ?? null, newAnnotations: v.tool.annotations ?? null });
+          } else {
+            const liveSchemaHash = computeSchemaHash(v.tool);
+            const driftType = v.pin.schemaHash !== liveSchemaHash ? 'BREAKING' : 'COSMETIC';
+            alert('DRIFT', v.tool.name, { driftType, oldHash: v.pin.hash, hash: v.hash, oldDescription: v.pin.description, newDescription: v.tool.description });
+          }
         }
         // Cross-server shadow: tool name also pinned under a different server
         const otherServer = Object.keys(pins.servers ?? {}).find(

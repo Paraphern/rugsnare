@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { fetchTools } from '../src/rpc.js';
 import { ensureServer, pinTool, savePins, loadPins } from '../src/pins.js';
 import { toolHash } from '../src/hash.js';
-import { shape, shapesEqual, replayCorpus, classifyReplay } from '../src/canary-replay.js';
+import { shape, shapesEqual, replayCorpus, classifyReplay, classifyCallForReplay } from '../src/canary-replay.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const V1 = path.join(__dirname, 'fixtures', 'canary-v1.cjs');
@@ -106,3 +106,51 @@ test('end-to-end: corpus recorded on v1 replays SAFE against v1, DO NOT UPGRADE 
 
 // keep savePins/loadPins referenced for future corpus-store tests
 void savePins; void loadPins;
+
+// ---- replay safety: read-only by default -------------------------------------
+
+test('classifyCallForReplay: read-like replays; writes/destructive skip; --include overrides everything', () => {
+  assert.equal(classifyCallForReplay('search_events'), 'replay');
+  assert.equal(classifyCallForReplay('get_booking'), 'replay');
+  assert.equal(classifyCallForReplay('read_file'), 'replay');
+  assert.equal(classifyCallForReplay('update_event'), 'skip-write');
+  assert.equal(classifyCallForReplay('send_email'), 'skip-write');
+  assert.equal(classifyCallForReplay('delete_booking'), 'skip-destructive');
+  assert.equal(classifyCallForReplay('drop_table'), 'skip-destructive');
+  // --all-calls lifts the write-class skip, never the destructive one
+  assert.equal(classifyCallForReplay('update_event', { allCalls: true }), 'replay');
+  assert.equal(classifyCallForReplay('delete_booking', { allCalls: true }), 'skip-destructive');
+  // explicit --include is the only way to replay destructive calls
+  assert.equal(classifyCallForReplay('delete_booking', { include: ['delete_booking'] }), 'replay');
+});
+
+test('replay safety e2e: write-class corpus entries are never sent to the server', async () => {
+  const corpus = [
+    { kind: 'call-trace', server: 't', tool: 'search_events', args: { q: 'x' }, ok: true, result: { content: [{ type: 'text', text: 'ab' }], count: 2 }, truncated: false },
+    { kind: 'call-trace', server: 't', tool: 'update_event', args: { id: '1' }, ok: true, result: { content: [] }, truncated: false }, // write: must NOT be sent
+    { kind: 'call-trace', server: 't', tool: 'delete_event', args: { id: '1' }, ok: true, result: { content: [] }, truncated: false }, // destructive: must NOT be sent
+  ];
+  const r = await replayCorpus({ command: 'node', args: [V1], cwd: process.cwd(), corpus, timeoutMs: 15000 });
+  assert.ok(!r.error, r.error);
+  // the write/destructive calls were never delivered: no response at all, marked skipped
+  const byTool = Object.fromEntries(r.calls.map((c) => [c.entry.tool, c]));
+  assert.ok(byTool.search_events.live, 'read-like call was replayed');
+  assert.equal(byTool.update_event.live, null);
+  assert.equal(byTool.update_event.skipped, 'skip-write');
+  assert.equal(byTool.delete_event.skipped, 'skip-destructive');
+}, { timeout: 45000 });
+
+test('classifyReplay reports skipped writes without failing the verdict', () => {
+  const r = classifyReplay({
+    serverPin: { tools: {} },
+    liveTools: [],
+    replayCalls: [
+      { entry: { tool: 'search', ok: true, result: { a: 1 }, truncated: false }, live: { result: { a: 2 } } },
+      { entry: { tool: 'update_thing', ok: true, result: {}, truncated: false }, live: null, skipped: 'skip-write' },
+    ],
+  });
+  assert.equal(r.breaking, 0);
+  assert.equal(r.skippedWrites, 1);
+  assert.equal(r.verdict, 'SAFE');
+  assert.ok(r.findings.some((f) => f.severity === 'SKIPPED' && f.tool === 'update_thing'));
+});

@@ -35,6 +35,31 @@ export function shapesEqual(a, b) {
   return JSON.stringify(shape(a)) === JSON.stringify(shape(b));
 }
 
+// ---- replay safety: read-only by default ------------------------------------
+//
+// Replaying a recorded corpus EXECUTES real tool calls against the target
+// server. Unconditional replay would re-run every write the agent ever made
+// (update_*, send_*, delete_*) on a possibly-live backend — unacceptable as
+// a default. Policy (found by the niche analysis, 2026-10-01, and it was right):
+//   - read-like tool names replay freely (they did no harm the first time)
+//   - destructive names NEVER replay (unless named in --include explicitly)
+//   - everything else (write-class: update/create/send/...) skips with a loud
+//     SKIPPED note, unless opted in via --include <tool> or --all-calls (sandbox)
+const READ_LIKE = /^(read|get|list|search|find|query|fetch|show|view|describe|lookup|head|tree|glob|grep|stat|whoami|check|scan|verify|report|health|status|resolve|parse|preview|dry[-_]?run)/i;
+const DESTRUCTIVE = /^(delete|drop|remove|rm|destroy|wipe|format|truncate|purge|nuke|kill|uninstall|clear|flush|reset)/i;
+
+/**
+ * Decide whether a recorded call may be replayed.
+ * 'replay' | 'skip-destructive' | 'skip-write'
+ * Explicit --include always wins (user consent), even for destructive names.
+ */
+export function classifyCallForReplay(toolName, { include = [], allCalls = false } = {}) {
+  if (include.includes(toolName)) return 'replay';
+  if (DESTRUCTIVE.test(toolName)) return 'skip-destructive';
+  if (READ_LIKE.test(toolName)) return 'replay';
+  return allCalls ? 'replay' : 'skip-write';
+}
+
 // ---- replay driver ----------------------------------------------------------
 
 /**
@@ -43,7 +68,7 @@ export function shapesEqual(a, b) {
  * Returns { serverInfo, tools, calls } — never throws on tool errors; a call
  * that errors or times out is DATA for the classifier, not a failure.
  */
-export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeoutMs = 15000 }) {
+export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeoutMs = 15000, include = [], allCalls = false }) {
   return new Promise((resolve) => {
     let spawnServerFn;
     import('./spawn-server.js')
@@ -126,9 +151,16 @@ export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeou
         } while (cursor !== undefined && ++pages < 100);
 
         for (const entry of corpus) {
+          const verdict = classifyCallForReplay(entry.tool, { include, allCalls });
+          if (verdict !== 'replay') {
+            // never sent to the server — recorded as skipped, reported loudly
+            calls.push({ entry, live: null, skipped: verdict });
+            continue;
+          }
           try {
+            const t0 = Date.now();
             const live = await request('tools/call', { name: entry.tool, arguments: entry.args ?? {} });
-            calls.push({ entry, live });
+            calls.push({ entry, live, ms: Date.now() - t0 });
           } catch (err) {
             calls.push({ entry, live: null, note: String(err) });
           }
@@ -146,7 +178,7 @@ export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeou
  * reported but never fail — cosmetic text changes and new tools are not a
  * reason to block an upgrade.
  */
-export function classifyReplay({ serverPin, liveTools, replayCalls }) {
+export function classifyReplay({ serverPin, liveTools, replayCalls, maxMs = 0 }) {
   const findings = [];
 
   // Contract side: reuse the split-hash machinery from scan/diff.
@@ -158,9 +190,26 @@ export function classifyReplay({ serverPin, liveTools, replayCalls }) {
 
   // Behavior side: recorded vs live, structure only.
   let ok = 0;
-  for (const { entry, live, note } of replayCalls) {
+  let skippedWrites = 0;
+  let skippedDestructive = 0;
+  for (const { entry, live, note, skipped, ms } of replayCalls) {
+    if (skipped === 'skip-destructive') {
+      skippedDestructive += 1;
+      findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'destructive-looking call NOT replayed (name it in --include <tool> to force, sandbox only)' });
+      continue;
+    }
+    if (skipped === 'skip-write') {
+      skippedWrites += 1;
+      findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'write-class call not replayed (read-only default; pass --include <tool> or --all-calls against a sandbox)' });
+      continue;
+    }
     if (entry.truncated) { findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'recorded entry was truncated — cannot compare' }); continue; }
     if (!live) { findings.push({ severity: 'BREAKING', where: 'call', tool: entry.tool, reason: `no response: ${note ?? 'connection lost'}` }); continue; }
+
+    // optional performance gate (a tool that got 10x slower broke the workflow too)
+    if (maxMs > 0 && typeof ms === 'number' && ms > maxMs) {
+      findings.push({ severity: 'SLOW', where: 'call', tool: entry.tool, reason: `latency regression: ${ms}ms > ${maxMs}ms budget` });
+    }
 
     const wasOk = entry.ok;
     const isOk = !live.error;
@@ -174,6 +223,8 @@ export function classifyReplay({ serverPin, liveTools, replayCalls }) {
 
   const breaking = findings.filter((f) => f.severity === 'BREAKING').length;
   const cosmetic = findings.filter((f) => f.severity === 'COSMETIC').length;
+  const slow = findings.filter((f) => f.severity === 'SLOW').length;
+  const skipped = skippedWrites + skippedDestructive;
   const verdict = breaking > 0 ? 'DO NOT UPGRADE' : cosmetic > 0 ? 'SAFE WITH NOTES' : 'SAFE';
-  return { findings, ok, breaking, cosmetic, verdict };
+  return { findings, ok, breaking, cosmetic, slow, skipped, skippedWrites, skippedDestructive, verdict };
 }

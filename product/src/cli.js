@@ -37,13 +37,16 @@ Usage:
                                                          --chameleon: re-list tools as claude-desktop/cursor;
                                                          different contract per client = CHAMELEON, exit 1
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
+                [--expect-tool <t>]... [--forbid-tool <t>]...   contract assertions (forbid catches shadow injection)
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
   rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
                                                          live stdio proxy (defaults: observe, fail-open)
   rugsnare canary record --name <server> -- <command>    record tool-call traces (opt-in, local file)
-  rugsnare canary replay --name <server> -- <command>    replay corpus vs new version; exit 1 = breaking
+  rugsnare canary replay --name <server> [--strict] [--include <tool>]... [--all-calls] -- <command>
+                                                         replay corpus vs new version; read-only calls by default;
+                                                         --include/--all-calls replay write-class (sandbox only); exit 1 = breaking
   rugsnare receipts sign                                 Ed25519 hash-chain over the event log
   rugsnare receipts verify [--pub <pem>]                 check the chain; exit 1 = tampered
   rugsnare receipts export                               auditor dossier (md + json, AAT -05 fields)
@@ -79,6 +82,11 @@ function parseArgs(argv) {
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
     else if (a === '--chameleon') flags.chameleon = true;
+    else if (a === '--all-calls') flags.allCalls = true;
+    else if (a === '--include') { (flags.include ??= []).push(argv[++i]); }
+    else if (a === '--expect-tool') { (flags.expectTool ??= []).push(argv[++i]); }
+    else if (a === '--forbid-tool') { (flags.forbidTool ??= []).push(argv[++i]); }
+    else if (a === '--max-ms') flags.maxMs = parseInt(argv[++i], 10) || 0;
     else if (a === '--from') flags.from = argv[++i];
     else if (a === '--pub') flags.pub = argv[++i];
     else if (a === '--strict') flags.strict = true;
@@ -281,13 +289,27 @@ async function cmdDiff(flags) {
     console.log(JSON.stringify(report, null, 2));
   } else {
     for (const s of shadows) {
-      console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')}`);
+      console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
     }
   }
-  const verdict = driftCount === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s))`;
+  // CI contract assertions: --expect-tool X (must be present) / --forbid-tool Y (must NOT appear — catches shadow injection)
+  let assertionFails = 0;
+  if (flags.expectTool || flags.forbidTool) {
+    for (const r of report) {
+      if (r.error) continue;
+      const liveNames = new Set(r.verdicts.filter((v) => v.status !== 'REMOVED').map((v) => v.tool));
+      for (const want of flags.expectTool ?? []) {
+        if (!liveNames.has(want)) { assertionFails++; console.error(`[CONTRACT] ${r.server}: expected tool "${want}" is MISSING from the live contract`); }
+      }
+      for (const ban of flags.forbidTool ?? []) {
+        if (liveNames.has(ban)) { assertionFails++; console.error(`[CONTRACT] ${r.server}: forbidden tool "${ban}" is PRESENT in the live contract`); }
+      }
+    }
+  }
+  const verdict = driftCount === 0 && assertionFails === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s)${assertionFails > 0 ? `, ${assertionFails} assertion failure(s)` : ''})`;
   console.error(`rugsnare diff: ${verdict}${infraErrorCount > 0 ? ` (+${infraErrorCount} infra error(s))` : ''}`);
   // Exit codes: 0=clean, 1=drift, 2=config error, 3=infrastructure error only (no drift detected)
-  if (driftCount > 0) process.exit(1);
+  if (driftCount > 0 || assertionFails > 0) process.exit(1);
   if (infraErrorCount > 0) process.exit(3);
   process.exit(0);
 }
@@ -496,13 +518,13 @@ async function cmdCanaryReplay(flags) {
   const recordedInfo = traces.find((t) => t.kind === 'server-info' && t.server === name);
 
   const { replayCorpus, classifyReplay } = await import('./canary-replay.js');
-  const result = await replayCorpus({ command, args, cwd: process.cwd(), corpus, timeoutMs });
-  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
+  const result = await replayCorpus({ command, args, cwd: process.cwd(), corpus, timeoutMs, include: flags.include ?? [], allCalls: Boolean(flags.allCalls) });  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
 
   const report = classifyReplay({
     serverPin: serverPin ?? { tools: {} },
     liveTools: result.tools,
     replayCalls: result.calls,
+    maxMs: flags.maxMs ?? 0,
   });
   const summary = {
     server: name,
@@ -527,10 +549,13 @@ async function cmdCanaryReplay(flags) {
     if (report.findings.length === 0) console.log('  (no contract or behavior changes found)');
     console.log(`  ${report.ok}/${result.calls.length} call(s) replayed with identical shape`);
     console.log('');
+    if (report.skipped > 0) {
+      console.log(`  ⚠ replay is read-only by default: ${report.skipped} call(s) NOT replayed (${report.skippedWrites} write-class, ${report.skippedDestructive} destructive-looking) — see the SKIPPED lines above`);
+    }
     console.log(`verdict: ${report.verdict} (breaking: ${report.breaking}, cosmetic: ${report.cosmetic})`);
   }
 
-  if (report.breaking > 0 || (flags.strict && report.cosmetic > 0)) process.exit(1);
+  if (report.breaking > 0 || (flags.strict && report.cosmetic > 0) || (flags.maxMs > 0 && report.slow > 0)) process.exit(1);
 }
 
 /**

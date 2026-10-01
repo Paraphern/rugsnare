@@ -80,12 +80,39 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
     schemaHash: computeSchemaHash(tool),
     proseHash: computeProseHash(tool),
     description: tool.description ?? '',
+    // Behavioral hints (readOnlyHint / destructiveHint / openWorldHint): a flip
+    // changes what the tool is allowed to do even when text+schema are identical.
+    // Stored separately from the hash so existing pins keep validating unchanged.
+    annotations: tool.annotations ?? null,
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
     approved,
   };
   return serverPin.tools[tool.name];
 }
+
+/**
+ * Compare behavioral annotations through their SPEC DEFAULTS, not raw values:
+ * MCP defines readOnlyHint/destructiveHint/idempotentHint as false and
+ * openWorldHint as true when absent. A server that starts spelling out a hint
+ * it was already relying on (absent -> {readOnlyHint: false}) changes nothing
+ * behaviorally and must NOT be flagged; a silent downgrade ({readOnlyHint:
+ * true} -> absent) IS a change and must be. (Discipline learned from reading
+ * mcpsnoop's baseline mechanics in full.)
+ */
+function effectiveAnnotations(a) {
+  return {
+    readOnly: a?.readOnlyHint ?? false,
+    destructive: a?.destructiveHint ?? false,
+    idempotent: a?.idempotentHint ?? false,
+    openWorld: a?.openWorldHint ?? true,
+  };
+}
+
+function annotationsEqual(pinned, live) {
+  return JSON.stringify(effectiveAnnotations(pinned)) === JSON.stringify(effectiveAnnotations(live));
+}
+export { annotationsEqual };
 
 export function compareTools(serverPin, liveTools, toolHashFn) {
   const result = [];
@@ -106,6 +133,21 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         hash,
         schemaChanged,
         proseChanged,
+        oldDescription: pin.description ?? '',
+        newDescription: tool.description ?? '',
+      });
+    } else if (pin.annotations !== undefined && !annotationsEqual(pin.annotations, tool.annotations)) {
+      // Byte-identical text+schema, but the behavioral hints flipped —
+      // e.g. approved as readOnlyHint:true, now declares itself destructive.
+      result.push({
+        tool: tool.name,
+        status: 'DRIFT',
+        driftType: 'ANNOTATION',
+        oldHash: pin.hash,
+        hash,
+        annotationsChanged: true,
+        oldAnnotations: pin.annotations ?? null,
+        newAnnotations: tool.annotations ?? null,
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });
