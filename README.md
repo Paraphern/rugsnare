@@ -104,6 +104,16 @@ rugsnare receipts export    # auditor dossier (markdown + JSON), fields aligned 
 
 Keys live in `.rugsnare/keys/` (gitignored). `verify --pub <pem>` checks a receipt file against an exported public key — an auditor can confirm your trail without ever seeing a private key. One honest limit: the chain catches edits, insertions, deletions, and reordering **inside** it, but not a silent truncation of its tail (dropping the last N entries leaves a valid shorter chain). That is what the **chain head** printed by `sign`/`export` is for — anchor it somewhere the log writer cannot quietly rewrite (a commit, a message to the auditor) and compare. Also in v0.4: a **loop detector** — the proxy notices when the same tool is called repeatedly with identical arguments and no other tool in between (a stuck agent burning credits) and raises a one-time `loop-suspected` advisory; it never blocks anything.
 
+### RugSnare as an MCP tool (read-only, for marketplaces and agents)
+
+The same binary doubles as a stdio MCP server, so agents can call it and marketplaces can list it:
+
+```json
+{ "mcpServers": { "rugsnare": { "command": "npx", "args": ["-y", "rugsnare", "mcp"] } } }
+```
+
+Two read-only tools: `drift_feed_status` (what the public drift-feed currently sees across popular MCP servers — the only outbound call this server ever makes, a fixed public URL, only when explicitly invoked) and `pins_report` (the local pin store of the project the agent works in — never writes, never sends anything). Pinned by our own gate, naturally — the baseline lives in [`corpus/03-rugsnare-self`](corpus/03-rugsnare-self). A Docker image and registry entry are prepared under `docker/` and `registry/`.
+
 ## Trust model
 
 We take our own medicine:
@@ -176,6 +186,7 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
 | **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; **signed receipts** — Ed25519 hash-chain over the audit log, `receipts sign/verify/export` with an AAT-05-aligned dossier; **loop detector** advisory; `init` writes a .gitignore protecting local state |
 | **v0.5 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
+| **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*79 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*83 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

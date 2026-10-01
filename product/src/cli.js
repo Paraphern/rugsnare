@@ -581,6 +581,17 @@ async function cmdReceiptsExport(flags) {
 }
 
 /**
+ * rugsnare mcp — run RugSnare itself as a read-only MCP server (stdio).
+ * Marketplace distribution entry point: the same binary users install for
+ * the CI gate doubles as an agent-callable tool (drift_feed_status over
+ * public data, pins_report over the local pin store). See src/mcp-server.js.
+ */
+async function cmdMcp() {
+  const { runMcpServer } = await import('./mcp-server.js');
+  runMcpServer();
+}
+
+/**
  * rugsnare report — human-readable inventory of the pinned MCP server fleet.
  * For compliance, audits, and the natural entry into the hosted panel.
  * Use --live to also check each server against its pins (like diff, but never exits 1).
@@ -721,6 +732,7 @@ async function main() {
       console.error('Usage: rugsnare receipts <sign|verify|export> [--from <receipts.jsonl>]');
       process.exit(2);
     }
+    case 'mcp': return cmdMcp();
     case 'report': return cmdReport(flags);
     case 'hook': return cmdHook(flags);
     case undefined:

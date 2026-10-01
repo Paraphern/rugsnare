@@ -20,8 +20,8 @@
     "supply-chain", "ci"
   ],
   "scripts": {
-    "test": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js test/advisory.test.js test/prompts.test.js test/policies.test.js test/canary.test.js test/canary-replay.test.js test/receipts.test.js",
-    "prepack": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js test/advisory.test.js test/prompts.test.js test/policies.test.js test/canary.test.js test/canary-replay.test.js test/receipts.test.js"
+    "test": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js test/advisory.test.js test/prompts.test.js test/policies.test.js test/canary.test.js test/canary-replay.test.js test/receipts.test.js test/mcp-server.test.js",
+    "prepack": "node --test test/core.test.js test/proxy.test.js test/rpc-edge.test.js test/keccak.test.js test/onchain.test.js test/shadow.test.js test/advisory.test.js test/prompts.test.js test/policies.test.js test/canary.test.js test/canary-replay.test.js test/receipts.test.js test/mcp-server.test.js"
   }
 }
 

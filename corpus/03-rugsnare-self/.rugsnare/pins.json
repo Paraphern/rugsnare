@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "servers": {
+    "rugsnare": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "C:/GlobalWork/product/src/mcp-server.js"
+        ]
+      },
+      "pinnedAt": "2026-10-01T16:28:01.419Z",
+      "tools": {
+        "drift_feed_status": {
+          "hash": "6c7ff88edd47c4be22b7b0905432d624ea595140b75ad2b6abe92dbf285b95e4",
+          "schemaHash": "a6cc3ccd5744acb1400c4d7deb0efbdefc037276eb74a1c7593f5a569ada6db4",
+          "proseHash": "212240f4091c05329f46c3d4497fe88f6dacd29145514c7b00b1adf9d8a53185",
+          "description": "Report the current versions and contract-change events of popular MCP servers, from the public RugSnare drift-feed (daily scans). Optional filter by server name.",
+          "firstSeen": "2026-10-01T16:28:01.421Z",
+          "pinnedAt": "2026-10-01T16:28:01.421Z",
+          "approved": true
+        },
+        "pins_report": {
+          "hash": "9b4a432f27f9fed7bdd1acb190f3e0571b3d9ec17aa5b8c281c1dd2ca3f7a923",
+          "schemaHash": "0151034d53b1998fe109657d2135a2319e1ce41349a579e03fbb0457fbacafb5",
+          "proseHash": "a00a981de74b1888e0af06007e7f42a28f92800abfb66656bc62f092cfe91804",
+          "description": "Report the RugSnare pin store of this project: which MCP servers are pinned, how many tools are approved, unapproved, or shadowed across servers. Read-only.",
+          "firstSeen": "2026-10-01T16:28:01.421Z",
+          "pinnedAt": "2026-10-01T16:28:01.421Z",
+          "approved": true
+        }
+      },
+      "prompts": {},
+      "resources": {}
+    }
+  }
+}
