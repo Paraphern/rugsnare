@@ -2,7 +2,9 @@ import crypto from 'node:crypto';
 
 // Deterministic JSON: sorted keys, stable arrays — so the same logical
 // tool definition always hashes identically across machines and runs.
-function stable(value) {
+// Exported for callers that need a canonical form of arbitrary payloads
+// (e.g. the proxy's loop detector fingerprints call arguments).
+export function stable(value) {
   if (Array.isArray(value)) return value.map(stable);
   if (value && typeof value === 'object') {
     const out = {};

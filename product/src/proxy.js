@@ -1,5 +1,6 @@
 import readline from 'node:readline';
-import { toolHash, schemaHash as computeSchemaHash, short } from './hash.js';
+import crypto from 'node:crypto';
+import { toolHash, schemaHash as computeSchemaHash, short, stable } from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
@@ -44,6 +45,11 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const pendingCalls = canary ? new Map() : null; // id -> { tool, args, t0 }
   let serverInfoSeen = false;
 
+  // Loop/stuck detector (advisory only — never blocks): N identical calls
+  // (same tool + same args fingerprint) in a row with no other tool between.
+  const LOOP_THRESHOLD = Number.isInteger(config?.loopThreshold) ? config.loopThreshold : 5;
+  let loopRun = { fingerprint: null, count: 0, alerted: false };
+
   const alert = async (status, tool, extra = {}) => {
     const payload = { kind: 'rugsnare.alert', status, server: name, tool, mode, ...extra };
     // Propagate driftType for debounced summary classification
@@ -81,6 +87,23 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         };
         if (config.logCallArgs) call.args = msg.params.arguments;
         logEvent(call, cwd);
+
+        // loop/stuck signal: same tool + same arguments, repeatedly, nothing else between
+        if (LOOP_THRESHOLD > 0) {
+          const fingerprint = crypto.createHash('sha256')
+            .update(msg.params.name + '|' + JSON.stringify(stable(msg.params.arguments ?? {})))
+            .digest('hex').slice(0, 16);
+          if (fingerprint === loopRun.fingerprint) {
+            loopRun.count += 1;
+            if (loopRun.count >= LOOP_THRESHOLD && !loopRun.alerted) {
+              loopRun.alerted = true; // one alert per stuck run, not per call
+              writeErr(`[rugsnare] LOOP-SUSPECTED: ${name}/${msg.params.name} called ${loopRun.count}x with identical arguments and no other tool in between`);
+              logEvent({ kind: 'loop-suspected', server: name, tool: msg.params.name, count: loopRun.count, threshold: LOOP_THRESHOLD }, cwd);
+            }
+          } else {
+            loopRun = { fingerprint, count: 1, alerted: false };
+          }
+        }
 
         if (canary && msg.id !== undefined) {
           if (pendingCalls.size >= MAX_PENDING) {

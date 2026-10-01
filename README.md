@@ -92,6 +92,18 @@ rugsnare canary replay --name flights -- npx -y flights-mcp@2.0.0   # replay rec
 
 Replay diffs both the contract (split hash: BREAKING schema vs COSMETIC prose) and the **behavior** — a call that was ok and now errors, a response whose shape changed — while ignoring value-only differences (timestamps, prices change between runs), so no crying wolf. Exit codes fit CI: 0 = safe, 1 = breaking findings, 2 = no corpus, 3 = replay failure. Traces are local and gitignored (`rugsnare init` writes that .gitignore for you); pins remain the only deliberate commit. Self-verifying demo: [`repro/canary.sh`](repro/canary.sh); CI integration: [`action/canary`](action/canary/action.yml).
 
+### Signed receipts: a tamper-evident trail of what the agent did (v0.4)
+
+The proxy already logs every tool call. Receipts make that log provable: an Ed25519 hash-chain where each entry signs the hash of the previous one — edit, delete, or reorder anything after signing, and `verify` names the exact entry where the chain breaks.
+
+```bash
+rugsnare receipts sign      # chain + sign the local event log (key generated locally, never leaves the machine)
+rugsnare receipts verify    # intact — or: BROKEN: entry #7 modified after signing (exit 1)
+rugsnare receipts export    # auditor dossier (markdown + JSON), fields aligned to IETF draft-sharif-agent-audit-trail-05
+```
+
+Keys live in `.rugsnare/keys/` (gitignored). `verify --pub <pem>` checks a receipt file against an exported public key — an auditor can confirm your trail without ever seeing a private key. Also in v0.4: a **loop detector** — the proxy notices when the same tool is called repeatedly with identical arguments and no other tool in between (a stuck agent burning credits) and raises a one-time `loop-suspected` advisory; it never blocks anything.
+
 ## Trust model
 
 We take our own medicine:
@@ -162,8 +174,8 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **v0.3** | ✅ shipped | Call policies + PII egress checks — deny `session:object`, deny credentials in arguments, require approval for destructive tools; custom rules via `.rugsnare/policies.json`; `--timeout` flag; exit code 3 for infra errors |
 | **v0.3.1** | ✅ shipped | Split hash — BREAKING (schema) vs COSMETIC (prose) drift classification (`--schema-only` / `--prose-only`); debounced summary alerts; `failMode: "closed"` option (`--fail-closed`) — proxy internal error blocks instead of forwarding, for strict environments |
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
-| **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; `init` now writes a .gitignore protecting local state |
+| **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; **signed receipts** — Ed25519 hash-chain over the audit log, `receipts sign/verify/export` with an AAT-05-aligned dossier; **loop detector** advisory; `init` writes a .gitignore protecting local state |
 | **v0.5 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*73 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*79 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

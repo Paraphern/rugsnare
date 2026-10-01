@@ -42,6 +42,9 @@ Usage:
                                                          live stdio proxy (defaults: observe, fail-open)
   rugsnare canary record --name <server> -- <command>    record tool-call traces (opt-in, local file)
   rugsnare canary replay --name <server> -- <command>    replay corpus vs new version; exit 1 = breaking
+  rugsnare receipts sign                                 Ed25519 hash-chain over the event log
+  rugsnare receipts verify [--pub <pem>]                 check the chain; exit 1 = tampered
+  rugsnare receipts export                               auditor dossier (md + json, AAT -05 fields)
 
 verify: checks a local release artifact against the on-chain ReleaseLog pin
         (https only; non-public RPC hosts are refused).
@@ -73,6 +76,9 @@ function parseArgs(argv) {
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
+    else if (a === '--from') flags.from = argv[++i];
+    else if (a === '--pub') flags.pub = argv[++i];
+    else if (a === '--strict') flags.strict = true;
     else flags._.push(a);
   }
   return flags;
@@ -502,6 +508,79 @@ async function cmdCanaryReplay(flags) {
 }
 
 /**
+ * rugsnare receipts sign|verify|export (Phase B).
+ * Tamper-evident audit trail: Ed25519 hash-chain over the local event log.
+ * Keys are generated locally on first sign (.rugsnare/keys/, gitignored) —
+ * they never leave the machine; the fingerprint identifies the key in exports.
+ */
+async function cmdReceiptsSign(flags) {
+  const { ensureKeys, signEvents, receiptsPath } = await import('./receipts.js');
+  const { readEvents } = await import('./events.js');
+  const events = readEvents();
+  if (events.length === 0) { console.error('No events in .rugsnare/events.jsonl — run the proxy or scan first.'); process.exit(2); }
+  const { privateKey, publicKey, created, fingerprint } = ensureKeys();
+  const receipts = signEvents(events, privateKey);
+  const fsMod = await import('node:fs');
+  fsMod.writeFileSync(receiptsPath(), receipts.map((r) => JSON.stringify(r)).join('\n') + '\n');
+  console.log(`signed ${receipts.length} entr(ies) -> .rugsnare/receipts.jsonl`);
+  if (created) console.log(`new Ed25519 key generated (fingerprint ${fingerprint.slice(0, 16)}…) — back it up if receipts must stay verifiable after a machine loss`);
+  console.log(`chain head: ${receipts[receipts.length - 1].entryHash}`);
+}
+
+async function cmdReceiptsVerify(flags) {
+  const { verifyReceipts, receiptsPath, loadPublicKey, keyFingerprint } = await import('./receipts.js');
+  const from = flags.from || receiptsPath();
+  let receipts;
+  try {
+    receipts = (await import('node:fs')).readFileSync(from, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  } catch { console.error(`cannot read ${from}`); process.exit(2); }
+  if (receipts.length === 0) { console.error('no receipts — run `rugsnare receipts sign` first'); process.exit(2); }
+
+  let publicKey;
+  let fingerprint;
+  if (flags.pub) {
+    // verify against an exported public key (auditor / after machine loss)
+    const fsMod = await import('node:fs');
+    try {
+      const pem = fsMod.readFileSync(flags.pub, 'utf8');
+      publicKey = (await import('node:crypto')).createPublicKey(pem);
+      fingerprint = keyFingerprint(pem);
+    } catch { console.error(`cannot read public key ${flags.pub}`); process.exit(2); }
+  } else {
+    const local = loadPublicKey();
+    if (!local) { console.error('no local signing key — pass --pub <ed25519.pub.pem> to verify with an exported key'); process.exit(2); }
+    ({ publicKey, fingerprint } = local);
+  }
+
+  const result = verifyReceipts(receipts, publicKey);
+  console.log(`key fingerprint: ${fingerprint.slice(0, 16)}…`);
+  console.log(`entries: ${result.count}   span: ${result.first ?? '?'} → ${result.last ?? '?'}`);
+  if (result.ok) {
+    console.log('chain intact — every entry matches its hash, link, and signature');
+  } else {
+    console.error(`BROKEN: ${result.reason}`);
+    process.exit(1);
+  }
+}
+
+async function cmdReceiptsExport(flags) {
+  const { exportDossier, readReceipts, loadPublicKey } = await import('./receipts.js');
+  const receipts = readReceipts();
+  if (receipts.length === 0) { console.error('no receipts — run `rugsnare receipts sign` first'); process.exit(2); }
+  const local = loadPublicKey();
+  if (!local) { console.error('no local signing key — receipts were signed elsewhere; export needs its public key context'); process.exit(2); }
+  const { markdown, json } = exportDossier(receipts, { fingerprint: local.fingerprint });
+  const fsMod = await import('node:fs');
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const mdFile = `.rugsnare/dossier-${stamp}.md`;
+  const jsonFile = `.rugsnare/dossier-${stamp}.json`;
+  fsMod.mkdirSync('.rugsnare', { recursive: true });
+  fsMod.writeFileSync(mdFile, markdown);
+  fsMod.writeFileSync(jsonFile, JSON.stringify(json, null, 2) + '\n');
+  console.log(`dossier written: ${mdFile}, ${jsonFile} (${receipts.length} actions)`);
+}
+
+/**
  * rugsnare report — human-readable inventory of the pinned MCP server fleet.
  * For compliance, audits, and the natural entry into the hosted panel.
  * Use --live to also check each server against its pins (like diff, but never exits 1).
@@ -632,6 +711,14 @@ async function main() {
       if (sub === 'record') return cmdCanaryRecord(flags);
       if (sub === 'replay') return cmdCanaryReplay(flags);
       console.error('Usage: rugsnare canary <record|replay> --name <server> -- <command> [args...]');
+      process.exit(2);
+    }
+    case 'receipts': {
+      const sub = flags._[0];
+      if (sub === 'sign') return cmdReceiptsSign(flags);
+      if (sub === 'verify') return cmdReceiptsVerify(flags);
+      if (sub === 'export') return cmdReceiptsExport(flags);
+      console.error('Usage: rugsnare receipts <sign|verify|export> [--from <receipts.jsonl>]');
       process.exit(2);
     }
     case 'report': return cmdReport(flags);
