@@ -31,6 +31,25 @@ const PII_PATTERNS = [
 
 const PII_THRESHOLD = 2;
 
+// ---- Dangerous shell patterns in tool arguments ----
+// A tool call whose arguments embed one of these is almost certainly a
+// hijacked or destructive agent action, regardless of the tool's contract.
+const DANGEROUS_PATTERNS = [
+  { id: 'D01', test: /\brm\s+[^|;&]{0,20}(?:-[a-zA-Z]*[rf][a-zA-Z]*\s+)+(?:\/|~|\$HOME|\*)/i, desc: 'recursive delete targeting root/home' },
+  { id: 'D02', test: /\b(?:curl|wget)\b[^|;&]{0,300}\|\s*(?:ba|z|da)?sh\b/i, desc: 'download piped straight into a shell' },
+  { id: 'D03', test: /\bmkfs(?:\.\w+)?\s+\//i, desc: 'filesystem format' },
+  { id: 'D04', test: /:\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;?\s*:/, desc: 'fork bomb' },
+  { id: 'D05', test: /\bremove-item\b[^|]{0,120}\b-recurse\b/i, desc: 'PowerShell recursive delete' },
+  { id: 'D06', test: /\bdd\s+if=[^|]{0,200}of=\/dev\/(?:sd|nvme|disk)/i, desc: 'raw disk overwrite' },
+];
+
+export function scanArgumentsForDanger(args) {
+  if (!args || typeof args !== 'object') return { hits: [], dangerous: false };
+  const serialized = JSON.stringify(args);
+  const hits = DANGEROUS_PATTERNS.filter((p) => p.test.test(serialized)).map((p) => ({ id: p.id, desc: p.desc }));
+  return { hits, dangerous: hits.length > 0 };
+}
+
 export function scanArgumentsForPII(args) {
   if (!args || typeof args !== 'object') return { hits: [], pii: false };
   const hits = [];
@@ -61,6 +80,12 @@ const DEFAULT_POLICIES = {
       action: 'deny',
       match: { piiInArguments: true },
       reason: 'PII/credentials detected in tool call arguments',
+    },
+    {
+      name: 'dangerous-shell',
+      action: 'deny',
+      match: { dangerousInArguments: true },
+      reason: 'dangerous shell pattern in arguments (rm -rf class, download|sh, disk overwrite)',
     },
     {
       name: 'destructive-approval',
@@ -108,6 +133,7 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
   if (piiResult.pii) {
     result.pii = piiResult;
   }
+  const dangerResult = scanArgumentsForDanger(args);
 
   for (const rule of policies?.rules ?? []) {
     const m = rule.match ?? {};
@@ -133,6 +159,9 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
 
     // Check PII in arguments
     if (m.piiInArguments && !piiResult.pii) continue;
+
+    // Check dangerous shell patterns in arguments
+    if (m.dangerousInArguments && !dangerResult.dangerous) continue;
 
     // Rule matched — apply action
     const entry = { rule: rule.name, reason: rule.reason ?? 'policy violation' };

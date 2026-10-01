@@ -70,7 +70,7 @@ Each tool's `{ name, description, inputSchema }` is canonicalized and hashed —
 rugsnare run --name flights --mode enforce -- npx -y @modelcontextprotocol/server-filesystem /tmp
 ```
 
-Wraps a stdio server: `observe` watches and alerts, `enforce` additionally quarantines drifted/new tools mid-session. By default the proxy is **fail-open** — if its own logic ever errors, the message is forwarded untouched (availability first). Strict environments can flip it:
+Wraps a stdio server: `observe` watches and alerts, `enforce` additionally quarantines drifted/new tools mid-session. Measured overhead on the bench fixture (`tools/bench-proxy.mjs`, 200 round-trips): **~0.7–1 ms per tool call** in observe mode, **~1.2 ms** with arg logging + canary recording on, **~7 MB** working set beyond the Node baseline — the proxy adds three orders of magnitude less than the LLM turn it protects. Idle CPU is zero (pure event loop, no polling). By default the proxy is **fail-open** — if its own logic ever errors, the message is forwarded untouched (availability first). Strict environments can flip it:
 
 ```json
 // .rugsnare/config.json
@@ -144,9 +144,11 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 | inputSchema mutated (hidden required `session` params, enum narrowing) | ✅ caught — see corpus 02 | — |
 | New tool appears / approved tool disappears post-approval | ✅ caught | — |
 | Cross-server tool shadowing (same name on two servers) | ✅ caught in `scan`, `diff` (breaks CI) and the live proxy — the client's undocumented resolution order is the risk | — |
+| Chameleon server (clean contract for inspection tools, poisoned for real clients) | ✅ caught by `rugsnare scan --chameleon` — re-lists tools identifying as claude-desktop/cursor and compares hashes; any per-client difference exits 1 | — |
 | Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
 | Toxic data inside call arguments or responses | ✅ caught (v0.3) — policies + PII egress checks in the live proxy | — |
+| Hijacked or destructive agent action (rm -rf class, download-pipe-shell, disk overwrite, fork bomb in call arguments) | ✅ denied by the default `dangerous-shell` policy in the live proxy | — |
 | Compromised MCP client or host | ❌ | host security |
 | Attacker with write access to `.rugsnare/pins.json` (e.g. a compromised CI runner) | ⚠️ trust boundary | commit pins to the repo and protect the branch — pins are only as trustworthy as the place you store them; signed pins are on the roadmap |
 
@@ -180,13 +182,13 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | Version | Status | What's inside |
 |---|---|---|
 | **v0.1** | ✅ shipped | CI gate (`scan` / `diff` / `approve`), on-chain release verification, attack corpus, zero-dep |
-| **v0.2** | ✅ shipped | Live stdio proxy (`rugsnare run`) — mid-session quarantine; shadow detection; advisory signals (13 heuristics); prompts & resources pinning; SARIF output; fleet report; pre-commit hook; drift-feed (daily ecosystem monitoring); 9 AI clients |
+| **v0.2** | ✅ shipped | Live stdio proxy (`rugsnare run`) — mid-session quarantine; shadow detection; advisory signals; prompts & resources pinning; SARIF output; fleet report; pre-commit hook; drift-feed (daily ecosystem monitoring); 9 AI clients |
 | **v0.3** | ✅ shipped | Call policies + PII egress checks — deny `session:object`, deny credentials in arguments, require approval for destructive tools; custom rules via `.rugsnare/policies.json`; `--timeout` flag; exit code 3 for infra errors |
 | **v0.3.1** | ✅ shipped | Split hash — BREAKING (schema) vs COSMETIC (prose) drift classification (`--schema-only` / `--prose-only`); debounced summary alerts; `failMode: "closed"` option (`--fail-closed`) — proxy internal error blocks instead of forwarding, for strict environments |
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
-| **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; **signed receipts** — Ed25519 hash-chain over the audit log, `receipts sign/verify/export` with an AAT-05-aligned dossier; **loop detector** advisory; `init` writes a .gitignore protecting local state |
+| **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; **signed receipts** — Ed25519 hash-chain over the audit log, `receipts sign/verify/export` with an AAT-05-aligned dossier; **loop detector** advisory; **chameleon check** — `scan --chameleon` catches servers serving different contracts per client; advisory signals extended (imperative openers, explicit instruction-hijack phrases — forced advisory, exfil-carrier optional params); default `dangerous-shell` policy; `init` writes a .gitignore protecting local state |
 | **v0.5 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
 | **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*83 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*92 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

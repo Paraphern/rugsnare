@@ -6,7 +6,7 @@ import { spawn } from 'node:child_process';
  * Used by `scan` / `diff` / `approve`. The long-lived proxy lives in proxy.js.
  */
 
-export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 15000 }) {
+export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 15000, clientName = 'rugsnare' }) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
@@ -83,7 +83,7 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
     request.seq = 0;
 
     (async () => {
-      const init = await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'rugsnare', version: '0.1.0' } });
+      const init = await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: clientName, version: '1' } });
       if (init.error) throw new Error(`initialize failed: ${JSON.stringify(init.error)}`);
       send({ jsonrpc: '2.0', method: 'notifications/initialized' });
       // tools/list may be paginated (nextCursor per the MCP spec) — a missing

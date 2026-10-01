@@ -23,6 +23,22 @@ import { loadPins, detectShadows } from './pins.js';
 
 const DRIFT_FEED_URL = 'https://raw.githubusercontent.com/Paraphern/rugsnare/main/drift-feed/latest-snapshot.json';
 
+/**
+ * Guard for the one outbound call this server makes: https only, and the host
+ * must be public (never localhost/loopback/private/reserved). The URL is a
+ * constant — the guard exists so that any future edit keeps the invariant.
+ */
+function assertSafeUrl(url) {
+  let u;
+  try { u = new URL(url); } catch { return false; }
+  if (u.protocol !== 'https:') return false;
+  const h = u.hostname.toLowerCase();
+  if (h === 'localhost' || h.endsWith('.localhost') || h === '::1' || h === '[::1]') return false;
+  if (/^(127\.|10\.|192\.168\.|169\.254\.|0\.)/.test(h)) return false;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return false;
+  return true;
+}
+
 const TOOLS = [
   {
     name: 'drift_feed_status',
@@ -41,18 +57,25 @@ const TOOLS = [
 
 let driftCache = null; // fetched once per process, public data only
 
-function fetchDriftFeed() {
+function fetchDriftFeed(url = DRIFT_FEED_URL) {
   return new Promise((resolve) => {
+    if (!assertSafeUrl(url)) return resolve(null);
     // constant relative path — Node resolves it against process.cwd(); no dynamic segments
     try {
       resolve(JSON.parse(fs.readFileSync('drift-feed/latest-snapshot.json', 'utf8')));
       return;
     } catch { /* not run from the repo — fetch the public copy */ }
     if (driftCache) return resolve(driftCache);
-    const req = https.get(DRIFT_FEED_URL, { timeout: 10000 }, (res) => {
+    const req = https.get(url, { timeout: 10000 }, (res) => {
       if (res.statusCode !== 200) { res.resume(); return resolve(null); }
       let body = '';
-      res.on('data', (c) => { body += c; if (body.length > 2 * 1024 * 1024) req.destroy(); });
+      res.on('data', (c) => {
+        body += c;
+        if (body.length > 2 * 1024 * 1024) {
+          req.destroy();
+          resolve(null); // destroy aborts 'end' — resolve HERE or the tool call hangs (obna 19, bug 5)
+        }
+      });
       res.on('end', () => {
         try { driftCache = JSON.parse(body); resolve(driftCache); } catch { resolve(null); }
       });

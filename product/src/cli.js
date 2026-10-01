@@ -33,7 +33,9 @@ const HELP = `rugsnare — runtime integrity for MCP tool descriptions
 
 Usage:
   rugsnare init
-  rugsnare scan [--config <mcp.json>] [--server <name>]
+  rugsnare scan [--config <mcp.json>] [--server <name>] [--chameleon]
+                                                         --chameleon: re-list tools as claude-desktop/cursor;
+                                                         different contract per client = CHAMELEON, exit 1
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
@@ -76,6 +78,7 @@ function parseArgs(argv) {
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
+    else if (a === '--chameleon') flags.chameleon = true;
     else if (a === '--from') flags.from = argv[++i];
     else if (a === '--pub') flags.pub = argv[++i];
     else if (a === '--strict') flags.strict = true;
@@ -137,6 +140,7 @@ async function cmdScan(flags) {
   if (names.length === 0) { console.error('No MCP servers found. Pass --config <file> or run `rugsnare init`.'); process.exit(2); }
   console.log(`Scanning ${names.length} server(s) from: ${source}`);
   let failed = 0;
+  let chameleonCount = 0;
   for (const name of names) {
     const entry = servers[name];
     if (!entry) { console.error(`  Server not found in sources: ${name}`); failed++; continue; }
@@ -168,6 +172,24 @@ async function cmdScan(flags) {
 
       console.log(`  pinned ${name}: ${tools.length} tool(s) -> ${tools.map((t) => t.name).join(', ')}`);
       logEvent({ kind: 'scan', server: name, tools: tools.length });
+
+      // chameleon check (opt-in): does this server serve a different contract
+      // when it thinks a real client is asking? Bait-and-switch per client.
+      if (flags.chameleon) {
+        const { CHAMELEON_CLIENTS, compareAcrossClients } = await import('./chameleon.js');
+        const perClient = {};
+        for (const client of CHAMELEON_CLIENTS) {
+          try {
+            perClient[client] = (await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout, clientName: client })).tools;
+          } catch { /* client-specific listing failed — skip that client, not the scan */ }
+        }
+        const found = compareAcrossClients(tools, perClient);
+        for (const f of found) {
+          console.error(`  [CHAMELEON] ${name}/${f.tool} serves a ${f.kind === 'different' ? 'DIFFERENT contract' : f.kind === 'missing' ? 'contract WITHOUT this tool' : 'an EXTRA tool'} to client "${f.client}"`);
+          logEvent({ kind: 'chameleon', server: name, tool: f.tool, client: f.client, mode: f.kind });
+        }
+        if (found.length > 0) chameleonCount += found.length;
+      }
     } catch (err) {
       console.error(`  FAILED ${name}: ${err.message}`);
       failed++;
@@ -180,6 +202,10 @@ async function cmdScan(flags) {
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
   console.log('');
+  if (chameleonCount > 0) {
+    console.error(`rugsnare scan: CHAMELEON findings: ${chameleonCount} (server serves different contracts per client)`);
+    process.exit(1);
+  }
   if (failed === names.length) {
     console.log('  ❌ All servers failed — no pins created. Check your config paths and server commands.');
   } else if (failed > 0) {
