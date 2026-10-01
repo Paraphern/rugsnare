@@ -1,0 +1,32 @@
+/* RugSnare pin pages, direction A "Precision" (light). Standalone. */
+@font-face{font-family:"Geist";src:url("assets/fonts/Geist.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("assets/fonts/GeistMono.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+  color-scheme:light;
+  --paper:#FAF7F0;--paper-2:#F3EFE4;--card:#FFFDF8;
+  --ink:#1A1611;--ink-2:#57503F;--line:#E4DDCC;--line-2:#D5CBB4;
+  --accent:#8B1D28;--accent-deep:#701620;--ok:#1E6B4A;
+  --mono:"Geist Mono",ui-monospace,Consolas,monospace;
+  --text:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--paper);color:var(--ink);font:16px/1.6 var(--text);padding:20px}
+.card{width:100%;max-width:560px;background:var(--card);border:1px solid var(--line-2);
+  border-radius:16px;padding:34px 32px;
+  box-shadow:0 1px 2px rgba(26,22,17,.05),0 24px 60px -30px rgba(26,22,17,.25)}
+h1{margin:0 0 12px;font-size:22px;line-height:1.3;letter-spacing:-.015em;font-weight:620}
+h1 code{font-size:18px;background:none;border:0;padding:0;color:var(--accent)}
+p{margin:10px 0;color:var(--ink-2);font-size:14.5px}
+code{font-family:var(--mono);font-size:13px;color:var(--ink);word-break:break-all;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+button{width:100%;min-height:44px;margin-top:18px;padding:17px 28px;border:0;border-radius:10px;
+  background:var(--accent);color:#FFF9F2;font:600 16px/1 var(--text);cursor:pointer}
+button:hover{background:var(--accent-deep)}
+button:disabled{background:var(--line-2);color:var(--ink-2);cursor:wait}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.ok{color:var(--ok)}
+.err{color:var(--accent)}
+.small{font-size:13px;color:var(--ink-2)}
