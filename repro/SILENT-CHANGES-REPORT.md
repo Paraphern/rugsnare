@@ -2,10 +2,10 @@
 
 > We pinned every stable release of 4 official `@modelcontextprotocol/server-*` reference servers,
 > diffed each version against the next, and counted every contract change between them.
-> **52 version pairs · 35 clean · 17 pairs with silent changes · 91 findings** —
+> **52 version pairs · 35 clean · 17 pairs with silent changes · 74 findings** —
 > not one of them announced in a changelog.
 
-Findings split: **34 BREAKING** (schema changed) · **6 COSMETIC** (description reworded) · **24 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **17 PROMPTS/RESOURCES** (server prompts or resources changed — instructions your agent also obeys) · **10 NEW tools** appeared · **0 REMOVED**.
+Findings split: **34 BREAKING** (schema changed) · **24 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **6 COSMETIC** (description reworded) · **10 NEW items** (of them: 8 tools, 1 prompts, 1 resources) · **0 REMOVED**.
 
 ## Per server
 
@@ -16,36 +16,150 @@ Findings split: **34 BREAKING** (schema changed) · **6 COSMETIC** (description 
 | everything | 13 | 10 | 3 | 0 | 0 | 0 | 4 | 0 |
 | sequential-thinking | 8 | 4 | 4 | 2 | 1 | 1 | 0 | 0 |
 
-## Every pair with changes
+## Every pair with changes — and exactly what changed
 
 ### filesystem
 
-- `0.6.2` → `2025.1.14`: 2 new tools
-- `2025.3.28` → `2025.7.1`: 1 cosmetic, 1 new tool
-- `2025.7.1` → `2025.7.29`: 2 cosmetic, 2 new tools
+- `0.6.2` → `2025.1.14`: 2 new items
+  - `edit_file` — appeared
+  - `directory_tree` — appeared
+- `2025.3.28` → `2025.7.1`: 1 cosmetic, 1 new item
+  - `read_file` — cosmetic change
+      - was: `… examine the contents of a single file. Only works within allowed directories.`
+      - now: `… examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or …`
+  - `list_directory_with_sizes` — appeared
+- `2025.7.1` → `2025.7.29`: 2 cosmetic, 2 new items
+  - `read_file` — cosmetic change
+      - was: `…Read the complete contents of a file from the file system. Handles various text encodings and provides detaile…`
+      - now: `…Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.`
+  - `read_text_file` — appeared
+  - `read_media_file` — appeared
+  - `list_allowed_directories` — cosmetic change
+      - was: `…Returns the list of directories that this server is allowed to access. Use this to understand which directorie…`
+      - now: `…Returns the list of root directories that this server is allowed to access. Use this to understand which direc…`
 - `2025.7.29` → `2025.8.18`: 1 cosmetic
+  - `list_allowed_directories` — cosmetic change
+      - was: `…Returns the list of root directories that this server is allowed to access. Use this to understand which direc…`
+      - now: `…Returns the list of directories that this server is allowed to access. Subdirectories within these allowed dir…`
 - `2025.8.21` → `2025.11.25`: 14 breaking
+  - `read_file` — breaking change
+  - `read_text_file` — breaking change
+  - `read_media_file` — breaking change
+  - `read_multiple_files` — breaking change
+  - `write_file` — breaking change
+  - `edit_file` — breaking change
+  - `create_directory` — breaking change
+  - `list_directory` — breaking change
+  - `list_directory_with_sizes` — breaking change
+  - `directory_tree` — breaking change
+  - `move_file` — breaking change
+  - `search_files` — breaking change
+      - was: `…les and directories matching a pattern. Searches through all subdirectories from the starting path. The search…`
+      - now: `…les and directories matching a pattern. The patterns should be glob-style patterns that match paths relative t…`
+  - `get_file_info` — breaking change
+  - `list_allowed_directories` — breaking change
 - `2026.1.14` → `2026.7.4`: 1 annotation
+  - `move_file` — annotation change
+      - hints: `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":false}` → `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":true}`
 - `2026.7.4` → `2026.7.10`: 1 cosmetic, 13 annotation
+  - `read_file` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `read_text_file` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `read_media_file` — cosmetic change
+      - was: `…Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed director…`
+      - now: `…Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are retu…`
+  - `read_multiple_files` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `write_file` — annotation change
+      - hints: `{"readOnlyHint":false,"idempotentHint":true,"destructiveHint":true}` → `{"readOnlyHint":false,"idempotentHint":true,"destructiveHint":true,"openWorldHint":false}`
+  - `edit_file` — annotation change
+      - hints: `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":true}` → `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":true,"openWorldHint":false}`
+  - `create_directory` — annotation change
+      - hints: `{"readOnlyHint":false,"idempotentHint":true,"destructiveHint":false}` → `{"readOnlyHint":false,"idempotentHint":true,"destructiveHint":false,"openWorldHint":false}`
+  - `list_directory` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `list_directory_with_sizes` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `directory_tree` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `move_file` — annotation change
+      - hints: `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":true}` → `{"readOnlyHint":false,"idempotentHint":false,"destructiveHint":true,"openWorldHint":false}`
+  - `search_files` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `get_file_info` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
+  - `list_allowed_directories` — annotation change
+      - hints: `{"readOnlyHint":true}` → `{"readOnlyHint":true,"openWorldHint":false}`
 
 ### memory
 
 - `2025.8.4` → `2025.9.24`: 9 breaking
+  - `create_entities` — breaking change
+  - `create_relations` — breaking change
+  - `add_observations` — breaking change
+  - `delete_entities` — breaking change
+  - `delete_observations` — breaking change
+  - `delete_relations` — breaking change
+  - `read_graph` — breaking change
+  - `search_nodes` — breaking change
+  - `open_nodes` — breaking change
 - `2025.9.25` → `2025.11.25`: 9 breaking
-- `2026.1.26` → `2026.7.4`: 9 annotation, 1 new tool
+  - `create_entities` — breaking change
+  - `create_relations` — breaking change
+  - `add_observations` — breaking change
+  - `delete_entities` — breaking change
+  - `delete_observations` — breaking change
+  - `delete_relations` — breaking change
+  - `read_graph` — breaking change
+  - `search_nodes` — breaking change
+  - `open_nodes` — breaking change
+- `2026.1.26` → `2026.7.4`: 9 annotation, 1 new item
+  - `create_entities` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false}`
+  - `create_relations` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false}`
+  - `add_observations` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false}`
+  - `delete_entities` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false}`
+  - `delete_observations` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false}`
+  - `delete_relations` — annotation change
+      - hints: `null` → `{"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false}`
+  - `read_graph` — annotation change
+      - hints: `null` → `{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false}`
+  - `search_nodes` — annotation change
+      - hints: `null` → `{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false}`
+  - `open_nodes` — annotation change
+      - hints: `null` → `{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false}`
+  - `knowledge-graph` (resource) — appeared
 
 ### everything
 
-- `0.6.2` → `2025.1.14`: 1 new tool
-- `2025.1.14` → `2025.3.19`: 1 new tool
-- `2025.3.19` → `2025.4.8`: 2 new tools
+- `0.6.2` → `2025.1.14`: 1 new item
+  - `printEnv` — appeared
+- `2025.1.14` → `2025.3.19`: 1 new item
+  - `annotatedMessage` — appeared
+- `2025.3.19` → `2025.4.8`: 2 new items
+  - `getResourceReference` — appeared
+  - `resource_prompt` (prompt) — appeared
 
 ### sequential-thinking
 
 - `2025.7.1` → `2025.11.25`: 1 breaking
+  - `sequentialthinking` — breaking change
+      - was: `…eration * Hypothesis verification - next_thought_needed: True if you need more thinking, even if at what seeme…`
+      - now: `…eration * Hypothesis verification - nextThoughtNeeded: True if you need more thinking, even if at what seemed …`
 - `2025.11.25` → `2025.12.18`: 1 cosmetic
+  - `sequentialthinking` — cosmetic change
+      - was: `…er as the final output 11. Only set next_thought_needed to false when truly done and a satisfactory answer is …`
+      - now: `…er as the final output 11. Only set nextThoughtNeeded to false when truly done and a satisfactory answer is re…`
 - `2025.12.18` → `2026.7.4`: 1 annotation
+  - `sequentialthinking` — annotation change
+      - hints: `null` → `{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false}`
 - `2026.7.4` → `2026.8.31`: 1 breaking
+  - `sequentialthinking` — breaking change
 
 ## Methodology (reproducible in one command)
 
@@ -57,11 +171,11 @@ Findings split: **34 BREAKING** (schema changed) · **6 COSMETIC** (description 
 bash repro/backtest-multi.sh   # ~20 minutes, four official servers, full history
 ```
 
-*Coverage note: 66 version pairs exist across the four servers; 52 pairs are measured. 14 older `server-everything` releases (2025-12 → 2026-08 line) do not start headless in this harness — scan fails, the pair is skipped, and nothing is imputed for it.*
+*Coverage note: 66 version pairs exist across the four servers; 52 pairs are measured. The 2025-12 → 2026-08 line of `server-everything` does not start headless in this harness — scan fails, the pair is skipped, and nothing is imputed for it.*
 
 ## Why this matters
 
 Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent's instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.
 
 ---
-*Generated 2026-10-02T09:14:49.477Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.4.0, 52 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*
+*Generated 2026-10-02T11:19:36.017Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.4.0, 52 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*

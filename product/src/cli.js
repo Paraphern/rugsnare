@@ -128,7 +128,9 @@ function printVerdict(server, verdicts, json) {
   for (const v of verdicts) {
     const hashes = v.oldHash ? ` ${short(v.oldHash)} -> ${short(v.hash)}` : v.hash ? ` ${short(v.hash)}` : '';
     const driftLabel = v.driftType ? ` (${v.driftType})` : '';
-    console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${v.tool}${driftLabel}${hashes}`);
+    // prompt/resource verdicts carry {item, kind}; tools carry {tool}
+    const target = v.tool ?? `${v.item}${v.kind ? ` (${v.kind})` : ''}`;
+    console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${target}${driftLabel}${hashes}`);
   }
 }
 

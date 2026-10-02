@@ -46,10 +46,11 @@ echo "   Versions found: $VERSION_COUNT"
 echo "   Pairs to test: $((VERSION_COUNT - 1))"
 echo ""
 
-TMP="$ROOT/repro/.backtest-tmp"
-rm -rf "$TMP"
+TMP="${RUGSNARE_BACKTEST_TMP:-$ROOT/repro/.backtest-tmp}"
+rm -rf "$TMP" 2>/dev/null || true   # stale locks from a previous killed run must not poison this one
 mkdir -p "$TMP"
-trap 'rm -rf "$TMP"' EXIT
+TMPM="$(cygpath -m "$TMP" 2>/dev/null || echo "$TMP")"   # native form: Windows node cannot read /c/... paths
+trap 'rm -rf "$TMP" 2>/dev/null || true' EXIT
 
 # Windows: convert MSYS paths to native for node.exe
 to_native() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s' "$1"; fi; }
@@ -72,10 +73,27 @@ TOTAL_ANNOTATION=0
 PAIR_NUM=0
 
 pair_json() {
-  # one JSON line per pair into $OUT if requested
+  # one JSON line per pair into $OUT if requested; details = [{name, change, of}] of CHANGED items only
   [ -z "$OUT" ] && return 0
-  printf '{"pkg":"%s","from":"%s","to":"%s","clean":%s,"drift":%s,"new":%s,"removed":%s,"breaking":%s,"cosmetic":%s,"annotation":%s}\n' \
-    "$PKG" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" >> "$OUT"
+  local DETAILS
+  DETAILS=$(node -e "
+const fs = require('fs');
+const src = '$TMPM/diff.txt';
+const lines = (fs.existsSync(src) ? fs.readFileSync(src, 'utf8') : '')
+  .split('\n').filter((l) => /^\s+\[(DRIFT|NEW |GONE)\]/.test(l));
+const out = [];
+for (const l of lines) {
+  const m = l.match(/\[(DRIFT|NEW |GONE)\]\s+(\S+)(?:\s+\((\w+)\))?/);
+  if (!m) continue;
+  const status = m[1].trim() === 'GONE' ? 'REMOVED' : m[1].trim();
+  const tag = m[3];
+  if (tag === 'prompt' || tag === 'resource') out.push({ name: m[2], change: status, of: tag });
+  else out.push({ name: m[2], change: tag || status, of: 'tool' });
+}
+console.log(JSON.stringify(out).slice(1, -1));
+" 2>/dev/null || echo '')
+  printf '{"pkg":"%s","from":"%s","to":"%s","clean":%s,"drift":%s,"new":%s,"removed":%s,"breaking":%s,"cosmetic":%s,"annotation":%s,"details":[%s]}\n' \
+    "$PKG" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$DETAILS" >> "$OUT"
 }
 
 for i in $VERSIONS; do
@@ -98,8 +116,12 @@ for i in $VERSIONS; do
   write_config
   rm -rf .rugsnare
 
-  # Pin baseline
-  SCAN_RESULT=$(node "$CLI" scan --config "$(to_native "$TMP/mcp.json")" 2>&1) || true
+  # Pin baseline (one retry: transient Windows file locks / cold starts)
+  SCAN_RESULT=$(node "$CLI" scan --config "$(to_native "$TMP/mcp.json")" --timeout 30000 2>&1) || true
+  if ! echo "$SCAN_RESULT" | grep -q "pinned"; then
+    sleep 2
+    SCAN_RESULT=$(node "$CLI" scan --config "$(to_native "$TMP/mcp.json")" --timeout 30000 2>&1) || true
+  fi
   if ! echo "$SCAN_RESULT" | grep -q "pinned"; then
     echo "  [$PAIR_NUM] $i → $NEXT: SCAN FAILED (skipping)"
     continue
@@ -109,14 +131,17 @@ for i in $VERSIONS; do
   npm install --no-audit --no-fund --silent "$PKG@$NEXT" >/dev/null 2>&1 || true
 
   # Diff
-  DIFF_OUTPUT=$(node "$CLI" diff --config "$(to_native "$TMP/mcp.json")" 2>&1 || true)
+  DIFF_OUTPUT=$(node "$CLI" diff --config "$(to_native "$TMP/mcp.json")" --timeout 30000 2>&1 || true)
+  echo "$DIFF_OUTPUT" > "$TMP/diff.txt"
 
-  DRIFT=$(echo "$DIFF_OUTPUT" | grep -c "DRIFT" || true)
-  NEW=$(echo "$DIFF_OUTPUT" | grep -c "NEW " || true)
-  REMOVED=$(echo "$DIFF_OUTPUT" | grep -c "REMOVED" || true)
-  BREAKING=$(echo "$DIFF_OUTPUT" | grep -c "BREAKING" || true)
-  COSMETIC=$(echo "$DIFF_OUTPUT" | grep -c "COSMETIC" || true)
-  ANNOTATION=$(echo "$DIFF_OUTPUT" | grep -c "ANNOTATION" || true)
+  # Count ONLY per-item bracket lines — the "DRIFT DETECTED (N finding(s))"
+  # summary line must not be counted (obna 23 counting artifact)
+  DRIFT=$(grep -cF "[DRIFT]" "$TMP/diff.txt" || true)
+  NEW=$(grep -cF "[NEW ]" "$TMP/diff.txt" || true)
+  REMOVED=$(grep -cF "[GONE]" "$TMP/diff.txt" || true)
+  BREAKING=$(grep -cF "(BREAKING)" "$TMP/diff.txt" || true)
+  COSMETIC=$(grep -cF "(COSMETIC)" "$TMP/diff.txt" || true)
+  ANNOTATION=$(grep -cF "(ANNOTATION)" "$TMP/diff.txt" || true)
 
   if echo "$DIFF_OUTPUT" | grep -q "clean"; then
     TOTAL_CLEAN=$((TOTAL_CLEAN + 1))

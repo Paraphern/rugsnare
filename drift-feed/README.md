@@ -50,4 +50,4 @@ Submit a PR adding an entry to `servers.json`:
 
 ## The proof it matters
 
-The one-command historical backtest behind the public field report — **91 silent contract changes across 52 release pairs of the four official MCP servers** (34 BREAKING, 24 annotation flips, 17 prompt/resource changes, 6 cosmetic, 10 new tools; 35 clean pairs) — lives in [repro/SILENT-CHANGES-REPORT.md](../repro/SILENT-CHANGES-REPORT.md) with raw data and full reproducibility.
+The one-command historical backtest behind the public field report — **74 silent contract changes across 52 release pairs of the four official MCP servers** (34 BREAKING, 24 annotation flips, 6 cosmetic, 10 new items — 8 tools, 1 prompt, 1 resource; 35 clean pairs) — lives in [repro/SILENT-CHANGES-REPORT.md](../repro/SILENT-CHANGES-REPORT.md) with raw data and full reproducibility.

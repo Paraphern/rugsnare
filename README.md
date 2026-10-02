@@ -161,16 +161,15 @@ If an attacker changes the code but not the contract, no description hash can se
 
 | Metric | Value |
 |---|---|
-| Version pairs measured | **52** (66 exist; 14 skipped honestly — old releases that do not start headless) |
+| Version pairs measured | **52** (66 exist; the 2025-12 → 2026-08 line of server-everything does not start headless — 14 pairs skipped honestly) |
 | Pairs with silent changes | **17** |
 | BREAKING (schema changed) | **34** |
 | ANNOTATION (behavioral hints flipped, spec-default aware) | **24** |
-| PROMPTS/RESOURCES changes | **17** |
 | COSMETIC (description reworded) | **6** |
-| New tools that appeared post-approval | **10** |
+| New items that appeared post-approval | **10** (8 tools, 1 prompt, 1 resource) |
 | Clean pairs (precision, no crying wolf) | **35** |
 
-**91 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` rewrote all 15 tool descriptions simultaneously; memory's history carries 18 schema-level breaks. Reproduce on your machine: one command, ~20 minutes, deterministic — see the report footer.
+**74 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` changed all 14 tool contracts simultaneously — 14 BREAKING schema changes in one silent release; memory's history carries 18 schema-level breaks. Reproduce on your machine: one command, ~20 minutes, deterministic — see the report footer.
 
 ## Status & roadmap
 

@@ -4,6 +4,7 @@
 # launch-post data story. Usage: bash repro/backtest-multi.sh
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+export RUGSNARE_BACKTEST_TMP="$ROOT/repro/.backtest-tmp-$(date +%H%M%S)-$$"   # unique per invocation: a killed previous run's locks cannot poison this one
 RESULTS="$ROOT/repro/.silent-changes.jsonl"
 rm -f "$RESULTS"
 

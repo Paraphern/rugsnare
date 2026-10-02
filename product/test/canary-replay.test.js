@@ -129,6 +129,9 @@ test('classifyCallForReplay: a read verb must not MASK a mutation (obna 21 edge)
   assert.equal(classifyCallForReplay('search_and_replace'), 'skip-write');
   assert.equal(classifyCallForReplay('get_or_create'), 'skip-write');
   assert.equal(classifyCallForReplay('check_and_repair'), 'skip-write');
+  assert.equal(classifyCallForReplay('search_and_append'), 'skip-write');
+  assert.equal(classifyCallForReplay('fetch_and_upload'), 'skip-write');
+  assert.equal(classifyCallForReplay('search_and_import'), 'skip-write');
   assert.equal(classifyCallForReplay('reset_and_list'), 'skip-destructive', 'destructive prefix wins');
   // --all-calls still lifts masked write-class; plain reads stay replayable
   assert.equal(classifyCallForReplay('fetch_and_delete', { allCalls: true }), 'replay');
