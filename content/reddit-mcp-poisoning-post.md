@@ -1,7 +1,9 @@
 # Reddit draft: r/mcp — "Three real MCP poisonings, and what actually stops them"
 
-**Status: DRAFT — post AFTER npm publish (npx rugsnare must work). Flair: Showcase or Discussion.**
+**Status: FINAL-READY — post AFTER npm publish + account warm-up. Flair: Discussion.**
 **Account: warmed account, disclose authorship ("I maintain RugSnare").**
+**Image: attach `content/poisoning-card.png` (1200x630) at the top via the rich-text editor — same image for the X thread.**
+**Everything below the line is the paste-ready post body.**
 
 ---
 
@@ -22,8 +24,8 @@ Every email an agent sent — bodies, attachments, reset links, secrets — was 
 Receipt: npm itself returns `404 — Unpublished on 2025-09-25T03:31:54.381Z` for the package today (check: `npm view postmark-mcp`).
 
 Sources:
-- Snyk: https://snyk.io/blog/malicious-mcp-server-on-npm-postmark-mcp-harvests-emails
-- The Hacker News: "First Malicious MCP Server Found Stealing Emails" (Sept 2025)
+- Snyk (primary research): https://snyk.io/blog/malicious-mcp-server-on-npm-postmark-mcp-harvests-emails
+- The Hacker News (coverage, cites Snyk): https://thehackernews.com/2025/09/first-malicious-mcp-server-found.html
 
 **What stops this class: not contract pinning.** The tool's description and schema didn't change — the backdoor was in code. This is a supply-chain/code-scanning layer's job (lockfiles, SCA). Any tool that claims otherwise is lying to you, and our own threat model says exactly this: https://github.com/Paraphern/rugsnare#threat-model--what-this-covers-honestly
 

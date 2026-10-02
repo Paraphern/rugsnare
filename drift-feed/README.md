@@ -51,3 +51,14 @@ Submit a PR adding an entry to `servers.json`:
 ## The proof it matters
 
 The one-command historical backtest behind the public field report — **74 silent contract changes across 52 release pairs of the four official MCP servers** (34 BREAKING, 24 annotation flips, 6 cosmetic, 10 new items — 8 tools, 1 prompt, 1 resource; 35 clean pairs) — lives in [repro/SILENT-CHANGES-REPORT.md](../repro/SILENT-CHANGES-REPORT.md) with raw data and full reproducibility.
+
+## Public API (read-only)
+
+The latest snapshot and the full change log are plain JSON on GitHub raw — consume freely, no key, no rate games:
+
+```
+https://raw.githubusercontent.com/Paraphern/rugsnare/main/drift-feed/latest-snapshot.json   # current versions + hashes
+https://raw.githubusercontent.com/Paraphern/rugsnare/main/drift-feed/changes.jsonl          # append-only event log
+```
+
+Updated daily at 06:00 UTC by CI. Registries and catalogs are welcome to ingest it (this is the data `rugsnare mcp`'s `drift_feed_status` tool serves).
