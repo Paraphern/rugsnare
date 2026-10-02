@@ -163,7 +163,8 @@ async function cmdScan(flags) {
         // HTTP transport (Streamable HTTP, spec 2025-06-18)
         const { fetchToolsHttp } = await import('./rpc-http.js');
         const headers = entry.headers ?? {};
-        ({ tools, prompts, resources } = await fetchToolsHttp({ url: entry.url, headers, timeoutMs: flags.timeout }));
+        const env = entry.env ?? {};
+        ({ tools, prompts, resources } = await fetchToolsHttp({ url: entry.url, headers, env, timeoutMs: flags.timeout }));
         serverCmd = { url: entry.url };
       } else {
         // stdio transport
@@ -274,7 +275,7 @@ async function cmdDiff(flags) {
     async function connect() {
       if (isHttp) {
         const { fetchToolsHttp } = await import('./rpc-http.js');
-        return fetchToolsHttp({ url: httpUrl, headers: httpHeaders, timeoutMs: flags.timeout });
+        return fetchToolsHttp({ url: httpUrl, headers: httpHeaders, env: configEntry?.env ?? {}, timeoutMs: flags.timeout });
       }
       return fetchTools({ command: stdioCmd.command, args: stdioCmd.args, env: stdioCmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
     }

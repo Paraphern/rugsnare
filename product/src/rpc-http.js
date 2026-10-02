@@ -17,13 +17,24 @@ import http from 'node:http';
 const DEFAULT_TIMEOUT = 15000;
 
 /**
+ * Resolve ${VAR} placeholders in URLs using environment variables.
+ * ZCode and other platforms use ${ZCODE_BASE_URL}/path — we substitute from
+ * process.env, and from the config's own env block if provided.
+ */
+function resolveUrl(url, extraEnv = {}) {
+  return url.replace(/\$\{(\w+)\}/g, (match, varName) => {
+    const v = extraEnv[varName] ?? process.env[varName];
+    return v !== undefined ? v : match; // leave unresolved placeholders as-is
+  });
+}
+/**
  * Send a single JSON-RPC request over HTTP POST and parse the response.
  * Handles both `application/json` and `text/event-stream` responses.
  * Returns the parsed JSON-RPC result object.
  */
-export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOUT, sessionId }) {
+export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOUT, sessionId, env = {} }) {
   return new Promise((resolve, reject) => {
-    const u = new URL(url);
+    const u = new URL(resolveUrl(url, env));
     const mod = u.protocol === 'https:' ? https : http;
 
     const body = JSON.stringify(message);
@@ -106,12 +117,13 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
  * Fetch tools from an HTTP-based MCP server.
  * Same return shape as rpc.js fetchTools: { tools, prompts, resources }.
  */
-export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TIMEOUT }) {
+export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TIMEOUT, env = {} }) {
+  const resolvedUrl = resolveUrl(url, env);
   let sessionId;
 
   // 1. initialize
   const init = await httpRpc({
-    url, headers, timeoutMs,
+    url: resolvedUrl, headers, timeoutMs, env,
     message: {
       jsonrpc: '2.0', id: 1, method: 'initialize',
       params: {
@@ -126,7 +138,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
 
   // 2. notifications/initialized (fire and forget)
   await httpRpc({
-    url, headers, timeoutMs, sessionId,
+    url: resolvedUrl, headers, timeoutMs, sessionId, env,
     message: { jsonrpc: '2.0', method: 'notifications/initialized' },
   }).catch(() => {}); // some servers return 202, some don't care
 
@@ -136,7 +148,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
   let pages = 0;
   do {
     const list = await httpRpc({
-      url, headers, timeoutMs, sessionId,
+      url: resolvedUrl, headers, timeoutMs, sessionId, env,
       message: {
         jsonrpc: '2.0', id: 2 + pages, method: 'tools/list',
         params: cursor === undefined ? {} : { cursor },
@@ -152,7 +164,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
   let prompts = [];
   try {
     const pr = await httpRpc({
-      url, headers, timeoutMs, sessionId,
+      url: resolvedUrl, headers, timeoutMs, sessionId, env,
       message: { jsonrpc: '2.0', id: 100, method: 'prompts/list', params: {} },
     });
     if (pr?.result?.prompts) prompts = pr.result.prompts;
@@ -162,7 +174,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
   let resources = [];
   try {
     const rr = await httpRpc({
-      url, headers, timeoutMs, sessionId,
+      url: resolvedUrl, headers, timeoutMs, sessionId, env,
       message: { jsonrpc: '2.0', id: 101, method: 'resources/list', params: {} },
     });
     if (rr?.result?.resources) resources = rr.result.resources;

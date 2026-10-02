@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "servers": {
+    "cloudflare-docs": {
+      "cmd": {
+        "url": "https://docs.mcp.cloudflare.com/mcp"
+      },
+      "pinnedAt": "2026-10-02T19:29:42.250Z",
+      "tools": {
+        "search_cloudflare_documentation": {
+          "hash": "36d204d5334dd872f1d5779b39f9a74b42636f273cea41f09d7558d58bd30b2f",
+          "schemaHash": "f71ae375cd08f20f0988de3e2b722fdfc1cf582c833c9f89a6d8ea003ba1fea5",
+          "proseHash": "a62a944aca09d4b974c1417d3001b74172bd203dee05323a4880729e90aa4660",
+          "description": "Search the Cloudflare documentation.\n\n\t\tThis tool should be used to answer any question about Cloudflare products or features, including:\n\t\t- Workers, Pages, R2, Images, Stream, D1, Durable Objects, KV, Workflows, Hyperdrive, Queues\n\t\t- AI Search, Workers AI, Vectorize, AI Gateway, Browser Run\n\t\t- Zero Trust, Access, Tunnel, Gateway, Browser Isolation, WARP, DDOS, Magic Transit, Magic WAN\n\t\t- CDN, Cache, DNS, Zaraz, Argo, Rulesets, Terraform, Account and Billing\n\n\t\tResults are returned as semantically similar chunks to the query.\n\t\t",
+          "annotations": {
+            "title": "Search Cloudflare docs",
+            "readOnlyHint": true
+          },
+          "firstSeen": "2026-10-02T19:29:42.252Z",
+          "pinnedAt": "2026-10-02T19:34:14.991Z",
+          "approved": true
+        },
+        "migrate_pages_to_workers_guide": {
+          "hash": "ac50928cbe399b5f822d3703fec0d15f769ff3ae68b4f195a067ab12c14a10e8",
+          "schemaHash": "18404747d999185a1d4b746798ae014ae4901501223607e8cd3cfff1451cee5e",
+          "proseHash": "b4cb2be102688e578ea48fe243b1373bff866460305b3ab1e64702471960c714",
+          "description": "ALWAYS read this guide before migrating Pages projects to Workers.",
+          "annotations": {
+            "title": "Get Pages migration guide",
+            "readOnlyHint": true
+          },
+          "firstSeen": "2026-10-02T19:29:42.252Z",
+          "pinnedAt": "2026-10-02T19:34:14.992Z",
+          "approved": true
+        }
+      },
+      "prompts": {
+        "workers-prompt-full": {
+          "hash": "304f2e859293911f0589e70c3d20f870204b0358f3d90063bb932d936821a50b",
+          "description": "Detailed prompt for generating Cloudflare Workers code (and other developer platform products) from https://developers.cloudflare.com/workers/prompt.txt",
+          "firstSeen": "2026-10-02T19:34:14.993Z"
+        }
+      },
+      "resources": {}
+    }
+  }
+}
