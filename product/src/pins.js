@@ -43,12 +43,16 @@ export function ensureServer(pins, name, cmd) {
     // Structured command only — never a joined shell string. Execution
     // always goes through spawn(command, args, { shell: false }).
     pins.servers[name].cmd = { command: cmd.command, args: cmd.args };
+  } else if (cmd && typeof cmd.url === 'string') {
+    // HTTP transport: store the URL (never executed as a command)
+    pins.servers[name].cmd = { url: cmd.url };
   }
   return pins.servers[name];
 }
 
 export function commandDisplay(server) {
   if (!server?.cmd) return '(unknown)';
+  if (server.cmd.url) return server.cmd.url;
   return [server.cmd.command, ...server.cmd.args].join(' ');
 }
 

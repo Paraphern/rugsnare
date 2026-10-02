@@ -103,10 +103,14 @@ export function discoverConfigs() {
         file,
         exists: true,
         servers: Object.fromEntries(
-          Object.entries(servers).filter(([, v]) => v && typeof v.command === 'string')
+          Object.entries(servers).filter(([, v]) => v && (typeof v.command === 'string' || typeof v.url === 'string'))
         ),
       });
     }
+  }
+  // ZCode plugins: per-plugin .mcp.json configs (often HTTP transport)
+  for (const z of discoverZCodePlugins()) {
+    found.push(z);
   }
   return found;
 }

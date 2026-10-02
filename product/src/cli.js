@@ -98,7 +98,8 @@ function parseArgs(argv) {
 function readServersFromConfigFile(file) {
   const json = readJsonFile(file);
   const servers = json.mcpServers ?? {};
-  return Object.fromEntries(Object.entries(servers).filter(([, v]) => v && typeof v.command === 'string'));
+  // Accept both stdio (command) and HTTP (url) servers
+  return Object.fromEntries(Object.entries(servers).filter(([, v]) => v && (typeof v.command === 'string' || typeof v.url === 'string')));
 }
 
 function collectServers(flags) {
@@ -155,9 +156,23 @@ async function cmdScan(flags) {
     const entry = servers[name];
     if (!entry) { console.error(`  Server not found in sources: ${name}`); failed++; continue; }
     try {
-      const { command, args, env } = serverCommand(entry);
-      const { tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout });
-      const serverPin = ensureServer(pins, name, { command, args });
+      let tools, prompts, resources;
+      let serverCmd;
+
+      if (typeof entry.url === 'string') {
+        // HTTP transport (Streamable HTTP, spec 2025-06-18)
+        const { fetchToolsHttp } = await import('./rpc-http.js');
+        const headers = entry.headers ?? {};
+        ({ tools, prompts, resources } = await fetchToolsHttp({ url: entry.url, headers, timeoutMs: flags.timeout }));
+        serverCmd = { url: entry.url };
+      } else {
+        // stdio transport
+        const { command, args, env } = serverCommand(entry);
+        ({ tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout }));
+        serverCmd = { command, args };
+      }
+
+      const serverPin = ensureServer(pins, name, serverCmd);
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
 
       // pin prompts and resources too (if the server exposes them)
@@ -236,8 +251,7 @@ async function cmdDiff(flags) {
   // swaps included). Without it, check the pinned command itself (the
   // classic "package updated in place" rug pull).
   const configServers = flags.config ? readServersFromConfigFile(flags.config) : null;
-  const pinnedNames = Object.keys(pins.servers).filter((n) => pins.servers[n].cmd || configServers?.[n]);
-  const names = flags.server ? pinnedNames.filter((n) => n === flags.server) : pinnedNames;
+  const pinnedNames = Object.keys(pins.servers).filter((n) => pins.servers[n].cmd || configServers?.[n]);  const names = flags.server ? pinnedNames.filter((n) => n === flags.server) : pinnedNames;
   if (names.length === 0) { console.error('No pinned servers. Run `rugsnare scan` first.'); process.exit(2); }
 
   let driftCount = 0;
@@ -250,9 +264,22 @@ async function cmdDiff(flags) {
   const report = [];
   for (const name of names) {
     const sp = pins.servers[name];
-    const cmd = configServers?.[name] ? serverCommand(configServers[name]) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
+    const configEntry = configServers?.[name];
     try {
-      const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
+      let tools;
+      const displayCmd = configEntry?.url ?? (configEntry ? [serverCommand(configEntry).command, ...serverCommand(configEntry).args].join(' ') : (sp.cmd?.url ?? [sp.cmd?.command, ...(sp.cmd?.args ?? [])].join(' ')));
+
+      if (configEntry?.url || sp.cmd?.url) {
+        // HTTP transport
+        const { fetchToolsHttp } = await import('./rpc-http.js');
+        const url = configEntry?.url ?? sp.cmd.url;
+        const headers = configEntry?.headers ?? {};
+        ({ tools } = await fetchToolsHttp({ url, headers, timeoutMs: flags.timeout }));
+      } else {
+        // stdio transport
+        const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
+        ({ tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout }));
+      }
       const allVerdicts = compareTools(sp, tools, toolHash);
       // Filter display based on --schema-only / --prose-only
       const verdicts = flags.schemaOnly
@@ -275,7 +302,7 @@ async function cmdDiff(flags) {
       const bad = badVerdicts(verdicts);
       driftCount += bad.length;
       if (!flags.json && !flags.sarif) {
-        console.log(`${name}  (${[cmd.command, ...cmd.args].join(' ')})`);
+        console.log(`${name}  (${displayCmd})`);
         printVerdict(name, verdicts, false);
       }
       report.push({ server: name, verdicts });
