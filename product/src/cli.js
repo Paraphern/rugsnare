@@ -47,6 +47,8 @@ Usage:
   rugsnare canary replay --name <server> [--strict] [--include <tool>]... [--all-calls] -- <command>
                                                          replay corpus vs new version; read-only calls by default;
                                                          --include/--all-calls replay write-class (sandbox only); exit 1 = breaking
+  rugsnare wrap <server-name>                            insert the RugSnare proxy into your MCP config
+  rugsnare unwrap <server-name>                          restore the original (undo wrap)
   rugsnare receipts sign                                 Ed25519 hash-chain over the event log
   rugsnare receipts verify [--pub <pem>]                 check the chain; exit 1 = tampered
   rugsnare receipts export                               auditor dossier (md + json, AAT -05 fields)
@@ -819,6 +821,27 @@ async function main() {
       process.exit(2);
     }
     case 'mcp': return cmdMcp();
+    case 'wrap': {
+      const name = flags._[0];
+      if (!name) { console.error('Usage: rugsnare wrap <server-name>'); process.exit(2); }
+      const { wrapServer } = await import('./wrap.js');
+      const r = wrapServer(name);
+      if (r.error) { console.error(r.error); process.exit(2); }
+      console.log(`wrapped "${r.server}" in ${r.file}`);
+      console.log(`backup: ${r.backup}`);
+      console.log(`restart your MCP client to apply. unwrap: rugsnare unwrap ${r.server}`);
+      return;
+    }
+    case 'unwrap': {
+      const name = flags._[0];
+      if (!name) { console.error('Usage: rugsnare unwrap <server-name>'); process.exit(2); }
+      const { unwrapServer } = await import('./wrap.js');
+      const r = unwrapServer(name);
+      if (r.error) { console.error(r.error); process.exit(2); }
+      console.log(`unwrapped "${r.server}" in ${r.file} — restored original command`);
+      console.log(`restart your MCP client to apply.`);
+      return;
+    }
     case 'report': return cmdReport(flags);
     case 'hook': return cmdHook(flags);
     case undefined:

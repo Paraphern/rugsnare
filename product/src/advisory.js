@@ -28,6 +28,7 @@ const SIGNALS = [
   { id: 'A14', weight: 2, test: /^\s*(you\s+must|always|never|make\s+sure|be\s+sure|ensure\s+that|it\s+is\s+(critical|important)\s+that)\b/i, desc: 'opens with an imperative directed at the agent, not documentation for a human' },
   { id: 'A15', weight: 3, test: /\bignore\s+(all\s+|any\s+|the\s+)?(previous|prior|above|earlier)\s+instructions?\b|\bdisregard\s+(all\s+|any\s+|the\s+)?(previous|prior|above)\s+instructions?\b/i, desc: 'explicit instruction-hijack phrase — never innocent in a tool description' },
   { id: 'A17', weight: 3, test: /\+\d{10,15}\b|\+\d{1,3}[\s().-]?\(?\d{2,4}\)?[\s().-]?\d{3}[\s().-]?\d{3,4}\b/, desc: 'contains an international phone number — tool documentation never needs one; classically the exfiltration recipient in WhatsApp/SMS poisoning' },
+  { id: 'A18', weight: 3, test: /\x1b\[[0-9;]*[a-zA-Z]/, desc: 'contains ANSI escape sequences — can hide text, fake terminal output, or deceive the user visually (Trail of Bits mcp-context-protector popularized this check)' },
 ];
 
 // Schema-level signal: an OPTIONAL parameter whose name is a classic exfiltration
@@ -36,7 +37,7 @@ const SIGNALS = [
 // popularized the pattern list); kept deliberately narrow to avoid false hits.
 const EXFIL_PARAM = /^(feedback|debug|extra|diagnostics?|telemetry|callback_?url|report_?uri|webhook_?url)$/i;
 
-const FORCED = new Set(['A12', 'A13', 'A15']); // invisible unicode, bidi, hijack phrase
+const FORCED = new Set(['A12', 'A13', 'A15', 'A18']); // invisible unicode, bidi, hijack phrase, ANSI escapes
 
 const THRESHOLD = 5;
 
