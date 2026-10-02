@@ -265,21 +265,22 @@ async function cmdDiff(flags) {
   for (const name of names) {
     const sp = pins.servers[name];
     const configEntry = configServers?.[name];
-    try {
-      let tools;
-      const displayCmd = configEntry?.url ?? (configEntry ? [serverCommand(configEntry).command, ...serverCommand(configEntry).args].join(' ') : (sp.cmd?.url ?? [sp.cmd?.command, ...(sp.cmd?.args ?? [])].join(' ')));
+    const isHttp = Boolean(configEntry?.url || sp.cmd?.url);
+    const httpUrl = configEntry?.url ?? sp.cmd?.url;
+    const httpHeaders = configEntry?.headers ?? {};
+    const stdioCmd = !isHttp ? (configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} }) : null;
+    const displayCmd = isHttp ? httpUrl : [stdioCmd.command, ...stdioCmd.args].join(' ');
 
-      if (configEntry?.url || sp.cmd?.url) {
-        // HTTP transport
+    async function connect() {
+      if (isHttp) {
         const { fetchToolsHttp } = await import('./rpc-http.js');
-        const url = configEntry?.url ?? sp.cmd.url;
-        const headers = configEntry?.headers ?? {};
-        ({ tools } = await fetchToolsHttp({ url, headers, timeoutMs: flags.timeout }));
-      } else {
-        // stdio transport
-        const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
-        ({ tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout }));
+        return fetchToolsHttp({ url: httpUrl, headers: httpHeaders, timeoutMs: flags.timeout });
       }
+      return fetchTools({ command: stdioCmd.command, args: stdioCmd.args, env: stdioCmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
+    }
+
+    try {
+      const { tools } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
       // Filter display based on --schema-only / --prose-only
       const verdicts = flags.schemaOnly
@@ -292,7 +293,7 @@ async function cmdDiff(flags) {
       if (sp.prompts && Object.keys(sp.prompts).length > 0) {
         // re-fetch prompts for comparison
       }
-      const { prompts: livePrompts = [], resources: liveResources = [] } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
+      const { prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       if (sp.prompts) verdicts.push(...comparePinned('prompt', sp.prompts, livePrompts, promptHash));
       if (sp.resources) verdicts.push(...comparePinned('resource', sp.resources, liveResources, resourceHash));
       for (const v of verdicts) {
