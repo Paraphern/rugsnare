@@ -14,20 +14,23 @@ cd "$ROOT"
 
 PKG="${1:-@modelcontextprotocol/server-filesystem}"
 ARG="${2:-/tmp}"
+MAXV="${3:-0}"   # 0 = full history; N = only the last N stable versions
+OUT="${4:-}"     # optional JSONL results file (appended per pair)
 CLI="$ROOT/product/src/cli.js"
 
 echo "🪤 RugSnare Historical Backtest"
 echo "   Package: $PKG"
 echo ""
 
-# Get all published versions
+# Get all published versions (stable only; optionally the last MAXV)
 VERSIONS=$(npm view "$PKG" versions --json 2>/dev/null | node -e "
 const chunks = [];
 process.stdin.on('data', d => chunks.push(d));
 process.stdin.on('end', () => {
   try {
     const v = JSON.parse(chunks.join(''));
-    const stable = v.filter(x => !x.includes('-'));
+    let stable = v.filter(x => !x.includes('-'));
+    if ($MAXV > 0) stable = stable.slice(-$MAXV);
     console.log(stable.join(' '));
   } catch { console.log(''); }
 });
@@ -63,7 +66,17 @@ TOTAL_DRIFT=0
 TOTAL_NEW=0
 TOTAL_REMOVED=0
 TOTAL_CLEAN=0
+TOTAL_BREAKING=0
+TOTAL_COSMETIC=0
+TOTAL_ANNOTATION=0
 PAIR_NUM=0
+
+pair_json() {
+  # one JSON line per pair into $OUT if requested
+  [ -z "$OUT" ] && return 0
+  printf '{"pkg":"%s","from":"%s","to":"%s","clean":%s,"drift":%s,"new":%s,"removed":%s,"breaking":%s,"cosmetic":%s,"annotation":%s}\n' \
+    "$PKG" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" >> "$OUT"
+}
 
 for i in $VERSIONS; do
   # Get next version
@@ -101,15 +114,23 @@ for i in $VERSIONS; do
   DRIFT=$(echo "$DIFF_OUTPUT" | grep -c "DRIFT" || true)
   NEW=$(echo "$DIFF_OUTPUT" | grep -c "NEW " || true)
   REMOVED=$(echo "$DIFF_OUTPUT" | grep -c "REMOVED" || true)
+  BREAKING=$(echo "$DIFF_OUTPUT" | grep -c "BREAKING" || true)
+  COSMETIC=$(echo "$DIFF_OUTPUT" | grep -c "COSMETIC" || true)
+  ANNOTATION=$(echo "$DIFF_OUTPUT" | grep -c "ANNOTATION" || true)
 
   if echo "$DIFF_OUTPUT" | grep -q "clean"; then
     TOTAL_CLEAN=$((TOTAL_CLEAN + 1))
     echo "  [$PAIR_NUM] $i → $NEXT: ✅ clean"
+    pair_json "$i" "$NEXT" true 0 0 0 0 0 0
   else
     TOTAL_DRIFT=$((TOTAL_DRIFT + DRIFT))
     TOTAL_NEW=$((TOTAL_NEW + NEW))
     TOTAL_REMOVED=$((TOTAL_REMOVED + REMOVED))
-    echo "  [$PAIR_NUM] $i → $NEXT: 🔴 DRIFT=$DRIFT NEW=$NEW REMOVED=$REMOVED"
+    TOTAL_BREAKING=$((TOTAL_BREAKING + BREAKING))
+    TOTAL_COSMETIC=$((TOTAL_COSMETIC + COSMETIC))
+    TOTAL_ANNOTATION=$((TOTAL_ANNOTATION + ANNOTATION))
+    echo "  [$PAIR_NUM] $i → $NEXT: 🔴 DRIFT=$DRIFT (B=$BREAKING C=$COSMETIC A=$ANNOTATION) NEW=$NEW REMOVED=$REMOVED"
+    pair_json "$i" "$NEXT" false "$DRIFT" "$NEW" "$REMOVED" "$BREAKING" "$COSMETIC" "$ANNOTATION"
 
     # Show which tools changed
     echo "$DIFF_OUTPUT" | grep -E "^\s+\[" | head -10 | while read line; do
@@ -125,7 +146,7 @@ echo "════════════════════════�
 echo "  Version pairs tested:  $PAIR_NUM"
 echo "  Clean pairs:           $TOTAL_CLEAN"
 echo "  Pairs with drift:      $((PAIR_NUM - TOTAL_CLEAN))"
-echo "  Total DRIFT findings:  $TOTAL_DRIFT"
+echo "  Total DRIFT findings:  $TOTAL_DRIFT  (BREAKING=$TOTAL_BREAKING COSMETIC=$TOTAL_COSMETIC ANNOTATION=$TOTAL_ANNOTATION)"
 echo "  Total NEW tools:       $TOTAL_NEW"
 echo "  Total REMOVED tools:   $TOTAL_REMOVED"
 echo ""
