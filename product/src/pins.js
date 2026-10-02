@@ -92,18 +92,21 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
 }
 
 /**
- * Compare behavioral annotations through their SPEC DEFAULTS, not raw values:
- * MCP defines readOnlyHint/destructiveHint/idempotentHint as false and
- * openWorldHint as true when absent. A server that starts spelling out a hint
- * it was already relying on (absent -> {readOnlyHint: false}) changes nothing
- * behaviorally and must NOT be flagged; a silent downgrade ({readOnlyHint:
- * true} -> absent) IS a change and must be. (Discipline learned from reading
- * mcpsnoop's baseline mechanics in full.)
+ * Compare behavioral annotations through their SPEC DEFAULTS, not raw values
+ * (official schema, modelcontextprotocol/schema 2025-06-18, ~lines 890-925):
+ *   readOnlyHint    absent = false
+ *   destructiveHint absent = TRUE  — tools are assumed destructive unless they
+ *                     explicitly opt out with destructiveHint:false
+ *   idempotentHint  absent = false
+ *   openWorldHint   absent = true
+ * A server spelling out a hint it was already relying on changes nothing
+ * behaviorally and must NOT be flagged; a silent downgrade (e.g. dropping an
+ * explicit `destructiveHint:false` after approval) IS a change and must be.
  */
 function effectiveAnnotations(a) {
   return {
     readOnly: a?.readOnlyHint ?? false,
-    destructive: a?.destructiveHint ?? false,
+    destructive: a?.destructiveHint ?? true,
     idempotent: a?.idempotentHint ?? false,
     openWorld: a?.openWorldHint ?? true,
   };

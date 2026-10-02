@@ -53,12 +53,30 @@ test('annotation comparison goes through spec defaults: explicit default is not 
   const pin = pinTool(sp, { name: 't', description: 'd', inputSchema: {} }, toolHash({ name: 't', description: 'd', inputSchema: {} }), { approved: true });
   assert.equal(pin.annotations, null);
   let v = compareTools(sp, [{ name: 't', description: 'd', inputSchema: {}, annotations: { readOnlyHint: false, destructiveHint: false } }], toolHash);
-  assert.equal(v[0].status, 'UNCHANGED', 'absent -> explicit defaults is noise, not drift');
+  // destructiveHint:false is an OPT-OUT from the spec default (true) — a real behavioral change, must flag
+  assert.equal(v[0].status, 'DRIFT', 'pinned-absent (destructive default true) -> explicit false = downgrade = drift');
+  assert.equal(v[0].driftType, 'ANNOTATION');
+
+  // pinned WITHOUT annotations; server spells out readOnly default (false) only -> nothing changed
+  v = compareTools(sp, [{ name: 't', description: 'd', inputSchema: {}, annotations: { readOnlyHint: false } }], toolHash);
+  assert.equal(v[0].status, 'UNCHANGED', 'absent -> explicit readOnlyHint:false (the default) is noise');
+
+  // pinned {destructiveHint:true}; server drops annotations entirely -> default true still applies -> no false flag
+  const sp2 = ensureServer({ servers: {} }, 's', null);
+  pinTool(sp2, { name: 't2', description: 'd', inputSchema: {}, annotations: { destructiveHint: true } }, toolHash({ name: 't2', description: 'd', inputSchema: {}, annotations: { destructiveHint: true } }), { approved: true });
+  v = compareTools(sp2, [{ name: 't2', description: 'd', inputSchema: {} }], toolHash);
+  assert.equal(v[0].status, 'UNCHANGED', 'explicit true -> absent (default true) must not false-flag');
+
+  // pinned explicit {destructiveHint:false} (opt-out); server silently drops it -> default true returns -> REAL flip
+  const sp3 = ensureServer({ servers: {} }, 's', null);
+  pinTool(sp3, { name: 't3', description: 'd', inputSchema: {}, annotations: { destructiveHint: false } }, toolHash({ name: 't3', description: 'd', inputSchema: {}, annotations: { destructiveHint: false } }), { approved: true });
+  v = compareTools(sp3, [{ name: 't3', description: 'd', inputSchema: {} }], toolHash);
+  assert.equal(v[0].status, 'DRIFT', 'dropping an explicit destructiveHint:false = silent weaponization = must flag');
 
   // the reverse IS a rug-pull: approved as read-only, hint silently dropped (absent = false by default)
-  const sp2 = ensureServer({ servers: {} }, 's', null);
-  pinTool(sp2, BASE, toolHash(BASE), { approved: true }); // BASE has readOnlyHint:true
-  v = compareTools(sp2, [{ ...BASE, annotations: undefined }], toolHash);
+  const sp4 = ensureServer({ servers: {} }, 's', null);
+  pinTool(sp4, BASE, toolHash(BASE), { approved: true }); // BASE has readOnlyHint:true
+  v = compareTools(sp4, [{ ...BASE, annotations: undefined }], toolHash);
   assert.equal(v[0].status, 'DRIFT', 'readOnlyHint:true silently dropped = downgrade = drift');
   assert.equal(v[0].driftType, 'ANNOTATION');
 });

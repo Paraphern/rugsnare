@@ -145,7 +145,7 @@ RugSnare pins the **contract** your agent obeys — `{ name, description, inputS
 | New tool appears / approved tool disappears post-approval | ✅ caught | — |
 | Cross-server tool shadowing (same name on two servers) | ✅ caught in `scan`, `diff` (breaks CI) and the live proxy — the client's undocumented resolution order is the risk | — |
 | Chameleon server (clean contract for inspection tools, poisoned for real clients) | ✅ caught by `rugsnare scan --chameleon` — re-lists tools identifying as claude-desktop/cursor and compares hashes; any per-client difference exits 1 | — |
-| Behavioral hint flip (`readOnlyHint: true → false` / adds `destructiveHint`) with byte-identical text+schema | ✅ caught — annotations are pinned separately from the hash (v0.4.1); a flip is DRIFT/ANNOTATION in `diff`, CI and the live proxy | — |
+| Behavioral hint flip (`readOnlyHint: true → false` / adds `destructiveHint`) with byte-identical text+schema | ✅ caught — annotations are pinned separately from the hash and compared through spec defaults (absent `destructiveHint` = true); a flip is DRIFT/ANNOTATION in `diff`, CI and the live proxy | — |
 | Mid-session swap of an already-connected server | ✅ quarantined in enforce mode | — |
 | Malicious code behind an *unchanged* contract | ❌ out of scope by design | package signing / provenance / sandboxing |
 | Toxic data inside call arguments or responses | ✅ caught (v0.3) — policies + PII egress checks in the live proxy | — |
@@ -192,4 +192,4 @@ bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift 
 | **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*99 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*101 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

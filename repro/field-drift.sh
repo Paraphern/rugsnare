@@ -53,7 +53,7 @@ echo "[5/5] verdict ..."
 if grep -q "DRIFT" "$TMP/result.txt"; then
   echo ""
   echo "REPRODUCED: real drift between two official releases detected."
-  echo "Everything marked [ok ] above is a tool whose contract did NOT change —"
+  echo "Every tool NOT listed above kept its contract unchanged —"
   echo "that is the no-crying-wolf precision claim, verified on your machine."
   exit 0
 else

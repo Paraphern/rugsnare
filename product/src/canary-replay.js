@@ -47,6 +47,11 @@ export function shapesEqual(a, b) {
 //     SKIPPED note, unless opted in via --include <tool> or --all-calls (sandbox)
 const READ_LIKE = /^(read|get|list|search|find|query|fetch|show|view|describe|lookup|head|tree|glob|grep|stat|whoami|check|scan|verify|report|health|status|resolve|parse|preview|dry[-_]?run)/i;
 const DESTRUCTIVE = /^(delete|drop|remove|rm|destroy|wipe|format|truncate|purge|nuke|kill|uninstall|clear|flush|reset)/i;
+// A leading read verb can MASK a mutation: fetch_and_delete, search_and_replace,
+// get_or_create, check_and_repair. Any mutating token anywhere in the name
+// downgrades the call to write-class (skipped unless opted in). (Edge found by
+// the independent audit, obna 21.)
+const MUTATING_TOKEN = /(delete|remove|drop|destroy|wipe|truncate|purge|nuke|kill|write|update|create|insert|patch|replace|repair|send|push|deploy|apply|reset|clear|flush|commit|merge|mutate|modify|set_|_set|invoke|execute|exec|run)/i;
 
 /**
  * Decide whether a recorded call may be replayed.
@@ -56,7 +61,10 @@ const DESTRUCTIVE = /^(delete|drop|remove|rm|destroy|wipe|format|truncate|purge|
 export function classifyCallForReplay(toolName, { include = [], allCalls = false } = {}) {
   if (include.includes(toolName)) return 'replay';
   if (DESTRUCTIVE.test(toolName)) return 'skip-destructive';
-  if (READ_LIKE.test(toolName)) return 'replay';
+  if (READ_LIKE.test(toolName)) {
+    if (MUTATING_TOKEN.test(toolName)) return allCalls ? 'replay' : 'skip-write'; // masked mutation
+    return 'replay';
+  }
   return allCalls ? 'replay' : 'skip-write';
 }
 

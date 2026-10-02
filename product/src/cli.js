@@ -518,7 +518,10 @@ async function cmdCanaryReplay(flags) {
   const recordedInfo = traces.find((t) => t.kind === 'server-info' && t.server === name);
 
   const { replayCorpus, classifyReplay } = await import('./canary-replay.js');
-  const result = await replayCorpus({ command, args, cwd: process.cwd(), corpus, timeoutMs, include: flags.include ?? [], allCalls: Boolean(flags.allCalls) });  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
+  const result = await replayCorpus({
+    command, args, cwd: process.cwd(), corpus, timeoutMs,
+    include: flags.include ?? [], allCalls: Boolean(flags.allCalls),
+  });  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
 
   const report = classifyReplay({
     serverPin: serverPin ?? { tools: {} },

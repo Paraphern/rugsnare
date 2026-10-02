@@ -124,6 +124,18 @@ test('classifyCallForReplay: read-like replays; writes/destructive skip; --inclu
   assert.equal(classifyCallForReplay('delete_booking', { include: ['delete_booking'] }), 'replay');
 });
 
+test('classifyCallForReplay: a read verb must not MASK a mutation (obna 21 edge)', () => {
+  assert.equal(classifyCallForReplay('fetch_and_delete'), 'skip-write');
+  assert.equal(classifyCallForReplay('search_and_replace'), 'skip-write');
+  assert.equal(classifyCallForReplay('get_or_create'), 'skip-write');
+  assert.equal(classifyCallForReplay('check_and_repair'), 'skip-write');
+  assert.equal(classifyCallForReplay('reset_and_list'), 'skip-destructive', 'destructive prefix wins');
+  // --all-calls still lifts masked write-class; plain reads stay replayable
+  assert.equal(classifyCallForReplay('fetch_and_delete', { allCalls: true }), 'replay');
+  assert.equal(classifyCallForReplay('search_events'), 'replay');
+  assert.equal(classifyCallForReplay('list_files'), 'replay', 'no mutating token -> unaffected');
+});
+
 test('replay safety e2e: write-class corpus entries are never sent to the server', async () => {
   const corpus = [
     { kind: 'call-trace', server: 't', tool: 'search_events', args: { q: 'x' }, ok: true, result: { content: [{ type: 'text', text: 'ab' }], count: 2 }, truncated: false },
