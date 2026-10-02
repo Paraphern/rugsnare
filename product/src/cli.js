@@ -521,7 +521,8 @@ async function cmdCanaryReplay(flags) {
   const result = await replayCorpus({
     command, args, cwd: process.cwd(), corpus, timeoutMs,
     include: flags.include ?? [], allCalls: Boolean(flags.allCalls),
-  });  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
+  });
+  if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
 
   const report = classifyReplay({
     serverPin: serverPin ?? { tools: {} },

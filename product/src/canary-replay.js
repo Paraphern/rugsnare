@@ -51,7 +51,7 @@ const DESTRUCTIVE = /^(delete|drop|remove|rm|destroy|wipe|format|truncate|purge|
 // get_or_create, check_and_repair. Any mutating token anywhere in the name
 // downgrades the call to write-class (skipped unless opted in). (Edge found by
 // the independent audit, obna 21.)
-const MUTATING_TOKEN = /(delete|remove|drop|destroy|wipe|truncate|purge|nuke|kill|write|update|create|insert|patch|replace|repair|send|push|deploy|apply|reset|clear|flush|commit|merge|mutate|modify|set_|_set|invoke|execute|exec|run)/i;
+const MUTATING_TOKEN = /(delete|remove|drop|destroy|wipe|truncate|purge|nuke|kill|write|update|create|insert|patch|replace|repair|send|push|deploy|apply|reset|clear|flush|commit|merge|mutate|modify|set_|_set|invoke|execute|exec|run|append|upload|import)/i;
 
 /**
  * Decide whether a recorded call may be replayed.

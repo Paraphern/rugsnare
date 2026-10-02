@@ -46,3 +46,4 @@ outreach-ready/
 .demo/
 **/.rugsnare/*
 !**/.rugsnare/pins.json
+.zcodeignore
