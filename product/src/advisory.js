@@ -12,7 +12,7 @@
  */
 
 const SIGNALS = [
-  { id: 'A01', weight: 3, test: /do\s+not\s+(tell|mention|inform|reveal)/i, desc: 'tells the model to hide something from the user' },
+  { id: 'A01', weight: 3, test: /do\s+not\s+(tell|mention|inform|reveal|notify|alert|update|contact)/i, desc: 'tells the model to hide something from the user' },
   { id: 'A02', weight: 3, test: /\.(ssh|id_rsa|id_ed25519|aws_secret|api_key|\.env|credentials?)/i, desc: 'references private keys, credentials or env files' },
   { id: 'A03', weight: 2, test: /base64[ -]?(encode|decoded?)/i, desc: 'asks for base64 encoding/decoding — common exfiltration pattern' },
   { id: 'A04', weight: 2, test: /\b(API_KEY|AWS_SECRET|GITHUB_TOKEN|OPENAI_API|STRIPE_KEY|PRIVATE_KEY)\b/i, desc: 'names specific credential variables' },
@@ -27,6 +27,7 @@ const SIGNALS = [
   { id: 'A13', weight: 2, test: /[\u202A-\u202E\u2066-\u2069]/, desc: 'contains bidi control characters (text direction override) — possible obfuscation' },
   { id: 'A14', weight: 2, test: /^\s*(you\s+must|always|never|make\s+sure|be\s+sure|ensure\s+that|it\s+is\s+(critical|important)\s+that)\b/i, desc: 'opens with an imperative directed at the agent, not documentation for a human' },
   { id: 'A15', weight: 3, test: /\bignore\s+(all\s+|any\s+|the\s+)?(previous|prior|above|earlier)\s+instructions?\b|\bdisregard\s+(all\s+|any\s+|the\s+)?(previous|prior|above)\s+instructions?\b/i, desc: 'explicit instruction-hijack phrase — never innocent in a tool description' },
+  { id: 'A17', weight: 3, test: /\+\d{10,15}\b|\+\d{1,3}[\s().-]?\(?\d{2,4}\)?[\s().-]?\d{3}[\s().-]?\d{3,4}\b/, desc: 'contains an international phone number — tool documentation never needs one; classically the exfiltration recipient in WhatsApp/SMS poisoning' },
 ];
 
 // Schema-level signal: an OPTIONAL parameter whose name is a classic exfiltration
