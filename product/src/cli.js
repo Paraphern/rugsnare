@@ -134,6 +134,10 @@ function printVerdict(server, verdicts, json) {
     // prompt/resource verdicts carry {item, kind}; tools carry {tool}
     const target = v.tool ?? `${v.item}${v.kind ? ` (${v.kind})` : ''}`;
     console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${target}${driftLabel}${hashes}`);
+    // human-readable schema changes ("added required parameter 'mode'" not just "schema changed")
+    if (v.schemaChanges && v.schemaChanges.length > 0) {
+      for (const sc of v.schemaChanges) console.log(`      ${sc}`);
+    }
   }
 }
 
@@ -198,6 +202,16 @@ async function cmdScan(flags) {
         logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
       }
 
+      // floating-version advisory: unpinned npx/uvx/docker = auto-upgrade rug-pull vector
+      if (typeof entry.command === 'string') {
+        const { checkFloatingVersion } = await import('./floating.js');
+        const floats = checkFloatingVersion({ command: entry.command, args: entry.args ?? [] });
+        for (const f of floats) {
+          console.error(`  [FLOATING] ${name}: ${f}`);
+          logEvent({ kind: 'floating-version', server: name, detail: f });
+        }
+      }
+
       console.log(`  pinned ${name}: ${tools.length} tool(s) -> ${tools.map((t) => t.name).join(', ')}`);
       logEvent({ kind: 'scan', server: name, tools: tools.length });
 
@@ -229,6 +243,21 @@ async function cmdScan(flags) {
     console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
+
+  // skill scanning: SKILL.md / .mdc / rule files can carry poisoned instructions
+  // just like tool descriptions (Snyk agent-scan popularized this check)
+  try {
+    const { scanSkills } = await import('./skills.js');
+    const skillFindings = scanSkills();
+    for (const sk of skillFindings) {
+      console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} — score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
+      logEvent({ kind: 'skill-advisory', app: sk.app, file: sk.file, score: sk.score, signals: sk.signals.map((s) => s.id) });
+    }
+    if (skillFindings.length > 0) {
+      console.error(`rugsnare scan: ${skillFindings.length} skill file(s) with advisory findings (see above)`);
+    }
+  } catch { /* skills dir not found or permission — fine */ }
+
   console.log('');
   if (chameleonCount > 0) {
     console.error(`rugsnare scan: CHAMELEON findings: ${chameleonCount} (server serves different contracts per client)`);

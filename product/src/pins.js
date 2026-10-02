@@ -84,10 +84,10 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
     schemaHash: computeSchemaHash(tool),
     proseHash: computeProseHash(tool),
     description: tool.description ?? '',
-    // Behavioral hints (readOnlyHint / destructiveHint / openWorldHint): a flip
-    // changes what the tool is allowed to do even when text+schema are identical.
-    // Stored separately from the hash so existing pins keep validating unchanged.
     annotations: tool.annotations ?? null,
+    // Canonical inputSchema for human-readable diffs ("added required param mode"
+    // instead of just "schema changed") — from the DescriptorPin learning
+    inputSchema: tool.inputSchema ?? null,
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
     approved,
@@ -121,6 +121,52 @@ function annotationsEqual(pinned, live) {
 }
 export { annotationsEqual };
 
+/**
+ * Human-readable schema diff: what exactly changed between two inputSchema objects.
+ * Returns ["added required parameter 'mode'", "narrowed enum of 'sort' from [asc,desc] to [asc]"] etc.
+ */
+export function schemaDiff(oldSchema, newSchema) {
+  if (!oldSchema || !newSchema) return [];
+  const changes = [];
+  const oldProps = oldSchema.properties ?? {};
+  const newProps = newSchema.properties ?? {};
+  const oldReq = new Set(oldSchema.required ?? []);
+  const newReq = new Set(newSchema.required ?? []);
+
+  // added params
+  for (const name of Object.keys(newProps)) {
+    if (!oldProps[name]) {
+      changes.push(newReq.has(name)
+        ? `added required parameter '${name}' (${newProps[name].type ?? 'unknown'})`
+        : `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`);
+    }
+  }
+  // removed params
+  for (const name of Object.keys(oldProps)) {
+    if (!newProps[name]) changes.push(`removed parameter '${name}'`);
+  }
+  // changed params
+  for (const name of Object.keys(oldProps)) {
+    if (!newProps[name]) continue;
+    const o = oldProps[name];
+    const n = newProps[name];
+    if (o.type !== n.type) changes.push(`changed type of '${name}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`);
+    if (!oldReq.has(name) && newReq.has(name)) changes.push(`'${name}' became required`);
+    if (oldReq.has(name) && !newReq.has(name)) changes.push(`'${name}' became optional`);
+    const oEnum = Array.isArray(o.enum) ? o.enum : null;
+    const nEnum = Array.isArray(n.enum) ? n.enum : null;
+    if (oEnum && nEnum) {
+      const narrowed = oEnum.filter((v) => !nEnum.includes(v));
+      if (narrowed.length > 0) changes.push(`narrowed enum of '${name}': removed ${narrowed.map((v) => String(v)).join(', ')}`);
+      const expanded = nEnum.filter((v) => !oEnum.includes(v));
+      if (expanded.length > 0) changes.push(`expanded enum of '${name}': added ${expanded.map((v) => String(v)).join(', ')}`);
+    }
+    if (oEnum && !nEnum) changes.push(`removed enum constraint from '${name}'`);
+    if (!oEnum && nEnum) changes.push(`added enum constraint to '${name}'`);
+  }
+  return changes;
+}
+
 export function compareTools(serverPin, liveTools, toolHashFn) {
   const result = [];
   for (const tool of liveTools) {
@@ -140,6 +186,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         hash,
         schemaChanged,
         proseChanged,
+        schemaChanges: schemaChanged && pin.inputSchema ? schemaDiff(pin.inputSchema, tool.inputSchema) : [],
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });
