@@ -35,7 +35,7 @@ const PII_THRESHOLD = 2;
 // A tool call whose arguments embed one of these is almost certainly a
 // hijacked or destructive agent action, regardless of the tool's contract.
 const DANGEROUS_PATTERNS = [
-  { id: 'D01', test: /\brm\s+[^|;&]{0,20}(?:-[a-zA-Z]*[rf][a-zA-Z]*\s+)+(?:\/|~|\$HOME|\*)/i, desc: 'recursive delete targeting root/home' },
+  { id: 'D01', test: /\brm\s+-\S*[rf]\S*\s+(?:\/(?!\/)|~\/|\$HOME|\*)/, desc: 'recursive delete targeting root/home' },
   { id: 'D02', test: /\b(?:curl|wget)\b[^|;&]{0,300}\|\s*(?:ba|z|da)?sh\b/i, desc: 'download piped straight into a shell' },
   { id: 'D03', test: /\bmkfs(?:\.\w+)?\s+\//i, desc: 'filesystem format' },
   { id: 'D04', test: /:\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;?\s*:/, desc: 'fork bomb' },
