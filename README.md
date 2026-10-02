@@ -157,26 +157,20 @@ If an attacker changes the code but not the contract, no description hash can se
 
 ## Field-tested
 
-**Historical backtest:** we ran RugSnare against the entire release history of the official `@modelcontextprotocol/server-filesystem` — 19 versions, 18 version pairs. Result:
+**The silent changes report** ([repro/SILENT-CHANGES-REPORT.md](repro/SILENT-CHANGES-REPORT.md)): we pinned every stable release of the 4 official `@modelcontextprotocol/server-*` reference servers, diffed each version against the next, and counted every contract change between them.
 
 | Metric | Value |
 |---|---|
-| Contract changes detected | **25** |
-| New tools detected | 5 |
-| Clean pairs (no changes) | 12 |
-| Pairs with drift | 6 |
+| Version pairs measured | **52** (66 exist; 14 skipped honestly — old releases that do not start headless) |
+| Pairs with silent changes | **17** |
+| BREAKING (schema changed) | **34** |
+| ANNOTATION (behavioral hints flipped, spec-default aware) | **24** |
+| PROMPTS/RESOURCES changes | **17** |
+| COSMETIC (description reworded) | **6** |
+| New tools that appeared post-approval | **10** |
+| Clean pairs (precision, no crying wolf) | **35** |
 
-The most dramatic: release `2025.8.21 → 2025.11.25` changed **all 15 tool descriptions simultaneously** — a mass rewrite no human reviewer would catch. Reproduce: `bash repro/backtest-filesystem.sh`
-
-**Compatibility:** the official `@modelcontextprotocol/server-filesystem` (2026.8.31, 14 real tools) — scanned, pinned, re-diffed clean.
-
-**Real drift caught:** pinned 2026.8.31, silently swapped to 2026.1.14 — `diff` flagged exactly one tool whose description genuinely changed between those releases (`read_media_file`), with 13 unchanged tools untouched. That's the precision bar: no crying wolf on version bumps, only behavioral changes.
-
-Don't take our word for it — reproduce the field test yourself:
-
-```bash
-bash repro/field-drift.sh   # node + npm, ~1 minute, exits non-zero if no drift is found
-```
+**91 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` rewrote all 15 tool descriptions simultaneously; memory's history carries 18 schema-level breaks. Reproduce on your machine: one command, ~20 minutes, deterministic — see the report footer.
 
 ## Status & roadmap
 
