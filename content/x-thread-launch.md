@@ -11,7 +11,7 @@ We diffed every release of the 4 official MCP servers.
 
 52 version pairs. 74 silent contract changes. Not one announced.
 
-34 broke schemas. 24 flipped behavioral hints. 10 new tools appeared that nobody approved.
+34 broke schemas. 24 flipped behavioral hints. 10 new items appeared (8 tools, 1 prompt, 1 resource) that nobody approved.
 
 Your agent obeys tool descriptions. Nobody was watching them change. 🧵
 

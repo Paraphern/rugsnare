@@ -2,10 +2,10 @@
 
 > We pinned every stable release of 4 official `@modelcontextprotocol/server-*` reference servers,
 > diffed each version against the next, and counted every contract change between them.
-> **52 version pairs · 35 clean · 17 pairs with silent changes · 74 findings** —
+> **66 version pairs · 43 clean · 23 pairs with silent changes · 140 findings** —
 > not one of them announced in a changelog.
 
-Findings split: **34 BREAKING** (schema changed) · **24 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **6 COSMETIC** (description reworded) · **10 NEW items** (of them: 8 tools, 1 prompts, 1 resources) · **0 REMOVED**.
+Findings split: **43 BREAKING** (schema changed) · **28 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **7 COSMETIC** (description reworded) · **37 NEW items** (of them: 24 tools, 5 prompts, 8 resources) · **24 REMOVED**.
 
 ## Per server
 
@@ -13,7 +13,7 @@ Findings split: **34 BREAKING** (schema changed) · **24 ANNOTATION** (behaviora
 |---|---|---|---|---|---|---|---|---|
 | filesystem | 18 | 11 | 7 | 14 | 5 | 14 | 5 | 0 |
 | memory | 13 | 10 | 3 | 18 | 0 | 9 | 1 | 0 |
-| everything | 13 | 10 | 3 | 0 | 0 | 0 | 4 | 0 |
+| everything | 27 | 18 | 9 | 9 | 1 | 4 | 31 | 24 |
 | sequential-thinking | 8 | 4 | 4 | 2 | 1 | 1 | 0 | 0 |
 
 ## Every pair with changes — and exactly what changed
@@ -144,6 +144,78 @@ Findings split: **34 BREAKING** (schema changed) · **24 ANNOTATION** (behaviora
 - `2025.3.19` → `2025.4.8`: 2 new items
   - `getResourceReference` — appeared
   - `resource_prompt` (prompt) — appeared
+- `2025.7.1` → `2025.7.29`: 3 new items
+  - `startElicitation` — appeared
+  - `getResourceLinks` — appeared
+  - `structuredContent` — appeared
+- `2025.8.18` → `2025.9.12`: 1 removed
+  - `startElicitation` — disappeared
+- `2025.9.25` → `2025.11.25`: 1 new item
+  - `zip` — appeared
+- `2025.12.18` → `2026.1.14`: 1 cosmetic, 22 new items, 23 removed
+  - `echo` — cosmetic change
+  - `get-annotated-message` — appeared
+  - `get-env` — appeared
+  - `get-resource-links` — appeared
+  - `get-resource-reference` — appeared
+  - `get-structured-content` — appeared
+  - `get-sum` — appeared
+  - `get-tiny-image` — appeared
+  - `gzip-file-as-resource` — appeared
+  - `toggle-simulated-logging` — appeared
+  - `toggle-subscriber-updates` — appeared
+  - `trigger-long-running-operation` — appeared
+  - `add` — disappeared
+  - `longRunningOperation` — disappeared
+  - `printEnv` — disappeared
+  - `sampleLLM` — disappeared
+  - `getTinyImage` — disappeared
+  - `annotatedMessage` — disappeared
+  - `getResourceReference` — disappeared
+  - `getResourceLinks` — disappeared
+  - `structuredContent` — disappeared
+  - `zip` — disappeared
+  - `simple-prompt` (prompt) — appeared
+  - `args-prompt` (prompt) — appeared
+  - `completable-prompt` (prompt) — appeared
+  - `resource-prompt` (prompt) — appeared
+  - `simple_prompt` (prompt) — disappeared
+  - `complex_prompt` (prompt) — disappeared
+  - `resource_prompt` (prompt) — disappeared
+  - `architecture.md` (resource) — appeared
+  - `extension.md` (resource) — appeared
+  - `features.md` (resource) — appeared
+  - `how-it-works.md` (resource) — appeared
+  - `instructions.md` (resource) — appeared
+  - `startup.md` (resource) — appeared
+  - `structure.md` (resource) — appeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+  - `Resource` — disappeared
+- `2026.1.14` → `2026.1.26`: 1 new item
+  - `simulate-research-query` — appeared
+- `2026.1.26` → `2026.7.4`: 9 breaking, 4 annotation
+  - `echo` — breaking change
+  - `get-annotated-message` — breaking change
+  - `get-env` — annotation change
+  - `get-resource-links` — breaking change
+  - `get-resource-reference` — breaking change
+  - `get-structured-content` — breaking change
+  - `get-sum` — breaking change
+  - `get-tiny-image` — annotation change
+  - `gzip-file-as-resource` — breaking change
+  - `toggle-simulated-logging` — annotation change
+  - `toggle-subscriber-updates` — annotation change
+  - `trigger-long-running-operation` — breaking change
+  - `simulate-research-query` — breaking change
+  - `args-prompt` (prompt) — drift change
 
 ### sequential-thinking
 
@@ -178,4 +250,4 @@ bash repro/backtest-multi.sh   # ~20 minutes, four official servers, full histor
 Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent's instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.
 
 ---
-*Generated 2026-10-02T11:19:36.017Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.4.0, 52 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*
+*Generated 2026-10-02T21:15:55.290Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.4.0, 66 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*

@@ -130,8 +130,9 @@ for i in $VERSIONS; do
   # Install version NEXT (silent replacement)
   npm install --no-audit --no-fund --silent "$PKG@$NEXT" >/dev/null 2>&1 || true
 
-  # Diff
-  DIFF_OUTPUT=$(node "$CLI" diff --config "$(to_native "$TMP/mcp.json")" --timeout 30000 2>&1 || true)
+  # Diff — capture exit code (obna 24: grep "clean" catches "clean (+1 infra error)")
+  DIFF_OUTPUT=$(node "$CLI" diff --config "$(to_native "$TMP/mcp.json")" --timeout 30000 2>&1)
+  DIFF_EXIT=$?
   echo "$DIFF_OUTPUT" > "$TMP/diff.txt"
 
   # Count ONLY per-item bracket lines — the "DRIFT DETECTED (N finding(s))"
@@ -143,7 +144,11 @@ for i in $VERSIONS; do
   COSMETIC=$(grep -cF "(COSMETIC)" "$TMP/diff.txt" || true)
   ANNOTATION=$(grep -cF "(ANNOTATION)" "$TMP/diff.txt" || true)
 
-  if echo "$DIFF_OUTPUT" | grep -q "clean"; then
+  if [ $DIFF_EXIT -eq 3 ]; then
+    # infra error: server unreachable — skip, don't count as clean or drift
+    echo "  [$PAIR_NUM] $i → $NEXT: ⏭️ INFRA SKIP (server unreachable, exit 3)"
+    continue
+  elif [ $DIFF_EXIT -eq 0 ]; then
     TOTAL_CLEAN=$((TOTAL_CLEAN + 1))
     echo "  [$PAIR_NUM] $i → $NEXT: ✅ clean"
     pair_json "$i" "$NEXT" true 0 0 0 0 0 0

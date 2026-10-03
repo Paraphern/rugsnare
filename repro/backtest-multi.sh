@@ -16,7 +16,7 @@ run() { # pkg arg label
 
 run @modelcontextprotocol/server-filesystem /tmp "filesystem"
 run @modelcontextprotocol/server-memory /tmp "memory"
-run @modelcontextprotocol/server-everything /tmp "everything"
+run @modelcontextprotocol/server-everything stdio "everything"
 run @modelcontextprotocol/server-sequential-thinking /tmp "sequential-thinking"
 
 echo ""

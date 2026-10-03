@@ -41,6 +41,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
     const reqHeaders = {
       'content-type': 'application/json',
       'accept': 'application/json, text/event-stream',
+      'mcp-protocol-version': '2025-06-18',
       ...headers,
     };
     if (sessionId) reqHeaders['mcp-session-id'] = sessionId;
@@ -62,8 +63,17 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
 
       if (res.statusCode !== 200) {
         let err = '';
-        res.on('data', (c) => { err += c; if (err.length > 1000) req.destroy(); });
+        let errSettled = false;
+        res.on('data', (c) => {
+          err += c;
+          if (err.length > 1000) {
+            req.destroy();
+            if (!errSettled) { errSettled = true; reject(new Error(`HTTP ${res.statusCode}: ${err.slice(0, 200)}`)); }
+          }
+        });
         res.on('end', () => {
+          if (errSettled) return;
+          errSettled = true;
           // try to surface the JSON-RPC error message if present
           try {
             const parsed = JSON.parse(err);
@@ -74,34 +84,55 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
           } catch { /* not JSON — fall through */ }
           reject(new Error(`HTTP ${res.statusCode}: ${err.slice(0, 200)}`));
         });
+        res.on('close', () => {
+          if (!errSettled) { errSettled = true; reject(new Error(`HTTP ${res.statusCode}: connection closed`)); }
+        });
         return;
       }
 
       const contentType = res.headers['content-type'] || '';
       let raw = '';
+      let settled = false;
+      const settle = (fn, value) => { if (!settled) { settled = true; fn(value); } };
+
       res.on('data', (c) => {
         raw += c;
-        if (raw.length > 5 * 1024 * 1024) req.destroy();
+        if (raw.length > 5 * 1024 * 1024) {
+          req.destroy();
+          settle(reject, new Error('response body exceeded 5MB limit'));
+        }
       });
+      res.on('aborted', () => settle(reject, new Error('response aborted mid-body')));
+      res.on('close', () => settle(reject, new Error('response closed before completion')));
       res.on('end', () => {
         try {
           if (contentType.includes('text/event-stream')) {
-            // SSE: extract the last `data:` line that contains JSON
+            // SSE: find the data line whose JSON-RPC id matches our request
             const lines = raw.split('\n').filter((l) => l.startsWith('data:'));
+            const wantId = message.id;
             for (let i = lines.length - 1; i >= 0; i--) {
               const json = lines[i].slice(5).trim();
-              if (json) {
-                resolve({ ...JSON.parse(json), sessionId: sid });
-                return;
-              }
+              if (!json) continue;
+              try {
+                const parsed = JSON.parse(json);
+                if (wantId !== undefined && parsed.id === wantId) {
+                  settle(resolve, { ...parsed, sessionId: sid });
+                  return;
+                }
+                // if no id match, take the last parseable one as fallback
+                if (i === 0 || lines.length === 1) {
+                  settle(resolve, { ...parsed, sessionId: sid });
+                  return;
+                }
+              } catch { /* not JSON — skip line */ }
             }
-            reject(new Error('SSE response contained no data lines'));
+            settle(reject, new Error('SSE response contained no matching data lines'));
           } else {
             // Plain JSON
-            resolve({ ...JSON.parse(raw), sessionId: sid });
+            settle(resolve, { ...JSON.parse(raw), sessionId: sid });
           }
         } catch (e) {
-          reject(new Error(`parse error: ${e.message}`));
+          settle(reject, new Error(`parse error: ${e.message}`));
         }
       });
     });

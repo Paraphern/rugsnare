@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RugSnare: pin release v0.5.0 on-chain</title>
+<link rel="stylesheet" href="pin.css">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+</head>
+<body>
+<div class="card">
+  <h1>RugSnare: pin release <code>v0.5.0</code></h1>
+  <p>This sends one transaction to the <b>ReleaseLog</b> contract on Base Sepolia.</p>
+  <p>artifact sha256: <code>4014399…0f03f</code></p>
+  <p id="status" class="small">Connect MetaMask (account 0x24d0…, network Base Sepolia).</p>
+  <button id="pin" onclick="pin()">PIN v0.5.0 ON-CHAIN</button>
+</div>
+<script>
+const CONTRACT='0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e';
+const DATA='0x8e5f2db892952f0b05a5e3bc794aeb47a698369a2d3befa6645200898e3d45901f654b4f4014399293cc16edbd07770bc3f2f17fe3b0024ecfa4256c896f16b55fb0f03f00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000005302e352e30000000000000000000000000000000000000000000000000000000';
+const CHAIN_ID='0x14a34';
+const $=(s)=>document.getElementById(s);
+async function pin(){const b=$('pin');try{b.disabled=true;
+if(!window.ethereum)throw new Error('MetaMask not found');
+$('status').textContent='Requesting accounts…';
+const a=await window.ethereum.request({method:'eth_requestAccounts'});
+$('status').textContent='Switching to Base Sepolia…';
+try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_ID}]})}catch(e){if(e.code===4902){await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:CHAIN_ID,chainName:'Base Sepolia',rpcUrls:['https://sepolia.base.org'],nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},blockExplorerUrls:['https://sepolia.basescan.org']}]})}else throw e}
+$('status').textContent='Confirm in MetaMask…';
+const tx=await window.ethereum.request({method:'eth_sendTransaction',params:[{from:a[0],to:CONTRACT,value:'0x0',data:DATA}]});
+$('status').innerHTML='<span class="ok">Pinned! Tx: <a href="https://sepolia.basescan.org/tx/'+tx+'" target="_blank">'+tx.slice(0,18)+'…</a></span>';b.textContent='DONE ✔';
+}catch(e){$('status').innerHTML='<span class="err">'+(e.message||e)+'</span>';b.disabled=false}}
+</script>
+</body>
+</html>
