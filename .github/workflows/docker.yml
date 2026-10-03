@@ -26,5 +26,5 @@ jobs:
           file: docker/Dockerfile
           push: true
           tags: |
-            paraphern/rugsnare-mcp:latest
-            paraphern/rugsnare-mcp:${{ github.ref_name }}
+            geraldmuddlethwack/rugsnare-mcp:latest
+            geraldmuddlethwack/rugsnare-mcp:${{ github.ref_name }}
