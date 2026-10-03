@@ -5,7 +5,7 @@
 > **66 version pairs · 43 clean · 23 pairs with silent changes · 140 findings** —
 > not one of them announced in a changelog.
 
-Findings split: **43 BREAKING** (schema changed) · **28 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **7 COSMETIC** (description reworded) · **37 NEW items** (of them: 24 tools, 5 prompts, 8 resources) · **24 REMOVED**.
+Findings split: **43 BREAKING** (schema changed) · **28 ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **7 COSMETIC** (description reworded) · **1 PROMPT/RESOURCE** (server prompt content changed) · **37 NEW items** (of them: 24 tools, 5 prompts, 8 resources) · **24 REMOVED**.
 
 ## Per server
 
@@ -243,11 +243,11 @@ Findings split: **43 BREAKING** (schema changed) · **28 ANNOTATION** (behaviora
 bash repro/backtest-multi.sh   # ~20 minutes, four official servers, full history
 ```
 
-*Coverage note: 66 version pairs exist across the four servers; 52 pairs are measured. The 2025-12 → 2026-08 line of `server-everything` does not start headless in this harness — scan fails, the pair is skipped, and nothing is imputed for it.*
+*Coverage: complete — all 66 stable release pairs across the four servers were measured, zero skipped.*
 
 ## Why this matters
 
 Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent's instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.
 
 ---
-*Generated 2026-10-02T21:15:55.290Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.4.0, 66 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*
+*Generated 2026-10-03T09:24:23.477Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.5.0, 66 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*

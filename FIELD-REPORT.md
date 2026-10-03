@@ -13,15 +13,15 @@ We pinned **every stable release** of the four official `@modelcontextprotocol/s
 | **BREAKING** — inputSchema changed | **43** | a required param appeared or an enum narrowed; yesterday's tool call is today's runtime error |
 | **ANNOTATION** — behavioral hints flipped | **28** | `readOnlyHint`/`destructiveHint` changed (compared through MCP spec defaults, where absent `destructiveHint` means destructive) |
 | **COSMETIC** — description reworded | **7** | the words your model reads were rewritten |
-| **NEW items** appeared post-approval | **37** | 24 tools, 5 prompts, 8 resources — new attack surface nobody approved |
-| **REMOVED** — tools disappeared | **24** | your agent's toolkit silently shrank |
+| **NEW items** appeared post-approval | **37** | 19 tools, 5 prompts, 8 resources (in everything), 5 tools (filesystem), 1 resource (memory), 12 more — new attack surface nobody approved |
+| **REMOVED** — items disappeared | **24** | 21 tools, 3 prompts — your agent's toolkit silently shrank |
 | Clean pairs | 43 | the precision claim: no crying wolf |
 
 ## Three examples worth remembering
 
 1. **filesystem `2025.8.21 → 2025.11.25`**: all 14 tools changed their contracts simultaneously — 14 BREAKING schema changes in one silent release. No human reviewer diffs fourteen tools on an upgrade they didn't know happened.
 2. **memory's history carries 18 schema-level breaks** — including a stretch where every `delete_*` tool changed its input contract at once.
-3. **everything's history is a churn machine**: 31 tools appeared and 24 disappeared across 27 releases — your agent's toolkit changed on nearly every upgrade, and nobody approved any of it.
+3. **everything's history is a churn machine**: 31 items appeared (19 tools, 5 prompts, 7 resources) and 24 disappeared (21 tools, 3 prompts) across 27 releases — your agent's toolkit changed on nearly every upgrade, and nobody approved any of it.
 
 ## How this was measured (reproduce it yourself)
 

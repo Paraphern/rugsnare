@@ -166,8 +166,8 @@ If an attacker changes the code but not the contract, no description hash can se
 | BREAKING (schema changed) | **43** |
 | ANNOTATION (behavioral hints flipped, spec-default aware) | **28** |
 | COSMETIC (description reworded) | **7** |
-| New items that appeared post-approval | **37** (24 tools, 5 prompts, 8 resources) |
-| Items removed post-approval | **24** |
+| New items that appeared post-approval | **37** (19 tools, 5 prompts, 8 resources, 5 more tools) |
+| Items removed post-approval | **24** (21 tools, 3 prompts) |
 | Clean pairs (precision, no crying wolf) | **43** |
 
 **140 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` changed all 14 tool contracts simultaneously — 14 BREAKING schema changes in one silent release; everything's history is a churn machine: 31 tools appeared and 24 disappeared across 27 releases. Reproduce on your machine: one command, ~30 minutes, deterministic — see the report footer.

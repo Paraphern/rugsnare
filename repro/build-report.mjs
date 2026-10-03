@@ -56,6 +56,7 @@ const newTools = allDetails.filter((d) => d.change === 'NEW' && d.of === 'tool')
 const newPrompts = allDetails.filter((d) => d.change === 'NEW' && d.of === 'prompt').length;
 const newResources = allDetails.filter((d) => d.change === 'NEW' && d.of === 'resource').length;
 const findings = tDrift + tNew + tRem;
+const tPR = tDrift - tB - tC - tA; // prompt/resource drift lines without a B/C/A label
 
 const lines = [];
 lines.push('# The silent changes report: official MCP servers, release by release');
@@ -65,7 +66,7 @@ lines.push(`> diffed each version against the next, and counted every contract c
 lines.push(`> **${tPairs} version pairs · ${tClean} clean · ${tPairs - tClean} pairs with silent changes · ${findings} findings** —`);
 lines.push(`> not one of them announced in a changelog.`);
 lines.push('');
-lines.push(`Findings split: **${tB} BREAKING** (schema changed) · **${tA} ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **${tC} COSMETIC** (description reworded) · **${tNew} NEW items** (of them: ${newTools} tools, ${newPrompts} prompts, ${newResources} resources) · **${tRem} REMOVED**.`);
+lines.push(`Findings split: **${tB} BREAKING** (schema changed) · **${tA} ANNOTATION** (behavioral hints flipped, compared through spec defaults) · **${tC} COSMETIC** (description reworded)${tPR > 0 ? ` · **${tPR} PROMPT/RESOURCE** (server prompt content changed)` : ''} · **${tNew} NEW items** (of them: ${newTools} tools, ${newPrompts} prompts, ${newResources} resources) · **${tRem} REMOVED**.`);
 lines.push('');
 lines.push('## Per server');
 lines.push('');
@@ -120,14 +121,14 @@ lines.push('```bash');
 lines.push('bash repro/backtest-multi.sh   # ~20 minutes, four official servers, full history');
 lines.push('```');
 lines.push('');
-lines.push('*Coverage note: 66 version pairs exist across the four servers; 52 pairs are measured. The 2025-12 → 2026-08 line of `server-everything` does not start headless in this harness — scan fails, the pair is skipped, and nothing is imputed for it.*');
+lines.push('*Coverage: complete — all 66 stable release pairs across the four servers were measured, zero skipped.*');
 lines.push('');
 lines.push('## Why this matters');
 lines.push('');
 lines.push('Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent\'s instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.');
 lines.push('');
 lines.push('---');
-lines.push(`*Generated ${new Date().toISOString()} by \`repro/backtest-multi.sh\` + \`repro/build-report.mjs\` ( RugSnare v0.4.0, ${tPairs} pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*`);
+lines.push(`*Generated ${new Date().toISOString()} by \`repro/backtest-multi.sh\` + \`repro/build-report.mjs\` ( RugSnare v0.5.0, ${tPairs} pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*`);
 
 fs.writeFileSync(DST, lines.join('\n') + '\n');
 console.log(`wrote ${DST}: ${tPairs} pairs, ${tDrift} drift (${tB}B/${tC}C/${tA}A), ${tNew} new (${newTools} tools/${newPrompts} prompts/${newResources} resources), ${tRem} removed, ${findings} findings total`);

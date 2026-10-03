@@ -65,7 +65,7 @@ Here's the honest part: **my keyword heuristics originally missed this exact tex
 
 ### The bigger picture
 
-While reproducing these, I also ran a historical backtest: every stable release of the four official `@modelcontextprotocol/server-*` reference servers, pinned and diffed pair by pair — **52 version pairs, 74 silent contract changes** (34 schema-level BREAKING, 24 behavioral annotation flips, 6 description rewrites, 10 new items), none announced in a changelog. Report with every version number and repro command: https://github.com/Paraphern/rugsnare/blob/main/repro/SILENT-CHANGES-REPORT.md
+While reproducing these, I also ran a historical backtest: every stable release of the four official `@modelcontextprotocol/server-*` reference servers, pinned and diffed pair by pair — **all 66 version pairs, 140 silent contract changes** (43 schema-level BREAKING, 28 behavioral annotation flips, 7 description rewrites, 1 prompt drift, 37 new items, 24 removed), none announced in a changelog. Report with every version number, was/became text, and a one-command repro: https://github.com/Paraphern/rugsnare/blob/main/repro/SILENT-CHANGES-REPORT.md
 
 Scanners check once, at install time. `npx -y pkg@latest` re-rolls the dice on every launch. The gap between what you approved and what actually runs is where all three incidents above lived.
 
@@ -77,8 +77,9 @@ Scanners check once, at install time. `npx -y pkg@latest` re-rolls the dice on e
 
 ### Notes for us (not part of the post)
 
-- Numbers to keep consistent with FIELD-REPORT: 52 pairs / 74 findings / 34-24-6-10 / 35 clean.
+- Numbers to keep consistent with FIELD-REPORT: 66 pairs / 140 findings / 43B-28A-7C-1PR-37new-24removed / 43 clean.
 - postmark receipt: `npm view postmark-mcp` → E404 "Unpublished on 2025-09-25" (verified 2026-10-02).
 - Case 1 and 2 honestly mapped to OTHER layers (code scanning, provenance) — this honesty is deliberate and differentiating; don't oversell.
 - Case 3 demo outputs above are REAL captured outputs (tools/demo-rugpull.sh), not mocked.
 - Timing: post after npm publish + first Reddit warm-up days; follow 90/10 rule, disclose authorship.
+- The "bigger picture" section below needs updated numbers too.
