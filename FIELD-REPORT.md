@@ -13,7 +13,7 @@ We pinned **every stable release** of the four official `@modelcontextprotocol/s
 | **BREAKING** — inputSchema changed | **43** | a required param appeared or an enum narrowed; yesterday's tool call is today's runtime error |
 | **ANNOTATION** — behavioral hints flipped | **28** | `readOnlyHint`/`destructiveHint` changed (compared through MCP spec defaults, where absent `destructiveHint` means destructive) |
 | **COSMETIC** — description reworded | **7** | the words your model reads were rewritten |
-| **NEW items** appeared post-approval | **37** | 19 tools, 5 prompts, 8 resources (in everything), 5 tools (filesystem), 1 resource (memory), 12 more — new attack surface nobody approved |
+| **NEW items** appeared post-approval | **37** | 24 tools, 5 prompts, 8 resources — new attack surface nobody approved |
 | **REMOVED** — items disappeared | **24** | 21 tools, 3 prompts — your agent's toolkit silently shrank |
 | Clean pairs | 43 | the precision claim: no crying wolf |
 

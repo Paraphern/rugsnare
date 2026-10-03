@@ -250,4 +250,4 @@ bash repro/backtest-multi.sh   # ~20 minutes, four official servers, full histor
 Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent's instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.
 
 ---
-*Generated 2026-10-03T09:24:23.477Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.5.0, 66 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*
+*Generated 2026-10-03T09:56:35.994Z by `repro/backtest-multi.sh` + `repro/build-report.mjs` ( RugSnare v0.5.1, 66 pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*

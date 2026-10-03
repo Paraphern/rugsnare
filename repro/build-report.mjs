@@ -128,7 +128,7 @@ lines.push('');
 lines.push('Your agent obeys tool descriptions. When a server changes a description, a schema, or a behavioral hint after you approved it, the agent\'s instructions change — silently. Scanners check once at install; `npx -y pkg@latest` re-rolls the dice on every launch. This report is what that looks like on the four servers everyone installs first.');
 lines.push('');
 lines.push('---');
-lines.push(`*Generated ${new Date().toISOString()} by \`repro/backtest-multi.sh\` + \`repro/build-report.mjs\` ( RugSnare v0.5.0, ${tPairs} pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*`);
+lines.push(`*Generated ${new Date().toISOString()} by \`repro/backtest-multi.sh\` + \`repro/build-report.mjs\` ( RugSnare v0.5.1, ${tPairs} pairs ). Zero dependencies, no telemetry, every number reproducible on your machine.*`);
 
 fs.writeFileSync(DST, lines.join('\n') + '\n');
 console.log(`wrote ${DST}: ${tPairs} pairs, ${tDrift} drift (${tB}B/${tC}C/${tA}A), ${tNew} new (${newTools} tools/${newPrompts} prompts/${newResources} resources), ${tRem} removed, ${findings} findings total`);

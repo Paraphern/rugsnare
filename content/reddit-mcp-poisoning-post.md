@@ -82,4 +82,4 @@ Scanners check once, at install time. `npx -y pkg@latest` re-rolls the dice on e
 - Case 1 and 2 honestly mapped to OTHER layers (code scanning, provenance) — this honesty is deliberate and differentiating; don't oversell.
 - Case 3 demo outputs above are REAL captured outputs (tools/demo-rugpull.sh), not mocked.
 - Timing: post after npm publish + first Reddit warm-up days; follow 90/10 rule, disclose authorship.
-- The "bigger picture" section below needs updated numbers too.
+- The "bigger picture" section numbers are updated (66/140).

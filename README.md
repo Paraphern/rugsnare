@@ -166,7 +166,7 @@ If an attacker changes the code but not the contract, no description hash can se
 | BREAKING (schema changed) | **43** |
 | ANNOTATION (behavioral hints flipped, spec-default aware) | **28** |
 | COSMETIC (description reworded) | **7** |
-| New items that appeared post-approval | **37** (19 tools, 5 prompts, 8 resources, 5 more tools) |
+| New items that appeared post-approval | **37** (24 tools, 5 prompts, 8 resources) |
 | Items removed post-approval | **24** (21 tools, 3 prompts) |
 | Clean pairs (precision, no crying wolf) | **43** |
 
