@@ -97,3 +97,30 @@ node product/src/cli.js verify rugsnare-1.0.0.tgz --version 1.0.0 --chain base  
 
 Проверка на обоих цепях после релиза:
 `verify --chain base-sepolia --version 0.5.1` (история) и `verify --chain base --version 1.0.0` (текущий).
+
+## Развёрнуто: Base Mainnet (2026-10-04)
+
+| Parameter | Value |
+|---|---|
+| Contract | `0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e` |
+| Network | Base Mainnet (chainId 8453 / 0x2105) — проверено eth_chainId |
+| Deploy tx | `0xaa1a44fe8167ac6e8090900b833f58467d2422dd351604e6d2431be5ebb89d56` (block 52173115, gas 465088) |
+| Genesis tx | `0x98d7bfca0247c74431c0ff6f2d47e7e661ff34cdc64a54eb5f164e306e9e7c44` (block 52173180, gas 24886) |
+| Pin 1.0.0 tx | `0x3be565297e9805c197ad38486b40f36e65b47d1dcb19371fa3526e68b121d2ee` (block 52173201, gas 70617) |
+| Signer | `0x24d0A3d0562CF4A62E5decAEB77356B51514258e` |
+| Genesis fingerprint | `87289542A1FB9A9AEA60974BEEEAD3348C93D91E` (same as Sepolia) |
+| Explorer | https://basescan.org/address/0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e |
+| Sourcify | Verified ✓ |
+| Note | Same contract address as Base Sepolia — same sender + same nonce on both chains = same CREATE address (deterministic deployment). |
+
+### Post-pin string check (1.0.0) — PASSED
+
+Decoded input from the transaction:
+```json
+{
+  "bytes32 versionKey": "0x06c015bd22b4c69690933c1058878ebdfef31f9aaae40bbe86d8a09fe1b2972c",
+  "bytes32 artifactHash": "0x39c0b9a7ba49ec709f24bc6f5562724e8574684f76df7b0b3ffd39977fff7a6d",
+  "string version": "1.0.0"
+}
+```
+**String = "1.0.0"** — correct. (Erratum 0.5.1 pinned the string "0.5.0"; lesson incorporated.)

@@ -22,8 +22,13 @@ export const DEFAULT_RPCS = Object.freeze({
 export const DEFAULT_CONTRACTS = Object.freeze({
   // Base Sepolia, deployed 2026-09-29, tx 0x51af00900781008967de8edd0c16b3ebd38d4d5b2f944cb32202089f83813955
   // genesis fingerprint published: 87289542A1FB9A9AEA60974BEEEAD3348C93D91E
+  // pins 0.1.0-0.5.1 (history chain)
   'base-sepolia': '0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e',
-  // base: set on first mainnet release
+  // Base Mainnet, deployed 2026-10-04, tx 0xaa1a44fe8167ac6e8090900b833f58467d2422dd351604e6d2431be5ebb89d56
+  // genesis fingerprint published: 87289542A1FB9A9AEA60974BEEEAD3348C93D91E
+  // pins from 1.0.0 onward (operational chain)
+  // same address as Sepolia: same sender + same nonce on both chains = same CREATE address
+  base: '0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e',
 });
 
 const PRIVATE_V4 = [
