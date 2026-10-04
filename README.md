@@ -27,11 +27,12 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (v0.1): `init` / `scan` / `diff` / `approve` / `verify` — hash pinning, drift detection, CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 0.5.1): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` — hash pinning, drift detection, live proxies (stdio + HTTP), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) — try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` — we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
 | `SECURITY.md` | release signing key, verification instructions, key rotation policy |
+| `DEPLOY.md` | release procedure — incl. the rule that released tags are immutable |
 
 ## Install
 
@@ -170,7 +171,7 @@ If an attacker changes the code but not the contract, no description hash can se
 | Items removed post-approval | **24** (21 tools, 3 prompts) |
 | Clean pairs (precision, no crying wolf) | **43** |
 
-**140 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` changed all 14 tool contracts simultaneously — 14 BREAKING schema changes in one silent release; everything's history is a churn machine: 31 tools appeared and 24 disappeared across 27 releases. Reproduce on your machine: one command, ~30 minutes, deterministic — see the report footer.
+**140 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` changed all 14 tool contracts simultaneously — 14 BREAKING schema changes in one silent release; everything's history is a churn machine: 31 items appeared (19 tools, 5 prompts, 7 resources) and 24 disappeared across its 27 releases. Reproduce on your machine: one command, ~30 minutes, deterministic — see the report footer.
 
 ## Status & roadmap
 
@@ -182,8 +183,10 @@ If an attacker changes the code but not the contract, no description hash can se
 | **v0.3.1** | ✅ shipped | Split hash — BREAKING (schema) vs COSMETIC (prose) drift classification (`--schema-only` / `--prose-only`); debounced summary alerts; `failMode: "closed"` option (`--fail-closed`) — proxy internal error blocks instead of forwarding, for strict environments |
 | **PR-diff Action** | ✅ shipped | Human-readable tool-contract diff on pull requests. [Demo: PR #2](https://github.com/Paraphern/rugsnare/pull/2) · [`action/pr-diff`](action/pr-diff/action.yml) |
 | **v0.4** | ✅ shipped | **Canary** — `rugsnare canary record/replay`: record real tool calls through the live proxy (opt-in, local), replay them against a new server version, deterministic verdict (BREAKING schema / behavior flip / COSMETIC) with CI exit codes; `action/canary` for GitHub Actions; **signed receipts** — Ed25519 hash-chain over the audit log, `receipts sign/verify/export` with an AAT-05-aligned dossier; **loop detector** advisory; **chameleon check** — `scan --chameleon` catches servers serving different contracts per client; advisory signals extended (imperative openers, explicit instruction-hijack phrases — forced advisory, exfil-carrier optional params); default `dangerous-shell` policy; `init` writes a .gitignore protecting local state |
-| **v0.5 (next)** | 🔜 | **AI Security Audit** — zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
+| **v0.5** | ✅ shipped | HTTP transport for `scan`/`diff` (Streamable HTTP, SSE, auth passthrough) · `wrap`/`unwrap` auto-config · SKILL.md scanning · human-readable schema diffs in pins ("added required parameter 'mode'") · floating-version advisory · MCP Registry entry + Docker Hub image |
+| **v0.6 (on main, unreleased)** | 🔜 | Full stdio/HTTP parity: ad-hoc `--url` pre-install recon, `doctor`, HTTP wrap (`--port`), canary record/replay over HTTP, call policies + loop detector in the HTTP proxy, `config` with validation, `events trim`, `unpin`, result inspection (advisory) |
+| **AI Security Audit** | 💭 | Zero-knowledge scanner for sensitive data in AI chats: API keys, SSH keys, credit cards (Luhn), crypto seed phrases, PII, database URLs, internal IPs. Local-only, screen-only, `--airgap` mode. `rugsnare audit --input <export>` |
 | **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*118 tests · 10 CI jobs · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*209 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

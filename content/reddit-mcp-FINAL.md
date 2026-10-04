@@ -56,7 +56,7 @@ Here's the honest part: **my keyword heuristics originally missed this exact tex
 
 ### The bigger picture
 
-While reproducing these, I also ran a historical backtest: every stable release of the four official `@modelcontextprotocol/server-*` reference servers, pinned and diffed pair by pair - **all 66 version pairs, 140 silent contract changes** (43 schema-level BREAKING, 28 behavioral annotation flips, 7 description rewrites, 37 new items, 24 removed), none announced in a changelog. Report with every version number, was/became text, and a one-command repro: [SILENT-CHANGES-REPORT.md](https://github.com/Paraphern/rugsnare/blob/main/repro/SILENT-CHANGES-REPORT.md)
+While reproducing these, I also ran a historical backtest: every stable release of the four official `@modelcontextprotocol/server-*` reference servers, pinned and diffed pair by pair - **all 66 version pairs, 140 silent contract changes** (43 schema-level BREAKING, 28 behavioral annotation flips, 7 description rewrites, 1 prompt-template change, 37 new items, 24 removed), none announced in a changelog. Report with every version number, was/became text, and a one-command repro: [SILENT-CHANGES-REPORT.md](https://github.com/Paraphern/rugsnare/blob/main/repro/SILENT-CHANGES-REPORT.md)
 
 Scanners check once, at install time. `npx -y pkg@latest` re-rolls the dice on every launch. The gap between what you approved and what actually runs is where all three incidents above lived.
 

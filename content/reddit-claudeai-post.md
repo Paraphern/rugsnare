@@ -9,6 +9,7 @@ This isn't hypothetical. We pinned every stable release of the 4 official `@mode
 - **66 version pairs, 140 silent contract changes, zero announced in a changelog**
 - 43 broke schemas (required params appeared, enums narrowed)
 - 28 flipped behavioral annotations (readOnlyHint, destructiveHint)
+- 7 rewrote descriptions and 1 changed a prompt template (no schema change, still not announced)
 - 37 new tools/prompts/resources appeared post-approval
 - 24 disappeared
 

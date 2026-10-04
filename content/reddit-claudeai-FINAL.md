@@ -65,7 +65,7 @@ I maintain **RugSnare**, a small open-source tool built exactly for this (Apache
 - `rugsnare run` -- wraps a live server and enforces policies (blocking the read `~/.ssh` / `~/.aws/credentials` class of calls), and quarantines mid-session swaps.
 - It also scans `SKILL.md` skill files with the same adversarial signals -- the ChainDrop class.
 
-Evidence it works, measured on real releases: we pinned **every stable version of the four official `@modelcontextprotocol/server-*` servers -- all 66 release pairs -- and counted 140 silent contract changes** (43 schema breaks, 28 behavioral-hint flips, 37 new items, 24 removals; 43 clean pairs). Not one was announced in a changelog. One command, ~30 minutes, reproducible on your machine.
+Evidence it works, measured on real releases: we pinned **every stable version of the four official `@modelcontextprotocol/server-*` servers -- all 66 release pairs -- and counted 140 silent contract changes** (43 schema breaks, 28 behavioral-hint flips, 7 description rewrites, 1 prompt-template change, 37 new items, 24 removals; 43 clean pairs). Not one was announced in a changelog. One command, ~30 minutes, reproducible on your machine.
 
 **Even if you never install a tool, do these:**
 
