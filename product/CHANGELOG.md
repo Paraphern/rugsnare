@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] — unreleased (on main)
+## [1.0.0] — 2026-10-04
 
 Everything since 0.5.1, released together. The version number is a stability
 commitment — see the contract at the bottom of this entry.

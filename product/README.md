@@ -24,7 +24,7 @@ Our backtest over 66 consecutive version pairs of official `modelcontextprotocol
 
 Zero dependencies. Node >= 18. Nothing leaves your machine.
 
-> **This README documents `main`.** The latest npm release is **0.5.1**; the commands added after it (`unpin`, `doctor`, `config`, `events trim`, the `--url` modes, HTTP wrap) ship in **0.6.0** — until then, from the repo: `git clone https://github.com/Paraphern/rugsnare && cd rugsnare/product && npm i -g .`
+> **This README documents `main`.** The latest npm release is **0.5.1**; the commands added after it (`unpin`, `doctor`, `config`, `events trim`, the `--url` modes, HTTP wrap, `audit`, `vault`) ship in **1.0.0** — until it is published, from the repo: `git clone https://github.com/Paraphern/rugsnare && cd rugsnare/product && npm i -g .`
 
 ```bash
 npx rugsnare init                    # scaffold .rugsnare/, show discovered MCP configs
