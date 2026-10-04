@@ -25,14 +25,14 @@ function tmpConfig(serverName, entry) {
   return { dir, file, cleanup: () => fs.rmSync(dir, { recursive: true, force: true }) };
 }
 
-test('wrap: inserts proxy command, preserves original, creates backup', () => {
+test('wrap: inserts proxy command, preserves original, creates backup', async () => {
   const { dir, file, cleanup } = tmpConfig('myserver', { command: 'node', args: ['server.js', '--port', '3000'] });
   try {
     // make cwd point to tmp so findConfigFile finds it
     const origCwd = process.cwd();
     process.chdir(dir);
     try {
-      const r = wrapServer('myserver');
+      const r = await wrapServer('myserver');
       assert.ok(!r.error, r.error);
       const json = JSON.parse(fs.readFileSync(file, 'utf8'));
       const entry = json.mcpServers.myserver;
@@ -44,14 +44,14 @@ test('wrap: inserts proxy command, preserves original, creates backup', () => {
   } finally { cleanup(); }
 });
 
-test('wrap twice: rejects; unwrap: restores original and removes backup', () => {
+test('wrap twice: rejects; unwrap: restores original and removes backup', async () => {
   const { dir, file, cleanup } = tmpConfig('svc', { command: 'python', args: ['server.py'] });
   try {
     const origCwd = process.cwd();
     process.chdir(dir);
     try {
-      wrapServer('svc');
-      const again = wrapServer('svc');
+      await wrapServer('svc');
+      const again = await wrapServer('svc');
       assert.ok(again.error, 'second wrap must fail');
       assert.match(again.error, /already wrapped/);
 
@@ -67,15 +67,60 @@ test('wrap twice: rejects; unwrap: restores original and removes backup', () => 
   } finally { cleanup(); }
 });
 
-test('wrap: HTTP server rejected with clear message', () => {
+test('wrap: HTTP server rewrites url to local proxy, auth moves into the marker', async () => {
+  const { dir, file, cleanup } = tmpConfig('remote', {
+    type: 'http',
+    url: 'https://api.example.com/mcp',
+    headers: { Authorization: 'Bearer sekrit' },
+  });
+  try {
+    const origCwd = process.cwd();
+    process.chdir(dir);
+    try {
+      const r = await wrapServer('remote');
+      assert.ok(!r.error, r.error);
+      assert.ok(Number.isInteger(r.port), 'wrap must report the chosen port');
+      assert.match(r.runCommand, /rugsnare run --name remote --url https:\/\/api\.example\.com\/mcp --port \d+/);
+      const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const entry = json.mcpServers.remote;
+      // live entry: localhost proxy, no auth sent to localhost
+      assert.match(entry.url, /^http:\/\/127\.0\.0\.1:\d+\/mcp$/);
+      assert.equal(entry.headers, undefined);
+      assert.equal(entry.type, 'http', 'still an HTTP-server entry — just a local one');
+      // marker keeps the original url + auth for `run` to use
+      assert.equal(entry.__rugsnare_original_command.url, 'https://api.example.com/mcp');
+      assert.deepEqual(entry.__rugsnare_original_command.headers, { Authorization: 'Bearer sekrit' });
+      assert.ok(fs.existsSync(file + '.rugsnare.bak'), 'backup must exist');
+    } finally { process.chdir(origCwd); }
+  } finally { cleanup(); }
+});
+
+test('wrap/unwrap: HTTP server restored to the exact original entry', async () => {
+  const original = { type: 'http', url: 'https://api.example.com/mcp', headers: { Authorization: 'Bearer sekrit' } };
+  const { dir, file, cleanup } = tmpConfig('remote', original);
+  try {
+    const origCwd = process.cwd();
+    process.chdir(dir);
+    try {
+      await wrapServer('remote');
+      const r = unwrapServer('remote');
+      assert.ok(!r.error, r.error);
+      const entry = JSON.parse(fs.readFileSync(file, 'utf8')).mcpServers.remote;
+      assert.deepEqual(entry, original, 'unwrap must restore url AND headers AND type');
+      assert.ok(!fs.existsSync(file + '.rugsnare.bak'), 'backup removed when no servers wrapped');
+    } finally { process.chdir(origCwd); }
+  } finally { cleanup(); }
+});
+
+test('wrap: HTTP server rejected with clear message', async () => {
   const { dir, cleanup } = tmpConfig('remote', { type: 'http', url: 'https://example.com/mcp' });
   try {
     const origCwd = process.cwd();
     process.chdir(dir);
     try {
-      const r = wrapServer('remote');
+      const r = await wrapServer('no-such-server');
       assert.ok(r.error);
-      assert.match(r.error, /HTTP transport/);
+      assert.match(r.error, /not found/);
     } finally { process.chdir(origCwd); }
   } finally { cleanup(); }
 });

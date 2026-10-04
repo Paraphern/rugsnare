@@ -148,7 +148,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
  * Fetch tools from an HTTP-based MCP server.
  * Same return shape as rpc.js fetchTools: { tools, prompts, resources }.
  */
-export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TIMEOUT, env = {} }) {
+export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TIMEOUT, env = {}, clientName = 'rugsnare' }) {
   const resolvedUrl = resolveUrl(url, env);
   let sessionId;
 
@@ -160,7 +160,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
       params: {
         protocolVersion: '2025-06-18',
         capabilities: {},
-        clientInfo: { name: 'rugsnare', version: '1' },
+        clientInfo: { name: clientName, version: '1' },
       },
     },
   });

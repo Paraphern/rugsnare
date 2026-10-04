@@ -71,19 +71,24 @@ export function classifyCallForReplay(toolName, { include = [], allCalls = false
 // ---- replay driver ----------------------------------------------------------
 
 /**
- * Spawn the server, run the MCP handshake, then replay every corpus call.
+ * Spawn the server (stdio) or open a Streamable HTTP session (url), run the
+ * MCP handshake, then replay every corpus call.
  * Process spawning lives in spawn-server.js (the only place it is allowed).
  * Returns { serverInfo, tools, calls } — never throws on tool errors; a call
  * that errors or times out is DATA for the classifier, not a failure.
  */
-export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeoutMs = 15000, include = [], allCalls = false }) {
+export function replayCorpus({ command, args = [], env = {}, cwd, url, corpus, timeoutMs = 15000, include = [], allCalls = false }) {
   return new Promise((resolve) => {
-    let spawnServerFn;
-    import('./spawn-server.js')
-      .then((m) => { spawnServerFn = m.spawnServer; start(m.spawnServer); })
-      .catch(() => resolve({ error: 'spawn-server.js missing — see README "What\'s inside"' }));
+    if (url) {
+      startWithHttp(url);
+    } else {
+      import('./spawn-server.js')
+        .then((m) => startWithStdio(m.spawnServer))
+        .catch(() => resolve({ error: 'spawn-server.js missing — see README "What\'s inside"' }));
+    }
 
-    function start(spawnServer) {
+    // ---- transport 1: stdio child process ----
+    function startWithStdio(spawnServer) {
       let child;
       try {
         child = spawnServer({ command, args, env, cwd, onStdout: () => {}, onStderr: () => {}, onExit: () => {} });
@@ -91,28 +96,7 @@ export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeou
         resolve({ error: String(err) });
         return;
       }
-
       const pending = new Map(); // id -> {resolve, timer}
-      const timers = new Set();
-      let settled = false;
-      const calls = [];
-      let serverInfo = null;
-      let tools = [];
-
-      const finish = (value) => {
-        if (settled) return;
-        settled = true;
-        for (const t of timers) clearTimeout(t);
-        timers.clear();
-        try { child.stdin.end(); } catch { /* gone */ }
-        try { child.kill(); } catch { /* gone */ }
-        resolve(value);
-      };
-      const fail = (msg) => finish({ error: msg });
-
-      const timer = setTimeout(() => fail(`server timed out after ${timeoutMs}ms`), timeoutMs);
-      timers.add(timer);
-
       const rl = readline.createInterface({ input: child.stdout });
       rl.on('line', (line) => {
         let msg;
@@ -124,14 +108,12 @@ export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeou
           ok(msg);
         }
       });
-
       const request = (method, params) =>
         new Promise((ok, failReq) => {
           const id = request.seq = (request.seq ?? 0) + 1;
           const t = setTimeout(() => {
             if (pending.has(id)) { pending.delete(id); failReq(new Error(`no response to ${method}`)); }
           }, timeoutMs);
-          timers.add(t);
           pending.set(id, { resolve: ok, timer: t });
           try {
             child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n');
@@ -140,12 +122,56 @@ export function replayCorpus({ command, args = [], env = {}, cwd, corpus, timeou
           }
         });
       request.seq = 0;
+      const notify = async () => { try { child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n'); } catch { /* gone */ } };
+      runSequence(request, notify, () => {
+        try { child.stdin.end(); } catch { /* gone */ }
+        try { child.kill(); } catch { /* gone */ }
+      });
+    }
+
+    // ---- transport 2: Streamable HTTP (remote servers, url mode) ----
+    function startWithHttp(targetUrl) {
+      let sessionId;
+      const request = async (method, params) => {
+        const { httpRpc } = await import('./rpc-http.js');
+        const id = request.seq = (request.seq ?? 0) + 1;
+        const out = await httpRpc({ url: targetUrl, env, timeoutMs, sessionId, message: { jsonrpc: '2.0', id, method, params } });
+        if (out.sessionId) sessionId = out.sessionId;
+        return out;
+      };
+      request.seq = 0;
+      const notify = async () => {
+        const { httpRpc } = await import('./rpc-http.js');
+        try { await httpRpc({ url: targetUrl, env, timeoutMs, sessionId, message: { jsonrpc: '2.0', method: 'notifications/initialized' } }); } catch { /* some servers reject notifications */ }
+      };
+      runSequence(request, notify, () => {});
+    }
+
+    // ---- shared handshake + replay sequence ----
+    function runSequence(request, notify, cleanup) {
+      const timers = new Set();
+      let settled = false;
+      const calls = [];
+      let serverInfo = null;
+      let tools = [];
+
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        for (const t of timers) clearTimeout(t);
+        timers.clear();
+        cleanup();
+        resolve(value);
+      };
+      const fail = (msg) => finish({ error: msg });
+      const timer = setTimeout(() => fail(`server timed out after ${timeoutMs}ms`), timeoutMs);
+      timers.add(timer);
 
       (async () => {
         const init = await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'rugsnare-canary', version: '1' } });
         if (init.error) return fail(`initialize failed: ${JSON.stringify(init.error)}`);
         serverInfo = init.result?.serverInfo ?? null;
-        child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
+        await notify();
 
         // tools/list with pagination (same discipline as rpc.js)
         let cursor;

@@ -1,12 +1,12 @@
 # rugsnare
 
-**Runtime integrity for MCP tool descriptions.** Scanners check MCP servers *before* you install them. RugSnare checks what happens *after*: an approved tool whose description silently changed is a rug pull, and it fails your build.
+**Runtime integrity for MCP tool contracts.** Scanners check MCP servers *before* you install them. RugSnare checks what happens *after*: an approved tool whose description or schema silently changed is a rug pull, and it fails your build.
 
 ```
 flights-search  (node ./server.js)
-  [DRIFT] search_flights 8c5ab922df5932ba -> fcc6d291d8ef4ab2
+  [DRIFT] search_flights 8c5ab922df5932ba -> fcc6d291d8ef4ab2  (BREAKING: added required parameter 'mode')
   [NEW ] _search_flights_pro 589ef74a38bb8d07
-  [DRIFT] get_booking 189261ab4cc7f0b6 -> 12da36af80ac39e5
+  [DRIFT] get_booking 189261ab4cc7f0b6 -> 12da36af80ac39e5  (COSMETIC: description edited)
 rugsnare diff: DRIFT DETECTED (3 finding(s))   # exit 1 — CI fails
 ```
 
@@ -14,19 +14,21 @@ rugsnare diff: DRIFT DETECTED (3 finding(s))   # exit 1 — CI fails
 
 MCP tool descriptions are instructions your agent obeys but nobody reads. They can change after you approve them (maintainer update, compromised registry, typosquatted package) — carrying hidden exfiltration orders. This attack class is codified as tool poisoning (OWASP MCP03:2025). Version pinning doesn't help when the version string doesn't change; scanning doesn't help after approval. Hash pinning does.
 
-## Install & use (v0.1 — CI gate)
+Our backtest over 66 consecutive version pairs of official `modelcontextprotocol/servers` releases found **140 silent tool-contract changes** — none of which a version bump alone would have flagged for review.
+
+## Install
 
 Zero dependencies. Node >= 18. Nothing leaves your machine.
 
 ```bash
-# in a repo (or anywhere):
-rugsnare init                       # scaffold .rugsnare/, show discovered MCP configs
-rugsnare scan --config .mcp.json    # baseline: pin current tool descriptions
-rugsnare diff --config .mcp.json    # live check; exit 1 on drift/new/removed
-rugsnare approve <server> --config .mcp.json   # re-pin after human review
+npx rugsnare init                    # scaffold .rugsnare/, show discovered MCP configs
+npx rugsnare scan                    # baseline: pin current tool contracts (auto-discovers configs)
+npx rugsnare diff                    # live check; exit 1 on drift/new/removed
+npx rugsnare approve <server>        # re-pin after human review
+npx rugsnare unpin <server>          # drop a departed server's pins (no more SHADOW/REMOVED ghosts)
 ```
 
-Auto-discovers `~/.claude.json`, `.mcp.json`, `~/.cursor/mcp.json`, `.cursor/mcp.json` when `--config` is omitted.
+Auto-discovers configs for Claude Code (`~/.claude.json`, `.mcp.json`), Cursor, Windsurf, VS Code, Zed, Cline, and ZCode plugin configs — including HTTP servers (`"url": "..."`). `--config <file>` overrides discovery.
 
 **CI (the point):** commit `.rugsnare/pins.json` to the repo, then:
 
@@ -34,22 +36,88 @@ Auto-discovers `~/.claude.json`, `.mcp.json`, `~/.cursor/mcp.json`, `.cursor/mcp
 - run: npx rugsnare diff --config .mcp.json
 ```
 
-Any tool description that changed since the last human approval fails the build.
+Or install the git pre-commit hook locally: `rugsnare hook install`.
+
+Any tool contract that changed since the last human approval fails the build. `--schema-only` fails only on BREAKING (schema) drift; `--prose-only` only on description edits. `--expect-tool <t>` / `--forbid-tool <t>` assert the tool set itself (forbid catches shadow injection).
+
+Docker: `geraldmuddlethwack/rugsnare-mcp` (auto-built from tags).
 
 ## What gets hashed
 
 `sha256` over the canonical `{ name, description, inputSchema }` of every tool — so poisoning (description edits) and shadowing (new "session" parameters in the schema) both trip, while cosmetic reordering doesn't.
 
-## Roadmap
+Each pin also stores a **split hash**: `schemaHash` (classified BREAKING on change) and `proseHash` (COSMETIC), plus the canonical `inputSchema` so drift reports read *"added required parameter 'mode'"* instead of just *"hash changed"*.
 
-- v0.2 — `rugsnare run`: live stdio proxy (observe → enforce quarantine), webhook alerts, per-call audit log
-- v0.3 — YAML policies, PII egress checks on tool arguments
-- later — hosted policy panel, signed + on-chain-pinned releases (`rugsnare verify --onchain`)
+Behavioral annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) are compared through their **spec defaults** — a server spelling out a hint it was already relying on is not flagged; silently dropping an explicit `destructiveHint: false` after approval is ANNOTATION drift.
+
+## Three layers
+
+### 1. CI gate — `scan` / `diff` / `approve`
+
+Pin, compare, re-approve. Works over stdio and HTTP (Streamable HTTP, JSON and SSE responses) servers. Auth for remote servers is read from the server's own config entry (`headers`, `auth: { type: "bearer", token: "${MY_TOKEN}" }`, `apiKey`), with `${ENV_VAR}` interpolation — secrets stay in the environment, never in pins.
+
+**Pre-install recon** — check a remote server *before* adding it to any config:
+
+```bash
+rugsnare scan --server candidate --url https://remote.example.com/mcp --header "Authorization: Bearer $TOKEN"
+rugsnare diff  --server candidate --url https://remote.example.com/mcp   # later: did it change since?
+```
+
+`rugsnare doctor` self-diagnoses the whole setup: discovered configs, pin health, pins never reviewed by a human, policy validity, receipts chain integrity.
+
+Settings live in `.rugsnare/config.json` — edit them with validation instead of by hand:
+
+```bash
+rugsnare config set mode enforce          # observe | enforce
+rugsnare config set failMode closed       # proxy internal errors block instead of forward
+rugsnare config set alertWebhook https://hooks.slack.com/services/...   # or "none" to clear
+rugsnare config set loopThreshold 5       # identical-call loop advisory (0 disables)
+```
+
+The event log is append-only and local; when it grows large, trim it explicitly (signed receipts are a separate hash-chained file and stay intact): `rugsnare events trim --keep-last 5000`.
+
+### 2. Live proxy — `run`
+
+Sits between your agent and the server, inspecting every message in both directions.
+
+```bash
+# stdio server:
+rugsnare run --name github --mode enforce -- npx -y @modelcontextprotocol/server-github
+# remote HTTP server:
+rugsnare run --name mycloud --url https://remote.example.com/mcp --mode enforce
+```
+
+- **observe** (default): log everything, alert on drift, forward traffic untouched.
+- **enforce**: drifted or unapproved tools are **quarantined** — replaced in `tools/list` by a `rugsnare_alert` stub telling the agent why. Pins and approvals are shared with the CLI (`diff`, `approve`) across restarts.
+- **Result inspection** (advisory-only): every tool response is scanned for injection indicators — instruction overrides, imperative commands, credential references, exfiltration endpoints, "don't tell the user", identity changes, invisible Unicode. Suspect results are logged and flagged, never blocked (the data already arrived; hiding it would be worse).
+- **Call policies** (YAML/JSON): allow/deny tools, PII egress checks on arguments, dangerous-shell detection. Enforced identically by the stdio and HTTP proxies — a blocked call is answered locally and never reaches the server.
+- **Chameleon check**: `scan --chameleon` re-lists tools as different clients (claude-desktop/cursor); a different contract per client is the strongest tool-poisoning signal there is. Works over stdio **and HTTP** — where per-client serving is trivially easy for a remote server.
+- `--fail-closed`: on a proxy internal error, block the message instead of forwarding.
+- `rugsnare wrap <server>` inserts the proxy into your MCP config automatically — stdio entries become `npx rugsnare run -- …`; HTTP entries are repointed at a local proxy (wrap picks a free port and prints the exact `run --url … --port …` command to keep running). `unwrap` restores the original either way.
+
+### 3. Evidence — `receipts`, `canary`, on-chain `verify`
+
+- `receipts sign|verify|export` — Ed25519 hash-chain over the local event log; tamper-evident audit trail, auditor dossier export.
+- `canary record|replay` — record real tool-call traces, replay them against a new server version before you upgrade (read-only calls by default; write-class only with explicit `--include`/`--all-calls` in a sandbox). Works over stdio **and HTTP** — record through the proxy (`canary record --name X --url …`), replay against the new endpoint (`canary replay --name X` falls back to the pinned URL).
+- `rugsnare verify <file> --version <v>` — check a release artifact against the on-chain ReleaseLog pin (Base / Base Sepolia; keccak-256 version key, sha-256 artifact hash).
+
+### RugSnare as an MCP server — `rugsnare mcp`
+
+The same binary runs as a read-only MCP server (`drift_feed_status`, `pins_report`) so your agent can ask whether anything drifted.
+
+## Advisory signals (scan-time, non-blocking)
+
+Tool **and prompt** descriptions are scored against 18 signals (A01–A18): instruction-hijack phrasing, imperative openers, exfiltration-carrier parameters, international phone numbers, ANSI escape sequences, and more. `REVIEW` findings tell you what a human should read before approving — they never fail the build by themselves.
 
 ## Trust posture
 
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
-- **No telemetry.** Local pin store, local JSONL event log.
+- **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
+- 209 tests, `node --test` only.
 
-*Early prototype. The attack corpus used in tests is educational; see `corpus/` in the repo root.*
+## Exit codes
+
+`0` clean · `1` drift detected · `2` config error · `3` infrastructure error (couldn't reach a server — not a drift verdict).
+
+*The attack corpus used in tests is educational; see `corpus/` in the repo root.*

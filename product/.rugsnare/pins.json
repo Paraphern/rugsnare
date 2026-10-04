@@ -16,8 +16,20 @@
             "title": "Search Cloudflare docs",
             "readOnlyHint": true
           },
+          "inputSchema": {
+            "type": "object",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
           "firstSeen": "2026-10-02T19:29:42.252Z",
-          "pinnedAt": "2026-10-02T19:34:14.991Z",
+          "pinnedAt": "2026-10-03T21:21:47.866Z",
           "approved": true
         },
         "migrate_pages_to_workers_guide": {
@@ -29,8 +41,13 @@
             "title": "Get Pages migration guide",
             "readOnlyHint": true
           },
+          "inputSchema": {
+            "type": "object",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {}
+          },
           "firstSeen": "2026-10-02T19:29:42.252Z",
-          "pinnedAt": "2026-10-02T19:34:14.992Z",
+          "pinnedAt": "2026-10-03T21:21:47.868Z",
           "approved": true
         }
       },
@@ -38,7 +55,7 @@
         "workers-prompt-full": {
           "hash": "304f2e859293911f0589e70c3d20f870204b0358f3d90063bb932d936821a50b",
           "description": "Detailed prompt for generating Cloudflare Workers code (and other developer platform products) from https://developers.cloudflare.com/workers/prompt.txt",
-          "firstSeen": "2026-10-02T19:34:14.993Z"
+          "firstSeen": "2026-10-03T21:21:47.869Z"
         }
       },
       "resources": {}

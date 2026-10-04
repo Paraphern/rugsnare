@@ -126,7 +126,16 @@ async function main() {
       process.stderr.write(` done (${data.tools.length} tools, ${comparison.changes.length} changes)\n`);
     } catch (err) {
       process.stderr.write(` FAILED: ${err.message}\n`);
-      allChanges.push({ ts: new Date().toISOString(), server: server.name, type: 'ERROR', detail: err.message.slice(0, 200) });
+      // A monitored package vanishing from npm is not a generic error — it is
+      // the postmark-mcp incident class (package unpublished / renamed). Feed
+      // consumers must be able to alert on it specifically.
+      const gone = /E404|not found|404/i.test(String(err.message));
+      allChanges.push({
+        ts: new Date().toISOString(),
+        server: server.name,
+        type: gone ? 'PACKAGE_GONE' : 'ERROR',
+        detail: err.message.slice(0, 200),
+      });
     }
   }
 

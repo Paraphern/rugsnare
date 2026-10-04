@@ -8,12 +8,12 @@ import {
   loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay, detectShadows,
 } from './pins.js';
 import { loadConfig, saveConfig } from './alerts.js';
-import { logEvent } from './events.js';
+import { logEvent, eventsPath } from './events.js';
 import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
 import { readJsonFile } from './jsonfile.js';
 import { buildSarif } from './sarif.js';
-import { scanToolsForAdvisories } from './advisory.js';
+import { scanToolsForAdvisories, scanToolDescription } from './advisory.js';
 import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -36,16 +36,31 @@ Usage:
   rugsnare scan [--config <mcp.json>] [--server <name>] [--chameleon]
                                                          --chameleon: re-list tools as claude-desktop/cursor;
                                                          different contract per client = CHAMELEON, exit 1
+  rugsnare scan --server <name> --url <https://remote/mcp> [--header "Name: Value"]...
+                                                         ad-hoc: pin a remote server BEFORE adding it to any config
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
                 [--expect-tool <t>]... [--forbid-tool <t>]...   contract assertions (forbid catches shadow injection)
+  rugsnare diff --server <name> --url <https://remote/mcp>    compare pins against THIS endpoint (overrides config)
   rugsnare approve <server> [--config <mcp.json>]
+  rugsnare unpin <server>             drop a departed server's pins (stops SHADOW/REMOVED ghosts)
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
+  rugsnare doctor                    self-diagnosis: configs, pins, approvals, receipts chain
+  rugsnare events [count]            event log size (append-only; local)
+  rugsnare events trim --keep-last <n>   shrink the log (receipts stay intact)
+  rugsnare config [list] | get <k> | set <k> <v>   validated edits to .rugsnare/config.json
+                                                (mode, failMode, alertWebhook, logCallArgs, canaryRecord, loopThreshold, resultThreshold)
+  rugsnare mcp                        run rugsnare itself as a read-only MCP server (drift_feed_status, pins_report)
+  rugsnare hook install               git pre-commit hook: block commits when contracts have drifted
   rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
                                                          live stdio proxy (defaults: observe, fail-open)
-  rugsnare canary record --name <server> -- <command>    record tool-call traces (opt-in, local file)
-  rugsnare canary replay --name <server> [--strict] [--include <tool>]... [--all-calls] -- <command>
-                                                         replay corpus vs new version; read-only calls by default;
+  rugsnare run --name <server> --url <https://remote/mcp> [--mode observe|enforce] [--port <n>]
+                                                         live HTTP reverse proxy on localhost (Streamable HTTP);
+                                                         auth from the server config entry (headers/auth) or MCP_AUTH_TOKEN;
+                                                         point your MCP client at the printed URL; --port for wrap mode
+  rugsnare canary record --name <server> [--url <https://...>] -- <command>   record tool-call traces (opt-in, local file)
+  rugsnare canary replay --name <server> [--strict] [--include <tool>]... [--all-calls] [--url <https://...>] -- <command>
+                                                         replay corpus vs new version (stdio or HTTP); read-only calls by default;
                                                          --include/--all-calls replay write-class (sandbox only); exit 1 = breaking
   rugsnare wrap <server-name>                            insert the RugSnare proxy into your MCP config
   rugsnare unwrap <server-name>                          restore the original (undo wrap)
@@ -79,6 +94,10 @@ function parseArgs(argv) {
     else if (a === '--rpc') flags.rpc = argv[++i];
     else if (a === '--name') flags.name = argv[++i];
     else if (a === '--mode') flags.mode = argv[++i];
+    else if (a === '--url') flags.url = argv[++i];
+    else if (a === '--header') { (flags.header ??= []).push(argv[++i]); }
+    else if (a === '--port') flags.port = Number(argv[++i]);
+    else if (a === '--keep-last') flags.keepLast = parseInt(argv[++i], 10);
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
@@ -104,7 +123,41 @@ function readServersFromConfigFile(file) {
   return Object.fromEntries(Object.entries(servers).filter(([, v]) => v && (typeof v.command === 'string' || typeof v.url === 'string')));
 }
 
+/**
+ * Ad-hoc remote server (pre-install recon): `scan/diff --server <name> --url <https://...>`
+ * [--header "Name: Value"]... — check a remote MCP server BEFORE adding it to
+ * any config. Same trust model as curl: the operator names the target, so
+ * local hosts are legitimate (local HTTP MCP servers); only the scheme is
+ * restricted — http/https only, everything else is refused.
+ */
+function adhocServerEntry(flags) {
+  if (!flags.url) return null;
+  if (!flags.server) {
+    console.error('--url needs --server <name> (the name the pins will be stored under)');
+    process.exit(2);
+  }
+  let scheme;
+  try { scheme = new URL(flags.url).protocol; } catch { scheme = null; }
+  if (scheme !== 'http:' && scheme !== 'https:') {
+    console.error(`--url must be http(s), got: ${flags.url}`);
+    process.exit(2);
+  }
+  const entry = { url: flags.url };
+  if (flags.header) {
+    entry.headers = {};
+    for (const h of flags.header) {
+      const idx = h.indexOf(':');
+      if (idx <= 0) { console.error(`--header expects "Name: Value", got: ${h}`); process.exit(2); }
+      entry.headers[h.slice(0, idx).trim()] = h.slice(idx + 1).trim();
+    }
+  }
+  return entry;
+}
+
 function collectServers(flags) {
+  // Ad-hoc: --server <name> + --url <https://...> overrides every config source
+  const adhoc = adhocServerEntry(flags);
+  if (adhoc) return { source: `--url ${adhoc.url}`, servers: { [flags.server]: adhoc } };
   // Explicit --config wins; otherwise discovered client configs; otherwise pins.
   if (flags.config) return { source: flags.config, servers: readServersFromConfigFile(flags.config) };
   const discovered = discoverConfigs().filter((c) => c.servers && Object.keys(c.servers).length > 0);
@@ -116,7 +169,9 @@ function collectServers(flags) {
   const pins = loadPins();
   const fromPins = {};
   for (const [name, sp] of Object.entries(pins.servers)) {
-    if (sp.cmd) fromPins[name] = { command: sp.cmd.command, args: sp.cmd.args };
+    if (!sp.cmd) continue;
+    // HTTP transport: restore the url; stdio: restore the structured command
+    fromPins[name] = sp.cmd.url ? { url: sp.cmd.url } : { command: sp.cmd.command, args: sp.cmd.args };
   }
   return { source: 'pins', servers: fromPins };
 }
@@ -164,17 +219,29 @@ async function cmdScan(flags) {
     try {
       let tools, prompts, resources;
       let serverCmd;
+      // hoisted so --chameleon can re-list under spoofed clients on either transport
+      let command, args, env = {};
+      let httpHeaders = {};
 
       if (typeof entry.url === 'string') {
         // HTTP transport (Streamable HTTP, spec 2025-06-18)
         const { fetchToolsHttp } = await import('./rpc-http.js');
-        const headers = entry.headers ?? {};
-        const env = entry.env ?? {};
-        ({ tools, prompts, resources } = await fetchToolsHttp({ url: entry.url, headers, env, timeoutMs: flags.timeout }));
+        const { resolveAuth, authHelp } = await import('./auth.js');
+        httpHeaders = resolveAuth(entry);
+        env = entry.env ?? {};
+        try {
+          ({ tools, prompts, resources } = await fetchToolsHttp({ url: entry.url, headers: httpHeaders, env, timeoutMs: flags.timeout }));
+        } catch (authErr) {
+          if (/401|403|no permission|unauthorized/i.test(String(authErr))) {
+            console.error(`  [AUTH] ${name}: server requires authentication`);
+            console.error(`        ${authHelp(entry).split('\n').join('\n        ')}`);
+          }
+          throw authErr;
+        }
         serverCmd = { url: entry.url };
       } else {
         // stdio transport
-        const { command, args, env } = serverCommand(entry);
+        ({ command, args, env } = serverCommand(entry));
         ({ tools, prompts, resources } = await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout }));
         serverCmd = { command, args };
       }
@@ -202,6 +269,16 @@ async function cmdScan(flags) {
         logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
       }
 
+      // prompts are instructions too — the same advisory signals apply to
+      // prompt descriptions, not just tool descriptions
+      for (const p of prompts ?? []) {
+        const r = scanToolDescription(p.description ?? '');
+        if (r.advisory) {
+          console.error(`  [ADVISORY] ${name}/prompt:${p.name} — score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
+          logEvent({ kind: 'advisory', server: name, prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
+        }
+      }
+
       // floating-version advisory: unpinned npx/uvx/docker = auto-upgrade rug-pull vector
       if (typeof entry.command === 'string') {
         const { checkFloatingVersion } = await import('./floating.js');
@@ -222,7 +299,14 @@ async function cmdScan(flags) {
         const perClient = {};
         for (const client of CHAMELEON_CLIENTS) {
           try {
-            perClient[client] = (await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout, clientName: client })).tools;
+            if (typeof entry.url === 'string') {
+              // HTTP: per-client serving is trivially easy for a remote server —
+              // the chameleon check matters MORE here than over stdio
+              const { fetchToolsHttp } = await import('./rpc-http.js');
+              perClient[client] = (await fetchToolsHttp({ url: entry.url, headers: httpHeaders, env, timeoutMs: flags.timeout, clientName: client })).tools;
+            } else {
+              perClient[client] = (await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout, clientName: client })).tools;
+            }
           } catch { /* client-specific listing failed — skip that client, not the scan */ }
         }
         const found = compareAcrossClients(tools, perClient);
@@ -282,7 +366,11 @@ async function cmdDiff(flags) {
   // With --config, check what the client would run RIGHT NOW (path/version
   // swaps included). Without it, check the pinned command itself (the
   // classic "package updated in place" rug pull).
-  const configServers = flags.config ? readServersFromConfigFile(flags.config) : null;
+  // --url (with --server) overrides the transport for that one server:
+  // compare the pins against THIS endpoint, whatever the configs say.
+  const adhoc = adhocServerEntry(flags);
+  let configServers = flags.config ? readServersFromConfigFile(flags.config) : null;
+  if (adhoc) configServers = { ...(configServers ?? {}), [flags.server]: adhoc };
   const pinnedNames = Object.keys(pins.servers).filter((n) => pins.servers[n].cmd || configServers?.[n]);  const names = flags.server ? pinnedNames.filter((n) => n === flags.server) : pinnedNames;
   if (names.length === 0) { console.error('No pinned servers. Run `rugsnare scan` first.'); process.exit(2); }
 
@@ -299,9 +387,15 @@ async function cmdDiff(flags) {
     const configEntry = configServers?.[name];
     const isHttp = Boolean(configEntry?.url || sp.cmd?.url);
     const httpUrl = configEntry?.url ?? sp.cmd?.url;
-    const httpHeaders = configEntry?.headers ?? {};
     const stdioCmd = !isHttp ? (configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} }) : null;
     const displayCmd = isHttp ? httpUrl : [stdioCmd.command, ...stdioCmd.args].join(' ');
+
+    // auth-passthrough: resolve headers from config auth, env vars, or platform credentials
+    let httpHeaders = {};
+    if (isHttp) {
+      const { resolveAuth } = await import('./auth.js');
+      httpHeaders = resolveAuth(configEntry ?? { url: httpUrl, headers: sp.cmd?.headers });
+    }
 
     async function connect() {
       if (isHttp) {
@@ -312,7 +406,10 @@ async function cmdDiff(flags) {
     }
 
     try {
-      const { tools } = await connect();
+      // one connection per server: fetchTools/fetchToolsHttp return tools AND
+      // prompts AND resources — spawning the server twice per diff is waste
+      // (and for HTTP, a second full handshake)
+      const { tools, prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
       // Filter display based on --schema-only / --prose-only
       const verdicts = flags.schemaOnly
@@ -320,12 +417,7 @@ async function cmdDiff(flags) {
         : flags.proseOnly
           ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'COSMETIC')
           : allVerdicts;
-      // also compare prompts and resources if pinned
       const { promptHash, resourceHash, comparePinned } = await import('./prompts.js');
-      if (sp.prompts && Object.keys(sp.prompts).length > 0) {
-        // re-fetch prompts for comparison
-      }
-      const { prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       if (sp.prompts) verdicts.push(...comparePinned('prompt', sp.prompts, livePrompts, promptHash));
       if (sp.resources) verdicts.push(...comparePinned('resource', sp.resources, liveResources, resourceHash));
       for (const v of verdicts) {
@@ -380,15 +472,56 @@ async function cmdApprove(flags, serverName) {
   if (!serverName) { console.error('Usage: rugsnare approve <server>'); process.exit(2); }
   const pins = loadPins();
   const sp = pins.servers[serverName];
-  const configEntry = flags.config ? readServersFromConfigFile(flags.config)[serverName] : null;
+  // transport override, same as diff: rugsnare approve X --url <endpoint>
+  const adhoc = adhocServerEntry(flags);
+  const configServers = flags.config ? readServersFromConfigFile(flags.config) : null;
+  let configEntry = configServers?.[serverName] ?? null;
+  if (adhoc && flags.server === serverName) configEntry = adhoc;
   if (!sp?.cmd && !configEntry) { console.error(`No pinned server named "${serverName}". Run \`rugsnare scan\` first.`); process.exit(2); }
-  const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
-  const { tools } = await fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
-  const serverPin = ensureServer(pins, serverName, { command: cmd.command, args: cmd.args });
+
+  const isHttp = Boolean(configEntry?.url || sp.cmd?.url);
+  const httpUrl = configEntry?.url ?? sp.cmd?.url;
+  let connect;
+  let pinCmd;
+  if (isHttp) {
+    const { fetchToolsHttp } = await import('./rpc-http.js');
+    const { resolveAuth } = await import('./auth.js');
+    const headers = resolveAuth(configEntry ?? { url: httpUrl });
+    pinCmd = { url: httpUrl };
+    connect = () => fetchToolsHttp({ url: httpUrl, headers, env: configEntry?.env ?? {}, timeoutMs: flags.timeout });
+  } else {
+    const cmd = configEntry ? serverCommand(configEntry) : { command: sp.cmd.command, args: sp.cmd.args, env: {} };
+    pinCmd = { command: cmd.command, args: cmd.args };
+    connect = () => fetchTools({ command: cmd.command, args: cmd.args, env: cmd.env ?? {}, cwd: process.cwd(), timeoutMs: flags.timeout });
+  }
+
+  const { tools, prompts = [], resources = [] } = await connect();
+  const serverPin = ensureServer(pins, serverName, pinCmd);
   for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
+
+  // Approve re-baselines prompts and resources wholesale: the human reviewed
+  // the NEW state, so entries the server dropped must not ghost as REMOVED on
+  // every future diff — and drifted prompt hashes must actually clear.
+  // ensureServer returns the same object: capture the old maps before rewrite.
+  const { promptHash, resourceHash } = await import('./prompts.js');
+  const prevPrompts = serverPin.prompts ?? {};
+  const prevResources = serverPin.resources ?? {};
+  const now = new Date().toISOString();
+  const nextPrompts = {};
+  for (const p of prompts) {
+    nextPrompts[p.name] = { hash: promptHash(p), description: p.description ?? '', firstSeen: prevPrompts[p.name]?.firstSeen ?? now };
+  }
+  serverPin.prompts = nextPrompts;
+  const nextResources = {};
+  for (const r of resources) {
+    const key = r.name ?? r.uri ?? '(unnamed)';
+    nextResources[key] = { hash: resourceHash(r), description: r.description ?? '', firstSeen: prevResources[key]?.firstSeen ?? now };
+  }
+  serverPin.resources = nextResources;
+
   savePins(pins);
   logEvent({ kind: 'approve', server: serverName, tools: tools.length });
-  console.log(`Re-pinned ${serverName}: ${tools.length} tool(s) approved.`);
+  console.log(`Re-pinned ${serverName}: ${tools.length} tool(s), ${Object.keys(nextPrompts).length} prompt(s), ${Object.keys(nextResources).length} resource(s) approved.`);
 }
 
 function ensureGitignore() {
@@ -463,21 +596,65 @@ async function cmdVerify(flags) {
 }
 
 /**
- * rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]
- * Wraps a stdio MCP server with the live integrity proxy. Spawn logic lives
- * in ./spawn-server.js (created by the repo owner once — see setup card);
- * loaded lazily so the rest of the CLI works without it.
- * --fail-closed: on a proxy internal error, block the message instead of forwarding.
+ * rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] [--url <https://...>] -- <command> [args...]
+ * Wraps a stdio or HTTP MCP server with the live integrity proxy.
+ * With --url: starts an HTTP reverse proxy on a local port (point your client at the printed URL).
+ * Without --url: stdio proxy (spawn-server.js).
  */
+/**
+ * Resolve the auth config for an HTTP proxy session (`run --url`,
+ * `canary record --url`): from the server's config entry (headers / auth
+ * block), with MCP_AUTH_TOKEN as the env fallback. A WRAPPED http entry
+ * carries its remote auth inside the wrap marker — the live entry points at
+ * localhost — so read it from there.
+ */
+async function httpAuthConfig(name, flags) {
+  const { servers } = collectServers({ config: flags.config });
+  const configEntry = servers[name];
+  const { originalOf } = await import('./wrap.js');
+  const original = originalOf(configEntry);
+  const authSource = original?.url ? original : configEntry;
+  return authSource && (authSource.headers || authSource.auth)
+    ? authSource
+    : { auth: process.env.MCP_AUTH_TOKEN ? { type: 'bearer', token: process.env.MCP_AUTH_TOKEN } : null };
+}
+
 async function cmdRun(flags) {
   const name = flags.name;
   const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+
+  // HTTP proxy mode: rugsnare run --name X --url https://remote/mcp
+  if (flags.url) {
+    const { startHttpProxy } = await import('./proxy-http.js');
+    const config = loadConfig();
+    if (flags.failClosed) config.failMode = 'closed';
+    // Auth from the server's own config entry (headers / auth block), with
+    // MCP_AUTH_TOKEN as the env fallback when the entry has neither.
+    // NOTE: no adhocServerEntry here — in `run`, --url IS the target, not an
+    // ad-hoc scan target; we only look the name up in real configs.
+    const authConfig = await httpAuthConfig(name, flags);
+    let started;
+    try {
+      started = await startHttpProxy({
+        name, targetUrl: flags.url, mode, config, cwd: process.cwd(), authConfig, port: flags.port,
+      });
+    } catch (startErr) {
+      console.error(`[rugsnare] ${startErr.message}`);
+      process.exit(2);
+    }
+    const { port, url } = started;
+    console.error(`[rugsnare] HTTP proxy for "${name}" listening on ${url} (${mode} mode)`);
+    console.error(`[rugsnare] Point your MCP client at this URL. Ctrl+C to stop.`);
+    if (mode === 'enforce') console.error(`[rugsnare] enforce: drifted tools will be quarantined mid-session`);
+    return; // server keeps running
+  }
+
   const dashdash = flags._.indexOf('--');
   const argv = dashdash >= 0 ? flags._.slice(dashdash + 1) : flags._;
   const command = argv[0];
   const args = argv.slice(1).map(String);
   if (!name || !command) {
-    console.error('Usage: rugsnare run --name <server> [--mode observe|enforce] [--fail-closed] -- <command> [args...]');
+    console.error('Usage: rugsnare run --name <server> [--mode observe|enforce] [--url <https://...>] -- <command> [args...]');
     process.exit(2);
   }
   let spawnServer;
@@ -518,8 +695,28 @@ async function cmdCanaryRecord(flags) {
   const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
   const command = argv[0];
   const args = argv.slice(1).map(String);
+
+  // HTTP transport: record through the HTTP reverse proxy (same capture
+  // format as stdio — the replay engine takes either corpus)
+  if (flags.url) {
+    if (!name) { console.error('Usage: rugsnare canary record --name <server> --url <https://...>'); process.exit(2); }
+    const config = { ...loadConfig(), canaryRecord: true }; // session-only override
+    const authConfig = await httpAuthConfig(name, flags);
+    const { startHttpProxy } = await import('./proxy-http.js');
+    let started;
+    try {
+      started = await startHttpProxy({ name, targetUrl: flags.url, mode, config, cwd: process.cwd(), authConfig, port: flags.port });
+    } catch (startErr) {
+      console.error(`[rugsnare] ${startErr.message}`);
+      process.exit(2);
+    }
+    console.error(`[rugsnare] recording "${name}" through the HTTP proxy on ${started.url} -> .rugsnare/canary/calls.jsonl (${mode} mode, Ctrl+C to stop)`);
+    console.error(`[rugsnare] point your MCP client at ${started.url}`);
+    return; // server keeps running
+  }
+
   if (!name || !command) {
-    console.error('Usage: rugsnare canary record --name <server> -- <command> [args...]');
+    console.error('Usage: rugsnare canary record --name <server> -- <command> [args...]   (or --url <endpoint>)');
     process.exit(2);
   }
   let spawnServer;
@@ -559,29 +756,32 @@ async function cmdCanaryReplay(flags) {
   const pins = loadPins();
   const serverPin = pins.servers?.[name];
 
+  // transport: explicit --url beats the pinned command (remote servers)
+  let url = flags.url ?? null;
   let command = argv[0];
   let args = argv.length > 1 ? argv.slice(1).map(String) : [];
-  if (!command && serverPin?.cmd) {
+  if (!command && !url && serverPin?.cmd?.url) url = serverPin.cmd.url;
+  if (!command && !url && serverPin?.cmd) {
     command = serverPin.cmd.command;
     args = Array.isArray(serverPin.cmd.args) ? serverPin.cmd.args.map(String) : [];
   }
-  if (!name || !command) {
-    console.error('Usage: rugsnare canary replay --name <server> [--strict] [--json] -- <new-command> [args...]');
-    console.error('(no -- command given: falls back to the pinned command from .rugsnare/pins.json)');
+  if (!name || (!command && !url)) {
+    console.error('Usage: rugsnare canary replay --name <server> [--strict] [--json] [--url <https://...>] -- <new-command> [args...]');
+    console.error('(no -- command and no --url: falls back to the pinned command/url from .rugsnare/pins.json)');
     process.exit(2);
   }
 
   const traces = (await import('./canary.js')).readTraces();
   const corpus = traces.filter((t) => t.kind === 'call-trace' && t.server === name);
   if (corpus.length === 0) {
-    console.error(`No recorded calls for "${name}". Run: rugsnare canary record --name ${name} -- <command>`);
+    console.error(`No recorded calls for "${name}". Run: rugsnare canary record --name ${name} -- <command>  (or --url <endpoint>)`);
     process.exit(2);
   }
   const recordedInfo = traces.find((t) => t.kind === 'server-info' && t.server === name);
 
   const { replayCorpus, classifyReplay } = await import('./canary-replay.js');
   const result = await replayCorpus({
-    command, args, cwd: process.cwd(), corpus, timeoutMs,
+    command, args, url, cwd: process.cwd(), corpus, timeoutMs,
     include: flags.include ?? [], allCalls: Boolean(flags.allCalls),
   });
   if (result.error) { console.error(`replay failed: ${result.error}`); process.exit(3); }
@@ -734,7 +934,14 @@ async function cmdReport(flags) {
     let liveStatus = '';
     if (flags.live && sp.cmd) {
       try {
-        const { tools } = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: flags.timeout });
+        let tools;
+        if (sp.cmd.url) {
+          const { fetchToolsHttp } = await import('./rpc-http.js');
+          const { resolveAuth } = await import('./auth.js');
+          tools = (await fetchToolsHttp({ url: sp.cmd.url, headers: resolveAuth({}), timeoutMs: flags.timeout })).tools;
+        } else {
+          ({ tools } = await fetchTools({ command: sp.cmd.command, args: sp.cmd.args, env: {}, cwd: process.cwd(), timeoutMs: flags.timeout }));
+        }
         const verdicts = compareTools(sp, tools, toolHash);
         const bad = badVerdicts(verdicts);
         liveStatus = bad.length === 0 ? ' ✓ live' : ` ⚠ ${bad.length} finding(s)`;
@@ -766,6 +973,197 @@ async function cmdReport(flags) {
   if (flags.json) console.log(JSON.stringify(json, null, 2));
   console.log(`Fleet: ${names.length} server(s), ${names.reduce((acc, n) => acc + Object.keys(pins.servers[n].tools).length, 0)} tool(s), ${shadows.length} shadow(s)`);
   process.exit(0); // report never fails — it informs
+}
+
+/**
+ * rugsnare doctor — self-diagnosis of the local setup: environment, discovered
+ * configs, pin-store health, unreviewed pins, policies, receipts chain, canary
+ * corpus. Informational by design; exit 2 only when the setup itself is broken
+ * (unusable environment, unreadable pin store, broken receipts chain).
+ */
+async function cmdDoctor() {
+  const problems = [];
+  const warn = (m) => console.log(`  [warn] ${m}`);
+
+  console.log(`node ${process.versions.node} (${process.platform})`);
+  const [major] = process.versions.node.split('.').map(Number);
+  if (major < 18) problems.push(`node >= 18 required, running ${process.versions.node}`);
+
+  const configs = discoverConfigs().filter((c) => c.servers && Object.keys(c.servers).length > 0);
+  console.log(`\nconfigs: ${configs.length} source(s) with servers`);
+  for (const c of configs.slice(0, 10)) console.log(`  ${c.app}/${c.scope}: ${Object.keys(c.servers).length} server(s)`);
+  if (configs.length > 10) console.log(`  ... +${configs.length - 10} more`);
+  if (configs.length === 0) warn('no MCP configs discovered — pass --config explicitly');
+
+  let pins = null;
+  try { pins = loadPins(); } catch (e) { problems.push(`pins.json unreadable: ${e.message}`); }
+  if (pins) {
+    const servers = Object.keys(pins.servers ?? {});
+    let toolCount = 0;
+    const unapproved = [];
+    for (const [name, sp] of Object.entries(pins.servers ?? {})) {
+      for (const [tool, pin] of Object.entries(sp.tools ?? {})) {
+        toolCount += 1;
+        if (!pin.approved) unapproved.push(`${name}/${tool}`);
+      }
+    }
+    console.log(`\npins: ${servers.length} server(s), ${toolCount} tool(s)`);
+    if (servers.length === 0) warn('nothing pinned — run `rugsnare scan`');
+    if (unapproved.length > 0) {
+      warn(`${unapproved.length} pinned but NEVER APPROVED (first sight, no human review yet):`);
+      for (const u of unapproved.slice(0, 10)) console.log(`    ${u}`);
+      if (unapproved.length > 10) console.log(`    ... +${unapproved.length - 10} more`);
+      console.log('    review with `rugsnare diff`, then `rugsnare approve <server>`');
+    }
+  }
+
+  const config = loadConfig();
+  console.log(`\nmode: ${config.mode}, failMode: ${config.failMode}, webhook: ${config.alertWebhook ? 'configured' : 'none'}`);
+
+  const policyFile = path.join(process.cwd(), '.rugsnare', 'policies.json');
+  if (fs.existsSync(policyFile)) {
+    try {
+      const { validate: validatePolicies } = await import('./policies.js');
+      validatePolicies(readJsonFile(policyFile));
+      console.log('policies: valid');
+    } catch (e) {
+      warn(`policies.json invalid (${e.message}) — the live proxy falls back to built-in defaults`);
+    }
+  } else {
+    console.log('policies: built-in defaults (no policies.json)');
+  }
+
+  const { loadPublicKey, readReceipts, verifyReceipts } = await import('./receipts.js');
+  const pub = loadPublicKey();
+  if (!pub) {
+    console.log('receipts: no signing key (`rugsnare receipts sign` creates one)');
+  } else {
+    const receipts = readReceipts();
+    if (receipts.length === 0) {
+      console.log('receipts: key present, nothing signed yet');
+    } else {
+      const verdict = verifyReceipts(receipts, pub.publicKey);
+      if (verdict.ok) console.log(`receipts: ${verdict.count} signed, chain intact (${verdict.first?.slice(0, 10)} → ${verdict.last?.slice(0, 10)})`);
+      else problems.push(`receipts chain BROKEN: ${verdict.reason}`);
+    }
+  }
+
+  const canaryFile = path.join(process.cwd(), '.rugsnare', 'canary', 'calls.jsonl');
+  if (fs.existsSync(canaryFile)) {
+    const traces = fs.readFileSync(canaryFile, 'utf8').split('\n').filter(Boolean).length;
+    console.log(`canary corpus: ${traces} trace(s)`);
+  }
+
+  const evPath = eventsPath();
+  if (fs.existsSync(evPath)) {
+    const sizeMb = fs.statSync(evPath).size / (1024 * 1024);
+    if (sizeMb > 10) warn(`events.jsonl is ${sizeMb.toFixed(1)} MB — trim old entries: rugsnare events trim --keep-last 5000 (receipts stay intact)`);
+  }
+
+  console.log('');
+  if (problems.length > 0) {
+    for (const p of problems) console.error(`  [PROBLEM] ${p}`);
+    console.error('doctor: NOT OK');
+    process.exit(2);
+  }
+  console.log('doctor: OK');
+}
+
+/**
+ * rugsnare events trim --keep-last <n> — shrink the local event log to the
+ * last n entries. Explicit operator action (the log is append-only by
+ * contract); receipts.jsonl is hash-chained separately and is never touched.
+ */
+async function cmdEvents(flags) {
+  const sub = flags._[0];
+  const { trimEvents, readEvents, eventsPath } = await import('./events.js');
+  if (sub === 'trim') {
+    if (!Number.isInteger(flags.keepLast)) { console.error('Usage: rugsnare events trim --keep-last <n>'); process.exit(2); }
+    const { kept, dropped } = trimEvents({ keepLast: flags.keepLast });
+    console.log(`events: kept ${kept}, dropped ${dropped} (${eventsPath()})`);
+    if (dropped > 0) console.log('receipts.jsonl was not touched — signed history stays verifiable');
+    return;
+  }
+  if (sub === 'count' || !sub) {
+    const events = readEvents();
+    console.log(`events: ${events.length} entr(ies) in ${eventsPath()}`);
+    const st = fs.existsSync(eventsPath()) ? fs.statSync(eventsPath()) : null;
+    if (st) console.log(`size: ${(st.size / 1024).toFixed(1)} KiB`);
+    return;
+  }
+  console.error('Usage: rugsnare events [count] | rugsnare events trim --keep-last <n>');
+  process.exit(2);
+}
+
+/**
+ * rugsnare config [list] | get <key> | set <key> <value>
+ * Edit .rugsnare/config.json without hand-editing JSON. Values are validated:
+ * a typo'd mode or a non-http webhook must fail here, not silently at runtime.
+ */
+async function cmdConfig(flags) {
+  const [sub, key, ...rest] = flags._;
+  const config = loadConfig();
+  const ENUMS = { mode: ['observe', 'enforce'], failMode: ['open', 'closed'] };
+  const BOOLEANS = ['logCallArgs', 'canaryRecord'];
+  const INTS = ['loopThreshold', 'resultThreshold'];
+  const URLS = ['alertWebhook'];
+  const KEYS = [...Object.keys(ENUMS), ...BOOLEANS, ...INTS, ...URLS];
+  const usage = () => { console.error(`Usage: rugsnare config [list] | get <key> | set <key> <value>\nKeys: ${KEYS.join(', ')}`); process.exit(2); };
+
+  if (!sub || sub === 'list') {
+    for (const k of KEYS) console.log(`${k}: ${JSON.stringify(config[k] ?? null)}`);
+    return;
+  }
+  if (!KEYS.includes(key)) usage();
+
+  if (sub === 'get') {
+    console.log(JSON.stringify(config[key] ?? null));
+    return;
+  }
+  if (sub !== 'set') usage();
+
+  const raw = rest.join(' ');
+  if (raw === '') usage();
+  let value;
+  if (ENUMS[key]) {
+    if (!ENUMS[key].includes(raw)) { console.error(`"${key}" must be one of: ${ENUMS[key].join(', ')}`); process.exit(2); }
+    value = raw;
+  } else if (BOOLEANS.includes(key)) {
+    if (raw !== 'true' && raw !== 'false') { console.error(`"${key}" must be true or false`); process.exit(2); }
+    value = raw === 'true';
+  } else if (INTS.includes(key)) {
+    const n = Number(raw);
+    if (!Number.isInteger(n) || n < 0) { console.error(`"${key}" must be a non-negative integer`); process.exit(2); }
+    value = n;
+  } else if (URLS.includes(key)) {
+    if (raw === 'none') value = null; // documented way to clear
+    else {
+      let u;
+      try { u = new URL(raw); } catch { /* fall through */ }
+      if (!u || (u.protocol !== 'https:' && u.protocol !== 'http:')) { console.error(`"${key}" must be an http(s) URL (or "none" to clear)`); process.exit(2); }
+      value = raw;
+    }
+  }
+  config[key] = value;
+  saveConfig(config);
+  console.log(`${key} = ${JSON.stringify(value)}`);
+}
+
+/**
+ * rugsnare unpin <server> — drop a server's pins entirely. For servers that
+ * left the config: stale pins ghost as SHADOW/REMOVED findings forever
+ * otherwise. Destructive to the pin store only — nothing else is touched.
+ */
+async function cmdUnpin(flags, serverName) {
+  if (!serverName) { console.error('Usage: rugsnare unpin <server>'); process.exit(2); }
+  const pins = loadPins();
+  const sp = pins.servers?.[serverName];
+  if (!sp) { console.error(`No pinned server named "${serverName}".`); process.exit(2); }
+  const toolCount = Object.keys(sp.tools ?? {}).length;
+  delete pins.servers[serverName];
+  savePins(pins);
+  logEvent({ kind: 'unpin', server: serverName, tools: toolCount });
+  console.log(`Unpinned ${serverName} (${toolCount} tool(s)). diff/report will no longer track it.`);
 }
 
 /**
@@ -832,6 +1230,7 @@ async function main() {
     case 'scan': return cmdScan(flags);
     case 'diff': return cmdDiff(flags);
     case 'approve': return cmdApprove(flags, flags._[0]);
+    case 'unpin': return cmdUnpin(flags, flags._[0]);
     case 'verify': return cmdVerify(flags);
     case 'run': return cmdRun(flags);
     case 'canary': {
@@ -854,10 +1253,15 @@ async function main() {
       const name = flags._[0];
       if (!name) { console.error('Usage: rugsnare wrap <server-name>'); process.exit(2); }
       const { wrapServer } = await import('./wrap.js');
-      const r = wrapServer(name);
+      const r = await wrapServer(name);
       if (r.error) { console.error(r.error); process.exit(2); }
       console.log(`wrapped "${r.server}" in ${r.file}`);
       console.log(`backup: ${r.backup}`);
+      if (r.runCommand) {
+        console.log(`HTTP mode: start the proxy and keep it running:`);
+        console.log(`  ${r.runCommand}`);
+        console.log(r.note);
+      }
       console.log(`restart your MCP client to apply. unwrap: rugsnare unwrap ${r.server}`);
       return;
     }
@@ -872,6 +1276,9 @@ async function main() {
       return;
     }
     case 'report': return cmdReport(flags);
+    case 'doctor': return cmdDoctor();
+    case 'events': return cmdEvents(flags);
+    case 'config': return cmdConfig(flags);
     case 'hook': return cmdHook(flags);
     case undefined:
     case '--help':

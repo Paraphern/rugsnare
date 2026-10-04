@@ -13,6 +13,8 @@
  */
 
 import crypto from 'node:crypto';
+import path from 'node:path';
+import { readJsonFile } from './jsonfile.js';
 
 // ---- PII / credential detection in tool arguments ----
 
@@ -99,11 +101,11 @@ const DEFAULT_POLICIES = {
 export { DEFAULT_POLICIES };
 
 export function loadPolicies(cwd = process.cwd()) {
-  // Caller reads the file; we just parse and validate
+  // .rugsnare/policies.json; missing/unparseable/invalid → built-in defaults.
+  // The live proxies (stdio and HTTP) share this loader so enforcement is
+  // identical across transports.
   try {
-    const raw = arguments[0];
-    if (typeof raw === 'string') return validate(JSON.parse(raw));
-    return validate(raw);
+    return validate(readJsonFile(path.join(cwd, '.rugsnare', 'policies.json')));
   } catch {
     return { ...DEFAULT_POLICIES };
   }

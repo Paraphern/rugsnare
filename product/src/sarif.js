@@ -38,9 +38,13 @@ export function buildSarif(report, shadows = []) {
 
   for (const { server, verdicts = [] } of report) {
     for (const v of verdicts) {
-      if (v.status === 'DRIFT') push('RS001', 'error', `Tool "${v.tool}" on MCP server "${server}" changed its contract after approval.`, server, v.tool);
-      else if (v.status === 'NEW' && v.tool !== '(all)') push('RS002', 'warning', `Tool "${v.tool}" appeared on MCP server "${server}" without approval.`, server, v.tool);
-      else if (v.status === 'REMOVED') push('RS003', 'warning', `Approved tool "${v.tool}" disappeared from MCP server "${server}".`, server, v.tool);
+      // tool verdicts carry {tool}; prompt/resource verdicts carry {item, kind} —
+      // both must reach code scanning, instructions live in prompts too
+      const target = v.tool ?? (v.item !== undefined ? `${v.kind}:${v.item}` : undefined);
+      if (target === undefined) continue;
+      if (v.status === 'DRIFT') push('RS001', 'error', `${v.kind ?? 'Tool'} "${target}" on MCP server "${server}" changed its contract after approval.`, server, target);
+      else if (v.status === 'NEW') push('RS002', 'warning', `${v.kind ?? 'Tool'} "${target}" appeared on MCP server "${server}" without approval.`, server, target);
+      else if (v.status === 'REMOVED') push('RS003', 'warning', `Approved ${v.kind ?? 'tool'} "${target}" disappeared from MCP server "${server}".`, server, target);
     }
   }
   for (const s of shadows) {

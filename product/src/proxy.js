@@ -4,21 +4,9 @@ import { toolHash, schemaHash as computeSchemaHash, short, stable } from './hash
 import { loadPins, pinTool, savePins, ensureServer, detectShadows, annotationsEqual } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
-import { evaluateCall, DEFAULT_POLICIES, validate as validatePolicies } from './policies.js';
+import { evaluateCall, loadPolicies as loadPoliciesForProxy } from './policies.js';
 import { canaryEnabled, appendTrace, capPayload, MAX_PENDING } from './canary.js';
-import { readJsonFile } from './jsonfile.js';
-import fs from 'node:fs';
-import path from 'node:path';
-
-function loadPoliciesForProxy(cwd) {
-  const policyFile = path.join(cwd, '.rugsnare', 'policies.json');
-  try {
-    const raw = readJsonFile(policyFile);
-    return validatePolicies(raw);
-  } catch {
-    return DEFAULT_POLICIES; // file missing → use built-in defaults
-  }
-}
+import { scanResult, resultSummary } from './results.js';
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
@@ -213,6 +201,17 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           { kind: 'call-trace', server: name, tool, args, ok, [ok ? 'result' : 'error']: payload, truncated, ms: Date.now() - t0 },
           cwd
         );
+      }
+    }
+
+    // Result inspection: scan every tool-call response for injection indicators
+    // (GhostSplice class: poisoned result carries the payload the description hinted at)
+    if (msg?.id !== undefined && msg.result && !tools) {
+      const resultScan = scanResult(msg.result, { threshold: config?.resultThreshold });
+      if (resultScan.advisory) {
+        writeErr(`[rugsnare] RESULT-INJECTION-SUSPECTED: response to #${msg.id} scored ${resultScan.score}: ${resultSummary(resultScan.signals)}`);
+        logEvent({ kind: 'result-advisory', server: name, requestId: msg.id, score: resultScan.score, signals: resultScan.signals.map((s) => s.id) }, cwd);
+        // advisory-only: the result is still forwarded (blocking would hide data)
       }
     }
 

@@ -1,7 +1,20 @@
 import readline from 'node:readline';
 import https from 'node:https';
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadPins, detectShadows } from './pins.js';
+import { readJsonFile } from './jsonfile.js';
+
+// version follows package.json — a stale hardcoded string here once lagged
+// three releases behind the published npm package
+const PKG_VERSION = (() => {
+  try {
+    return readJsonFile(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json')).version;
+  } catch {
+    return '0.0.0-dev';
+  }
+})();
 
 /**
  * RugSnare as an MCP server (marketplace distribution, stage 2). Read-only,
@@ -124,7 +137,7 @@ export function runMcpServer({ stdin = process.stdin, stdout = process.stdout } 
     const replyErr = (message) => stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message } }) + '\n');
 
     if (msg.method === 'initialize') {
-      reply({ protocolVersion: '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'rugsnare', version: '0.4.0' } });
+      reply({ protocolVersion: '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'rugsnare', version: PKG_VERSION } });
     } else if (msg.method === 'tools/list') {
       reply({ tools: TOOLS });
     } else if (msg.method === 'tools/call') {

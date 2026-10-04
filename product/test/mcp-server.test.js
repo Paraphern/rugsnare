@@ -101,3 +101,25 @@ test('mcp server: unknown tool answers with a JSON-RPC error', async () => {
     cleanup();
   }
 });
+
+test('mcp server: serverInfo version follows package.json (no stale hardcoded strings)', async () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+  const res = await new Promise((resolve, reject) => {
+    const child = spawn('node', [SERVER], { cwd: __dirname, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+    let buf = '';
+    const timer = setTimeout(() => { child.kill(); reject(new Error('timeout')); }, 15000);
+    child.stdout.on('data', (c) => {
+      buf += c;
+      const i = buf.indexOf('\n');
+      if (i >= 0) {
+        try {
+          const msg = JSON.parse(buf.slice(0, i));
+          if (msg.id === 1) { clearTimeout(timer); child.kill(); resolve(msg); return; }
+        } catch { /* partial line */ }
+      }
+    });
+    child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 't', version: '1' } } }) + '\n');
+  });
+  assert.equal(res.result.serverInfo.name, 'rugsnare');
+  assert.equal(res.result.serverInfo.version, pkg.version, 'advertised version must match the published package');
+});
