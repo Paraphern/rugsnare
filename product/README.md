@@ -114,7 +114,7 @@ In `.rugsnare/policies.json`:
 
 A runaway agent burns its per-session budget (observe: one advisory past the cap; enforce: blocked with a JSON-RPC error). A `disabled` tool never runs in any mode and is hidden from the enforce contract — the operator kill-switch.
 
-`scan`/`approve`/`unpin` sign `pins.json` (Ed25519 over the exact bytes) into `.rugsnare/pins.sig`. `diff` then refuses **tampered** pins always (exit 2) — an attacker editing the pin store in your repo/CI to force a "clean" diff gets caught. Unsigned pins with an existing signing key fail too (`--allow-unsigned-pins` to bootstrap); `doctor` reports the signature state.
+`scan`/`approve`/`unpin` sign `pins.json` (Ed25519 over the exact bytes) into `.rugsnare/pins.sig` and publish the verification key next to it (`.rugsnare/pins.pub.pem`). Commit all three files together: the committed public key is what lets CI verify — runners hold no keys, and the private key never leaves your machine. `diff` then refuses **tampered** pins always (exit 2) — an attacker editing the pin store in your repo/CI gets caught. Unsigned pins with a verification key available fail too (`--allow-unsigned-pins` to bootstrap); `doctor` reports the signature state.
 
 ### 2. Live proxy — `run`
 
@@ -154,7 +154,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 240 tests, `node --test` only.
+- 247 tests, `node --test` only.
 
 ## Exit codes
 

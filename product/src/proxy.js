@@ -247,13 +247,24 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
 
     // Vault redaction runs BEFORE canary capture and result inspection: the
     // corpus and the signals must see the placeholder form, and a server
-    // echoing a secret back must never reach the model in cleartext.
-    if (vault && msg?.id !== undefined && msg.result) {
-      const { result: scrubbed, redacted } = redactResult(msg.result, vault);
-      if (redacted.length > 0) {
-        msg.result = scrubbed;
-        line = JSON.stringify(msg);
-        logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted }, cwd); // names, never values
+    // echoing a secret back — in a result OR an error message — must never
+    // reach the model in cleartext (review 28, P1: errors were not scrubbed).
+    if (vault && msg?.id !== undefined && (msg.result || msg.error)) {
+      if (msg.result) {
+        const { result: scrubbed, redacted } = redactResult(msg.result, vault);
+        if (redacted.length > 0) {
+          msg.result = scrubbed;
+          line = JSON.stringify(msg);
+          logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted }, cwd); // names, never values
+        }
+      }
+      if (msg.error) {
+        const { result: scrubbedErr, redacted } = redactResult(msg.error, vault);
+        if (redacted.length > 0) {
+          msg.error = scrubbedErr;
+          line = JSON.stringify(msg);
+          logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted, in: 'error' }, cwd);
+        }
       }
     }
 

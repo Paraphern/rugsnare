@@ -596,7 +596,7 @@ function ensureGitignore() {
   // args + responses) are user data. pins.json is the deliberate exception —
   // the CI-gate workflow expects the baseline in the repo.
   const file = '.gitignore';
-  const block = '# rugsnare local state (pins may be committed deliberately)\n**/.rugsnare/*\n!**/.rugsnare/pins.json\n';
+  const block = '# rugsnare local state (pins may be committed deliberately)\n**/.rugsnare/*\n!**/.rugsnare/pins.json\n!**/.rugsnare/pins.sig\n!**/.rugsnare/pins.pub.pem\n';
   let current = '';
   try { current = fs.readFileSync(file, 'utf8'); } catch { /* no .gitignore yet */ }
   if (!current.includes('**/.rugsnare/*')) {
@@ -1101,15 +1101,19 @@ async function cmdDoctor() {
 
   const { loadPublicKey, readReceipts, verifyReceipts, verifyPinsFile } = await import('./receipts.js');
   const pinsSig = verifyPinsFile();
-  if (pinsSig.status === 'ok') console.log(`pins signature: ok (${(pinsSig.signedAt ?? '').slice(0, 10) || '?'})`);
+  if (pinsSig.status === 'ok') console.log(`pins signature: ok (${(pinsSig.signedAt ?? '').slice(0, 10) || '?'}, key: ${pinsSig.keySource ?? 'local'})`);
   else if (pinsSig.status === 'tampered') problems.push(`pins.sig TAMPERED: ${pinsSig.reason} — \`rugsnare diff\` will refuse these pins`);
-  else if (pinsSig.status === 'unsigned') warn('pins.json unsigned while a signing key exists — run `rugsnare scan` to re-pin and sign');
-  // nokey/nopins: normal pre-signature state, silent
+  else if (pinsSig.status === 'unsigned') warn('pins.json unsigned while a verification key exists — run `rugsnare scan` to re-pin and sign');
+  else if (pinsSig.status === 'nokey' && pinsSig.note) warn(pinsSig.note);
+  // nokey without note: normal pre-signature state, silent
   const pub = loadPublicKey();
   if (!pub) {
     console.log('receipts: no signing key (`rugsnare receipts sign` creates one)');
   } else {
     const receipts = readReceipts();
+    if (receipts.corrupt > 0) {
+      problems.push(`receipts.jsonl has ${receipts.corrupt} unparseable line(s) — truncated or tampered audit trail; run \`rugsnare receipts sign\` to re-chain the readable part`);
+    }
     if (receipts.length === 0) {
       console.log('receipts: key present, nothing signed yet');
     } else {

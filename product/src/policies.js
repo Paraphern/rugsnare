@@ -15,6 +15,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { readJsonFile } from './jsonfile.js';
+import { logEvent } from './events.js';
 
 // ---- PII / credential detection in tool arguments ----
 
@@ -101,19 +102,54 @@ const DEFAULT_POLICIES = {
 export { DEFAULT_POLICIES };
 
 export function loadPolicies(cwd = process.cwd()) {
-  // .rugsnare/policies.json; missing/unparseable/invalid → built-in defaults.
-  // The live proxies (stdio and HTTP) share this loader so enforcement is
-  // identical across transports.
+  // .rugsnare/policies.json; ABSENT file → built-in defaults (normal, silent).
+  // PRESENT but broken (unparseable, invalid budgets/disabled, no `rules`)
+  // → defaults too — enforcement never silently weakens beyond that — but
+  // LOUDLY: stderr + event, because the operator's custom rules are NOT
+  // active and they need to know (review 28, P1).
+  const file = path.join(cwd, '.rugsnare', 'policies.json');
+  let raw;
   try {
-    return validate(readJsonFile(path.join(cwd, '.rugsnare', 'policies.json')));
-  } catch {
+    raw = readJsonFile(file);
+  } catch (err) {
+    if (err && err.code === 'ENOENT') return { ...DEFAULT_POLICIES };
+    degrade(`policies.json unreadable (${String(err.message).slice(0, 100)}) — custom rules are NOT active, built-in defaults apply`, cwd);
     return { ...DEFAULT_POLICIES };
   }
+  try {
+    if (!raw || !Array.isArray(raw.rules)) throw new Error('missing "rules" array');
+    return validate(raw);
+  } catch (err) {
+    degrade(`policies.json invalid (${String(err.message).slice(0, 100)}) — custom rules are NOT active, built-in defaults apply`, cwd);
+    return { ...DEFAULT_POLICIES };
+  }
+}
+
+function degrade(reason, cwd) {
+  process.stderr.write(`[rugsnare] POLICIES DEGRADED: ${reason}\n`);
+  try {
+    // count-only event; the reason string is a config-description, not user data
+    logEvent({ kind: 'policies-degraded', reason: reason.slice(0, 160) }, cwd);
+  } catch { /* event log must not break the proxy */ }
 }
 
 export function validate(policies) {
   if (!policies || !Array.isArray(policies.rules)) {
     return { version: 1, rules: [] };
+  }
+  // user-supplied regexes must COMPILE at load time — a bad pattern then
+  // fails loudly here (loadPolicies degrades with a reason) instead of
+  // throwing inside the proxy hot path on every call (review 28, P2)
+  for (const rule of policies.rules) {
+    const m = rule?.match ?? {};
+    for (const field of ['toolName', 'description_matches']) {
+      if (m[field] !== undefined) {
+        if (typeof m[field] !== 'string') throw new Error(`rule "${rule.name}": match.${field} must be a string`);
+        try { new RegExp(m[field], 'i'); } catch (e) {
+          throw new Error(`rule "${rule.name}": match.${field} is not a valid regex (${String(e.message).slice(0, 60)})`);
+        }
+      }
+    }
   }
   // budgets: per-tool session call caps; disabled: kill-switch tool names.
   // Both live in policies.json (the enforcement config both proxies load).
@@ -151,10 +187,13 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
   for (const rule of policies?.rules ?? []) {
     const m = rule.match ?? {};
 
-    // Check tool name pattern
+    // Check tool name pattern. Compile guarded (validate pre-checks, but the
+    // hot path must never throw); input length capped — ReDoS is superlinear
+    // in input length, so bounding the input bounds the worst case (rev 28 P2)
     if (m.toolName) {
-      const re = new RegExp(m.toolName, 'i');
-      if (!re.test(toolName)) continue;
+      let re;
+      try { re = new RegExp(m.toolName, 'i'); } catch { continue; }
+      if (!re.test(toolName.slice(0, 256))) continue;
     }
 
     // Check argument name and type
@@ -164,10 +203,11 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
       if (m.argumentType && typeof argValue !== m.argumentType) continue;
     }
 
-    // Check description pattern
+    // Check description pattern (same guards as toolName)
     if (m.description_matches) {
-      const re = new RegExp(m.description_matches, 'i');
-      if (!description || !re.test(description)) continue;
+      let re;
+      try { re = new RegExp(m.description_matches, 'i'); } catch { continue; }
+      if (!description || !re.test(description.slice(0, 10000))) continue;
     }
 
     // Check PII in arguments

@@ -8,6 +8,10 @@ verification (2026-10-04) — see P1/P2 findings on tags and gitHead.
 1. Full battery green: `cd product && npm test` (the count in `product/README.md`
    and the root README footer must match the run).
 2. Working tree clean; `main` pushed.
+3. Commit the pin baseline with its proof: `.rugsnare/pins.json` together with
+   `.rugsnare/pins.sig` and `.rugsnare/pins.pub.pem` (all three whitelisted in
+   .gitignore). The committed PUBLIC key is what lets CI verify the signature —
+   runners have no local keys; the private key never leaves your machine.
 
 ## Release steps, in this exact order
 
@@ -22,6 +26,11 @@ verification (2026-10-04) — see P1/P2 findings on tags and gitHead.
    0.1.0–0.5.1 history). The FIRST mainnet release additionally deploys the
    contract — runbook and funding note: `contracts/releaselog/DEPLOY.md`,
    section "Mainnet Base". Record the tx hash for the release notes.
+   **Post-pin string check** (lesson from the 0.5.1 erratum): after the tx,
+   read the human-readable version string back from the chain
+   (`getRelease`, or the explorer's input decode) and confirm it says
+   exactly `X.Y.Z` — the keccak key and the sha256 hash can both be correct
+   while the string has a typo; the chain keeps it forever.
 4. Tag the **publish commit** (the one from step 1 plus nothing else) and push
    the tag once: `git tag vX.Y.Z <commit> && git push origin vX.Y.Z`.
 5. Docker builds automatically on `v*` tag push.

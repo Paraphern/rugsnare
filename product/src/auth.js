@@ -71,6 +71,21 @@ export function resolveAuth(entry) {
     } else if (auth.type === 'zcode_official' || auth.provider === 'jwt_token') {
       const token = getZcodeToken();
       if (token && !headers.Authorization) headers.Authorization = `Bearer ${token}`;
+      else if (!token && !headers.Authorization) {
+        process.stderr.write('[rugsnare] AUTH: ZCode JWT not found (ZCODE_JWT_TOKEN unset and credentials are encrypted or absent) — request will go out unauthenticated\n');
+      }
+    }
+  }
+
+  // unresolved ${VAR} placeholders mean the env var is unset — the header
+  // would go out with a LITERAL "${...}" and fail with a confusing 401.
+  // Say so now, with the variable NAME (never the value) (review 28, P2).
+  for (const [k, v] of Object.entries(headers)) {
+    if (typeof v === 'string') {
+      const unresolved = v.match(/\$\{([A-Za-z0-9_]+)\}/g);
+      if (unresolved) {
+        process.stderr.write(`[rugsnare] AUTH: header "${k}" still contains unresolved placeholder(s) ${unresolved.join(', ')} — set the variable or remove the header; the request will likely fail auth\n`);
+      }
     }
   }
 

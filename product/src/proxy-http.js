@@ -238,6 +238,13 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           }
         }
 
+        // Canary snapshot of the PLACEHOLDER args (P0 fix, review 28): taken
+        // BEFORE vault substitution — the corpus must never hold real secrets.
+        // The stdio proxy does the same by capturing at the top of the branch.
+        const canaryArgs = canary && msg.method === 'tools/call' && msg.params
+          ? structuredClone(msg.params.arguments ?? null)
+          : null;
+
         // Vault substitution is the LAST step before the wire (policy and
         // loop detection above saw the placeholder form)
         if (vault && msg.method === 'tools/call' && msg.params) {
@@ -251,20 +258,30 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         const t0 = canary && msg.method === 'tools/call' ? Date.now() : 0;
         const response = await forward(msg);
 
-        // Vault redaction BEFORE canary capture and result inspection: the
-        // corpus and the signals see placeholders; the model never sees the
-        // secret even when the server echoes it back
-        if (vault && response?.result && msg.method === 'tools/call') {
-          const { result: scrubbed, redacted } = redactResult(response.result, vault);
-          if (redacted.length > 0) {
-            response.result = scrubbed;
-            logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted }, cwd);
+        // Vault redaction BEFORE canary capture and result inspection — and
+        // errors are scrubbed too: a server echoing the secret in an error
+        // message must not leak it into the corpus or the model (review 28, P1)
+        if (vault && msg.method === 'tools/call') {
+          if (response?.result) {
+            const { result: scrubbed, redacted } = redactResult(response.result, vault);
+            if (redacted.length > 0) {
+              response.result = scrubbed;
+              logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted }, cwd);
+            }
+          }
+          if (response?.error) {
+            const { result: scrubbedErr, redacted } = redactResult(response.error, vault);
+            if (redacted.length > 0) {
+              response.error = scrubbedErr;
+              logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted, in: 'error' }, cwd);
+            }
           }
         }
         const tools = response?.result?.tools;
 
         // Canary capture (opt-in): server identity from the handshake, and
-        // every tools/call id-correlated with ITS response (same POST)
+        // every tools/call id-correlated with ITS response (same POST).
+        // args come from the pre-substitution snapshot — placeholders only.
         if (canary) {
           if (msg.method === 'initialize' && response?.result?.serverInfo) {
             appendTrace({ kind: 'server-info', server: name, serverInfo: response.result.serverInfo }, cwd);
@@ -273,7 +290,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
             const ok = !response?.error;
             const { payload, truncated } = capPayload(ok ? response?.result : response?.error);
             appendTrace(
-              { kind: 'call-trace', server: name, tool: msg.params?.name, args: msg.params?.arguments ?? null, ok, [ok ? 'result' : 'error']: payload, truncated, ms: t0 ? Date.now() - t0 : 0 },
+              { kind: 'call-trace', server: name, tool: msg.params?.name, args: canaryArgs, ok, [ok ? 'result' : 'error']: payload, truncated, ms: t0 ? Date.now() - t0 : 0 },
               cwd
             );
           }

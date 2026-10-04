@@ -46,8 +46,21 @@ export function loadVault(cwd = process.cwd()) {
 export function saveVault(vault, cwd = process.cwd()) {
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
   const file = vaultPath(cwd);
-  fs.writeFileSync(file, JSON.stringify(vault, null, 2) + '\n');
-  try { fs.chmodSync(file, 0o600); } catch { /* Windows: best effort */ }
+  const assertNotSymlink = (p) => {
+    try {
+      if (fs.lstatSync(p).isSymbolicLink()) throw new Error(`${path.basename(p)} is a symlink — refusing to write through it (pre-planted link could redirect the write)`);
+    } catch (e) {
+      if (e.code !== 'ENOENT') throw e;
+    }
+  };
+  assertNotSymlink(file);
+  // atomic write: secrets never sit in a world-readable half state, and a
+  // crash mid-write can't truncate the vault. tmp is created 0600 from the
+  // first byte, then renamed over (review 28, P2: write→chmod had a window)
+  const tmp = file + '.tmp';
+  assertNotSymlink(tmp);
+  fs.writeFileSync(tmp, JSON.stringify(vault, null, 2) + '\n', { mode: 0o600 });
+  fs.renameSync(tmp, file);
 }
 
 function substituteString(s, vault, used) {
@@ -87,7 +100,13 @@ export function substituteArgs(args, vault) {
  */
 export function redactResult(result, vault) {
   if (!vault || result === undefined || result === null) return { result, redacted: [] };
-  const names = Object.keys(vault).sort((a, b) => vault[b].length - vault[a].length);
+  // values below 4 chars are skipped: scrubbing every occurrence of a 1-3
+  // char secret would mangle ordinary text (and near every string contains
+  // them). Substitution (the other direction) is exact-token and stays safe
+  // for short values (review 28, P2).
+  const names = Object.keys(vault)
+    .filter((n) => vault[n].length >= 4)
+    .sort((a, b) => vault[b].length - vault[a].length);
   const redacted = new Set();
   const scrub = (s) => {
     let out = s;

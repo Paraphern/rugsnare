@@ -78,6 +78,17 @@ export function pinsSigPath(cwd = process.cwd()) {
   return path.join(rugsnareDir(cwd), 'pins.sig');
 }
 
+/**
+ * The COMMITTED public key (`.rugsnare/pins.pub.pem`, tracked — the .gitignore
+ * block whitelists it). Committing the key is what makes the CI-attacker
+ * defense work in CI itself (review 28, P1): a runner has no local keys dir,
+ * so verification must not depend on one. Written by signPinsFile next to the
+ * signature; deleting it is a visible diff, like deleting the signature.
+ */
+export function pinsPubPath(cwd = process.cwd()) {
+  return path.join(rugsnareDir(cwd), 'pins.pub.pem');
+}
+
 /** Sign the current pins.json bytes. Returns true when signed, false when no key exists (nothing surprising happens on machines that never ran `receipts sign`). */
 export function signPinsFile(cwd = process.cwd()) {
   const privateKey = loadPrivateKey(cwd);
@@ -89,17 +100,30 @@ export function signPinsFile(cwd = process.cwd()) {
   const sig = crypto.sign(null, Buffer.from(hash, 'hex'), privateKey).toString('hex');
   const payload = { algo: 'sha256+ed25519', hash, sig, keyFingerprint: pub.fingerprint, signedAt: new Date().toISOString() };
   fs.writeFileSync(pinsSigPath(cwd), JSON.stringify(payload, null, 2) + '\n');
+  // publish the verification key next to the signature (same 0600 attempt for
+  // consistency; it is a PUBLIC key, secrecy is not required)
+  fs.writeFileSync(pinsPubPath(cwd), fs.readFileSync(path.join(rugsnareDir(cwd), 'keys', 'ed25519.pub.pem')));
   return true;
+}
+
+/** Resolve the verification key: the COMMITTED pins.pub.pem first (works in CI), then the local keys dir. Null when neither exists. */
+function resolveVerifyKey(cwd) {
+  try {
+    const pem = fs.readFileSync(pinsPubPath(cwd), 'utf8');
+    return { publicKey: crypto.createPublicKey(pem), fingerprint: keyFingerprint(pem), source: 'committed' };
+  } catch { /* not committed here */ }
+  const local = loadPublicKey(cwd);
+  return local ? { ...local, source: 'local' } : null;
 }
 
 /**
  * Verify pins.json against pins.sig.
  * Statuses:
- *   ok          — signature matches the exact bytes
+ *   ok          — signature matches the exact bytes (key: committed or local)
  *   tampered    — pins.json changed after signing (or sig forged) — ALWAYS fatal
- *   unsigned    — no pins.sig, but a signing key EXISTS on this machine —
- *                 suspicious: fail unless --allow-unsigned-pins
- *   nokey       — no pins.sig and no key: pre-0.9 / never signed here — OK
+ *   unsigned    — no pins.sig, but a verification key EXISTS (committed or
+ *                 local) — suspicious: fail unless --allow-unsigned-pins
+ *   nokey       — no pins.sig and no key anywhere: pre-0.9 / never signed — OK
  *   nopins      — no pins.json at all (caller handles its own "run scan first")
  */
 export function verifyPinsFile(cwd = process.cwd()) {
@@ -107,7 +131,7 @@ export function verifyPinsFile(cwd = process.cwd()) {
   if (!fs.existsSync(pinsFile)) return { status: 'nopins' };
   const sigFile = pinsSigPath(cwd);
   if (!fs.existsSync(sigFile)) {
-    return loadPrivateKey(cwd) ? { status: 'unsigned' } : { status: 'nokey' };
+    return resolveVerifyKey(cwd) ? { status: 'unsigned' } : { status: 'nokey' };
   }
   let payload;
   try {
@@ -115,25 +139,44 @@ export function verifyPinsFile(cwd = process.cwd()) {
   } catch {
     return { status: 'tampered', reason: 'pins.sig is not valid JSON' };
   }
-  const pub = loadPublicKey(cwd);
-  if (!pub) return { status: 'nokey', note: 'pins.sig exists but no public key on this machine' };
+  const key = resolveVerifyKey(cwd);
+  if (!key) {
+    return {
+      status: 'nokey',
+      note: 'pins.sig exists but no verification key (neither committed pins.pub.pem nor local keys/) — commit .rugsnare/pins.pub.pem, or re-run `rugsnare scan` on the machine that holds the key',
+    };
+  }
   const hash = crypto.createHash('sha256').update(fs.readFileSync(pinsFile)).digest('hex');
   if (hash !== payload.hash) return { status: 'tampered', reason: 'pins.json was modified after signing' };
-  const sigOk = crypto.verify(null, Buffer.from(payload.hash, 'hex'), pub.publicKey, Buffer.from(payload.sig, 'hex'));
+  const sigOk = crypto.verify(null, Buffer.from(payload.hash, 'hex'), key.publicKey, Buffer.from(payload.sig, 'hex'));
   if (!sigOk) return { status: 'tampered', reason: 'pins.sig signature does not verify' };
-  return { status: 'ok', signedAt: payload.signedAt, fingerprint: payload.keyFingerprint };
+  return { status: 'ok', signedAt: payload.signedAt, fingerprint: payload.keyFingerprint, keySource: key.source };
 }
 
 export function receiptsPath(cwd = process.cwd()) {
   return path.join(rugsnareDir(cwd), 'receipts.jsonl');
 }
 
+/**
+ * Read receipts.jsonl. Returns an array; a PRESENT-but-corrupt file is a
+ * finding of its own (tamper or truncation) and is reported via the `corrupt`
+ * count instead of masquerading as "nothing signed" (review 28, P2).
+ */
 export function readReceipts(cwd = process.cwd()) {
+  let text;
   try {
-    return fs.readFileSync(receiptsPath(cwd), 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
+    text = fs.readFileSync(receiptsPath(cwd), 'utf8');
   } catch {
-    return [];
+    return []; // absent — nothing signed yet, the honest empty case
   }
+  const lines = text.trim().split('\n').filter(Boolean);
+  const out = [];
+  let corrupt = 0;
+  for (const l of lines) {
+    try { out.push(JSON.parse(l)); } catch { corrupt += 1; }
+  }
+  if (corrupt > 0) out.corrupt = corrupt; // non-enumerable-ish marker: read via .corrupt
+  return out;
 }
 
 // canonical json: sorted keys, no whitespace — same discipline as hash.js stable()
