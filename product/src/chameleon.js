@@ -11,7 +11,11 @@ import { toolHash } from './hash.js';
  * Deterministic hash comparison, same discipline as pins — no heuristics.
  */
 
-export const CHAMELEON_CLIENTS = ['claude-desktop', 'cursor'];
+// Client names a rogue server might special-case. Same set of clients we
+// DISCOVER configs for (discovery.js): a remote server distinguishing
+// "inspection tool" from "real client" is the attack; more vantage names =
+// more coverage per scan.
+export const CHAMELEON_CLIENTS = ['claude-desktop', 'cursor', 'windsurf', 'zed', 'continue'];
 
 /**
  * @param {Array} baselineTools tools listed under the default client

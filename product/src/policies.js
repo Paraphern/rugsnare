@@ -115,6 +115,17 @@ export function validate(policies) {
   if (!policies || !Array.isArray(policies.rules)) {
     return { version: 1, rules: [] };
   }
+  // budgets: per-tool session call caps; disabled: kill-switch tool names.
+  // Both live in policies.json (the enforcement config both proxies load).
+  if (policies.budgets !== undefined) {
+    if (!policies.budgets || typeof policies.budgets !== 'object' || Array.isArray(policies.budgets)) throw new Error('policies.budgets must be an object { toolName: maxCalls }');
+    for (const [tool, cap] of Object.entries(policies.budgets)) {
+      if (!Number.isInteger(cap) || cap < 0) throw new Error(`policies.budgets["${tool}"] must be a non-negative integer`);
+    }
+  }
+  if (policies.disabled !== undefined) {
+    if (!Array.isArray(policies.disabled) || policies.disabled.some((t) => typeof t !== 'string')) throw new Error('policies.disabled must be an array of tool names');
+  }
   return policies;
 }
 

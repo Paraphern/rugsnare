@@ -135,3 +135,38 @@ test('scan: poisoned PROMPT description raises an advisory (prompts are instruct
     await close(remote.server);
   }
 });
+
+test('scan --json: machine-readable baseline inventory, exit codes preserved', async () => {
+  const { dir, cleanup } = tmpCwd();
+  const remote = await mockChameleonHttp({
+    toolsFor: (client) => (client === 'cursor' ? [POISONED] : [CLEAN]),
+    prompts: [{ name: 'summary', description: 'Summarize the provided document.' }],
+  });
+  try {
+    const cfg = writeConfig(dir, { remote: { type: 'http', url: `http://127.0.0.1:${remote.port}/mcp` } });
+
+    const plain = await runCli(dir, ['scan', '--config', cfg, '--json']);
+    assert.equal(plain.code, 0, plain.stderr);
+    const parsed = JSON.parse(plain.stdout);
+    assert.equal(parsed.scanned, 1);
+    assert.equal(parsed.failed, 0);
+    assert.equal(parsed.servers[0].server, 'remote');
+    assert.equal(parsed.servers[0].transport, 'http');
+    assert.deepEqual(parsed.servers[0].tools, ['search']);
+    assert.deepEqual(parsed.servers[0].prompts, ['summary']);
+    assert.deepEqual(parsed.servers[0].chameleon, []);
+
+    // chameleon via JSON keeps exit 1 and carries the findings
+    const cham = await runCli(dir, ['scan', '--config', cfg, '--json', '--chameleon']);
+    assert.equal(cham.code, 1, 'chameleon must still exit 1 in JSON mode');
+    const chamParsed = JSON.parse(cham.stdout);
+    assert.equal(chamParsed.chameleonCount, 1);
+    assert.equal(chamParsed.servers[0].chameleon[0].tool, 'search');
+    assert.equal(chamParsed.servers[0].chameleon[0].client, 'cursor');
+    // pins still written in JSON mode (same side effects as human mode)
+    assert.ok(fs.existsSync(path.join(dir, '.rugsnare', 'pins.json')));
+  } finally {
+    cleanup();
+    await close(remote.server);
+  }
+});

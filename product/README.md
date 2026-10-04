@@ -1,5 +1,9 @@
 # rugsnare
 
+[![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
+[![Glama rating](https://glama.ai/mcp/servers/Paraphern/rugsnare/badges/score.svg)](https://glama.ai/mcp/servers/Paraphern/rugsnare)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 **Runtime integrity for MCP tool contracts.** Scanners check MCP servers *before* you install them. RugSnare checks what happens *after*: an approved tool whose description or schema silently changed is a rug pull, and it fails your build.
 
 ```
@@ -78,6 +82,40 @@ rugsnare config set loopThreshold 5       # identical-call loop advisory (0 disa
 
 The event log is append-only and local; when it grows large, trim it explicitly (signed receipts are a separate hash-chained file and stay intact): `rugsnare events trim --keep-last 5000`.
 
+## AI Security Audit (0.6) — did you leak secrets into a chat?
+
+```bash
+rugsnare audit --input ~/downloads/chat-export.json     # a file or a directory
+rugsnare audit --input ./notes --airgap                 # leave NO trace, not even a count
+```
+
+Scans local files (AI chat exports, notes, `.env`) for leaked secrets: API keys (OpenAI/Anthropic/AWS/GitHub/Google/Slack/Stripe/Telegram/SendGrid), private key blocks, Luhn-valid payment cards, crypto seed phrases (12+ consecutive BIP-39 words — the 2048-word list is embedded, verified against two independent sources), database URLs with credentials, internal infrastructure, contact PII, and `.env`-style credential lines.
+
+Zero-knowledge by design: output is **redacted** (first 4 characters + length — never the full value), nothing is written to disk, and `--airgap` skips even the count-only event entry. Exit 1 when HIGH findings exist, so it doubles as a pre-share gate: run it on an export before you send that export to anyone.
+
+## Secret vault (0.7) — the model never holds the key
+
+```bash
+rugsnare vault set STRIPE_KEY sk_live_…     # stored in .rugsnare/vault.json (chmod 600, gitignored)
+```
+
+The agent writes `{{VAULT:STRIPE_KEY}}` in tool arguments; the live proxies (stdio and HTTP) substitute the real value on the way **to** the server and scrub every occurrence of the secret from results on the way **back**. Call logging, canary traces, policies, and result inspection all operate on the placeholder form — event entries record the NAME, never the value.
+
+## Budgets, kill-switch, signed pins (0.8 / 0.9)
+
+In `.rugsnare/policies.json`:
+
+```json
+{
+  "budgets": { "deploy": 3 },
+  "disabled": ["format_disk"]
+}
+```
+
+A runaway agent burns its per-session budget (observe: one advisory past the cap; enforce: blocked with a JSON-RPC error). A `disabled` tool never runs in any mode and is hidden from the enforce contract — the operator kill-switch.
+
+`scan`/`approve`/`unpin` sign `pins.json` (Ed25519 over the exact bytes) into `.rugsnare/pins.sig`. `diff` then refuses **tampered** pins always (exit 2) — an attacker editing the pin store in your repo/CI to force a "clean" diff gets caught. Unsigned pins with an existing signing key fail too (`--allow-unsigned-pins` to bootstrap); `doctor` reports the signature state.
+
 ### 2. Live proxy — `run`
 
 Sits between your agent and the server, inspecting every message in both directions.
@@ -116,7 +154,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 209 tests, `node --test` only.
+- 238 tests, `node --test` only.
 
 ## Exit codes
 

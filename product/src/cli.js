@@ -33,16 +33,24 @@ const HELP = `rugsnare — runtime integrity for MCP tool descriptions
 
 Usage:
   rugsnare init
-  rugsnare scan [--config <mcp.json>] [--server <name>] [--chameleon]
+  rugsnare scan [--config <mcp.json>] [--server <name>] [--chameleon] [--json]
                                                          --chameleon: re-list tools as claude-desktop/cursor;
                                                          different contract per client = CHAMELEON, exit 1
+                                                         --json: machine-readable baseline inventory
   rugsnare scan --server <name> --url <https://remote/mcp> [--header "Name: Value"]...
                                                          ad-hoc: pin a remote server BEFORE adding it to any config
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
                 [--expect-tool <t>]... [--forbid-tool <t>]...   contract assertions (forbid catches shadow injection)
+                [--allow-unsigned-pins]   skip the pins.sig check when no signature exists (bootstrap)
+                                                         signed pins: an edited pins.json (CI attacker) fails with exit 2
   rugsnare diff --server <name> --url <https://remote/mcp>    compare pins against THIS endpoint (overrides config)
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare unpin <server>             drop a departed server's pins (stops SHADOW/REMOVED ghosts)
+  rugsnare audit --input <file-or-dir> [--json] [--airgap]
+                                                         scan local files (AI chat exports, notes, .env) for
+                                                         leaked secrets — redacted screen-only output; exit 1 = HIGH
+  rugsnare vault set <NAME> [VALUE] | get | list | rm   secret vault: model sends {{VAULT:NAME}}, proxy injects
+                                                         the real value to the server and scrubs it from results
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
   rugsnare doctor                    self-diagnosis: configs, pins, approvals, receipts chain
@@ -98,6 +106,9 @@ function parseArgs(argv) {
     else if (a === '--header') { (flags.header ??= []).push(argv[++i]); }
     else if (a === '--port') flags.port = Number(argv[++i]);
     else if (a === '--keep-last') flags.keepLast = parseInt(argv[++i], 10);
+    else if (a === '--input') flags.input = argv[++i];
+    else if (a === '--airgap') flags.airgap = true;
+    else if (a === '--allow-unsigned-pins') flags.allowUnsignedPins = true;
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
@@ -210,7 +221,8 @@ async function cmdScan(flags) {
   const pins = loadPins();
   const names = flags.server ? [flags.server] : Object.keys(servers);
   if (names.length === 0) { console.error('No MCP servers found. Pass --config <file> or run `rugsnare init`.'); process.exit(2); }
-  console.log(`Scanning ${names.length} server(s) from: ${source}`);
+  if (!flags.json) console.log(`Scanning ${names.length} server(s) from: ${source}`);
+  const report = []; // --json: machine-readable baseline inventory
   let failed = 0;
   let chameleonCount = 0;
   for (const name of names) {
@@ -265,35 +277,40 @@ async function cmdScan(flags) {
       // advisory signals: catch suspicious descriptions even on first contact
       const advisories = scanToolsForAdvisories(tools);
       for (const adv of advisories) {
-        console.error(`  [ADVISORY] ${name}/${adv.tool} — score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
+        if (!flags.json) console.error(`  [ADVISORY] ${name}/${adv.tool} — score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
         logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
       }
 
       // prompts are instructions too — the same advisory signals apply to
       // prompt descriptions, not just tool descriptions
+      const promptAdvisories = [];
       for (const p of prompts ?? []) {
         const r = scanToolDescription(p.description ?? '');
         if (r.advisory) {
-          console.error(`  [ADVISORY] ${name}/prompt:${p.name} — score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
+          if (!flags.json) console.error(`  [ADVISORY] ${name}/prompt:${p.name} — score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
+          promptAdvisories.push({ prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
           logEvent({ kind: 'advisory', server: name, prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
         }
       }
 
       // floating-version advisory: unpinned npx/uvx/docker = auto-upgrade rug-pull vector
+      const floating = [];
       if (typeof entry.command === 'string') {
         const { checkFloatingVersion } = await import('./floating.js');
         const floats = checkFloatingVersion({ command: entry.command, args: entry.args ?? [] });
         for (const f of floats) {
-          console.error(`  [FLOATING] ${name}: ${f}`);
+          if (!flags.json) console.error(`  [FLOATING] ${name}: ${f}`);
+          floating.push(String(f));
           logEvent({ kind: 'floating-version', server: name, detail: f });
         }
       }
 
-      console.log(`  pinned ${name}: ${tools.length} tool(s) -> ${tools.map((t) => t.name).join(', ')}`);
+      if (!flags.json) console.log(`  pinned ${name}: ${tools.length} tool(s) -> ${tools.map((t) => t.name).join(', ')}`);
       logEvent({ kind: 'scan', server: name, tools: tools.length });
 
       // chameleon check (opt-in): does this server serve a different contract
       // when it thinks a real client is asking? Bait-and-switch per client.
+      let chameleonFindings = [];
       if (flags.chameleon) {
         const { CHAMELEON_CLIENTS, compareAcrossClients } = await import('./chameleon.js');
         const perClient = {};
@@ -310,39 +327,71 @@ async function cmdScan(flags) {
           } catch { /* client-specific listing failed — skip that client, not the scan */ }
         }
         const found = compareAcrossClients(tools, perClient);
+        chameleonFindings = found;
         for (const f of found) {
-          console.error(`  [CHAMELEON] ${name}/${f.tool} serves a ${f.kind === 'different' ? 'DIFFERENT contract' : f.kind === 'missing' ? 'contract WITHOUT this tool' : 'an EXTRA tool'} to client "${f.client}"`);
+          if (!flags.json) console.error(`  [CHAMELEON] ${name}/${f.tool} serves a ${f.kind === 'different' ? 'DIFFERENT contract' : f.kind === 'missing' ? 'contract WITHOUT this tool' : 'an EXTRA tool'} to client "${f.client}"`);
           logEvent({ kind: 'chameleon', server: name, tool: f.tool, client: f.client, mode: f.kind });
         }
         if (found.length > 0) chameleonCount += found.length;
       }
+
+      report.push({
+        server: name,
+        transport: typeof entry.url === 'string' ? 'http' : 'stdio',
+        tools: tools.map((t) => t.name),
+        prompts: (prompts ?? []).map((p) => p.name),
+        resources: (resources ?? []).map((r) => r.name ?? r.uri ?? '(unnamed)'),
+        advisories: advisories.map((a) => ({ tool: a.tool, score: a.score, signals: a.signals.map((s) => s.id) })),
+        promptAdvisories,
+        floating,
+        chameleon: chameleonFindings,
+      });
     } catch (err) {
-      console.error(`  FAILED ${name}: ${err.message}`);
+      if (!flags.json) console.error(`  FAILED ${name}: ${err.message}`);
+      report.push({ server: name, error: String(err.message) });
       failed++;
     }
   }
   savePins(pins);
+  // pins signing happens at the human-review points (scan/approve/unpin);
+  // best-effort: machines without a receipts key simply skip the signature
+  (await import('./receipts.js')).signPinsFile();
   const shadows = detectShadows(pins);
   for (const s of shadows) {
-    console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
+    if (!flags.json) console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
 
   // skill scanning: SKILL.md / .mdc / rule files can carry poisoned instructions
   // just like tool descriptions (Snyk agent-scan popularized this check)
+  let skillFindings = [];
   try {
     const { scanSkills } = await import('./skills.js');
-    const skillFindings = scanSkills();
+    skillFindings = scanSkills();
     for (const sk of skillFindings) {
-      console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} — score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
+      if (!flags.json) console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} — score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
       logEvent({ kind: 'skill-advisory', app: sk.app, file: sk.file, score: sk.score, signals: sk.signals.map((s) => s.id) });
     }
-    if (skillFindings.length > 0) {
+    if (skillFindings.length > 0 && !flags.json) {
       console.error(`rugsnare scan: ${skillFindings.length} skill file(s) with advisory findings (see above)`);
     }
   } catch { /* skills dir not found or permission — fine */ }
 
-  console.log('');
+  if (flags.json) {
+    // machine-readable baseline inventory; exit semantics identical to human mode
+    console.log(JSON.stringify({
+      scanned: names.length,
+      failed,
+      chameleonCount,
+      servers: report,
+      shadows,
+      skills: skillFindings.map((sk) => ({ app: sk.app, file: path.basename(sk.file), score: sk.score, signals: sk.signals.map((s) => s.id) })),
+    }, null, 2));
+    if (chameleonCount > 0) process.exit(1);
+    process.exit(failed > 0 ? 2 : 0);
+  }
+
+  if (!flags.json) console.log('');
   if (chameleonCount > 0) {
     console.error(`rugsnare scan: CHAMELEON findings: ${chameleonCount} (server serves different contracts per client)`);
     process.exit(1);
@@ -363,6 +412,22 @@ async function cmdScan(flags) {
 
 async function cmdDiff(flags) {
   const pins = loadPins();
+  // Signed pins (v0.9): an attacker editing pins.json in the repo/CI to force
+  // a "clean" diff is caught by the signature. tampered is ALWAYS fatal;
+  // unsigned-with-key fails unless --allow-unsigned-pins (bootstrap override).
+  const { verifyPinsFile } = await import('./receipts.js');
+  const pinsVerdict = verifyPinsFile();
+  if (pinsVerdict.status === 'tampered') {
+    console.error(`rugsnare: pins.sig TAMPERED — ${pinsVerdict.reason}. Refusing to diff against a modified pin store.`);
+    process.exit(2);
+  }
+  if (pinsVerdict.status === 'unsigned' && !flags.allowUnsignedPins) {
+    console.error('rugsnare: pins.json is unsigned while a signing key exists on this machine. Run `rugsnare scan` (re-pins and signs) or pass --allow-unsigned-pins to override once.');
+    process.exit(2);
+  }
+  if (pinsVerdict.status === 'ok' && !flags.json && !flags.sarif) {
+    console.error(`pins: signature ok (${(pinsVerdict.signedAt ?? '').slice(0, 10) || '?'})`);
+  }
   // With --config, check what the client would run RIGHT NOW (path/version
   // swaps included). Without it, check the pinned command itself (the
   // classic "package updated in place" rug pull).
@@ -520,6 +585,7 @@ async function cmdApprove(flags, serverName) {
   serverPin.resources = nextResources;
 
   savePins(pins);
+  (await import('./receipts.js')).signPinsFile();
   logEvent({ kind: 'approve', server: serverName, tools: tools.length });
   console.log(`Re-pinned ${serverName}: ${tools.length} tool(s), ${Object.keys(nextPrompts).length} prompt(s), ${Object.keys(nextResources).length} resource(s) approved.`);
 }
@@ -1033,7 +1099,12 @@ async function cmdDoctor() {
     console.log('policies: built-in defaults (no policies.json)');
   }
 
-  const { loadPublicKey, readReceipts, verifyReceipts } = await import('./receipts.js');
+  const { loadPublicKey, readReceipts, verifyReceipts, verifyPinsFile } = await import('./receipts.js');
+  const pinsSig = verifyPinsFile();
+  if (pinsSig.status === 'ok') console.log(`pins signature: ok (${(pinsSig.signedAt ?? '').slice(0, 10) || '?'})`);
+  else if (pinsSig.status === 'tampered') problems.push(`pins.sig TAMPERED: ${pinsSig.reason} — \`rugsnare diff\` will refuse these pins`);
+  else if (pinsSig.status === 'unsigned') warn('pins.json unsigned while a signing key exists — run `rugsnare scan` to re-pin and sign');
+  // nokey/nopins: normal pre-signature state, silent
   const pub = loadPublicKey();
   if (!pub) {
     console.log('receipts: no signing key (`rugsnare receipts sign` creates one)');
@@ -1162,8 +1233,145 @@ async function cmdUnpin(flags, serverName) {
   const toolCount = Object.keys(sp.tools ?? {}).length;
   delete pins.servers[serverName];
   savePins(pins);
+  (await import('./receipts.js')).signPinsFile();
   logEvent({ kind: 'unpin', server: serverName, tools: toolCount });
   console.log(`Unpinned ${serverName} (${toolCount} tool(s)). diff/report will no longer track it.`);
+}
+
+/**
+ * rugsnare audit --input <file-or-dir> [--json] [--airgap]
+ * Zero-knowledge scan of local files (AI chat exports, notes, .env) for
+ * leaked secrets: API keys, private key blocks, payment cards, crypto seed
+ * phrases, DB URLs with credentials, internal infrastructure, contact PII,
+ * .env-style credential lines. Screen-only BY DESIGN: findings are redacted
+ * (first 4 chars + length), nothing is written to disk, the only trace is a
+ * count-only event entry (--airgap skips even that). Exit 1 = HIGH findings
+ * present, so it doubles as a pre-share gate.
+ */
+async function cmdAudit(flags) {
+  const input = flags.input ?? flags._[0];
+  if (!input || typeof input !== 'string') {
+    console.error('Usage: rugsnare audit --input <file-or-dir> [--json] [--airgap]');
+    console.error('Scans local text/JSON files (AI chat exports, notes, .env) for leaked secrets.');
+    console.error('Screen-only, redacted output; exit 1 when HIGH findings exist.');
+    process.exit(2);
+  }
+  if (!fs.existsSync(input)) { console.error(`No such file or directory: ${input}`); process.exit(2); }
+  const { auditPath } = await import('./audit.js');
+  const t0 = Date.now();
+  const { results, counts, high, filesScanned } = auditPath(input);
+
+  if (flags.json) {
+    console.log(JSON.stringify({ input, filesScanned, high, counts, results }, null, 2));
+  } else {
+    console.log(`rugsnare audit — ${input} (${filesScanned} file(s), ${Date.now() - t0}ms)`);
+    let anyShown = false;
+    for (const r of results) {
+      if (r.skipped) { console.log(`  ${r.file}: SKIPPED (${r.skipped})`); continue; }
+      if (r.findings.length === 0) continue;
+      anyShown = true;
+      console.log(`  ${r.file}${r.note ? ` (${r.note})` : ''}:`);
+      for (const f of r.findings) {
+        console.log(`    [${f.severity}] ${f.id} ${f.kind} @ ${f.location} — ${f.preview}`);
+      }
+    }
+    if (!anyShown) console.log('  (no findings)');
+    console.log('');
+    const parts = Object.entries(counts).map(([id, n]) => `${id}:${n}`).join('  ') || 'clean';
+    console.log(`findings: ${parts}${high > 0 ? ` — ${high} HIGH` : ''}`);
+    console.log(high > 0
+      ? 'audit: SECRETS PRESENT — rotate them before sharing this export'
+      : 'audit: no high-severity findings');
+  }
+
+  if (!flags.airgap) {
+    // count-only trace: no paths, no previews — the promise is screen-only
+    logEvent({ kind: 'audit', files: filesScanned, high, counts });
+  }
+  process.exit(high > 0 ? 1 : 0);
+}
+
+/** Hidden-input prompt (zero-dep): raw mode, Enter confirms, Ctrl-C aborts. */
+function promptHidden(question) {
+  return new Promise((resolve) => {
+    if (!process.stdin.setRawMode || !process.stdin.isTTY) {
+      // Non-interactive (pipe/CI): values must come via the VALUE argument
+      resolve(null);
+      return;
+    }
+    process.stdout.write(question);
+    const wasRaw = process.stdin.isRaw;
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    let buf = '';
+    const onData = (ch) => {
+      const c = ch.toString('utf8');
+      if (c === '\r' || c === '\n') {
+        process.stdin.setRawMode(wasRaw ?? false);
+        process.stdin.removeListener('data', onData);
+        process.stdout.write('\n');
+        resolve(buf);
+      } else if (c === '\u0003') {
+        process.exit(130);
+      } else if (c === '\u007f' || c === '\b') {
+        buf = buf.slice(0, -1);
+      } else {
+        buf += c;
+      }
+    };
+    process.stdin.on('data', onData);
+  });
+}
+
+/**
+ * rugsnare vault set <NAME> [VALUE] | get <NAME> | list | rm <NAME>
+ * Secret vault: the model writes {{VAULT:NAME}} placeholders, the live proxy
+ * injects the real value on the way to the server and scrubs it from results
+ * on the way back. Storage: .rugsnare/vault.json (chmod 600, gitignored).
+ * With no VALUE given, `set` prompts with hidden input (TTY only; in scripts
+ * pass the value as the argument).
+ */
+async function cmdVault(flags) {
+  const [sub, name, ...rest] = flags._;
+  const { loadVault, saveVault, vaultPath } = await import('./vault.js');
+  const usage = () => { console.error('Usage: rugsnare vault set <NAME> [VALUE] | get <NAME> | list | rm <NAME>'); process.exit(2); };
+  if (sub === 'set') {
+    if (!name) usage();
+    let value = rest[0];
+    if (value === undefined) {
+      value = await promptHidden(`value for ${name} (input hidden, Enter to confirm): `);
+      if (value === null) { console.error('No TTY for hidden input — pass the value as an argument in scripts.'); process.exit(2); }
+    }
+    if (typeof value !== 'string' || value.length === 0) { console.error('Empty value — nothing written.'); process.exit(2); }
+    const vault = loadVault() ?? {};
+    vault[name] = value;
+    saveVault(vault);
+    console.log(`vault: ${name} set (${value.length} chars) -> ${vaultPath()}`);
+    return;
+  }
+  if (sub === 'get') {
+    if (!name) usage();
+    const vault = loadVault();
+    if (!vault || vault[name] === undefined) { console.error(`No vault entry "${name}".`); process.exit(2); }
+    console.log(vault[name]);
+    return;
+  }
+  if (sub === 'list') {
+    const vault = loadVault();
+    if (!vault) { console.log('vault: empty (no entries)'); return; }
+    for (const [k, v] of Object.entries(vault)) console.log(`${k}: ${v.length} chars`);
+    return;
+  }
+  if (sub === 'rm') {
+    if (!name) usage();
+    const vault = loadVault();
+    if (!vault || vault[name] === undefined) { console.error(`No vault entry "${name}".`); process.exit(2); }
+    delete vault[name];
+    saveVault(vault);
+    console.log(`vault: ${name} removed`);
+    return;
+  }
+  usage();
 }
 
 /**
@@ -1231,6 +1439,8 @@ async function main() {
     case 'diff': return cmdDiff(flags);
     case 'approve': return cmdApprove(flags, flags._[0]);
     case 'unpin': return cmdUnpin(flags, flags._[0]);
+    case 'audit': return cmdAudit(flags);
+    case 'vault': return cmdVault(flags);
     case 'verify': return cmdVerify(flags);
     case 'run': return cmdRun(flags);
     case 'canary': {

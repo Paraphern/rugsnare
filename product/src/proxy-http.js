@@ -9,6 +9,7 @@ import { scanResult } from './results.js';
 import { resolveAuth } from './auth.js';
 import { canaryEnabled, appendTrace, capPayload } from './canary.js';
 import { evaluateCall, loadPolicies } from './policies.js';
+import { loadVault, substituteArgs, redactResult } from './vault.js';
 
 /**
  * HTTP-based live proxy: sits between an MCP client and a remote HTTP MCP
@@ -33,6 +34,15 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
   const activePolicies = loadPolicies(cwd);
   const LOOP_THRESHOLD = Number.isInteger(config?.loopThreshold) ? config.loopThreshold : 5;
   let loopRun = { fingerprint: null, count: 0, alerted: false };
+
+  // Per-session budgets + kill-switch (policies.budgets / policies.disabled, v0.8)
+  const budgets = activePolicies?.budgets ?? null;
+  const disabled = Array.isArray(activePolicies?.disabled) ? activePolicies.disabled : [];
+  const callCounts = new Map();
+  const budgetAlerted = new Set();
+
+  // Secret vault (v0.7): see src/vault.js — placeholders out, secrets scrubbed back
+  const vault = loadVault(cwd);
 
   // Canary capture (opt-in): HTTP is one request per POST, so correlation is
   // trivial — no pending-id map like the stdio proxy needs.
@@ -190,10 +200,67 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           if (policyResult.pii) {
             logEvent({ kind: 'pii-detected', server: name, tool: msg.params.name, hits: policyResult.pii.hits }, cwd);
           }
+
+          // kill-switch: disabled tools never run, in ANY mode
+          if (disabled.includes(msg.params.name)) {
+            process.stderr.write(`[rugsnare] KILL-SWITCH: ${name}/${msg.params.name} is disabled in policies.json — call blocked\n`);
+            logEvent({ kind: 'kill-switch-block', server: name, tool: msg.params.name }, cwd);
+            clientRes.writeHead(200, { 'content-type': 'application/json' });
+            clientRes.end(JSON.stringify({
+              jsonrpc: '2.0', id: msg.id,
+              error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" is disabled by the operator (policies.json kill-switch).` },
+            }));
+            return;
+          }
+
+          // per-session budget: observe warns once past the cap, enforce blocks
+          if (budgets && Number.isInteger(budgets[msg.params.name])) {
+            const cap = budgets[msg.params.name];
+            const n = (callCounts.get(msg.params.name) ?? 0) + 1;
+            callCounts.set(msg.params.name, n);
+            if (n > cap) {
+              if (mode === 'enforce') {
+                process.stderr.write(`[rugsnare] BUDGET EXCEEDED: ${name}/${msg.params.name} — cap ${cap} call(s) per session, this is #${n}. Blocked.\n`);
+                logEvent({ kind: 'budget-block', server: name, tool: msg.params.name, cap, call: n }, cwd);
+                clientRes.writeHead(200, { 'content-type': 'application/json' });
+                clientRes.end(JSON.stringify({
+                  jsonrpc: '2.0', id: msg.id,
+                  error: { code: -32603, message: `[RUGSNARE] Call budget exceeded for "${msg.params.name}": cap ${cap} per session (this is #${n}).` },
+                }));
+                return;
+              }
+              if (!budgetAlerted.has(msg.params.name)) {
+                budgetAlerted.add(msg.params.name);
+                process.stderr.write(`[rugsnare] BUDGET EXCEEDED (observe): ${name}/${msg.params.name} past cap ${cap} — call #${n} forwarded; switch to enforce to block\n`);
+                logEvent({ kind: 'budget-exceeded', server: name, tool: msg.params.name, cap, call: n }, cwd);
+              }
+            }
+          }
+        }
+
+        // Vault substitution is the LAST step before the wire (policy and
+        // loop detection above saw the placeholder form)
+        if (vault && msg.method === 'tools/call' && msg.params) {
+          const { args, used } = substituteArgs(msg.params.arguments, vault);
+          if (used.length > 0) {
+            msg.params.arguments = args;
+            logEvent({ kind: 'vault-substitute', server: name, tool: msg.params.name, names: used }, cwd); // names, never values
+          }
         }
 
         const t0 = canary && msg.method === 'tools/call' ? Date.now() : 0;
         const response = await forward(msg);
+
+        // Vault redaction BEFORE canary capture and result inspection: the
+        // corpus and the signals see placeholders; the model never sees the
+        // secret even when the server echoes it back
+        if (vault && response?.result && msg.method === 'tools/call') {
+          const { result: scrubbed, redacted } = redactResult(response.result, vault);
+          if (redacted.length > 0) {
+            response.result = scrubbed;
+            logEvent({ kind: 'vault-redact', server: name, requestId: msg.id, names: redacted }, cwd);
+          }
+        }
         const tools = response?.result?.tools;
 
         // Canary capture (opt-in): server identity from the handshake, and
@@ -221,6 +288,13 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 .map((v) => v.tool)
             );
             const blocked = verdicts.filter((v) => tools.some((t) => t.name === v.tool) && !allowed.has(v.tool));
+            // kill-switch: disabled tools are hidden from the contract too
+            for (const t of tools) {
+              if (allowed.has(t.name) && disabled.includes(t.name)) {
+                allowed.delete(t.name);
+                blocked.push({ tool: t.name, status: 'DISABLED' });
+              }
+            }
             if (blocked.length > 0) {
               response.result.tools = [
                 ...tools.filter((t) => allowed.has(t.name)),

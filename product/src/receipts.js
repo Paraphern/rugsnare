@@ -58,6 +58,72 @@ export function loadPublicKey(cwd = process.cwd()) {
   return { publicKey: crypto.createPublicKey(pem), fingerprint: keyFingerprint(pem) };
 }
 
+/** Load the existing PRIVATE key without generating one. Null if absent. */
+export function loadPrivateKey(cwd = process.cwd()) {
+  const privPath = path.join(rugsnareDir(cwd), 'keys', 'ed25519.pem');
+  if (!fs.existsSync(privPath)) return null;
+  return crypto.createPrivateKey(fs.readFileSync(privPath, 'utf8'));
+}
+
+// ---- signed pin store (v0.9) ---------------------------------------------------
+//
+// Threat (from the first external audit, finding #2): an attacker with write
+// access to the repo/CI can edit .rugsnare/pins.json so `diff` reports clean
+// against a poisoned contract. Committed together with pins.json, pins.sig
+// makes that edit detectable: Ed25519 over the exact bytes of pins.json.
+// The signature does NOT travel to the attacker's keyboard — signing happens
+// at the human-review points (scan/approve/unpin) on the operator's machine.
+
+export function pinsSigPath(cwd = process.cwd()) {
+  return path.join(rugsnareDir(cwd), 'pins.sig');
+}
+
+/** Sign the current pins.json bytes. Returns true when signed, false when no key exists (nothing surprising happens on machines that never ran `receipts sign`). */
+export function signPinsFile(cwd = process.cwd()) {
+  const privateKey = loadPrivateKey(cwd);
+  const pinsFile = path.join(rugsnareDir(cwd), 'pins.json');
+  if (!privateKey || !fs.existsSync(pinsFile)) return false;
+  const bytes = fs.readFileSync(pinsFile);
+  const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+  const pub = loadPublicKey(cwd);
+  const sig = crypto.sign(null, Buffer.from(hash, 'hex'), privateKey).toString('hex');
+  const payload = { algo: 'sha256+ed25519', hash, sig, keyFingerprint: pub.fingerprint, signedAt: new Date().toISOString() };
+  fs.writeFileSync(pinsSigPath(cwd), JSON.stringify(payload, null, 2) + '\n');
+  return true;
+}
+
+/**
+ * Verify pins.json against pins.sig.
+ * Statuses:
+ *   ok          — signature matches the exact bytes
+ *   tampered    — pins.json changed after signing (or sig forged) — ALWAYS fatal
+ *   unsigned    — no pins.sig, but a signing key EXISTS on this machine —
+ *                 suspicious: fail unless --allow-unsigned-pins
+ *   nokey       — no pins.sig and no key: pre-0.9 / never signed here — OK
+ *   nopins      — no pins.json at all (caller handles its own "run scan first")
+ */
+export function verifyPinsFile(cwd = process.cwd()) {
+  const pinsFile = path.join(rugsnareDir(cwd), 'pins.json');
+  if (!fs.existsSync(pinsFile)) return { status: 'nopins' };
+  const sigFile = pinsSigPath(cwd);
+  if (!fs.existsSync(sigFile)) {
+    return loadPrivateKey(cwd) ? { status: 'unsigned' } : { status: 'nokey' };
+  }
+  let payload;
+  try {
+    payload = JSON.parse(fs.readFileSync(sigFile, 'utf8'));
+  } catch {
+    return { status: 'tampered', reason: 'pins.sig is not valid JSON' };
+  }
+  const pub = loadPublicKey(cwd);
+  if (!pub) return { status: 'nokey', note: 'pins.sig exists but no public key on this machine' };
+  const hash = crypto.createHash('sha256').update(fs.readFileSync(pinsFile)).digest('hex');
+  if (hash !== payload.hash) return { status: 'tampered', reason: 'pins.json was modified after signing' };
+  const sigOk = crypto.verify(null, Buffer.from(payload.hash, 'hex'), pub.publicKey, Buffer.from(payload.sig, 'hex'));
+  if (!sigOk) return { status: 'tampered', reason: 'pins.sig signature does not verify' };
+  return { status: 'ok', signedAt: payload.signedAt, fingerprint: payload.keyFingerprint };
+}
+
 export function receiptsPath(cwd = process.cwd()) {
   return path.join(rugsnareDir(cwd), 'receipts.jsonl');
 }
