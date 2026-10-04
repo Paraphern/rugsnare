@@ -17,14 +17,20 @@ verification (2026-10-04) — see P1/P2 findings on tags and gitHead.
    the version line, so no integrity risk, but "release = commit" was only
    recoverable through the on-chain pin).
 2. `npm publish` from `product/` — `prepack` re-runs the whole battery.
-3. On-chain pin: sha256 of the published tarball → `ReleaseLog.pin` on Base
-   Sepolia (contract address in `product/src/onchain.js`, `DEFAULT_CONTRACTS`).
-   Record the tx hash for the release notes.
+3. On-chain pin: sha256 of the published tarball → `ReleaseLog.pin` on **Base
+   mainnet** (decision 2026-10-04; the Sepolia contract stays live for the
+   0.1.0–0.5.1 history). The FIRST mainnet release additionally deploys the
+   contract — runbook and funding note: `contracts/releaselog/DEPLOY.md`,
+   section "Mainnet Base". Record the tx hash for the release notes.
 4. Tag the **publish commit** (the one from step 1 plus nothing else) and push
    the tag once: `git tag vX.Y.Z <commit> && git push origin vX.Y.Z`.
 5. Docker builds automatically on `v*` tag push.
-6. GitHub Release: notes + npm link + pin tx + pin page (`site/pin*.html`).
-7. `node src/cli.js verify <tarball.tgz> --version X.Y.Z` — must print VERIFIED.
+6. **MCP Registry**: re-publish the `io.github.Paraphern/rugsnare` entry
+   (mcp-publisher CLI) so the registry version matches npm. Found stale at
+   0.4.0 vs npm 0.5.1 by verification 2026-10-04 — this step exists so it
+   never lags again.
+7. GitHub Release: notes + npm link + pin tx + pin page (`site/pin*.html`).
+8. `node src/cli.js verify <tarball.tgz> --version X.Y.Z` — must print VERIFIED.
 
 ## The rule: release tags are immutable
 

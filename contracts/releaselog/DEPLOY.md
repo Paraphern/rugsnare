@@ -46,3 +46,54 @@ Base mainnet deploy: ~$0.5–3. Each pin: <$0.05. ENS: ~$5/yr + gas for text rec
 ## Honest limitations
 
 The contract guarantees hash immutability, not signer honesty — that's what the fingerprint scheme (GitHub + ENS + genesis event = three independent anchors) and PGP-signed releases are for. If the release key is ever compromised: a new contract is deployed, ENS records are re-pointed, and the old contract is marked compromised in README and SECURITY.md — there is intentionally no admin key-swap path.
+
+---
+
+# Mainnet Base: первый деплой (решение принято 2026-10-04, релиз 1.0.0)
+
+Решение: **1.0.0 пиннится в Base mainnet** (chainId 8453 / 0x2105). Sepolia-контракт остаётся
+живым для истории (0.1.0–0.5.1 уже запинены там и проверяемы).
+
+## Что нужно ДО релиза (владелец)
+
+1. **Заправить релизный кошелёк** `0x24d0A3d0562CF4A62E5decAEB77356B51514258e`
+   на **Base mainnet**. Требуется ~0.0005 ETH: вся последовательность
+   (деплой + genesis + pin, ~1.5M gas при газе 0.006 gwei) ≈ 0.05–0.50 USD
+   при ETH = 2700 USD (замер 2026-10-04).
+   **Статус: ГОТОВО — живой eth_getBalance 2026-10-04 15:42 подтверждает
+   0.002177 ETH на Base mainnet (chainId 8453). Этого хватает на весь
+   релизный набор и запас на десятки пинов.**
+2. Ключ/кошелек тот же, которым деплоилась Sepolia (Remix-флоу, ничего нового).
+
+## Порядок деплоя (Remix, тот же флоу, сеть = Base Mainnet)
+
+1. Remix → Deploy → ENVIRONMENT: Injected Provider (кошелёк 0x24d0…).
+2. NETWORK: **Base Mainnet, chainId 8453 (0x2105)** — проверено живым
+   eth_chainId 2026-10-04. Рядом в списке Base Sepolia = 84532 (0x14a34) —
+   не перепутать: у них похожие имена и один провайдер RPC-эндпоинтов.
+3. Contract: `build_ReleaseLog.bin` (solc 0.8.24, артефакты рядом с этим файлом).
+4. Deploy → записать адрес и tx-хэш в таблицу ниже.
+5. Genesis: вызвать `publishFingerprint(...)` тем же ключом (см. genesis-вызов
+   Sepolia-деплоя; PGP fingerprint `87289542A1FB9A9AEA60974BEEEAD3348C93D91E`).
+6. Сообщить адрес агенту → патч `DEFAULT_CONTRACTS.base` в
+   `product/src/onchain.js` → коммит (это часть релизного коммита 1.0.0).
+
+## Таблица (заполнить при деплое)
+
+| Parameter | Value |
+|---|---|
+| Contract | ___ (mainnet Base) |
+| Genesis tx | ___ |
+| Explorer | https://basescan.org/address/___ |
+
+## Первый пин 1.0.0 (после npm publish)
+
+```bash
+sha256sum rugsnare-1.0.0.tgz
+node -e "import('./product/src/keccak.js').then(m=>console.log(m.keccak256('1.0.0')))"
+# Remix → At Address (mainnet-адрес) → pin(versionKey, artifactHash, "1.0.0")
+node product/src/cli.js verify rugsnare-1.0.0.tgz --version 1.0.0 --chain base   # VERIFIED
+```
+
+Проверка на обоих цепях после релиза:
+`verify --chain base-sepolia --version 0.5.1` (история) и `verify --chain base --version 1.0.0` (текущий).

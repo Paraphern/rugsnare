@@ -86,11 +86,21 @@ export function scanText(text, locPrefix = '') {
     for (const m of text.matchAll(re)) add('AUD01', 'HIGH', `API key — ${name}`, m[0], m.index);
   }
   for (const m of text.matchAll(PRIVATE_KEY_BLOCK)) add('AUD02', 'HIGH', 'private key block', m[0], m.index, 'BEGIN … PRIVATE KEY block');
+  // AUD05 spans collected first: an email/phone INSIDE a credential-bearing URL
+  // is part of that finding, not a second finding (verifier run 2, P2)
+  const dbUrlSpans = [...text.matchAll(DB_URL_WITH_CREDS)].map((m) => [m.index, m.index + m[0].length]);
+  const inDbUrl = (idx) => dbUrlSpans.some(([s, e]) => idx >= s && idx < e);
   for (const m of text.matchAll(DB_URL_WITH_CREDS)) add('AUD05', 'HIGH', 'database URL with credentials', m[0], m.index, `${m[0].split(':')[0]}://user:password@…`);
   for (const m of text.matchAll(RFC1918)) add('AUD06', 'LOW', 'internal IP address (RFC1918)', m[0], m.index);
   for (const m of text.matchAll(INTERNAL_HOST)) add('AUD06', 'LOW', 'internal hostname', m[0], m.index);
-  for (const m of text.matchAll(EMAIL)) add('AUD07', 'LOW', 'email address', m[0], m.index);
-  for (const m of text.matchAll(PHONE)) add('AUD07', 'LOW', 'phone number', m[0], m.index);
+  for (const m of text.matchAll(EMAIL)) {
+    if (inDbUrl(m.index)) continue; // inside a db URL — already reported as AUD05
+    add('AUD07', 'LOW', 'email address', m[0], m.index);
+  }
+  for (const m of text.matchAll(PHONE)) {
+    if (inDbUrl(m.index)) continue;
+    add('AUD07', 'LOW', 'phone number', m[0], m.index);
+  }
 
   // payment cards: Luhn-validated candidates
   for (const m of text.matchAll(CARD_CANDIDATE)) {
@@ -107,8 +117,12 @@ export function scanText(text, locPrefix = '') {
     if (lm) findings.push({ id: 'AUD08', severity: 'HIGH', kind: `.env-style credential — ${lm[1]}`, location: locPrefix || `line ${i + 1}`, preview: preview(lm[2]) });
   }
 
-  // crypto seed phrases: maximal runs of >= 12 consecutive BIP-39 words
+  // crypto seed phrases: maximal runs of >= 12 consecutive BIP-39 words.
+  // A token immediately followed by ':' is a LABEL ("seed:", "card:"), not a
+  // list item — many labels are themselves BIP-39 words and must break the
+  // run instead of inflating it (verifier run 2, P2: "14 words starting card").
   const tokens = [...text.matchAll(/[A-Za-z']+/g)];
+  const isLabel = (t) => text[t.index + t[0].length] === ':';
   let runStart = -1;
   const flushRun = (endExclusive) => {
     const len = endExclusive - runStart;
@@ -120,7 +134,7 @@ export function scanText(text, locPrefix = '') {
   };
   for (let i = 0; i < tokens.length; i++) {
     const word = tokens[i][0].toLowerCase().replace(/'+/g, '');
-    if (BIP39_WORDS.has(word)) {
+    if (BIP39_WORDS.has(word) && !isLabel(tokens[i])) {
       if (runStart < 0) runStart = i;
     } else {
       flushRun(i);

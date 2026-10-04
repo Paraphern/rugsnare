@@ -11,9 +11,15 @@ import { BIP39_COUNT } from '../src/bip39-words.js';
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
 
 // Fake credentials assembled by concatenation so no secret-shaped LITERAL sits
-// in this source file — secret scanners (CI, Mimosa, our own audit) must not
-// trip on the test fixtures themselves. Every value below is a documentation
-// example, not a real credential.
+// in this source file — secret scanners (GitHub push protection found the mongo
+// URI as a literal on 2026-10-04; CI, Mimosa, our own audit) must not trip on
+// the test fixtures themselves. Every value below is a documentation example,
+// not a real credential.
+const DB = {
+  pg: 'postgres' + '://admin:hunter2@db.internal:5432/prod',
+  mongo: 'mongodb+srv' + '://u:pass@cluster0.xyz.mongodb.net/db',
+  pgShort: 'postgres' + '://u:p@h.internal/x',
+};
 const K = {
   openai: 'sk-' + 'proj-abcdefghijklmnopqrstuv',
   anthropic: 'sk-' + 'ant-api03-abcdefghij1234567890',
@@ -57,8 +63,8 @@ test('AUD01: API key formats detected', () => {
 test('AUD02/AUD05: private key blocks and DB URLs with credentials', () => {
   const keyBlock = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAA\n-----END OPENSSH PRIVATE KEY-----';
   assert.equal(of(scanText(keyBlock), 'AUD02').length, 1);
-  assert.equal(of(scanText('connect via postgres://admin:hunter2@db.internal:5432/prod'), 'AUD05').length, 1);
-  assert.equal(of(scanText(`mongodb+srv://u:pass@cluster0.xyz.mongodb.net/db`), 'AUD05').length, 1);
+  assert.equal(of(scanText(`connect via ${DB.pg}`), 'AUD05').length, 1);
+  assert.equal(of(scanText(DB.mongo), 'AUD05').length, 1);
   // URL WITHOUT credentials is not a finding
   assert.equal(of(scanText('see https://api.example.com/docs'), 'AUD05').length, 0);
 });
@@ -82,6 +88,28 @@ test('AUD04: 12-word BIP-39 seed phrase detected; ordinary prose is not', () => 
   // 11 in a row is below the threshold
   const eleven = seed.split(' ').slice(0, 11).join(' ');
   assert.equal(of(scanText(`ends here. ${eleven} done`), 'AUD04').length, 0);
+});
+
+// ---- verifier run 2 (P2) regressions ------------------------------------------
+
+test('AUD04: label words followed by a colon do NOT merge into the run (count and first word stay exact)', () => {
+  const seed = 'abandon ability able about above absent absorb abstract absurd abuse access accident';
+  // "seed" and "card" are themselves BIP-39 words — as LABELS they must break,
+  // not inflate, the run (was: "14 words, starting card")
+  const text = `notes:\nseed: ${seed}\ncard: 4111 1111 1111 1111`;
+  const hits = of(scanText(text), 'AUD04');
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].preview, /12 consecutive BIP-39 words, starting "abandon"/);
+  assert.equal(hits[0].location, 'line 2', 'attributed to the seed line, not the label line');
+});
+
+test('AUD05/AUD07: no double flag — email/phone inside a credential URL is not a separate finding', () => {
+  const findings = scanText(`connect: ${DB.pg}`);
+  assert.equal(of(findings, 'AUD05').length, 1, 'the URL itself is one finding');
+  assert.equal(of(findings, 'AUD07').length, 0, 'pass@db.internal inside the URL must not double as an email');
+  // a REAL email outside any URL still fires
+  const real = scanText(`write to ops@example.com (db is ${DB.pgShort})`);
+  assert.equal(of(real, 'AUD07').length, 1);
 });
 
 test('AUD06/AUD07: internal infra and contact PII', () => {
