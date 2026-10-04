@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] — 2026-10-04
+
+- Fix: `DEFAULT_CONTRACTS.base` now defaults to the Base Mainnet ReleaseLog
+  contract — `rugsnare verify --chain base` works out of the box. (In 1.0.0
+  the published npm tarball was built one commit before the contract address
+  was patched in; the tag pointed to the patched tree, creating an npm ↔
+  Docker mismatch. 1.0.1 is the clean release from the correct commit.)
+
 ## [1.0.0] — 2026-10-04
 
 Everything since 0.5.1, released together. The version number is a stability
