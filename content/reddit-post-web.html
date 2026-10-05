@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Reddit post — copy-paste ready</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:700px;margin:40px auto;padding:0 20px;background:#1a1a2e;color:#e0e0e0}
+.box{background:#262640;border-radius:8px;padding:24px;margin:20px 0}
+.title{font-size:22px;font-weight:bold;color:#818cf8;margin-bottom:16px;padding:12px;background:#1e1e3a;border-radius:6px;cursor:pointer}
+.title:hover{background:#2a2a4a}
+.body{white-space:pre-wrap;font-size:15px;line-height:1.7;color:#d4d4d8}
+.hint{color:#71717a;font-size:13px;margin-top:8px}
+button{background:#818cf8;color:#1a1a2e;border:none;padding:8px 16px;border-radius:4px;font-size:14px;cursor:pointer;margin:4px}
+button:hover{background:#a5b4fc}
+</style>
+</head>
+<body>
+
+<div class="box">
+<div style="color:#71717a;font-size:12px;margin-bottom:8px">SUBREDDIT: r/mcp &nbsp;|&nbsp; TAG: Showcase &nbsp;|&nbsp; Attach image: villains-card.png</div>
+<div class="title" onclick="navigator.clipboard.writeText(this.textContent)">[Showcase] I built a hash-pinning tool for MCP contracts. Ran it across 186 npm packages. 12 failed. Here's what nobody is talking about.</div>
+<div class="hint">Click title to copy</div>
+</div>
+
+<div class="box">
+<div style="color:#71717a;font-size:12px;margin-bottom:8px">POST BODY — click button to copy all</div>
+<button onclick="copyBody()">Copy post body</button>
+<div class="body" id="postbody">**Disclosure: I built RugSnare. Open source, Apache-2.0, zero npm dependencies. This post is about what the tool found, not about the tool itself.**
+
+I spent last weekend running hash-diff checks on 186 MCP packages from npm. The results changed how I think about MCP security. Three things in particular.
+
+---
+
+**Thing #1: Your agent's safety guardrails are just text strings. Not code. Not sandbox. Text.**
+
+Every MCP tool has a description. This description is what your LLM agent reads to decide: "Is this operation dangerous? Should I ask the human first?"
+
+There is no other mechanism. No permission registry. No capability system. No OS-level check. The LLM reads the string and makes a judgment call.
+
+This means: change the string, change the behavior. Delete "Requires confirmation" from a tool's description and your agent stops asking. The entire safety model of MCP rests on freeform text that any package update can modify.
+
+---
+
+**Thing #2: A patch update on October 3rd silently erased safety warnings from 48 destructive tools. Nobody noticed.**
+
+Here's the before/after from `@jadchene/mcp-ssh-service` (206 installs/week):
+
+v2.0.2 — what users approved:
+> *"Delete a path under allowedRemoteRoots. **Requires confirmation.**"*
+> *"Kill a process by PID. **Requires confirmation** unless whitelisted."*
+> *"Run one shell command. No chaining, pipes... **Requires confirmation** unless whitelisted."*
+
+v2.0.3 — what shipped as a "patch":
+> *"Delete a remote file or directory."*
+> *"Kill a process."*
+> *"Run a shell command on the selected server."*
+
+All 48 destructive tools: `rm_safe`, `kill_process`, `chmod`, `chown`, `docker_rm`, `docker_build`, `systemctl_stop`, `firewall_cmd`, `curl_http`, `tar_extract`...
+
+The confirmation mechanism is technically still in the code. But the agent reads the description to decide whether to trigger it. No "Requires confirmation" in the text = agent doesn't ask.
+
+They also added a `dangerMode` flag that overrides everything, and a module that auto-approves when the client name starts with "codex".
+
+I'm not speculating about intent. Maybe it's a feature. But it shipped as semver **patch** — the kind npm auto-installs — and it fundamentally changed what the agent thinks it's allowed to do without asking.
+
+---
+
+**Thing #3: Even Anthropic's official server does this. 36,746 installs/week. Nobody noticed.**
+
+The control group in my scan: `@modelcontextprotocol/server-puppeteer` — the official Puppeteer reference implementation from the modelcontextprotocol org.
+
+Between two releases, a tool's input schema silently broke. Not malicious. Just an ordinary API change that nobody caught because nobody was pinning contracts.
+
+If the team that *invented* MCP doesn't flag contract changes in their own reference server, what chance do third-party developers have?
+
+---
+
+Other catches from the scan:
+
+- `lightning-wallet-mcp` — minor release added 5 sports betting tools to an agent wallet. Your "Lightning wallet" is now a gambling interface.
+- `47620-solana-mcp` — 21 new pay-per-call tools at $0.02 USDC each. Agent starts spending money per invocation.
+- `agentic-wallet-mcp` — policy-write tools added to a payment wallet post-approval.
+- `@agentcomms/gmail-mcp` (1,896 installs/week) — diagnostic tool changed from "one command per problem" to "multiple commands per problem."
+
+Full list with reproduction commands: https://github.com/Paraphern/rugsnare
+
+---
+
+**My conclusion from all this:**
+
+MCP security currently works on the honor system. You install a server, you read its descriptions, you think "this looks safe." Then npm updates it, the descriptions change, and nothing tells you.
+
+This isn't about one malicious package. It's about the fact that **the entire contract between you and your agent's tools is mutable text with no integrity check.**
+
+The fix is boring but effective: hash-pin what you approved, diff after every update, fail the build if anything changed.
+
+```
+npx rugsnare scan    # pin current contracts
+npx rugsnare diff    # exit 1 if anything changed
+```
+
+Put diff in CI. Nothing updates silently again.
+
+Happy to dig into any of the findings or the hash-pinning mechanics.</div>
+</div>
+
+<script>
+function copyBody(){
+  const text = document.getElementById('postbody').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>btn.textContent='Copy post body', 2000);
+  });
+}
+</script>
+</body>
+</html>

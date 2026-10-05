@@ -34,6 +34,16 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const pendingCalls = canary ? new Map() : null; // id -> { tool, args, t0 }
   let serverInfoSeen = false;
 
+  // Undeclared tool detection (v1.0.x): tools that appear in tools/call but
+  // were NEVER listed in tools/list. Progressive-discovery servers (Bitget,
+  // etc.) hide most of their surface behind discover()/meta-tools — the agent
+  // calls tools the user never saw or approved. This catches that gap.
+  // Activated only AFTER the first tools/list response (before that we don't
+  // know what's declared, so we can't judge).
+  const declaredTools = new Set(); // tool names seen in tools/list responses
+  const undeclaredAlerted = new Set(); // one advisory per undeclared tool name
+  let hasSeenToolsList = false;
+
   // Per-session call budgets + kill-switch (policies.budgets / policies.disabled,
   // v0.8): a runaway agent burns the budget and gets blocked (enforce) or
   // flagged once (observe); a disabled tool NEVER runs in any mode.
@@ -90,6 +100,25 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         };
         if (config.logCallArgs) call.args = msg.params.arguments;
         logEvent(call, cwd);
+
+        // Undeclared tool detection: the tool was never in tools/list but the
+        // agent is calling it (progressive discovery, hidden surface). Only
+        // enforced after we've seen at least one tools/list response.
+        if (hasSeenToolsList && !declaredTools.has(msg.params.name)) {
+          if (mode === 'enforce') {
+            shouldForward = false;
+            writeErr(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} — never appeared in tools/list; the agent discovered it outside your approval. Blocked (enforce).`);
+            logEvent({ kind: 'undeclared-tool-block', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
+            writeOut(JSON.stringify({
+              jsonrpc: '2.0', id: msg.id,
+              error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it only through progressive discovery — the user never approved this tool. Switch to observe mode or add it to the declared surface.` },
+            }));
+          } else if (!undeclaredAlerted.has(msg.params.name)) {
+            undeclaredAlerted.add(msg.params.name);
+            writeErr(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} — not in tools/list, agent discovered it via progressive discovery; forwarded, but this is outside your approval`);
+            logEvent({ kind: 'undeclared-tool', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
+          }
+        }
 
         // loop/stuck signal: same tool + same arguments, repeatedly, nothing else between
         if (LOOP_THRESHOLD > 0) {
@@ -269,6 +298,16 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     }
 
     const tools = msg?.result?.tools;
+
+    // Populate the declared surface: every tools/list response tells us which
+    // tools the server ADMITS to having. Tools called but never listed here
+    // are undeclared (progressive-discovery surface).
+    if (Array.isArray(tools)) {
+      hasSeenToolsList = true;
+      for (const t of tools) {
+        if (t?.name) declaredTools.add(t.name);
+      }
+    }
 
     // Canary capture: sniff server identity, then close any pending call by id.
     if (canary) {

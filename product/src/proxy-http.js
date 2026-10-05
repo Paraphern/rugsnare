@@ -48,6 +48,13 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
   // trivial — no pending-id map like the stdio proxy needs.
   const canary = canaryEnabled(config);
 
+  // Undeclared tool detection (same as stdio proxy): tools called but never
+  // listed in tools/list = progressive-discovery surface outside user approval.
+  // Activated only after the first tools/list response.
+  const declaredTools = new Set();
+  const undeclaredAlerted = new Set();
+  let hasSeenToolsList = false;
+
   const targetHeaders = resolveAuth(authConfig ?? {});
   let sessionId = null;
 
@@ -213,6 +220,27 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
             return;
           }
 
+          // Undeclared tool detection: the tool was never in tools/list but the
+          // agent is calling it — progressive-discovery surface. Runs AFTER
+          // kill-switch and policies (those have more specific messages).
+          if (hasSeenToolsList && !declaredTools.has(msg.params.name)) {
+            if (mode === 'enforce') {
+              process.stderr.write(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} — never in tools/list; blocked (enforce)\n`);
+              logEvent({ kind: 'undeclared-tool-block', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
+              clientRes.writeHead(200, { 'content-type': 'application/json' });
+              clientRes.end(JSON.stringify({
+                jsonrpc: '2.0', id: msg.id,
+                error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it through progressive discovery — the user never approved this tool.` },
+              }));
+              return;
+            }
+            if (!undeclaredAlerted.has(msg.params.name)) {
+              undeclaredAlerted.add(msg.params.name);
+              process.stderr.write(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} — not in tools/list, progressive-discovery surface; forwarded\n`);
+              logEvent({ kind: 'undeclared-tool', server: name, tool: msg.params.name, note: 'progressive-discovery surface' }, cwd);
+            }
+          }
+
           // per-session budget: observe warns once past the cap, enforce blocks
           if (budgets && Number.isInteger(budgets[msg.params.name])) {
             const cap = budgets[msg.params.name];
@@ -278,6 +306,12 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           }
         }
         const tools = response?.result?.tools;
+
+        // Populate declared surface from tools/list responses (same as stdio proxy)
+        if (Array.isArray(tools)) {
+          hasSeenToolsList = true;
+          for (const t of tools) if (t?.name) declaredTools.add(t.name);
+        }
 
         // Canary capture (opt-in): server identity from the handshake, and
         // every tools/call id-correlated with ITS response (same POST).

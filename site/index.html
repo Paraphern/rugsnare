@@ -87,7 +87,8 @@
     </div>
     <div class="flow">
       <div class="flow-row">
-        <div class="flow-k" style="font-size:28px;color:var(--fg-dim)">1</div>
+        <div class="flow-ic"><span style="font:700 20px/1 var(--font-mono);color:var(--accent)">1</span></div>
+        <div class="flow-k">PIN</div>
         <div>
           <h3>Pin your current servers</h3>
           <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx rugsnare scan</span>
@@ -98,7 +99,8 @@
         </div>
       </div>
       <div class="flow-row">
-        <div class="flow-k" style="font-size:28px;color:var(--fg-dim)">2</div>
+        <div class="flow-ic"><span style="font:700 20px/1 var(--font-mono);color:var(--accent)">2</span></div>
+        <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
           <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx rugsnare diff --config .mcp.json</span>
@@ -112,7 +114,8 @@
         </div>
       </div>
       <div class="flow-row">
-        <div class="flow-k" style="font-size:28px;color:var(--fg-dim)">3</div>
+        <div class="flow-ic"><span style="font:700 20px/1 var(--font-mono);color:var(--accent)">3</span></div>
+        <div class="flow-k">AUDIT</div>
         <div>
           <h3>Audit your AI chat exports</h3>
           <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> rugsnare audit --input ~/downloads/chat-export.json</span>
@@ -204,23 +207,21 @@
 </main>
 
 <footer>
-  <div class="shell foot-grid">
+  <div class="shell" style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end">
     <div>
       <div class="foot-brand">RugSnare</div>
-      <div>Apache-2.0 &#183; zero dependencies &#183; no telemetry &#183; on-chain verified</div>
+      <div>Apache-2.0 &#183; zero dependencies &#183; no telemetry</div>
     </div>
-    <div class="foot-links">
-      <a href="https://github.com/Paraphern/rugsnare" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.npmjs.com/package/rugsnare" target="_blank" rel="noopener">npm</a>
-      <a href="https://x.com/SergeyDruzhba" target="_blank" rel="noopener">X</a>
-      <a href="https://glama.ai/mcp/servers/Paraphern/rugsnare" target="_blank" rel="noopener">Glama</a>
-      <span class="dim">|</span>
-      <a href="pin100.html">Pin 1.0.0</a>
-      <a href="pin051.html">Pin 0.5.1</a>
-      <a href="pin050.html">Pin 0.5.0</a>
+    <div style="display:flex;gap:18px;font-size:13.5px">
+      <a href="https://github.com/Paraphern/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">GitHub</a>
+      <a href="https://www.npmjs.com/package/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">npm</a>
+      <a href="https://glama.ai/mcp/servers/Paraphern/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">Glama</a>
+      <a href="https://x.com/SergeyDruzhba" target="_blank" rel="noopener" style="color:var(--ink-2)">X</a>
+      <a href="https://basescan.org/address/0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e" target="_blank" rel="noopener" style="color:var(--ink-2)">On-chain</a>
+      <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener" style="color:var(--ink-2)">Releases</a>
     </div>
   </div>
-  <div class="shell foot-note">RugSnare 1.0.1 &#183; <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener">Releases</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
+  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.0.1 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
 </footer>
 
 <script>
