@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "comment": "Marks the worker sources as ES modules for every Node version (18 lacks module syntax detection; without this, Node 18 parses .js here as CommonJS and named exports break). Wrangler bundles this directory regardless."
+}
