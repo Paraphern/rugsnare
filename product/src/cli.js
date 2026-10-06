@@ -46,6 +46,10 @@ Usage:
   rugsnare diff --server <name> --url <https://remote/mcp>    compare pins against THIS endpoint (overrides config)
   rugsnare approve <server> [--config <mcp.json>]
   rugsnare unpin <server>             drop a departed server's pins (stops SHADOW/REMOVED ghosts)
+  rugsnare skills scan | diff | report   pin, diff, and visually report on AI agent
+                                                         skill files (SKILL.md, .mdc) across Claude Code,
+                                                         Cursor, Windsurf, ZCode, Copilot, and others.
+                                                         report generates HTML and opens your browser
   rugsnare audit --input <file-or-dir> [--json] [--airgap]
                                                          scan local files (AI chat exports, notes, .env) for
                                                          leaked secrets — redacted screen-only output; exit 1 = HIGH
@@ -946,6 +950,106 @@ async function cmdReceiptsVerify(flags) {
   }
 }
 
+/**
+ * rugsnare skills scan | skills diff | skills report
+ * Pin, diff, and report on AI agent skill files (SKILL.md, .mdc, etc.)
+ * across Claude Code, Cursor, Windsurf, Continue, ZCode, Copilot, and others.
+ *
+ *   rugsnare skills scan     → discover and pin all skill files
+ *   rugsnare skills diff     → check for changes since last pin (exit 1 on drift)
+ *   rugsnare skills report   → generate HTML report and open in browser
+ */
+async function cmdSkills(flags) {
+  const sub = flags._[0];
+  const { discoverSkills, pinAllSkills, diffSkills } = await import('./skills-pin.js');
+  const { writeSkillsReport } = await import('./skills-report.js');
+  const pins = loadPins();
+  const cwd = process.cwd();
+
+  if (sub === 'scan') {
+    // respect HOME override for isolation (tests set HOME to tmp dir)
+    const home = process.env.RUGSNARE_TEST_HOME ?? os.homedir?.() ?? process.env.HOME ?? process.env.USERPROFILE ?? '';
+    const { pinned } = pinAllSkills(pins, cwd, home);
+    savePins(pins);
+    (await import('./receipts.js')).signPinsFile();
+    console.log(`Pinned ${pinned} skill file(s).`);
+    console.log(`Run \`rugsnare skills diff\` to check for changes, or \`rugsnare skills report\` for a visual report.`);
+    return;
+  }
+
+  if (sub === 'diff' || sub === 'report') {
+    if (!pins.skills || Object.keys(pins.skills).length === 0) {
+      console.error('No skills pinned yet. Run `rugsnare skills scan` first.');
+      process.exit(2);
+    }
+    const home = process.env.RUGSNARE_TEST_HOME ?? os.homedir?.() ?? process.env.HOME ?? process.env.USERPROFILE ?? '';
+    const results = diffSkills(pins, cwd, home);
+    const bad = results.filter((r) => r.status === 'DRIFT' || r.status === 'NEW' || r.status === 'REMOVED');
+
+    if (sub === 'report') {
+      // Include MCP drift results alongside skills for a unified report
+      let mcpResults = [];
+      if (Object.keys(pins.servers ?? {}).length > 0) {
+        try {
+          const { compareTools } = await import('./pins.js');
+          const { toolHash } = await import('./hash.js');
+          const configServers = flags.config ? readServersFromConfigFile(flags.config) : null;
+          const pinNames = Object.keys(pins.servers).filter((n) => pins.servers[n].cmd || configServers?.[n]);
+          for (const name of pinNames) {
+            const sp = pins.servers[name];
+            const isHttp = Boolean(configServers?.[name]?.url || sp.cmd?.url);
+            const httpUrl = configServers?.[name]?.url ?? sp.cmd?.url;
+            if (!isHttp) continue; // MCP-over-stdio needs spawn, skip in report (CLI diff covers it)
+            const { fetchToolsHttp } = await import('./rpc-http.js');
+            const { resolveAuth } = await import('./auth.js');
+            const tools = (await fetchToolsHttp({ url: httpUrl, headers: resolveAuth({}), timeoutMs: flags.timeout })).tools;
+            const verdicts = compareTools(sp, tools, toolHash);
+            mcpResults.push({ server: name, verdicts: verdicts.filter((v) => v.status !== 'UNCHANGED') });
+          }
+        } catch { /* MCP fetch failed — skills report still works */ }
+      }
+
+      const { reportPath, counts } = writeSkillsReport(results, cwd, mcpResults);
+      console.log(`Report: ${reportPath}`);
+      const totalBad = counts.dangerous + mcpResults.reduce((n, r) => n + r.verdicts.length, 0);
+      console.log(`  ${totalBad} total finding(s) (${counts.dangerous} dangerous skills, ${mcpResults.reduce((n, r) => n + r.verdicts.length, 0)} MCP contract changes)`);
+      // open in browser (execFile with arg array - no shell, no injection vector)
+      const { execFile } = await import('node:child_process');
+      const plat = process.platform;
+      if (plat === 'win32') {
+        execFile('cmd', ['/c', 'start', '', reportPath], () => {});
+      } else if (plat === 'darwin') {
+        execFile('open', [reportPath], () => {});
+      } else {
+        execFile('xdg-open', [reportPath], () => {});
+      }
+      return;
+    }
+
+    // diff (CLI output)
+    for (const r of results) {
+      const icon = { UNCHANGED: 'ok ', DRIFT: 'DRIFT', NEW: 'NEW ', REMOVED: 'GONE' }[r.status] ?? '?';
+      const sev = r.severity ? ` (${r.severity})` : '';
+      console.log(`  [${icon}] ${r.key}${sev}`);
+      if (r.status === 'DRIFT' && r.changes?.added?.length) {
+        for (const line of r.changes.added.slice(0, 3)) {
+          console.log(`    + ${line.trim().slice(0, 80)}`);
+        }
+      }
+    }
+    const summary = `Skills: ${bad.length} finding(s) (${results.filter((r) => r.severity === 'DANGEROUS').length} dangerous)`;
+    console.error(`\nrugsnare skills diff: ${bad.length > 0 ? 'DRIFT DETECTED' : 'clean'} - ${summary}`);
+    if (bad.length > 0) process.exit(1);
+    return;
+  }
+
+  console.error('Usage: rugsnare skills <scan|diff|report>');
+  console.error('  scan    - discover and pin all skill files');
+  console.error('  diff    - check for changes (exit 1 = drift detected)');
+  console.error('  report  - generate HTML report and open in browser');
+  process.exit(2);
+}
+
 async function cmdReceiptsExport(flags) {
   const { exportDossier, readReceipts, loadPublicKey } = await import('./receipts.js');
   const receipts = readReceipts();
@@ -1490,6 +1594,7 @@ async function main() {
       return;
     }
     case 'report': return cmdReport(flags);
+    case 'skills': return cmdSkills(flags);
     case 'doctor': return cmdDoctor();
     case 'events': return cmdEvents(flags);
     case 'config': return cmdConfig(flags);

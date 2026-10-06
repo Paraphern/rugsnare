@@ -1,0 +1,201 @@
+kind	key	cat	risk	date	dl/wk|stars	vers	status	desc
+npm	@ponsmcp/sdk	money	3	2026-10-03	2833	18	DRIFT-CAUGHT	PonsMCP SDK + MCP server - autonomous agent payments (MPP) settled in USDG on Ro
+npm	bybit-official-trading-server	money	3	2026-09-22	1332	?	DRIFT-CAUGHT	Bybit trading MCP server — exposes Bybit REST and WebSocket APIs as MCP tools
+npm	presign-guard-wallet-mcp	money	3	2026-10-04	1117	?	DRIFT-CAUGHT	An MCP server that gives AI agents (Claude, Cursor, …) a wallet with spending li
+npm	agentic-wallet-mcp	money	3	2026-09-29	505	?	DRIFT-CAUGHT	Agent-facing MCP wallet for Zetrix — orchestrates x401 identity proof, x402 paym
+npm	mcp-server-robinhood-chain	money	3	2026-10-03	434	?	DRIFT-CAUGHT	MCP server for the MadeOnSol Robinhood Chain (chain id 4663) API — EVM-native on
+npm	tradingview-mcp-server	money	3	2026-08-21	338	?	DRIFT-CAUGHT	Unofficial MCP server and CLI for TradingView stock screener API
+npm	47620-solana-mcp	money	3	2026-09-28	277	?	DRIFT-CAUGHT	MCP server for the 47620 Data API — pay-per-call x402 tools for AI agents: multi
+npm	@parabolicfamily/mcp	money	3	2026-10-03	254	10	DRIFT-CAUGHT	MCP server for Parabolic, a bonding-curve token launchpad: discover coins, quote
+npm	@jadchene/mcp-ssh-service	exec	3	2026-10-03	229	13	DRIFT-CAUGHT	A production-ready, highly secure SSH MCP server featuring stateless connections
+npm	@clusteragent/cluster-mcp	money	3	2026-09-21	167	13	DRIFT-CAUGHT	Cluster MCP + skills — self-hostable index of AI financial agents. Tokenized sto
+npm	lightning-wallet-mcp	money	3	2026-09-22	155	?	DRIFT-CAUGHT	Lightning wallet for AI agents. MCP server + CLI. Works with Claude Code, OpenCl
+npm	@aaarc/handfree-ssh-mcp	exec	3	2026-09-25	147	28	DRIFT-CAUGHT	Handfree SSH MCP Server - A hands-free SSH automation tool via MCP protocol
+npm	@mrfentmen/solana-mcp	money	3	2026-09-27	130	2	DRIFT-CAUGHT	Solana chain status from the public RPC. No key required.
+npm	binance-mcp-tools	money	3	2026-03-08	22	2	DRIFT-CAUGHT	Binance MCP server for Claude - trade crypto, check balances, and monitor market
+npm	x402-crypto-mcp	money	3	2026-08-17	0	25	DRIFT-CAUGHT	Crypto market data via x402 pay-per-call: prices, convert, candles, indicators, 
+npm	@n24q02m/better-notion-mcp	money	3	2026-09-13	0	214	DRIFT-CAUGHT	Better MCP server for Notion API with composite tools optimized for AI agents
+npm	@studio-dao/aether-browser-mcp	money	3	2026-09-08	0	2	DRIFT-CAUGHT	Aether Browser MCP: Ultra token-efficient Chrome extension and native bridge for
+npm	@marian-craciunescu/ssh-mcp-server-secured	exec	3	2026-09-02	0	22	DRIFT-CAUGHT	Secured SSH MCP server with command whitelist/blacklist filtering for safe remot
+npm	@hypnosis/ssh-mcp-server	exec	3	2026-08-24	0	17	DRIFT-CAUGHT	SSH MCP server for AI agents — remote commands, file transfer, log search and se
+npm	qiksy-mcp	browser	2	2026-09-30	1154	?	DRIFT-CAUGHT	Browser MCP server for the Chrome tab you already have open — your session, your
+npm	mcp-browser-dev-tools	browser	2	2026-10-04	946	?	DRIFT-CAUGHT	Browser MCP server for AI agents: batch actions, waits, and checks into one call
+npm	trippy-mcp	other	2	2026-10-05	0	?	DRIFT-CAUGHT	(hunted in waves 1-6, from logs)
+npm	@agentcomms/gmail-mcp	other	2	2026-10-05	0	?	DRIFT-CAUGHT	(hunted in waves 1-6, from logs)
+npm	@modelcontextprotocol/server-puppeteer	other	2	2026-10-05	0	?	DRIFT-CAUGHT	(hunted in waves 1-6, from logs)
+npm	@sondv5/browser-mcp	other	2	2026-10-05	0	?	DRIFT-CAUGHT	(hunted in waves 1-6, from logs)
+npm	ssh-mcp	exec	3	2026-10-04	11655	?	clean	MCP server exposing policy-gated, audited SSH access for Linux and Windows hosts
+npm	bushido-tradingview-mcp	money	3	2026-10-05	2131	?	clean	MCP server that lets AI analyze the TradingView desktop app via Chrome DevTools 
+npm	@okx_ai/okx-trade-mcp	money	3	2026-09-23	1070	109	SKIP-PRE-POSTINSTALL	OKX MCP Server - Model Context Protocol server for OKX exchange
+npm	@zlash65/postgresql-ssh-mcp	exec	3	2025-12-28	1064	4	clean	PostgreSQL MCP Server with built-in SSH tunneling for secure database access thr
+npm	@yawlabs/ssh-mcp	exec	3	2026-09-29	432	30	clean	SSH MCP server: run remote commands, transfer files over SFTP, manage ssh-agent 
+npm	@mario.andreschak/mcp-bash	exec	3	2026-10-02	417	13	clean	FLUJO's standalone cross-platform shell MCP server
+npm	local-shell-mcp	exec	3	2026-09-30	389	?	diff-exit-2	Official npm launcher for local-shell-mcp, a ChatGPT-ready MCP control plane for
+npm	@kaditang/agent-wallet-mcp	money	3	2026-10-03	315	9	clean	Non-custodial RWA + yield service for AI agents on Solana. Compare yields, quote
+npm	@blockchainacademics/mcp	money	3	2026-09-29	273	11	clean	The canonical crypto MCP server for AI agents — 99 tools spanning news, entities
+npm	robinhood-for-agents	money	3	2026-09-24	218	13	clean	AI-native Robinhood trading interface — MCP server + TypeScript client
+npm	binance-market-mcp	money	3	2026-09-27	193	5	clean	Live crypto prices, tickers, and candlestick charts from Binance public data. No
+npm	@nl4ever/sshmcp	money	3	2026-05-27	153	16	clean	SSH MCP Server — Let AI manage remote servers via SSH with zero-token SFTP file 
+npm	@mrfentmen/okx-mcp	money	3	2026-09-27	148	3	clean	Crypto prices from OKX. No key required.
+npm	@tamtunnel/si-wallet-mcp	money	3	2026-09-22	87	4	clean	Sovereign-identity wallet as an MCP server: DIDs, agency grants, task mandates
+npm	@axon-trading/mcp	money	3	2026-06-03	80	45	clean	Axon MCP server — local non-custodial trading terminal for AI agents. ~35 typed 
+npm	okx-trade-mcp	money	3	2026-04-03	62	20	clean	Alias package for @okx_ai/okx-trade-mcp — supports both install methods
+npm	electricity-trading-mcp	money	3	2026-02-05	58	41	clean	MCP server for Shandong Power Trading Center - provides electricity price and tr
+npm	@pipeworx/mcp-insider-trading	money	3	2026-09-26	52	3	clean	Insider Trading MCP — SEC EDGAR insider filings and material events
+npm	@pipeworx/mcp-crypto	money	3	2026-09-25	49	3	clean	Crypto MCP — cryptocurrency prices and currency conversion.
+npm	ajs-bybit-mcp	money	3	2026-06-14	41	10	diff-exit-2	Bybit Quant MCP server for Claude Desktop, Claude Code, and Cursor. Trade and an
+npm	@guylouis/keycard-shell-mcp	exec	3	2026-09-20	41	3	clean	MCP server that makes a Keycard Shell the signer for your AI agent. The agent pr
+npm	@hkrds1996/paper-trading-mcp	money	3	2026-09-22	37	6	clean	Local stdio MCP access to the KH paper trading brokerage and competitions.
+npm	defi-trading-mcp	money	3	2026-06-10	29	11	clean	Transform your AI assistant into an autonomous crypto trading agent with real-ti
+npm	mcp-trade-guard	money	3	2026-09-22	23	3	diff-exit-2	A policy gate between an AI agent and an agentic-trading MCP: scans the text the
+npm	@thesashadev/ssh-mcp-server	exec	3	2026-03-06	23	4	clean	Professional SSH MCP server for AI agents. Supports sync/async commands, high-pe
+npm	@rackspay/wallet-mcp	money	3	2026-03-23	18	11	diff-exit-2	RACKS Wallet MCP — crypto trading, betting, and MPP payments for AI agents. Trad
+npm	@goodfoot/shell-mcp	exec	3	2026-09-21	17	4	diff-exit-2	Remote managed Bash MCP server over Streamable HTTP, reached through an OpenAI S
+npm	@shell-mcp/core	exec	3	2026-04-01	9	5	diff-exit-2	Core session management, safety guardrails, and audit logging for shell-mcp
+npm	@specialagentk/tradingview-mcp	money	3	2026-06-02	9	3	clean	MCP bridge for TradingView Desktop via Chrome DevTools Protocol
+npm	@iflow-mcp/termix-official_binance-mcp	money	3	2026-01-23	4	2	clean	Binance MCP Server is a backend service designed to interact with the Binance AP
+npm	@kasarlabs/okx-mcp	money	3	2026-01-09	2	5	clean	MCP server for OKX wallet account creation and deployment on Starknet
+npm	flotilla-mcp	exec	3	2026-09-19	0	16	clean	Multi-server SSH MCP server: fleet fan-out, rolling deploys with circuit breakin
+npm	@bitget-ai/bitget-agent-mcp	money	3	2026-09-20	0	6	clean	Official Bitget MCP Server for the Unified Trading Account (UTA / v3) API — expo
+npm	@clawnch/clawncher-mcp	money	3	2026-09-17	0	13	diff-exit-2	MCP server for agentic finance on Base and Robinhood Chain — token deployment (C
+npm	@fangjunjie/ssh-mcp-server	exec	3	2026-09-09	0	37	diff-exit-2	SSH-based MCP Server (基于 SSH 的 MCP 服务器)
+npm	@daniyal0100101/binance-mcp	money	3	2026-09-16	0	2	clean	Hardened MCP server for Binance market data, account management, and trading — f
+npm	@keyban/agent-wallet-mcp	money	3	2026-09-14	0	6	diff-exit-2	MCP server for Keyban agent wallet operations
+npm	base-multi-wallet-mcp	money	3	2026-09-13	0	4	diff-exit-2	MCP server for AI agents to manage multiple wallets with coordinated trading and
+npm	@three-ws/pumpfun-mcp	money	3	2026-09-11	0	7	clean	Free, read-only pump.fun + Solana MCP server — token discovery, on-chain bonding
+npm	@pyrokine/mcp-ssh	exec	3	2026-09-11	0	20	clean	A comprehensive SSH MCP Server for Claude Code
+npm	@databolsa/wallet-mcp	money	3	2026-09-10	0	9	clean	Servidor MCP da Wallet do DataBolsa (carteiras por workspace) — tools geradas a 
+npm	@ferroxlabs/tvcontrol	money	3	2026-09-08	0	22	clean	AI remote control for TradingView Desktop — 113 MCP tools driving symbols, indic
+npm	plugin-notion-mcp	exec	3	2026-09-07	0	3	diff-exit-2	One command to install and configure the Notion MCP automatically.
+npm	@calevi/ssh-mcp-dynamic	exec	3	2026-09-06	0	2	clean	Dynamic SSH MCP server — host and key per call
+npm	wikey-wallet-mcp	money	3	2026-09-03	0	7	diff-exit-2	Wikey Wallet MCP — a self-hosted, zero-custody MCP stdio server that exposes the
+npm	@midaslabs/mcp	money	3	2026-09-02	0	5	INSTALL-FAIL-new	Midas AI trading MCP server — use Midas from Claude, Cursor, and any MCP client
+npm	easy-notion-mcp	money	3	2026-08-28	0	23	diff-exit-2	Token-efficient, markdown-first Notion MCP server — agents write markdown, never
+npm	@iuk-ink/binance-mcp-server	money	3	2026-08-25	0	7	clean	Binance USDS-M Futures MCP server: 61 tools across market / indicator / analysis
+npm	@perhamm/ssh-mcp-server	exec	3	2026-08-19	0	6	diff-exit-2	SSH MCP server with guard profiles, sudo from the environment, known_hosts verif
+npm	sw-postgres-mcp	exec	3	2026-08-15	0	4	diff-exit-2	Safe-write Postgres MCP server with dual-role pools and preview-before-execute
+npm	@nirholas/universal-crypto-mcp	money	3	2026-08-04	0	9	diff-exit-2	The most extensive crypto MCP repository - 60+ networks, 100+ tools, DEX/CEX, De
+npm	@nirholas/binance-mcp	money	3	2026-08-04	0	3	diff-exit-2	MCP server for Binance exchange - spot trading, staking, wallet, NFT, pay, minin
+npm	@nirholas/binance-mcp-server	money	3	2026-08-04	0	5	diff-exit-2	MCP server for Binance exchange - spot trading, staking, wallet, NFT, pay, minin
+npm	robinhood-mcp	money	3	2026-07-20	0	2	diff-exit-2	Model Context Protocol servers for the official Robinhood Crypto Trading API: a 
+npm	chrome-devtools-mcp	browser	2	2026-09-23	1731154	?	clean	MCP server for Chrome DevTools
+npm	mcp-server-kubernetes	infra	2	2026-10-02	14268	?	clean	MCP server for interacting with Kubernetes clusters via kubectl
+npm	google-services-mcp	comms	2	2026-10-02	11617	?	clean	Gmail MCP server for AI agents — Google Workspace MCP with 100+ tools for Gmail,
+npm	gogcli-mcp-gmail	comms	2	2026-10-03	922	?	clean	Extended Gmail MCP server via gogcli — auth + full Gmail support (threads, label
+npm	ainative-postgres-mcp	db	2	2026-09-25	138	?	diff-exit-2	Zero-config Postgres MCP server with auto-provisioning. Drop-in replacement for 
+npm	k8s-helm-mcp	infra	2	2026-09-24	59	?	1)	Production-grade Kubernetes MCP Server - Complete kubectl coverage with Infrastr
+npm	tradingcalc-mcp	other	2	2026-10-05	0	?	ENTRY-MISSING-new	(hunted in waves 1-6, from logs)
+npm	@apify/actors-mcp-server	other	2	2026-10-05	0	?	diff-exit-2	(hunted in waves 1-6, from logs)
+npm	@contextflo/postgres-mcp	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@ejazullah/browser-mcp	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@executeautomation/playwright-mcp-server	exec	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@heroku/mcp-server	other	2	2026-10-05	0	?	1)	(hunted in waves 1-6, from logs)
+npm	@j0hanz/filesystem-mcp	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@klodr/gmail-mcp	other	2	2026-10-05	0	?	diff-exit-2	(hunted in waves 1-6, from logs)
+npm	@mario.andreschak/mcp-browser	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@mario.andreschak/mcp-filesystem	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@modelcontextprotocol/server-everything	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@modelcontextprotocol/server-filesystem	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@modelcontextprotocol/server-memory	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@notionhq/notion-mcp-server	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@pipeworx/mcp-gmail	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@sentry/mcp-server	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@upstash/context7-mcp	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	@yawlabs/postgres-mcp	other	2	2026-10-05	0	?	clean	(hunted in waves 1-6, from logs)
+npm	mcp-remote	other	0	2026-09-21	720446	?	1)	Remote proxy for Model Context Protocol, allowing local-only clients to connect 
+npm	notion-mcp-server	other	0	2026-10-04	4471	?	clean	Notion MCP server for Claude, Cursor, ChatGPT, and Claude Desktop — connect AI a
+gh	tradesdontlie/tradingview-mcp	money	3	2026-07-28	6722*	-	untested	AI-assisted TradingView chart analysis — connect Claude Code to your TradingView
+gh	atilaahmettaner/tradingview-mcp	money	3	2026-10-04	4914*	-	untested	TradingView MCP server — real-time market data, technical analysis, screeners & 
+gh	okx/agent-trade-kit	money	3	2026-09-23	461*	-	untested	OKX trading MCP server — connect AI agents to spot, swap, futures, options & gri
+gh	Oft3r/agentic-trading-desk	money	3	2026-09-03	306*	-	untested	AI-assisted trading desk for short-term technical analysis on stocks & ETFs via 
+gh	YizhiSong/FriesTrader	money	3	2026-10-05	206*	-	untested	Robinhood Agentic Trading agent — a fully automated AI trading bot placing real 
+gh	jaipreet15/tradingview-mcp	money	3	2026-09-14	152*	-	untested	tradingview mcp that exposes tradingview market data, multi-exchange scanners an
+gh	JesusRS1/stock-trade-finance-api	money	3	2026-09-14	138*	-	untested	Stock Trade MCP server in Tiingo with stock prices, news, forex, and fundamental
+gh	Weebapp003/tradingview-mcp	money	3	2026-09-14	135*	-	untested	tradingview mcp which connect claude code via chrome devtools protocol
+gh	pueschel88/Tradingview-MCP	money	3	2026-09-14	133*	-	untested	Tradingview MCP server for controlling Tradingview Desktop from Claude Code via 
+npm	solana-mcp-server	money	3	2026-02-14	97	1	untested	Solana MCP server for wallet management, transaction handling, and program inter
+gh	fiale-plus/tradingview-mcp-server	money	3	2026-08-21	53*	-	untested	Unofficial MCP and CLI for TradingView API
+gh	AnalyticAce/binance-mcp-server	money	3	2026-09-15	50*	-	untested	Unofficial tools and server implementation for Binance's Model Context Protocol 
+gh	bybit-exchange/trading-mcp	money	3	2026-10-05	37*	-	untested	MCP server for Bybit's V5 API — 382 tools spanning market data, trading, positio
+gh	nirholas/Binance-MCP	money	3	2026-09-15	37*	-	untested	A Model Context Protocol (MCP) server for Binance.com API. Offers standardized a
+npm	paean-dex-mcp	money	3	2026-02-28	31	1	untested	DEX trading MCP server — autonomous token swaps on Base (Uniswap v3) & Solana (J
+gh	drasticstatic/tradingview-mcp-jackson	money	3	2026-09-15	20*	-	untested	TradingView Desktop MCP — Fortuna trading system working copy. Upstream: LewisWJ
+npm	clara-mcp	money	3	2026-01-29	15	1	untested	Clara Wallet MCP Server - AI agent wallet with x402 payment support
+gh	pedrobraiti/agentic-trading-mcp	money	3	2026-07-20	13*	-	untested	Valet - MCP servers that let an AI agent (Claude Code) trade for real: Interacti
+npm	iflow-okx-agent-trade-kit	money	3	2026-03-17	12	1	untested	OKX MCP Server - Model Context Protocol server for OKX exchange
+npm	@okx_retail/okx-trade-mcp	money	3	2026-03-05	12	1	untested	OKX MCP Server - Model Context Protocol server for OKX exchange
+gh	davidho27941/tradingview-mcp-skill	money	3	2026-09-23	10*	-	untested	
+gh	shadowalpha-ai/shadow-cortex	money	3	2026-07-18	10*	-	untested	A central decision engine for automated stock trading using ShadowAlpha MCP and 
+gh	EklavyaSehraway/Robinhood-Mcp-Trader	money	3	2026-07-13	10*	-	untested	Automated weekly swing trader: S&P 500 + ETF scanner with AI news review (Claude
+gh	nirholas/robinhood-mcp	money	3	2026-09-15	9*	-	untested	Model Context Protocol servers for the official Robinhood Crypto Trading API — t
+gh	tohsaka888/trading-mcp	money	3	2026-07-16	9*	-	untested	MCP service designed for stock quantitative agents - 针对股票量化Agent设计的MCP服务
+npm	improved-notion-mcp	money	3	2026-04-09	8	1	untested	Enhanced Notion MCP server with better markdown conversion and composite tools
+gh	alidaftar1/robinhood-agent	money	3	2026-10-05	6*	-	untested	Autonomous equity trading agent built with Claude AI and Robinhood MCP. Runs dai
+gh	vincentwongso/mt5-trading-mcp	money	3	2026-10-01	5*	-	untested	MCP server wrapping the MetaTrader 5 Python library, read market data, watch you
+gh	pedrobraiti/market-research-mcp	money	3	2026-07-26	4*	-	untested	Scout — an MCP server that gives AI trading agents 62 free-data research tools: 
+gh	moeuu/tradingview-mcp	money	3	2026-09-30	3*	-	untested	Local-first MCP server for market analysis, charts, and optional TradingView bro
+gh	backtest-kit/ai-trading-mcp	money	3	2026-10-04	2*	-	untested	MCP-driven crypto trading rig: Claude (or any MCP client) trades a live portfoli
+gh	SKalinin909/tradingcalc-mcp	money	3	2026-10-01	2*	-	untested	Exact trading math for AI agents over MCP: options (Black-Scholes, Greeks, payof
+gh	coinrule-com/coinrule-mcp-ai-trading	money	3	2026-09-04	2*	-	untested	Coinrule AI Agentic Trading MCP - Crypto Stocks ETFs - Automated Strategies
+gh	Ut8v/NOMO	money	3	2026-08-17	2*	-	untested	An AI trading assistant for Robinhood, powered by Claude: multi-agent research, 
+gh	Chefy3x/tradingview-mcp-chefy	money	3	2026-07-20	2*	-	untested	Token-efficient TradingView MCP for backtesting — built on LewisWJackson/trading
+gh	surajkmr4218/alphagen	money	3	2026-10-04	1*	-	untested	 Human-in-the-loop equity research agent: SEC-filing RAG with cited evidence, de
+gh	asman9659/tradingview-mcp	money	3	2026-10-04	1*	-	untested	Control TradingView Desktop charts and automate Pine Script workflows using Clau
+gh	steveyangpi/binance-research-pro	money	3	2026-10-02	1*	-	untested	Binance trading mcp server
+gh	trustxai/binance-mcp	money	3	2026-09-28	1*	-	untested	MCP server for the Binance Spot + Wallet REST API — deposits, withdrawals, every
+gh	pipeworx-io/mcp-insider-trading	money	3	2026-09-26	1*	-	untested	Insider Trading MCP — SEC EDGAR insider filings and material events
+gh	ayggdrasil/callput-option-agent	money	3	2026-09-26	1*	-	untested	Spread-only Callput options trading MCP skill for AI agents on Base Mainnet
+gh	Sperax/Binance-MCP	money	3	2026-09-20	1*	-	untested	A Model Context Protocol (MCP) server for Binance.com API. Offers standardized a
+gh	tutin9-cmd/TutQuantS9	money	3	2026-09-20	1*	-	untested	Viable Robinhood MCP trader....
+gh	dmotta/binance-mcp-go	money	3	2026-09-03	1*	-	untested	Unofficial MCP Server implementation for Binance (Spot, futures, options). Desig
+gh	cbangera2/robinhood-mcp-cli	money	3	2026-08-30	1*	-	untested	Schema-driven CLI for the Robinhood Trading MCP server
+gh	openclawby/tradingview-mcp	money	3	2026-07-23	1*	-	untested	
+gh	aditya-r123/claude-robinhood-mcp	money	3	2026-07-02	1*	-	untested	Agentic trading with Robinhood MCP, Claude Agent, AWS EC2, and Cron scheduler
+gh	frogman263/trading-agent	money	3	2026-10-05	0*	-	untested	Autonomous AI trading agent — Claude Code + Robinhood MCP
+gh	A-Raphie/Assay	money	3	2026-10-04	0*	-	untested	Assay: the check every Binance Agent OS order must pass. Pre-trade guardrail + p
+gh	medsriha/wheelta-robinhood-agent	money	3	2026-10-02	0*	-	untested	Wheelta agent that places CSP and CC trades using Robinhood MCP
+gh	nexuslife42/trading-robinhood	money	3	2026-10-02	0*	-	untested	Personal Robinhood MCP development, simulation, and guarded execution framework
+gh	JohnnyHu2024/Robinhood_AI_Trading	money	3	2026-10-02	0*	-	untested	Use the Robinhood MCP for trading
+gh	adityarya24/trading-mcp-server	money	3	2026-10-01	0*	-	untested	Trading MCP server — Indian markets data, morning briefs, EOD reviews, trade jou
+gh	danvaneijck/trippy-mcp	money	3	2026-10-01	0*	-	untested	Injective trading MCP — let AI agents (Claude Code, Codex, Cursor) launch and tr
+gh	maks-emelyanov/robinhood-mcp-wrapper	money	3	2026-10-01	0*	-	untested	Typed Python client, CLI, and REST gateway for Robinhood Agentic Trading MCP, wi
+gh	Codejrangel/robinhood-mcp-client	money	3	2026-09-24	0*	-	untested	Safety-first Python client for Robinhood's agentic trading MCP — staged, gated o
+gh	pipeworx-io/mcp-census-trade	money	3	2026-09-24	0*	-	untested	Census Trade MCP — US Census Bureau International Trade data
+gh	Teecash96/Signal402	money	3	2026-09-22	0*	-	untested	An agent-to-agent market-intelligence marketplace on Binance Agent OS: AI agents
+gh	gloom-sh/gloom-robinhood	money	3	2026-09-22	0*	-	untested	Read-only account and position sync through Robinhood Trading MCP
+gh	awsanadelabdulbariahmedsultan-art/robinhood-chain-agentic-trader	money	3	2026-09-21	0*	-	untested	Institutional FinTech & Web3 platform integrating Robinhood Trading MCP, EVM sma
+gh	lui16-Netcreate/Binance-mcp	money	3	2026-09-21	0*	-	untested	MCP server for live Binance crypto data and TradingView signal analysis
+gh	kray2958-lab/Robinhood	money	3	2026-09-17	0*	-	untested	Robinhood MCP trading assistant and Cursor analysis skills
+npm	@nirholas/rh-mcp	money	3	2026-09-16	0	1	untested	Client-side tooling for a Robinhood Trading MCP connection: enumerate and diff t
+gh	drasticstatic/robinhood-mcp	money	3	2026-09-15	0*	-	untested	Robinhood MCP — Fortuna trading system working copy. Upstream: verygoodplugins/r
+gh	minadoom/bitkub-mcp-diagrams	money	3	2026-09-09	0*	-	untested	SVG sequence diagrams for Bitkub Trading MCP data flows, security, and error han
+gh	muzzz3/kronos-agent	money	3	2026-09-09	0*	-	untested	Semi-autonomous equity portfolio agent using Robinhood's Trading MCP, Kronos for
+gh	YOUYOU11223344/clearingdesk-binance-agent-os	exec	3	2026-09-08	0*	-	untested	Deterministic execution clearing layer for AI financial agents, built with Binan
+gh	eddidmund12/TradeLens	money	3	2026-09-08	0*	-	untested	Self-grading crypto market analysis engine built on the Binance MCP Server — tre
+gh	glorioustephan/simple-trader	money	3	2026-09-07	0*	-	untested	A simple Alpaca stock trading MCP server for the layman, per-paycheck, long-term
+gh	Max445697230954/IRON_SRA_BINANCE_AGENT_V3_1_HARDENED	money	3	2026-09-07	0*	-	untested	Autonomous Binance MCP trading agent powered by Iron SRA, delivering determinist
+gh	Awessh/binance-ai-agent	money	3	2026-09-07	0*	-	untested	local VS Code extension that provides a controlled interface between an LLM, the
+gh	CrystalViiva/sentinelflow	exec	3	2026-09-06	0*	-	untested	Explainable market surveillance with deterministic risk controls and human-appro
+gh	chenxiaoyi6688/alphapilot-binance-agent-os	money	3	2026-09-06	0*	-	untested	AI Trade Readiness Agent powered by Binance MCP
+gh	dushaorighthere/RiskPilot	money	3	2026-09-05	0*	-	untested	Risk-controlled crypto trading agent built with Binance Agent OS and Binance MCP
+gh	David35478/trade-agent-by-rei	money	3	2026-09-05	0*	-	untested	this is my custom trade agent i build using binance MCP and skill and with my cu
+gh	day0n/binance-agent-os	money	3	2026-09-04	0*	-	untested	Evidence-first crypto research and risk workbench with Gemini, Binance MCP and d
+gh	nethao/crypto-tv-board	money	3	2026-09-04	0*	-	untested	Read-only AI market intelligence dashboard powered by Binance MCP, multi-signal 
+npm	botpay-go-mcp	money	3	2026-09-02	0	1	untested	Guardrailed BotPay /go trading MCP for Binance, OKX, Coinbase, Hyperliquid, and 
+gh	liuyanxue23/binance-agent-workflows	money	3	2026-09-02	0*	-	untested	Reusable Codex Skill for Binance Agent OS and Binance MCP workflows, with analys
+gh	willcassell/scorched	money	3	2026-08-31	0*	-	untested	Simulated stock trading MCP server — daily AI-driven paper trades with P&L and t
+gh	wl18295600077-a11y/okx-trading-mcp	money	3	2026-08-21	0*	-	untested	OKX Trading MCP Server — AI-powered crypto futures trading via MCP. Landing page
+gh	jamesnjk/trading-mcp-server	money	3	2026-08-16	0*	-	untested	A Trading MCP Server ( still in progress in making it works.. ) 
+npm	@mseep/turtlestack-lite	money	3	2026-08-13	0	1	untested	🚀 TurtleStack Lite - Multi-Broker Trading MCP Server with Kite, Groww, Dhan | T
+npm	@mseep/easy-notion-mcp	money	3	2026-08-13	0	1	untested	Token-efficient, markdown-first Notion MCP server — agents write markdown, never
+gh	maraprikkripa/databricks-lakebase-app-day-3	money	3	2026-08-13	0*	-	untested	📊 Day 3: Agent Bricks + Alpaca Markets Paper-Trading MCP Server
+gh	kriparamm/databricks-lakebase-app-day-3	money	3	2026-08-13	0*	-	untested	📊 Day 3: Agent Bricks + Alpaca Markets Paper-Trading MCP Server - Databricks AI
+gh	tayyadev/TradingMCP	money	3	2026-08-10	0*	-	untested	
+gh	Pedregoneric/agentic-trading-lab	money	3	2026-07-30	0*	-	untested	Safety-first multi-agent stock research and paper-trading lab with an optional o
+gh	harsha-moparthy/broker-rails	money	3	2026-07-30	0*	-	untested	MCP trading server with non-bypassable pre-trade risk rails: enforcement runs in
+gh	hoodly-agent/hoodly-gmgn-robinhood-mcp	money	3	2026-07-20	0*	-	untested	Read-only MCP service for Hoodly's Robinhood financial-agent stack. It uses the 
+gh	dotdevn/sato-trading-orchestrator	money	3	2026-07-20	0*	-	untested	SATO — LangGraph Research → Deterministic Risk → Execution with Robinhood Tradin
+gh	benatcmathew/Shoonya_Trading_MCP-Server	money	3	2026-07-17	0*	-	untested	A Shoonya Trading MCP
+gh	rangertaha/coinbase-mcp	money	3	2026-07-15	0*	-	untested	Coinbase  Trading MCP Server in Golang
+gh	tempestcha/regime-v4-spy-robinhood_mcp-trading-desk	money	3	2026-07-12	0*	-	untested	AI-assisted trading desk for short-term technical analysis on stocks & ETFs via 
+gh	baolin1389/trade-runtime	money	3	2026-07-09	0*	-	untested	Binary distribution for trade-mcp — do not commit source code

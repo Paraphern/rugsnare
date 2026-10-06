@@ -145,6 +145,16 @@ rugsnare run --name mycloud --url https://remote.example.com/mcp --mode enforce
 
 The same binary runs as a read-only MCP server (`drift_feed_status`, `pins_report`) so your agent can ask whether anything drifted.
 
+## Skills Security (1.1) - did your AI instructions change?
+
+```bash
+rugsnare skills scan     # pin all skill files (SKILL.md, .mdc, etc.)
+rugsnare skills diff     # exit 1 if anything changed
+rugsnare skills report   # visual report in your browser
+```
+
+Discovers skill files across Claude Code, Cursor, Windsurf, Continue, ZCode, Copilot, Codex, and Cline. When a skill changes after you approved it, the HTML report shows what was added/removed, classifies severity (DANGEROUS / REVIEW / SAFE), and explains in plain language why it matters.
+
 ## Advisory signals (scan-time, non-blocking)
 
 Tool **and prompt** descriptions are scored against 18 signals (A01–A18): instruction-hijack phrasing, imperative openers, exfiltration-carrier parameters, international phone numbers, ANSI escape sequences, and more. `REVIEW` findings tell you what a human should read before approving — they never fail the build by themselves.
@@ -154,7 +164,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 247 tests, `node --test` only.
+- 261 tests, `node --test` only.
 
 ## Exit codes
 

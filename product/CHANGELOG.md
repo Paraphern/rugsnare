@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0] — 2026-10-06
+
+- **Skills Security** (new): `rugsnare skills scan|diff|report` — pin, diff, and
+  visually report on AI agent skill files (SKILL.md, .mdc, etc.) across Claude
+  Code, Cursor, Windsurf, Continue, ZCode, Copilot, Codex, and Cline.
+  Severity classification (DANGEROUS/REVIEW/SAFE) based on content analysis
+  of changed lines. HTML report with plain-language was/became diffs and
+  actionable recommendations - designed for non-technical users.
+- **Undeclared tool detection** (new): the live proxy catches tools called by
+  the agent that were never listed in tools/list (progressive-discovery servers).
+  Blocked in enforce, one-time advisory in observe.
+- Security fixes (review 28): P0 canary leak via HTTP, P1 error scrubbing,
+  committed verification key for CI, loud policies degradation, P2 guards.
+
 ## [1.0.1] — 2026-10-04
 
 - Fix: `DEFAULT_CONTRACTS.base` now defaults to the Base Mainnet ReleaseLog
