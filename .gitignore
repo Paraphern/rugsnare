@@ -49,3 +49,7 @@ outreach-ready/
 !**/.rugsnare/pins.sig
 !**/.rugsnare/pins.pub.pem
 .zcodeignore
+
+# Go native launcher build artifacts (sources are public, binaries ship via GitHub Releases)
+native/bin/
+native/rugsnare-skills.exe
