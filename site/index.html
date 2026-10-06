@@ -23,6 +23,7 @@
     <a class="brand" href="#top"><img src="assets/logo-128.png" alt="RugSnare logo" width="30" height="30"><span>RugSnare</span></a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#start">Quick start</a>
+      <a href="#history">History check</a>
       <a href="#skills">Skills Security</a>
       <a href="#detection">Detection</a>
       <a href="#new">What's new</a>
@@ -75,7 +76,7 @@
     <span><b>Apache-2.0</b></span>
     <span>zero npm dependencies</span>
     <span>no telemetry</span>
-    <span><b>274 tests</b></span>
+    <span><b>285 tests</b></span>
     <span><b>on-chain verified</b> (Base Mainnet)</span>
   </div>
 </div>
@@ -163,6 +164,26 @@
           <p style="font-size:13px;color:#dc2626;margin:4px 0"><b>Action:</b> Restore previous version immediately.</p>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="history">
+  <div class="shell">
+    <div class="sec-head">
+      <h2>Has this MCP server ever rug-pulled? Check its whole history.</h2>
+      <p>Paste an npm package name. We download its published tarballs and diff every tool contract between versions — without running any code. See what changed, when, and what the description used to say.</p>
+    </div>
+    <div class="callout">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input id="histPkg" type="text" placeholder="@scope/mcp-server or my-mcp-server" spellcheck="false"
+               style="flex:1;min-width:240px;padding:12px 14px;border:1px solid #cbd5e1;border-radius:10px;font:14px/1.3 var(--font-mono);background:#fff;color:#0f172a" />
+        <button id="histBtn" class="btn" type="button" onclick="scanHistory()">Check history</button>
+        <button id="histRunBtn" class="btn btn-sm" type="button" onclick="runHistory()" title="Downloads, installs and actually starts each published version in an ephemeral GitHub Actions sandbox. Takes 2-3 minutes; every result links to its public run log.">⚙️ Runtime scan</button>
+      </div>
+      <div id="histStatus" style="margin-top:10px;font-size:13px;color:#64748b"></div>
+      <div id="histResult" style="margin-top:12px"></div>
+      <p style="margin-top:14px;font-size:12px;color:#94a3b8">Static scan over the last 5 published versions: it reads the published files, never executes them, so tools assembled at runtime can be invisible to it. For runtime-exact scanning — every version actually started and its tools/list taken — run <code style="background:#e2e8f0;padding:1px 4px;border-radius:3px">npx rugsnare history &lt;package&gt;</code> locally.</p>
     </div>
   </div>
 </section>
@@ -287,6 +308,119 @@
     }
   });
 })();
+
+/* package history scanner: calls /api/history (static scan, no code execution) */
+function scanHistory() {
+  const pkg = document.getElementById('histPkg').value.trim();
+  const status = document.getElementById('histStatus');
+  const out = document.getElementById('histResult');
+  const btn = document.getElementById('histBtn');
+  if (!pkg) { status.textContent = 'Type a package name first.'; return; }
+  btn.disabled = true; status.textContent = 'Downloading published tarballs and diffing contracts...'; out.innerHTML = '';
+  fetch('/api/history?package=' + encodeURIComponent(pkg))
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      btn.disabled = false;
+      if (r.error) { status.textContent = ''; out.innerHTML = card('#fef2f2,#dc2626', 'Could not scan: ' + esc(r.error)); return; }
+      status.textContent = '';
+      if (r.silentChanges === 0) {
+        out.innerHTML = card('#f0fdf4,#10b981', '✅ ' + esc(r.package) + ': ' + r.scanned + ' version(s) checked, no silent contract changes found.');
+        return;
+      }
+      var html = card('#fff7ed,#ea580c', '⚠️ ' + esc(r.package) + ': ' + r.silentChanges + ' silent change(s) across ' + r.scanned + ' version(s)');
+      r.pairs.forEach(function (p) {
+        if (!p.findings.length) return;
+        html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin:8px 0">';
+        html += '<b style="font-size:13px">' + esc(p.from) + ' → ' + esc(p.to) + '</b> <span style="color:#64748b;font-size:12px">' + p.findings.length + ' finding(s)</span>';
+        p.findings.slice(0, 12).forEach(function (f) {
+          html += '<div style="margin-top:6px;font-size:12px">';
+          html += '<b>' + esc(f.tool) + '</b> [' + f.status + (f.driftType ? ' ' + f.driftType : '') + ']';
+          if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
+            html += '<div style="color:#ef4444">− ' + esc(f.oldDescription) + '</div>';
+            html += '<div style="color:#22c55e">+ ' + esc(f.newDescription || '') + '</div>';
+          }
+          html += '</div>';
+        });
+        if (p.findings.length > 12) html += '<div style="color:#64748b;font-size:12px">... and ' + (p.findings.length - 12) + ' more</div>';
+        html += '</div>';
+      });
+      out.innerHTML = html;
+    })
+    .catch(function (e) {
+      btn.disabled = false; status.textContent = '';
+      out.innerHTML = card('#fef2f2,#dc2626', 'Scan failed: ' + esc(String(e)));
+    });
+}
+function card(cs, text) {
+  var p = cs.split(',');
+  return '<div style="background:' + p[0] + ';border:1px solid ' + p[1] + ';border-radius:10px;padding:12px;margin:8px 0;color:#374151;font-size:13px">' + text + '</div>';
+}
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* runtime scan: dispatch a sandboxed GitHub Actions run, poll for the result */
+function runHistory() {
+  var pkg = document.getElementById('histPkg').value.trim();
+  var status = document.getElementById('histStatus');
+  var out = document.getElementById('histResult');
+  var btn = document.getElementById('histRunBtn');
+  if (!pkg) { status.textContent = 'Type a package name first.'; return; }
+  btn.disabled = true;
+  status.textContent = 'Dispatching a sandboxed runner (GitHub Actions)... the runtime scan downloads, installs and starts every published version. Usually 2-3 minutes.';
+  out.innerHTML = '';
+  fetch('/api/history-run', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ package: pkg }) })
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.started) { btn.disabled = false; status.textContent = ''; out.innerHTML = card('#fef2f2,#dc2626', 'Runtime scan not started: ' + esc(r.error || 'unknown error')); return; }
+      var tries = 0;
+      (function poll() {
+        tries++;
+        if (tries > 60) { btn.disabled = false; status.textContent = ''; out.innerHTML = card('#fff7ed,#ea580c', 'Timed out waiting for the sandbox run — it may still finish; check the <a href="https://github.com/Paraphern/rugsnare/actions" target="_blank" rel="noopener">Actions log</a>.'); return; }
+        fetch('/api/history-result?package=' + encodeURIComponent(pkg), { cache: 'no-store' })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (res.status === 'pending') { status.textContent = 'Running in the sandbox... (' + tries * 5 + 's elapsed, checking every 5s)'; setTimeout(poll, 5000); return; }
+            btn.disabled = false;
+            status.textContent = '';
+            renderRuntimeResult(res);
+          })
+          .catch(function () { setTimeout(poll, 5000); });
+      })();
+    })
+    .catch(function (e) {
+      btn.disabled = false; status.textContent = '';
+      out.innerHTML = card('#fef2f2,#dc2626', 'Dispatch failed: ' + esc(String(e)));
+    });
+}
+function renderRuntimeResult(res) {
+  var out = document.getElementById('histResult');
+  var r = res.result || {};
+  if (r.error) { out.innerHTML = card('#fef2f2,#dc2626', 'Scan failed: ' + esc(r.error) + ' — details in the <a href="' + esc(res.runUrl || '#') + '" target="_blank" rel="noopener">run log</a>.'); return; }
+  var head = (r.silentChanges === 0)
+    ? card('#f0fdf4,#10b981', '✅ ' + esc(res.package) + ': ' + r.checked + ' version(s) actually started and listed their tools — no silent contract changes.')
+    : card('#fff7ed,#ea580c', '⚠️ ' + esc(res.package) + ': ' + r.silentChanges + ' silent change(s) found across ' + r.checked + ' runtime-checked version(s)');
+  var body = '';
+  (r.pairs || []).forEach(function (p) {
+    if (!p.findings || !p.findings.length) return;
+    body += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin:8px 0">';
+    body += '<b style="font-size:13px">' + esc(p.from) + ' → ' + esc(p.to) + '</b> <span style="color:#64748b;font-size:12px">' + p.findings.length + ' finding(s)</span>';
+    p.findings.slice(0, 12).forEach(function (f) {
+      body += '<div style="margin-top:6px;font-size:12px"><b>' + esc(f.tool) + '</b> [' + f.status + (f.driftType ? ' ' + f.driftType : '') + ']';
+      if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
+        body += '<div style="color:#ef4444">− ' + esc(f.oldDescription) + '</div><div style="color:#22c55e">+ ' + esc(f.newDescription || '') + '</div>';
+      }
+      body += '</div>';
+    });
+    if (p.findings.length > 12) body += '<div style="color:#64748b;font-size:12px">... and ' + (p.findings.length - 12) + ' more</div>';
+    body += '</div>';
+  });
+  if (r.unreachable && r.unreachable.length) {
+    body += '<div style="color:#64748b;font-size:12px;margin-top:6px">' + r.unreachable.length + ' version(s) could not be started (no bin, missing env, crash) — excluded from the diff; see the log.</div>';
+  }
+  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact — every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/main/scans/history/' + esc(res.slug || '') + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
+  out.innerHTML = head + body + evidence;
+}
 </script>
 
 </body>

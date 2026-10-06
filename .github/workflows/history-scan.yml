@@ -1,0 +1,69 @@
+name: history-scan
+
+# Runtime-exact history scan in an ephemeral sandbox. Triggered by the
+# website's "Runtime scan" button via repository_dispatch (worker holds a
+# fine-grained token, Contents:RW, repo-only). Runs `rugsnare history` on
+# every published version of the requested package and commits the result
+# to scans/history/<slug>.json — the site polls that file, and the Actions
+# log is the public evidence the scan really ran.
+
+on:
+  repository_dispatch:
+    types: [history-scan]
+
+permissions:
+  contents: write
+
+# serialize scans: one at a time, queued requests wait
+concurrency:
+  group: history-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run runtime history scan
+        env:
+          # env-var indirection: never interpolate the payload into a shell
+          PKG: ${{ github.event.client_payload.package }}
+          SLUG: ${{ github.event.client_payload.slug }}
+        run: |
+          node product/src/cli.js version
+          if ! node product/src/cli.js history "$PKG" --last 10 --json > /tmp/scan.json; then
+            echo '{"error": "scan failed - see the Actions log", "package": "'"$PKG"'"}' > /tmp/scan.json
+          fi
+
+      - name: Publish result
+        env:
+          PKG: ${{ github.event.client_payload.package }}
+          SLUG: ${{ github.event.client_payload.slug }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p scans/history
+          node -e '
+            const fs = require("node:fs");
+            const scan = JSON.parse(fs.readFileSync("/tmp/scan.json", "utf8"));
+            const out = {
+              package: process.env.PKG,
+              ts: new Date().toISOString(),
+              runUrl: process.env.RUN_URL,
+              mode: "runtime (GitHub Actions sandbox)",
+              result: scan,
+            };
+            const slug = (process.env.SLUG || process.env.PKG).toLowerCase().replace(/^@/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+            fs.writeFileSync(`scans/history/${slug}.json`, JSON.stringify(out, null, 2) + "\n");
+            console.log(`wrote scans/history/${slug}.json`);
+          '
+          git config user.name "rugsnare-bot"
+          git config user.email "releases@rugsnare.com"
+          git add scans/history
+          git commit -m "scan(history): ${PKG} [skip ci]" || echo "nothing to commit"
+          git push

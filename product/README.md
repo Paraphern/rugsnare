@@ -60,6 +60,18 @@ Each pin also stores a **split hash**: `schemaHash` (classified BREAKING on chan
 
 Behavioral annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) are compared through their **spec defaults** — a server spelling out a hint it was already relying on is not flagged; silently dropping an explicit `destructiveHint: false` after approval is ANNOTATION drift.
 
+## Scan a package's whole history
+
+Before you adopt an MCP server, check whether it has EVER quietly changed its contracts:
+
+```bash
+npx rugsnare history @somebody/mcp-server --last 10
+```
+
+Downloads every published version straight from the registry (no lifecycle scripts run), installs production deps with `--ignore-scripts`, actually starts each version like an MCP client would, takes `tools/list`, and diffs consecutive versions with the same split-hash logic as `diff`. The output prints the was/became text for every drifted tool. Exit 1 = silent changes found.
+
+There is also a free web version (static, no code execution) at [rugsnare.com/#history](https://rugsnare.com/#history) — paste a package name, see its drift history. Static means it reads the published files without running them; tools assembled at runtime are invisible to it, so the CLI is the source of truth.
+
 ## Three layers
 
 ### 1. CI gate — `scan` / `diff` / `approve`
@@ -168,7 +180,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 274 tests, `node --test` only.
+- 285 tests, `node --test` only.
 
 ## Exit codes
 

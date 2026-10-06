@@ -4,6 +4,36 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose — this is a roadmap, not a secret.)
 
+## History scanning (`rugsnare history` + rugsnare.com/#history, added in 1.1.0)
+
+What exists: CLI runs every version locally (runtime truth, was/became per
+tool); the website form runs a static scan in a Worker (tarballs parsed,
+name/description literals diffed, nothing executed, last 5 versions); the
+"Runtime scan" button dispatches the same CLI into an ephemeral GitHub
+Actions runner (repository_dispatch, serialized queue, result committed to
+scans/history/, run log = public evidence).
+
+- **Rate limiting is isolate-local today** (per-worker-instance Map). Move
+  the bucket to KV or Durable Objects for a real global limit once traffic
+  justifies it.
+
+- **Cache per package@version.** The Worker re-downloads tarballs on every
+  request. A KV namespace (contract extracts keyed by package@version) makes
+  rescans instant and cuts npm traffic; invalidate by tarball shasum.
+- **Runtime-exact scan as a hosted service.** The real gap vs the CLI. Needs
+  sandboxed execution (containers/Durable Objects with strict limits) — a
+  much bigger commitment than the static Worker; keep the CLI as the source
+  of truth until there is a reason to host execution.
+- **Static schema extraction.** The Worker diffs descriptions today; schemas
+  are visible in the same literals (`inputSchema: {...}`) and could be
+  hashed for BREAKING detection — medium-effort regex/JSON.parse work.
+- **Per-version advisory score.** The advisory engine (A01-A18) could score
+  each historical version's contracts, surfacing "this package's tool prose
+  has always smelled of exfiltration" as a timeline.
+- **Pre-adoption gate recipe.** `history` + `scan` in a pre-install check
+  script (`npx rugsnare history <pkg> --last 5 && npx rugsnare scan --url
+  ...`) documented as the "trust a new server" flow.
+
 ## Scheduled checks (`native install-schedule`, added in 1.1.0)
 
 What exists: Startup-folder shortcut (logon) + schtasks DAILY task (12:00),

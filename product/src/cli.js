@@ -51,6 +51,11 @@ Usage:
                                                          skill files (SKILL.md, .mdc) across Claude Code,
                                                          Cursor, Windsurf, ZCode, Copilot, and others.
                                                          report generates HTML and opens your browser
+  rugsnare history <npm-package> [--last N] [--json]
+                                                         scan the WHOLE published history of an npm MCP
+                                                         server for silent contract changes: downloads
+                                                         and runs each version locally, diffs tool
+                                                         contracts pair by pair; exit 1 = silent changes
   rugsnare audit --input <file-or-dir> [--json] [--airgap]
                                                          scan local files (AI chat exports, notes, .env) for
                                                          leaked secrets — redacted screen-only output; exit 1 = HIGH
@@ -118,6 +123,7 @@ function parseArgs(argv) {
     else if (a === '--check-update') flags.checkUpdate = true;
     else if (a === '--allow-unsigned-pins') flags.allowUnsignedPins = true;
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
+    else if (a === '--last') flags.last = argv[++i];
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
@@ -986,6 +992,50 @@ async function cmdReceiptsVerify(flags) {
  *   rugsnare skills diff     → check for changes since last pin (exit 1 on drift)
  *   rugsnare skills report   → generate HTML report and open in browser
  */
+/**
+ * rugsnare history <package> — scan a package's whole published history
+ * for silent contract changes (runtime truth: every version is run and
+ * its tools/list is taken, exactly like a real MCP client would).
+ */
+async function cmdHistory(flags) {
+  const { scanHistory, parsePackageName } = await import('./history.js');
+  const raw = flags._[0];
+  if (!raw) { console.error('Usage: rugsnare history <npm-package> [--last N] [--json]'); process.exit(2); }
+  let name;
+  try { name = parsePackageName(raw); } catch (e) { console.error(e.message); process.exit(2); }
+  const last = Number(flags.last) > 0 ? Number(flags.last) : 10;
+
+  console.error(`history scan: ${name} (last ${last} versions)`);
+  console.error('NOTE: this downloads and RUNS each version locally — the same code you would run by installing it.');
+  const result = await scanHistory(name, {
+    last,
+    onProgress: (m) => { if (!flags.json) console.error(`  ${m}`); },
+  });
+
+  if (flags.json) { console.log(JSON.stringify(result, null, 2)); }
+  else {
+    for (const { from, to, findings } of result.pairs) {
+      if (findings.length === 0) continue;
+      console.log(`\n${from} -> ${to}: ${findings.length} finding(s)`);
+      for (const f of findings) {
+        const driftLabel = f.driftType ? ` (${f.driftType})` : '';
+        console.log(`  [${f.status}] ${f.tool}${driftLabel}`);
+        if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
+          console.log(`      WAS: ${String(f.oldDescription).replace(/\s+/g, ' ').slice(0, 200)}`);
+          console.log(`      NOW: ${String(f.newDescription ?? '').replace(/\s+/g, ' ').slice(0, 200)}`);
+        }
+      }
+    }
+    if (result.unreachable.length > 0) {
+      console.log(`\nunreachable versions (${result.unreachable.length}, excluded from the diff):`);
+      for (const u of result.unreachable.slice(0, 5)) console.log(`  ${u.version}: ${u.reason}`);
+      if (result.unreachable.length > 5) console.log(`  ... +${result.unreachable.length - 5} more`);
+    }
+    console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${result.clean ? '— CLEAN' : '— SILENT CHANGES FOUND'}`);
+  }
+  process.exit(result.clean ? 0 : 1);
+}
+
 async function cmdSkills(flags) {
   const sub = flags._[0];
   const { discoverSkills, pinAllSkills, diffSkills } = await import('./skills-pin.js');
@@ -1662,6 +1712,7 @@ async function main() {
     }
     case 'report': return cmdReport(flags);
     case 'skills': return cmdSkills(flags);
+    case 'history': return cmdHistory(flags);
     case 'version':
     case '--version':
     case '-v': {
