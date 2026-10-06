@@ -37,8 +37,13 @@ jobs:
           SLUG: ${{ github.event.client_payload.slug }}
         run: |
           node product/src/cli.js version
-          if ! node product/src/cli.js history "$PKG" --last 10 --json > /tmp/scan.json; then
-            echo '{"error": "scan failed - see the Actions log", "package": "'"$PKG"'"}' > /tmp/scan.json
+          set +e
+          node product/src/cli.js history "$PKG" --last 10 --json > /tmp/scan.json
+          code=$?
+          set -e
+          # exit 0 = clean, exit 1 = findings found — BOTH are successful scans
+          if [ "$code" -ge 2 ] || [ ! -s /tmp/scan.json ]; then
+            echo '{"error": "scan failed (exit '"$code"') - see the Actions log", "package": "'"$PKG"'"}' > /tmp/scan.json
           fi
 
       - name: Publish result

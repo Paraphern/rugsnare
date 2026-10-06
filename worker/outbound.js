@@ -48,12 +48,15 @@ export async function dispatchHistoryScan(rawName, token) {
 
 /**
  * Fetch the published result JSON for a package (or null while the scan
- * has not landed yet).
+ * has not landed yet). cacheTtl 0: raw.githubusercontent caches 404s for
+ * minutes, which would keep a fresh result looking "pending".
  */
 export async function fetchHistoryResult(rawName) {
   const pkg = cleanPackageName(rawName);
   if (!pkg) throw new Error('invalid package name');
-  const res = await guardFetch(GH_RAW_RESULTS + encodeURIComponent(packageSlug(pkg)) + '.json');
+  const res = await guardFetch(GH_RAW_RESULTS + encodeURIComponent(packageSlug(pkg)) + '.json', {
+    cf: { cacheTtl: 0, cacheEverything: false },
+  });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`result fetch ${res.status}`);
   return res.text();
