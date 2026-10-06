@@ -418,7 +418,8 @@ function renderRuntimeResult(res) {
   if (r.unreachable && r.unreachable.length) {
     body += '<div style="color:#64748b;font-size:12px;margin-top:6px">' + r.unreachable.length + ' version(s) could not be started (no bin, missing env, crash) — excluded from the diff; see the log.</div>';
   }
-  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact — every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/main/scans/history/' + esc(res.slug || '') + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
+  var slug = String(res.package || '').toLowerCase().replace(/^@/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact — every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/scans/history/' + esc(slug) + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
   out.innerHTML = head + body + evidence;
 }
 </script>
