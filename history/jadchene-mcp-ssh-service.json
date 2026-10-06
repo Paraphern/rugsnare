@@ -1,0 +1,2426 @@
+{
+  "package": "@jadchene/mcp-ssh-service",
+  "ts": "2026-10-06T21:36:38.971Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37535025744",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "package": "@jadchene/mcp-ssh-service",
+    "checked": 10,
+    "planned": 10,
+    "unreachable": [],
+    "pairs": [
+      {
+        "from": "1.2.0",
+        "to": "1.3.0",
+        "findings": [
+          {
+            "tool": "execute_batch",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION if any sub-tool is high-risk.",
+            "newDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted."
+          },
+          {
+            "tool": "execute_command",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Arbitrary execution: Runs any shell command via SSH. REQUIRES CONFIRMATION.",
+            "newDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "firewall_cmd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Control the runtime/permanent firewall. REQUIRES CONFIRMATION.",
+            "newDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "netstat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Monitor ports/connections.",
+            "newDescription": "Monitor ports/connections. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"]."
+          }
+        ]
+      },
+      {
+        "from": "1.3.0",
+        "to": "1.4.0",
+        "findings": [
+          {
+            "tool": "mkdir",
+            "status": "NEW"
+          },
+          {
+            "tool": "mv",
+            "status": "NEW"
+          },
+          {
+            "tool": "cp",
+            "status": "NEW"
+          },
+          {
+            "tool": "append_text_file",
+            "status": "NEW"
+          },
+          {
+            "tool": "replace_in_file",
+            "status": "NEW"
+          },
+          {
+            "tool": "git_fetch",
+            "status": "NEW"
+          },
+          {
+            "tool": "git_switch",
+            "status": "NEW"
+          },
+          {
+            "tool": "git_branch",
+            "status": "NEW"
+          },
+          {
+            "tool": "git_log",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_exec",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_inspect",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_stats",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_restart",
+            "status": "NEW"
+          },
+          {
+            "tool": "journalctl",
+            "status": "NEW"
+          },
+          {
+            "tool": "ss",
+            "status": "NEW"
+          },
+          {
+            "tool": "ping_host",
+            "status": "NEW"
+          },
+          {
+            "tool": "traceroute",
+            "status": "NEW"
+          },
+          {
+            "tool": "nslookup",
+            "status": "NEW"
+          },
+          {
+            "tool": "dig",
+            "status": "NEW"
+          },
+          {
+            "tool": "curl_http",
+            "status": "NEW"
+          },
+          {
+            "tool": "pgrep",
+            "status": "NEW"
+          },
+          {
+            "tool": "kill_process",
+            "status": "NEW"
+          },
+          {
+            "tool": "chmod",
+            "status": "NEW"
+          },
+          {
+            "tool": "chown",
+            "status": "NEW"
+          },
+          {
+            "tool": "ln",
+            "status": "NEW"
+          },
+          {
+            "tool": "tar_create",
+            "status": "NEW"
+          },
+          {
+            "tool": "tar_extract",
+            "status": "NEW"
+          },
+          {
+            "tool": "zip",
+            "status": "NEW"
+          },
+          {
+            "tool": "unzip",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "1.4.0",
+        "to": "1.4.1",
+        "findings": [
+          {
+            "tool": "head",
+            "status": "NEW"
+          },
+          {
+            "tool": "sed",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "1.4.1",
+        "to": "1.4.2",
+        "findings": [
+          {
+            "tool": "hostname",
+            "status": "NEW"
+          },
+          {
+            "tool": "id",
+            "status": "NEW"
+          },
+          {
+            "tool": "uname",
+            "status": "NEW"
+          },
+          {
+            "tool": "uptime",
+            "status": "NEW"
+          },
+          {
+            "tool": "free",
+            "status": "NEW"
+          },
+          {
+            "tool": "env",
+            "status": "NEW"
+          },
+          {
+            "tool": "ll",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory listing: Lists files in a directory with detailed information.",
+            "newDescription": "Directory listing: Lists files in a directory with detailed information."
+          },
+          {
+            "tool": "grep_r",
+            "status": "NEW"
+          },
+          {
+            "tool": "find",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Search for files in a directory hierarchy.",
+            "newDescription": "Search for files in a directory hierarchy."
+          },
+          {
+            "tool": "docker_compose_pull",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_compose_ps",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_compose_config",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_compose_exec",
+            "status": "NEW"
+          },
+          {
+            "tool": "docker_build",
+            "status": "NEW"
+          },
+          {
+            "tool": "systemctl_enable",
+            "status": "NEW"
+          },
+          {
+            "tool": "systemctl_disable",
+            "status": "NEW"
+          },
+          {
+            "tool": "ip_route",
+            "status": "NEW"
+          },
+          {
+            "tool": "mount",
+            "status": "NEW"
+          },
+          {
+            "tool": "journalctl",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Read systemd journal logs with optional unit, since, and priority filters.",
+            "newDescription": "Read systemd journal logs with optional unit, since, until, priority, and follow filters."
+          },
+          {
+            "tool": "df_inode",
+            "status": "NEW"
+          },
+          {
+            "tool": "which",
+            "status": "NEW"
+          },
+          {
+            "tool": "lsof",
+            "status": "NEW"
+          },
+          {
+            "tool": "file",
+            "status": "NEW"
+          },
+          {
+            "tool": "stat",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "1.4.2",
+        "to": "1.5.0",
+        "findings": [
+          {
+            "tool": "list_servers",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Discovery tool: List all configured SSH servers, their hosts, and descriptions.",
+            "newDescription": "Discovery tool: List all configured SSH servers, their hosts, and descriptions."
+          },
+          {
+            "tool": "ping_server",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Connection test: Verifies if the SSH configuration for a specific server is valid and reachable.",
+            "newDescription": "Connection test: Verifies if the SSH configuration for a specific server is valid and reachable."
+          },
+          {
+            "tool": "list_working_directories",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Context tool: Retrieves path mappings for a specific server.",
+            "newDescription": "Context tool: Retrieves path mappings for a specific server."
+          },
+          {
+            "tool": "check_dependencies",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Environmental pre-check: Verifies if specific binaries exist on the remote server.",
+            "newDescription": "Environmental pre-check: Verifies if specific binaries exist on the remote server."
+          },
+          {
+            "tool": "get_system_info",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "System health check: Returns current user, system uptime, kernel, and memory.",
+            "newDescription": "System health check: Returns current user, system uptime, kernel, and memory."
+          },
+          {
+            "tool": "hostname",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show the current host name.",
+            "newDescription": "Show the current host name."
+          },
+          {
+            "tool": "id",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show current user identity and group information.",
+            "newDescription": "Show current user identity and group information."
+          },
+          {
+            "tool": "uname",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show kernel and operating system information.",
+            "newDescription": "Show kernel and operating system information."
+          },
+          {
+            "tool": "uptime",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show system uptime and load averages.",
+            "newDescription": "Show system uptime and load averages."
+          },
+          {
+            "tool": "free",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show memory usage in megabytes.",
+            "newDescription": "Show memory usage in megabytes."
+          },
+          {
+            "tool": "env",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show environment variables visible to the remote session.",
+            "newDescription": "Show environment variables visible to the remote session."
+          },
+          {
+            "tool": "pwd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Current path: Returns the absolute path of the current directory on remote.",
+            "newDescription": "Current path: Returns the absolute path of the current directory on remote."
+          },
+          {
+            "tool": "cd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory navigation: Changes the working directory (effective within batch).",
+            "newDescription": "Directory navigation: Changes the working directory (effective within batch)."
+          },
+          {
+            "tool": "execute_batch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted.",
+            "newDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted."
+          },
+          {
+            "tool": "execute_command",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "echo",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Print text or variables.",
+            "newDescription": "Print text or variables."
+          },
+          {
+            "tool": "upload_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Local -> Remote). REQUIRES CONFIRMATION.",
+            "newDescription": "File transfer (Local -> Remote). REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "download_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Remote -> Local).",
+            "newDescription": "File transfer (Remote -> Local). REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "ll",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory listing: Lists files in a directory with detailed information.",
+            "newDescription": "Directory listing: Lists files in a directory with detailed information."
+          },
+          {
+            "tool": "cat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File reading: Reads text file content.",
+            "newDescription": "File reading: Reads text file content."
+          },
+          {
+            "tool": "head",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File preview: Reads the first N lines of a file.",
+            "newDescription": "File preview: Reads the first N lines of a file."
+          },
+          {
+            "tool": "tail",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Log inspection: Reads last N lines of a file.",
+            "newDescription": "Log inspection: Reads last N lines of a file."
+          },
+          {
+            "tool": "sed",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Line range reading: Reads an inclusive line range from a text file.",
+            "newDescription": "Line range reading: Reads an inclusive line range from a text file."
+          },
+          {
+            "tool": "grep",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pattern search: Search for a regex pattern in a file.",
+            "newDescription": "Pattern search: Search for a regex pattern in a file."
+          },
+          {
+            "tool": "grep_r",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Recursive pattern search: Search for a regex pattern across files under a directory tree.",
+            "newDescription": "Recursive pattern search: Search for a regex pattern across files under a directory tree."
+          },
+          {
+            "tool": "edit_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File creation/overwrite: Completely replaces file content. REQUIRES CONFIRMATION.",
+            "newDescription": "File creation/overwrite: Completely replaces file content. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "touch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Timestamp/File creation: Updates access time or creates empty file.",
+            "newDescription": "Timestamp/File creation: Updates access time or creates empty file. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "mkdir",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory creation: Creates a directory. Set parents=true for mkdir -p behavior. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Directory creation: Creates a directory. Set parents=true for mkdir -p behavior. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "mv",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Move or rename a file or directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Move or rename a file or directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy a file or directory. Set recursive=true for directories. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Copy a file or directory. Set recursive=true for directories. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "append_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Append text to a file, creating it if needed. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Append text to a file, creating it if needed. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "replace_in_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "rm_safe",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File deletion: Removes file or directory. REQUIRES CONFIRMATION.",
+            "newDescription": "File deletion: Removes file or directory. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "find",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Search for files in a directory hierarchy.",
+            "newDescription": "Search for files in a directory hierarchy."
+          },
+          {
+            "tool": "git_status",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git status: Displays repository status.",
+            "newDescription": "Git status: Displays repository status."
+          },
+          {
+            "tool": "git_fetch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git fetch: Updates remote tracking refs. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Git fetch: Updates remote tracking refs. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "git_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git update: Pulls latest changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Git update: Pulls latest changes. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "git_switch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git switch: Switches branches, or creates one with create=true. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Git switch: Switches branches, or creates one with create=true. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "git_branch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git branch: Lists local or all branches.",
+            "newDescription": "Git branch: Lists local or all branches."
+          },
+          {
+            "tool": "git_log",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git log: Shows recent commit history.",
+            "newDescription": "Git log: Shows recent commit history."
+          },
+          {
+            "tool": "docker_compose_up",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Deploy docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Deploy docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_down",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_logs",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "View compose logs.",
+            "newDescription": "View compose logs."
+          },
+          {
+            "tool": "docker_compose_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart compose stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull images defined by the compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull images defined by the compose stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List compose services and their current state.",
+            "newDescription": "List compose services and their current state."
+          },
+          {
+            "tool": "docker_compose_config",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Render the fully resolved compose configuration for inspection.",
+            "newDescription": "Render the fully resolved compose configuration for inspection."
+          },
+          {
+            "tool": "docker_compose_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a compose service container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a compose service container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List docker containers.",
+            "newDescription": "List docker containers."
+          },
+          {
+            "tool": "docker_images",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List docker images.",
+            "newDescription": "List docker images."
+          },
+          {
+            "tool": "docker_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a running container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a running container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_inspect",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Inspect a container, image, volume, or network.",
+            "newDescription": "Inspect a container, image, volume, or network."
+          },
+          {
+            "tool": "docker_stats",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show container resource usage.",
+            "newDescription": "Show container resource usage."
+          },
+          {
+            "tool": "docker_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull an image from a registry. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull an image from a registry. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy files/folders between a container and the local filesystem. REQUIRES CONFIRMATION.",
+            "newDescription": "Copy files/folders between a container and the local filesystem. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop one or more running containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop one or more running containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_rm",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start one or more stopped containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Start one or more stopped containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart one or more running containers. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Restart one or more running containers. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_rmi",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more images. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more images. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_commit",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a new image from a container's changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Create a new image from a container's changes. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_logs",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Get container logs.",
+            "newDescription": "Get container logs."
+          },
+          {
+            "tool": "docker_load",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Load an image from a tar archive or STDIN. REQUIRES CONFIRMATION.",
+            "newDescription": "Load an image from a tar archive or STDIN. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_save",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Save one or more images to a tar archive. REQUIRES CONFIRMATION.",
+            "newDescription": "Save one or more images to a tar archive. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_build",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "systemctl_status",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Check systemd service status.",
+            "newDescription": "Check systemd service status."
+          },
+          {
+            "tool": "systemctl_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Start system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_enable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Enable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Enable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "systemctl_disable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Disable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Disable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "ip_addr",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show network interface info.",
+            "newDescription": "Show network interface info."
+          },
+          {
+            "tool": "ip_route",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show routing table information.",
+            "newDescription": "Show routing table information."
+          },
+          {
+            "tool": "mount",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show mounted filesystems.",
+            "newDescription": "Show mounted filesystems."
+          },
+          {
+            "tool": "journalctl",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Read systemd journal logs with optional unit, since, until, priority, and follow filters.",
+            "newDescription": "Read systemd journal logs with optional unit, since, until, priority, and follow filters."
+          },
+          {
+            "tool": "firewall_cmd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "netstat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Monitor ports/connections. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"].",
+            "newDescription": "Monitor ports/connections. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"]."
+          },
+          {
+            "tool": "ss",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Socket statistics. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"].",
+            "newDescription": "Socket statistics. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"]."
+          },
+          {
+            "tool": "ping_host",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Ping a host a fixed number of times.",
+            "newDescription": "Ping a host a fixed number of times."
+          },
+          {
+            "tool": "traceroute",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Trace the network path to a host.",
+            "newDescription": "Trace the network path to a host."
+          },
+          {
+            "tool": "nslookup",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve hostnames using nslookup.",
+            "newDescription": "Resolve hostnames using nslookup."
+          },
+          {
+            "tool": "dig",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve DNS records using dig.",
+            "newDescription": "Resolve DNS records using dig."
+          },
+          {
+            "tool": "curl_http",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "nvidia_smi",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "GPU utilization status.",
+            "newDescription": "GPU utilization status."
+          },
+          {
+            "tool": "ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Report a snapshot of the current processes.",
+            "newDescription": "Report a snapshot of the current processes."
+          },
+          {
+            "tool": "pgrep",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Find process IDs by name or full command pattern.",
+            "newDescription": "Find process IDs by name or full command pattern."
+          },
+          {
+            "tool": "kill_process",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Send a signal to a process ID. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Send a signal to a process ID. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "df_h",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "System disk usage.",
+            "newDescription": "System disk usage."
+          },
+          {
+            "tool": "df_inode",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Filesystem inode usage.",
+            "newDescription": "Filesystem inode usage."
+          },
+          {
+            "tool": "du_sh",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory size estimation.",
+            "newDescription": "Directory size estimation."
+          },
+          {
+            "tool": "which",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve the executable path of a command available on the remote host.",
+            "newDescription": "Resolve the executable path of a command available on the remote host."
+          },
+          {
+            "tool": "lsof",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Inspect open files, ports, and process-file relationships.",
+            "newDescription": "Inspect open files, ports, and process-file relationships."
+          },
+          {
+            "tool": "file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Detect file type and encoding information.",
+            "newDescription": "Detect file type and encoding information."
+          },
+          {
+            "tool": "stat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File metadata inspection: Shows size, timestamps, mode bits, and related file details.",
+            "newDescription": "File metadata inspection: Shows size, timestamps, mode bits, and related file details."
+          },
+          {
+            "tool": "chmod",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file mode bits. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file mode bits. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "chown",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file owner and group. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file owner and group. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "ln",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a link. Uses symbolic=true by default for symlinks. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a link. Uses symbolic=true by default for symlinks. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "tar_create",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a tar archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a tar archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "tar_extract",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a tar archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a tar archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "zip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a zip archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a zip archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "unzip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a zip archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a zip archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          }
+        ]
+      },
+      {
+        "from": "1.5.0",
+        "to": "1.6.0",
+        "findings": []
+      },
+      {
+        "from": "1.6.0",
+        "to": "2.0.0",
+        "findings": [
+          {
+            "tool": "execute_batch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted.",
+            "newDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted."
+          },
+          {
+            "tool": "execute_command",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "upload_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Local -> Remote). REQUIRES CONFIRMATION.",
+            "newDescription": "File transfer (Local -> Remote). REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "download_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Remote -> Local). REQUIRES CONFIRMATION.",
+            "newDescription": "File transfer (Remote -> Local). REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "edit_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File creation/overwrite: Completely replaces file content. REQUIRES CONFIRMATION.",
+            "newDescription": "File creation/overwrite: Completely replaces file content. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "touch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Timestamp/File creation: Updates access time or creates empty file. REQUIRES CONFIRMATION.",
+            "newDescription": "Timestamp/File creation: Updates access time or creates empty file. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "mkdir",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory creation: Creates a directory. Set parents=true for mkdir -p behavior. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Directory creation: Creates a directory. Set parents=true for mkdir -p behavior. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "mv",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Move or rename a file or directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Move or rename a file or directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy a file or directory. Set recursive=true for directories. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Copy a file or directory. Set recursive=true for directories. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "append_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Append text to a file, creating it if needed. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Append text to a file, creating it if needed. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "replace_in_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "rm_safe",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File deletion: Removes file or directory. REQUIRES CONFIRMATION.",
+            "newDescription": "File deletion: Removes file or directory. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "git_fetch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git fetch: Updates remote tracking refs. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Git fetch: Updates remote tracking refs. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "git_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git update: Pulls latest changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Git update: Pulls latest changes. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "git_switch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git switch: Switches branches, or creates one with create=true. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Git switch: Switches branches, or creates one with create=true. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_compose_up",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Deploy docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Deploy docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_down",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop docker stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart compose stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull images defined by the compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull images defined by the compose stack. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_compose_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a compose service container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a compose service container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a running container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a running container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull an image from a registry. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull an image from a registry. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy files/folders between a container and the local filesystem. REQUIRES CONFIRMATION.",
+            "newDescription": "Copy files/folders between a container and the local filesystem. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop one or more running containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop one or more running containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_rm",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start one or more stopped containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Start one or more stopped containers. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart one or more running containers. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Restart one or more running containers. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "docker_rmi",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more images. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more images. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_commit",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a new image from a container's changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Create a new image from a container's changes. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_load",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Load an image from a tar archive or STDIN. REQUIRES CONFIRMATION.",
+            "newDescription": "Load an image from a tar archive or STDIN. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_save",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Save one or more images to a tar archive. REQUIRES CONFIRMATION.",
+            "newDescription": "Save one or more images to a tar archive. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "docker_build",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "systemctl_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Start system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop system service. REQUIRES CONFIRMATION."
+          },
+          {
+            "tool": "systemctl_enable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Enable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Enable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "systemctl_disable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Disable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Disable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "firewall_cmd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "curl_http",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "kill_process",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Send a signal to a process ID. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Send a signal to a process ID. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "chmod",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file mode bits. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file mode bits. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "chown",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file owner and group. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file owner and group. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "ln",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a link. Uses symbolic=true by default for symlinks. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a link. Uses symbolic=true by default for symlinks. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "tar_create",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a tar archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a tar archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "tar_extract",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a tar archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a tar archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "zip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a zip archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a zip archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          },
+          {
+            "tool": "unzip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a zip archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a zip archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted."
+          }
+        ]
+      },
+      {
+        "from": "2.0.0",
+        "to": "2.0.2",
+        "findings": [
+          {
+            "tool": "list_servers",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Discovery tool: List all configured SSH servers, their hosts, and descriptions.",
+            "newDescription": "List configured server aliases, hosts, and descriptions without connecting."
+          },
+          {
+            "tool": "ping_server",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Connection test: Verifies if the SSH configuration for a specific server is valid and reachable.",
+            "newDescription": "Test SSH connectivity."
+          },
+          {
+            "tool": "list_working_directories",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Context tool: Retrieves path mappings for a specific server.",
+            "newDescription": "List configured working-directory aliases."
+          },
+          {
+            "tool": "check_dependencies",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Environmental pre-check: Verifies if specific binaries exist on the remote server.",
+            "newDescription": "Check whether remote binaries are installed."
+          },
+          {
+            "tool": "get_system_info",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "System health check: Returns current user, system uptime, kernel, and memory.",
+            "newDescription": "Returns current user, system uptime, kernel, and memory."
+          },
+          {
+            "tool": "hostname",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show the current host name.",
+            "newDescription": "Show the current host name."
+          },
+          {
+            "tool": "id",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show current user identity and group information.",
+            "newDescription": "Show current user identity and group information."
+          },
+          {
+            "tool": "uname",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show kernel and operating system information.",
+            "newDescription": "Show kernel and operating system information."
+          },
+          {
+            "tool": "uptime",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show system uptime and load averages.",
+            "newDescription": "Show system uptime and load averages."
+          },
+          {
+            "tool": "free",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show memory usage in megabytes.",
+            "newDescription": "Show memory usage in megabytes."
+          },
+          {
+            "tool": "env",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show environment variables visible to the remote session.",
+            "newDescription": "Show environment variables visible to the remote session."
+          },
+          {
+            "tool": "pwd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Current path: Returns the absolute path of the current directory on remote.",
+            "newDescription": "Returns the absolute path of the current directory on remote."
+          },
+          {
+            "tool": "cd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory navigation: Changes the working directory (effective within batch).",
+            "newDescription": "Change working directory for subsequent tools in execute_batch; calls otherwise have independent sessions."
+          },
+          {
+            "tool": "execute_batch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Workflow automation: Executes a sequence of multiple tools in a single persistent SSH session. REQUIRES CONFIRMATION when any high-risk sub-tool final command is not whitelisted.",
+            "newDescription": "Run tools sequentially in one SSH session. Unwhitelisted high-risk commands require confirmation."
+          },
+          {
+            "tool": "execute_command",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Single-command execution: Runs exactly one shell command segment via SSH. Rejects chaining, pipes, redirection, subshell syntax, and multiline input. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one shell command. No chaining, pipes, redirection, subshells, or multiline input. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "echo",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Print text or variables.",
+            "newDescription": "Print text or variables."
+          },
+          {
+            "tool": "upload_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Local -> Remote). REQUIRES CONFIRMATION.",
+            "newDescription": "File transfer (Local -> Remote). Requires confirmation."
+          },
+          {
+            "tool": "download_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File transfer (Remote -> Local). REQUIRES CONFIRMATION.",
+            "newDescription": "File transfer (Remote -> Local). Requires confirmation."
+          },
+          {
+            "tool": "ll",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory listing: Lists files in a directory with detailed information.",
+            "newDescription": "Lists files in a directory with detailed information."
+          },
+          {
+            "tool": "cat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File reading: Reads text file content.",
+            "newDescription": "Reads text file content."
+          },
+          {
+            "tool": "head",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File preview: Reads the first N lines of a file.",
+            "newDescription": "Reads the first N lines of a file."
+          },
+          {
+            "tool": "tail",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Log inspection: Reads last N lines of a file.",
+            "newDescription": "Reads last N lines of a file."
+          },
+          {
+            "tool": "sed",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Line range reading: Reads an inclusive line range from a text file.",
+            "newDescription": "Reads an inclusive line range from a text file."
+          },
+          {
+            "tool": "grep",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pattern search: Search for a regex pattern in a file.",
+            "newDescription": "Search for a regex pattern in a file."
+          },
+          {
+            "tool": "grep_r",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Recursive pattern search: Search for a regex pattern across files under a directory tree.",
+            "newDescription": "Search for a regex pattern across files under a directory tree."
+          },
+          {
+            "tool": "edit_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File creation/overwrite: Completely replaces file content. REQUIRES CONFIRMATION.",
+            "newDescription": "Completely replaces file content. Requires confirmation."
+          },
+          {
+            "tool": "touch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Timestamp/File creation: Updates access time or creates empty file. REQUIRES CONFIRMATION.",
+            "newDescription": "Updates access time or creates empty file. Requires confirmation."
+          },
+          {
+            "tool": "mkdir",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory creation: Creates a directory. Set parents=true for mkdir -p behavior. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Creates a directory. Set parents=true for mkdir -p behavior. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "mv",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Move or rename a file or directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Move or rename a file or directory. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy a file or directory. Set recursive=true for directories. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Copy a file or directory. Set recursive=true for directories. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "append_text_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Append text to a file, creating it if needed. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Append text to a file, creating it if needed. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "replace_in_file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "rm_safe",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File deletion: Removes file or directory. REQUIRES CONFIRMATION.",
+            "newDescription": "Delete a path under allowedRemoteRoots. Requires confirmation."
+          },
+          {
+            "tool": "find",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Search for files in a directory hierarchy.",
+            "newDescription": "Search for files in a directory hierarchy."
+          },
+          {
+            "tool": "git_status",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git status: Displays repository status.",
+            "newDescription": "Displays repository status."
+          },
+          {
+            "tool": "git_fetch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git fetch: Updates remote tracking refs. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Updates remote tracking refs. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "git_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git update: Pulls latest changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Pulls latest changes. Requires confirmation."
+          },
+          {
+            "tool": "git_switch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git switch: Switches branches, or creates one with create=true. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Switches branches, or creates one with create=true. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "git_branch",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git branch: Lists local or all branches.",
+            "newDescription": "Lists local or all branches."
+          },
+          {
+            "tool": "git_log",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Git log: Shows recent commit history.",
+            "newDescription": "Shows recent commit history."
+          },
+          {
+            "tool": "docker_compose_up",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Deploy docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Deploy docker stack. Requires confirmation."
+          },
+          {
+            "tool": "docker_compose_down",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove docker stack. Requires confirmation."
+          },
+          {
+            "tool": "docker_compose_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop docker stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop docker stack. Requires confirmation."
+          },
+          {
+            "tool": "docker_compose_logs",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "View compose logs.",
+            "newDescription": "View compose logs."
+          },
+          {
+            "tool": "docker_compose_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart compose stack. Requires confirmation."
+          },
+          {
+            "tool": "docker_compose_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull images defined by the compose stack. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull images defined by the compose stack. Requires confirmation."
+          },
+          {
+            "tool": "docker_compose_ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List compose services and their current state.",
+            "newDescription": "List compose services and their current state."
+          },
+          {
+            "tool": "docker_compose_config",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Render the fully resolved compose configuration for inspection.",
+            "newDescription": "Render the fully resolved compose configuration for inspection."
+          },
+          {
+            "tool": "docker_compose_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a compose service container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a compose service container without shell expansion. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "docker_ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List docker containers.",
+            "newDescription": "List docker containers."
+          },
+          {
+            "tool": "docker_images",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List docker images.",
+            "newDescription": "List docker images."
+          },
+          {
+            "tool": "docker_exec",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Run one process inside a running container without shell expansion. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Run one process inside a running container without shell expansion. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "docker_inspect",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Inspect a container, image, volume, or network.",
+            "newDescription": "Inspect a container, image, volume, or network."
+          },
+          {
+            "tool": "docker_stats",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show container resource usage.",
+            "newDescription": "Show container resource usage."
+          },
+          {
+            "tool": "docker_pull",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pull an image from a registry. REQUIRES CONFIRMATION.",
+            "newDescription": "Pull an image from a registry. Requires confirmation."
+          },
+          {
+            "tool": "docker_cp",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Copy files/folders between a container and the local filesystem. REQUIRES CONFIRMATION.",
+            "newDescription": "Copy files/folders between a container and the local filesystem. Requires confirmation."
+          },
+          {
+            "tool": "docker_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop one or more running containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop one or more running containers. Requires confirmation."
+          },
+          {
+            "tool": "docker_rm",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more containers. Requires confirmation."
+          },
+          {
+            "tool": "docker_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start one or more stopped containers. REQUIRES CONFIRMATION.",
+            "newDescription": "Start one or more stopped containers. Requires confirmation."
+          },
+          {
+            "tool": "docker_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart one or more running containers. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Restart one or more running containers. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "docker_rmi",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Remove one or more images. REQUIRES CONFIRMATION.",
+            "newDescription": "Remove one or more images. Requires confirmation."
+          },
+          {
+            "tool": "docker_commit",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a new image from a container's changes. REQUIRES CONFIRMATION.",
+            "newDescription": "Create a new image from a container's changes. Requires confirmation."
+          },
+          {
+            "tool": "docker_logs",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Get container logs.",
+            "newDescription": "Get container logs."
+          },
+          {
+            "tool": "docker_load",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Load an image from a tar archive or STDIN. REQUIRES CONFIRMATION.",
+            "newDescription": "Load an image from a tar archive or STDIN. Requires confirmation."
+          },
+          {
+            "tool": "docker_save",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Save one or more images to a tar archive. REQUIRES CONFIRMATION.",
+            "newDescription": "Save one or more images to a tar archive. Requires confirmation."
+          },
+          {
+            "tool": "docker_build",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "systemctl_status",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Check systemd service status.",
+            "newDescription": "Check systemd service status."
+          },
+          {
+            "tool": "systemctl_restart",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Restart system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Restart system service. Requires confirmation."
+          },
+          {
+            "tool": "systemctl_start",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Start system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Start system service. Requires confirmation."
+          },
+          {
+            "tool": "systemctl_stop",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Stop system service. REQUIRES CONFIRMATION.",
+            "newDescription": "Stop system service. Requires confirmation."
+          },
+          {
+            "tool": "systemctl_enable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Enable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Enable system service at boot. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "systemctl_disable",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Disable system service at boot. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Disable system service at boot. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "ip_addr",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show network interface info.",
+            "newDescription": "Show network interface info."
+          },
+          {
+            "tool": "ip_route",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show routing table information.",
+            "newDescription": "Show routing table information."
+          },
+          {
+            "tool": "mount",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Show mounted filesystems.",
+            "newDescription": "Show mounted filesystems."
+          },
+          {
+            "tool": "journalctl",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Read systemd journal logs with optional unit, since, until, priority, and follow filters.",
+            "newDescription": "Read systemd journal logs with optional unit, since, until, priority, and follow filters."
+          },
+          {
+            "tool": "firewall_cmd",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "netstat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Monitor ports/connections. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"].",
+            "newDescription": "Monitor ports/connections. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"]."
+          },
+          {
+            "tool": "ss",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Socket statistics. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"].",
+            "newDescription": "Socket statistics. Use args as an array of individual option tokens, for example [\"-t\", \"-u\", \"-l\", \"-n\"]."
+          },
+          {
+            "tool": "ping_host",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Ping a host a fixed number of times.",
+            "newDescription": "Ping a host a fixed number of times."
+          },
+          {
+            "tool": "traceroute",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Trace the network path to a host.",
+            "newDescription": "Trace the network path to a host."
+          },
+          {
+            "tool": "nslookup",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve hostnames using nslookup.",
+            "newDescription": "Resolve hostnames using nslookup."
+          },
+          {
+            "tool": "dig",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve DNS records using dig.",
+            "newDescription": "Resolve DNS records using dig."
+          },
+          {
+            "tool": "curl_http",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "nvidia_smi",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "GPU utilization status.",
+            "newDescription": "GPU utilization status."
+          },
+          {
+            "tool": "ps",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Report a snapshot of the current processes.",
+            "newDescription": "Report a snapshot of the current processes."
+          },
+          {
+            "tool": "pgrep",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Find process IDs by name or full command pattern.",
+            "newDescription": "Find process IDs by name or full command pattern."
+          },
+          {
+            "tool": "kill_process",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Send a signal to a process ID. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Send a signal to a process ID. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "df_h",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "System disk usage.",
+            "newDescription": "System disk usage."
+          },
+          {
+            "tool": "df_inode",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Filesystem inode usage.",
+            "newDescription": "Filesystem inode usage."
+          },
+          {
+            "tool": "du_sh",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Directory size estimation.",
+            "newDescription": "Directory size estimation."
+          },
+          {
+            "tool": "which",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Resolve the executable path of a command available on the remote host.",
+            "newDescription": "Resolve the executable path of a command available on the remote host."
+          },
+          {
+            "tool": "lsof",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Inspect open files, ports, and process-file relationships.",
+            "newDescription": "Inspect open files, ports, and process-file relationships."
+          },
+          {
+            "tool": "file",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Detect file type and encoding information.",
+            "newDescription": "Detect file type and encoding information."
+          },
+          {
+            "tool": "stat",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "File metadata inspection: Shows size, timestamps, mode bits, and related file details.",
+            "newDescription": "Shows size, timestamps, mode bits, and related file details."
+          },
+          {
+            "tool": "chmod",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file mode bits. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file mode bits. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "chown",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Change file owner and group. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Change file owner and group. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "ln",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a link. Uses symbolic=true by default for symlinks. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a link. Uses symbolic=true by default for symlinks. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "tar_create",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a tar archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a tar archive from one or more source paths. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "tar_extract",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a tar archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a tar archive into a destination directory. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "zip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create a zip archive from one or more source paths. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Create a zip archive from one or more source paths. Requires confirmation unless whitelisted."
+          },
+          {
+            "tool": "unzip",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Extract a zip archive into a destination directory. REQUIRES CONFIRMATION unless the final command is whitelisted.",
+            "newDescription": "Extract a zip archive into a destination directory. Requires confirmation unless whitelisted."
+          }
+        ]
+      },
+      {
+        "from": "2.0.2",
+        "to": "2.0.3",
+        "findings": [
+          {
+            "tool": "execute_batch",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Run tools sequentially in one SSH session. Unwhitelisted high-risk commands require confirmation.",
+            "newDescription": "Run tools sequentially in one SSH session."
+          },
+          {
+            "tool": "execute_command",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Run one shell command. No chaining, pipes, redirection, subshells, or multiline input. Requires confirmation unless whitelisted.",
+            "newDescription": "Run a shell command on the selected server."
+          },
+          {
+            "tool": "upload_file",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "File transfer (Local -> Remote). Requires confirmation.",
+            "newDescription": "File transfer (Local -> Remote)."
+          },
+          {
+            "tool": "download_file",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "File transfer (Remote -> Local). Requires confirmation.",
+            "newDescription": "File transfer (Remote -> Local)."
+          },
+          {
+            "tool": "edit_text_file",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Completely replaces file content. Requires confirmation.",
+            "newDescription": "Completely replaces file content."
+          },
+          {
+            "tool": "touch",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Updates access time or creates empty file. Requires confirmation.",
+            "newDescription": "Updates access time or creates empty file."
+          },
+          {
+            "tool": "mkdir",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Creates a directory. Set parents=true for mkdir -p behavior. Requires confirmation unless whitelisted.",
+            "newDescription": "Creates a directory. Set parents=true for mkdir -p behavior."
+          },
+          {
+            "tool": "mv",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Move or rename a file or directory. Requires confirmation unless whitelisted.",
+            "newDescription": "Move or rename a file or directory."
+          },
+          {
+            "tool": "cp",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Copy a file or directory. Set recursive=true for directories. Requires confirmation unless whitelisted.",
+            "newDescription": "Copy a file or directory. Set recursive=true for directories."
+          },
+          {
+            "tool": "append_text_file",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Append text to a file, creating it if needed. Requires confirmation unless whitelisted.",
+            "newDescription": "Append text to a file, creating it if needed."
+          },
+          {
+            "tool": "replace_in_file",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence. Requires confirmation unless whitelisted.",
+            "newDescription": "Replace literal text inside a file. Set replaceAll=false to replace only the first occurrence."
+          },
+          {
+            "tool": "rm_safe",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Delete a path under allowedRemoteRoots. Requires confirmation.",
+            "newDescription": "Delete a remote file or directory."
+          },
+          {
+            "tool": "git_fetch",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Updates remote tracking refs. Requires confirmation unless whitelisted.",
+            "newDescription": "Updates remote tracking refs."
+          },
+          {
+            "tool": "git_pull",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Pulls latest changes. Requires confirmation.",
+            "newDescription": "Pulls latest changes."
+          },
+          {
+            "tool": "git_switch",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Switches branches, or creates one with create=true. Requires confirmation unless whitelisted.",
+            "newDescription": "Switches branches, or creates one with create=true."
+          },
+          {
+            "tool": "docker_compose_up",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Deploy docker stack. Requires confirmation.",
+            "newDescription": "Deploy docker stack."
+          },
+          {
+            "tool": "docker_compose_down",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Remove docker stack. Requires confirmation.",
+            "newDescription": "Remove docker stack."
+          },
+          {
+            "tool": "docker_compose_stop",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Stop docker stack. Requires confirmation.",
+            "newDescription": "Stop docker stack."
+          },
+          {
+            "tool": "docker_compose_restart",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Restart compose stack. Requires confirmation.",
+            "newDescription": "Restart compose stack."
+          },
+          {
+            "tool": "docker_compose_pull",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Pull images defined by the compose stack. Requires confirmation.",
+            "newDescription": "Pull images defined by the compose stack."
+          },
+          {
+            "tool": "docker_compose_exec",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Run one process inside a compose service container without shell expansion. Requires confirmation unless whitelisted.",
+            "newDescription": "Run one process inside a compose service container without shell expansion."
+          },
+          {
+            "tool": "docker_exec",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Run one process inside a running container without shell expansion. Requires confirmation unless whitelisted.",
+            "newDescription": "Run one process inside a running container without shell expansion."
+          },
+          {
+            "tool": "docker_pull",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Pull an image from a registry. Requires confirmation.",
+            "newDescription": "Pull an image from a registry."
+          },
+          {
+            "tool": "docker_cp",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Copy files/folders between a container and the local filesystem. Requires confirmation.",
+            "newDescription": "Copy files/folders between a container and the local filesystem."
+          },
+          {
+            "tool": "docker_stop",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Stop one or more running containers. Requires confirmation.",
+            "newDescription": "Stop one or more running containers."
+          },
+          {
+            "tool": "docker_rm",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Remove one or more containers. Requires confirmation.",
+            "newDescription": "Remove one or more containers."
+          },
+          {
+            "tool": "docker_start",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Start one or more stopped containers. Requires confirmation.",
+            "newDescription": "Start one or more stopped containers."
+          },
+          {
+            "tool": "docker_restart",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Restart one or more running containers. Requires confirmation unless whitelisted.",
+            "newDescription": "Restart one or more running containers."
+          },
+          {
+            "tool": "docker_rmi",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Remove one or more images. Requires confirmation.",
+            "newDescription": "Remove one or more images."
+          },
+          {
+            "tool": "docker_commit",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Create a new image from a container's changes. Requires confirmation.",
+            "newDescription": "Create a new image from a container's changes."
+          },
+          {
+            "tool": "docker_load",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Load an image from a tar archive or STDIN. Requires confirmation.",
+            "newDescription": "Load an image from a tar archive or STDIN."
+          },
+          {
+            "tool": "docker_save",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Save one or more images to a tar archive. Requires confirmation.",
+            "newDescription": "Save one or more images to a tar archive."
+          },
+          {
+            "tool": "docker_build",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking. Requires confirmation unless whitelisted.",
+            "newDescription": "Build a docker image from a build context. Supports options such as tag, dockerfile, build args, no-cache, and fixed host networking."
+          },
+          {
+            "tool": "systemctl_restart",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Restart system service. Requires confirmation.",
+            "newDescription": "Restart system service."
+          },
+          {
+            "tool": "systemctl_start",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Start system service. Requires confirmation.",
+            "newDescription": "Start system service."
+          },
+          {
+            "tool": "systemctl_stop",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Stop system service. Requires confirmation.",
+            "newDescription": "Stop system service."
+          },
+          {
+            "tool": "systemctl_enable",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Enable system service at boot. Requires confirmation unless whitelisted.",
+            "newDescription": "Enable system service at boot."
+          },
+          {
+            "tool": "systemctl_disable",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Disable system service at boot. Requires confirmation unless whitelisted.",
+            "newDescription": "Disable system service at boot."
+          },
+          {
+            "tool": "firewall_cmd",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget. Requires confirmation unless whitelisted.",
+            "newDescription": "Structured firewall control. Supports action=list|add-port|remove-port|reload with optional zone, permanent, and listTarget."
+          },
+          {
+            "tool": "curl_http",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Perform an HTTP request with structured method, URL, headers, and optional body. Requires confirmation unless whitelisted.",
+            "newDescription": "Perform an HTTP request with structured method, URL, headers, and optional body."
+          },
+          {
+            "tool": "kill_process",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Send a signal to a process ID. Requires confirmation unless whitelisted.",
+            "newDescription": "Send a signal to a process ID."
+          },
+          {
+            "tool": "chmod",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Change file mode bits. Requires confirmation unless whitelisted.",
+            "newDescription": "Change file mode bits."
+          },
+          {
+            "tool": "chown",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Change file owner and group. Requires confirmation unless whitelisted.",
+            "newDescription": "Change file owner and group."
+          },
+          {
+            "tool": "ln",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Create a link. Uses symbolic=true by default for symlinks. Requires confirmation unless whitelisted.",
+            "newDescription": "Create a link. Uses symbolic=true by default for symlinks."
+          },
+          {
+            "tool": "tar_create",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Create a tar archive from one or more source paths. Requires confirmation unless whitelisted.",
+            "newDescription": "Create a tar archive from one or more source paths."
+          },
+          {
+            "tool": "tar_extract",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Extract a tar archive into a destination directory. Requires confirmation unless whitelisted.",
+            "newDescription": "Extract a tar archive into a destination directory."
+          },
+          {
+            "tool": "zip",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Create a zip archive from one or more source paths. Requires confirmation unless whitelisted.",
+            "newDescription": "Create a zip archive from one or more source paths."
+          },
+          {
+            "tool": "unzip",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Extract a zip archive into a destination directory. Requires confirmation unless whitelisted.",
+            "newDescription": "Extract a zip archive into a destination directory."
+          }
+        ]
+      }
+    ],
+    "silentChanges": 359,
+    "clean": false
+  }
+}
