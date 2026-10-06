@@ -39,7 +39,9 @@ async function handleHistory(url, request) {
     const result = await scanHistory(pkg);
     return json(result, 200, { 'cache-control': 'public, max-age=3600' });
   } catch (e) {
-    return json({ error: String(e && e.message ? e.message : e) }, 502);
+    // log the real reason for `wrangler tail`; the API answer stays generic
+    console.error('history scan failed:', e && e.stack ? e.stack : e);
+    return json({ error: 'scan failed — the package may be unreachable or malformed' }, 502);
   }
 }
 

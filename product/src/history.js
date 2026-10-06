@@ -39,7 +39,9 @@ export function parsePackageName(input) {
 
 /** Fetch the version->tarball map from the registry (abbreviated metadata). */
 export async function fetchRegistryVersions(name, { timeoutMs = 10000 } = {}) {
-  const res = await fetch(`${REGISTRY}/${encodeURIComponent(name).replace('%40', '@')}`, {
+  // full encodeURIComponent over the whole name: scoped packages become
+  // %40scope%2Fname, which the registry accepts as the canonical form
+  const res = await fetch(`${REGISTRY}/${encodeURIComponent(name)}`, {
     headers: { accept: 'application/vnd.npm.install-v1+json' },
     signal: AbortSignal.timeout(timeoutMs),
   });

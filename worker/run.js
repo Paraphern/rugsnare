@@ -35,7 +35,9 @@ export async function handleHistoryRun(request, env) {
   try {
     res = await dispatchHistoryScan(pkg, env.GH_DISPATCH_TOKEN);
   } catch (e) {
-    return jsonResponse({ error: String(e.message) }, 500);
+    // log the real reason for `wrangler tail`; the API answer stays generic
+    console.error('dispatch failed:', e && e.stack ? e.stack : e);
+    return jsonResponse({ error: 'could not reach GitHub - try again shortly' }, 500);
   }
 
   if (res.status === 204) return jsonResponse({ started: true, package: pkg }, 202);
@@ -53,7 +55,8 @@ export async function handleHistoryResult(request) {
   try {
     text = await fetchHistoryResult(pkg);
   } catch (e) {
-    return jsonResponse({ error: String(e.message) }, 502);
+    console.error('result fetch failed:', e && e.stack ? e.stack : e);
+    return jsonResponse({ error: 'could not read the result - try again shortly' }, 502);
   }
   if (text === null) return jsonResponse({ status: 'pending' }, 200, { 'cache-control': 'no-store' });
   return new Response(text, {

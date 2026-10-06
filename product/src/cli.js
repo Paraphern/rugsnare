@@ -1107,11 +1107,12 @@ async function cmdSkills(flags) {
       if (currentAudit.length > 0) {
         console.log(`  ${currentAudit.length} pre-existing risk file(s) (already on your machine before the baseline)`);
       }
-      // open in browser (execFile with arg array - no shell, no injection vector)
+      // open in browser: rundll32 FileProtocolHandler on Windows — no cmd
+      // shell, no argument re-parsing (same approach as the Go launcher)
       const { execFile } = await import('node:child_process');
       const plat = process.platform;
       if (plat === 'win32') {
-        execFile('cmd', ['/c', 'start', '', reportPath], () => {});
+        execFile('rundll32', ['url.dll,FileProtocolHandler', reportPath], () => {});
       } else if (plat === 'darwin') {
         execFile('open', [reportPath], () => {});
       } else {
