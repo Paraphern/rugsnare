@@ -24,6 +24,9 @@ func TestIsNewerVersion(t *testing.T) {
 		{"1.1.0", "1.1.0", false},
 		{"1.1", "1.1.0", false}, // missing fields pad to zero
 		{"2.0.0-native.1", "2.0.0-native.2", true},
+		// review 32, semver rule: a plain release beats a prerelease
+		{"1.1.0-native.2", "1.1.0", true},
+		{"1.1.0", "1.1.0-native.2", false},
 	}
 	for _, c := range cases {
 		if got := isNewerVersion(c.current, c.latest); got != c.want {
@@ -43,12 +46,12 @@ func TestUpdateNoticeRendering(t *testing.T) {
 	}
 	// and it lands in the report footer when passed through GenerateReport
 	results := []DiffResult{{Key: "k", Status: "UNCHANGED", Changes: &Changes{}}}
-	body, _ := GenerateReport(results, nowUTC(), line)
+	body, _ := GenerateReport(results, nowUTC(), line, nil)
 	if !strings.Contains(body, "Update available: 1.1.0-native.9") {
 		t.Fatal("GenerateReport must embed the update notice")
 	}
 	// clean report without a notice must not mention updates
-	bodyClean, _ := GenerateReport(results, nowUTC(), "")
+	bodyClean, _ := GenerateReport(results, nowUTC(), "", nil)
 	if strings.Contains(bodyClean, "Update available") {
 		t.Fatal("no notice must render when none given")
 	}

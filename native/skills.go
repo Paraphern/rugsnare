@@ -83,7 +83,8 @@ type Skill struct {
 
 // DiscoverSkills walks all known skill locations. cwd is the project
 // directory (project-scope locations resolve against it), home the user
-// directory (user-scope locations).
+// directory (user-scope locations). Some patterns are FILES, not directories
+// (copilot-instructions.md, CONVENTIONS.md) — those are included directly.
 func DiscoverSkills(cwd, home string) []Skill {
 	var found []Skill
 	seen := map[string]bool{} // dedup by resolved absolute path
@@ -93,10 +94,25 @@ func DiscoverSkills(cwd, home string) []Skill {
 		if loc.Scope == "project" {
 			base = filepath.Join(cwd, filepath.FromSlash(loc.Pattern))
 		}
-		if _, err := os.Stat(base); err != nil {
+		info, err := os.Stat(base)
+		if err != nil {
 			continue
 		}
-		files := walkSkillDir(base, 0)
+
+		var files []string
+		isFile := false
+		if info.Mode().IsRegular() {
+			ext := strings.ToLower(filepath.Ext(base))
+			if info.Size() == 0 || info.Size() > maxFileSize || !textExtensions[ext] {
+				continue
+			}
+			files = []string{base}
+			isFile = true
+		} else if info.IsDir() {
+			files = walkSkillDir(base, 0)
+		} else {
+			continue // symlink/device: not a skill target
+		}
 		for _, file := range files {
 			resolved, err := filepath.Abs(file)
 			if err != nil {
@@ -106,11 +122,15 @@ func DiscoverSkills(cwd, home string) []Skill {
 				continue // same file found via multiple patterns
 			}
 			seen[resolved] = true
+			rel := relPath(base, file)
+			if isFile {
+				rel = filepath.Base(base)
+			}
 			found = append(found, Skill{
 				Path:     file,
 				App:      loc.App,
 				Scope:    loc.Scope,
-				Relative: relPath(base, file),
+				Relative: rel,
 			})
 		}
 	}

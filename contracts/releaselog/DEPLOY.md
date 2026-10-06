@@ -124,3 +124,16 @@ Decoded input from the transaction:
 }
 ```
 **String = "1.0.0"** — correct. (Erratum 0.5.1 pinned the string "0.5.0"; lesson incorporated.)
+
+## Пин 1.0.1 (2026-10-04)
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x8c3eb166290512c9fb002b3b73a173c9c4415dd5644458cfaa9631e6f4e48a95` (block 52177403) |
+| artifact sha256 | `7630d7be09d74f209c8d48808fafbe8511886858208cfe83e07886fb1b382fbe00` (= unpackedSize реестра) |
+| versionKey | keccak256("1.0.1") |
+| Signer | `0x24d0A3d0562CF4A62E5decAEB77356B51514258e` |
+| Тег-парити | v1.0.1 = publish-коммит = npm gitHead = `3c190ce7` (разрыв О31 закрыт) |
+| Проверка | `npx rugsnare verify rugsnare-1.0.1.tgz --version 1.0.1 --chain base` → VERIFIED |
+
+Пост-пин чек строки (decoded input): versionKey keccak("1.0.1"), artifactHash `7630d7be…82fbe00`, строка `"1.0.1"` — пройден.

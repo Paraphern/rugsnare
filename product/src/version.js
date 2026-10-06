@@ -21,12 +21,16 @@ export function getVersion() {
 }
 
 /**
- * Compare two semver-ish strings (supports prerelease suffixes like
- * "1.1.0-native.2"). Returns -1 / 0 / 1 like strcmp.
+ * Compare two semver-ish strings. Prerelease tails ("-native.2") follow
+ * semver rules: a prerelease is LOWER than the plain release, and two
+ * prereleases compare field by field (numeric fields numerically).
+ * Returns -1 / 0 / 1 like strcmp.
  */
 export function compareVersions(a, b) {
-  const pa = String(a).split(/[.-]/).map((x) => Number(x));
-  const pb = String(b).split(/[.-]/).map((x) => Number(x));
+  const [av, ap] = splitPre(String(a));
+  const [bv, bp] = splitPre(String(b));
+  const pa = av.map(Number);
+  const pb = bv.map(Number);
   const len = Math.max(pa.length, pb.length);
   for (let i = 0; i < len; i++) {
     const da = pa[i] ?? 0;
@@ -34,7 +38,30 @@ export function compareVersions(a, b) {
     if (da < db) return -1;
     if (da > db) return 1;
   }
+  // cores equal: release beats prerelease
+  const aPre = ap.length > 0;
+  const bPre = bp.length > 0;
+  if (!aPre && bPre) return 1;
+  if (aPre && !bPre) return -1;
+  if (!aPre && !bPre) return 0;
+  // both prereleases: numeric fields numerically, then field count
+  const n = Math.max(ap.length, bp.length);
+  for (let i = 0; i < n; i++) {
+    const da = ap[i] ?? '';
+    const db = bp[i] ?? '';
+    if (da === db) continue;
+    const na = Number(da);
+    const nb = Number(db);
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) return na < nb ? -1 : 1;
+    return da < db ? -1 : 1;
+  }
   return 0;
+}
+
+function splitPre(v) {
+  const dash = v.indexOf('-');
+  if (dash < 0) return [v.split('.'), []];
+  return [v.slice(0, dash).split('.'), v.slice(dash + 1).split(/[.-]/)];
 }
 
 /**

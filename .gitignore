@@ -56,3 +56,10 @@ native/rugsnare-skills.exe
 
 # goversioninfo experiment output (rejected by Go 1.27 linker; icon-only syso IS committed)
 native/test-version.syso
+
+# local toolchains (installed per-machine, never needed by CI; see native/README)
+/tools/go/
+/tools/gobin/
+/tools/*.zip
+# wrangler local state (contains account ids)
+.wrangler/

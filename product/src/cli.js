@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { toolHash, short } from './hash.js';
 import { discoverConfigs, discoverZCodePlugins, serverCommand } from './discovery.js';
@@ -1000,6 +1001,18 @@ async function cmdSkills(flags) {
     (await import('./receipts.js')).signPinsFile();
     console.log(`Pinned ${pinned} skill file(s).`);
     console.log(`Run \`rugsnare skills diff\` to check for changes, or \`rugsnare skills report\` for a visual report.`);
+    // cold-start audit: pinning blesses whatever is on disk — also say what
+    // ALREADY looks suspicious before the baseline existed
+    const { auditCurrentSkills } = await import('./skills-pin.js');
+    const audit = auditCurrentSkills(cwd, home);
+    if (audit.length > 0) {
+      console.log(`\n${audit.length} file(s) in your current skills contain risk patterns (they were like this BEFORE pinning — not update drift):`);
+      for (const f of audit.slice(0, 10)) {
+        console.log(`  [!] ${f.key} (score ${f.score}: ${f.signals.join(', ')})`);
+      }
+      if (audit.length > 10) console.log(`  ... +${audit.length - 10} more`);
+      console.log('Run `rugsnare skills report` to see them highlighted in the report.');
+    }
     return;
   }
 
@@ -1035,10 +1048,15 @@ async function cmdSkills(flags) {
         } catch { /* MCP fetch failed — skills report still works */ }
       }
 
-      const { reportPath, counts } = writeSkillsReport(results, cwd, mcpResults);
+      const { auditCurrentSkills } = await import('./skills-pin.js');
+      const currentAudit = auditCurrentSkills(cwd, home);
+      const { reportPath, counts } = writeSkillsReport(results, cwd, mcpResults, currentAudit);
       console.log(`Report: ${reportPath}`);
       const totalBad = counts.dangerous + mcpResults.reduce((n, r) => n + r.verdicts.length, 0);
       console.log(`  ${totalBad} total finding(s) (${counts.dangerous} dangerous skills, ${mcpResults.reduce((n, r) => n + r.verdicts.length, 0)} MCP contract changes)`);
+      if (currentAudit.length > 0) {
+        console.log(`  ${currentAudit.length} pre-existing risk file(s) (already on your machine before the baseline)`);
+      }
       // open in browser (execFile with arg array - no shell, no injection vector)
       const { execFile } = await import('node:child_process');
       const plat = process.platform;

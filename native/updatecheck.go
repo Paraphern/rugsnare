@@ -48,20 +48,18 @@ func fetchLatestNativeVersion(url string) string {
 	return strings.TrimSpace(string(body))
 }
 
-// isNewerVersion reports whether latest > current. Both are dotted numeric
-// strings, possibly with a prerelease tail ("1.1.0-native.2"): split on dots
-// and dashes, compare numerically field by field, missing fields are zero.
+// isNewerVersion reports whether latest > current, semver-style: a
+// prerelease ("1.1.0-native.2") is LOWER than the plain release ("1.1.0"),
+// and two prereleases compare field by field (numeric fields numerically).
 func isNewerVersion(current, latest string) bool {
 	return compareVersionStrings(current, latest) < 0
 }
 
 func compareVersionStrings(a, b string) int {
-	pa := versionFields(a)
-	pb := versionFields(b)
-	n := len(pa)
-	if len(pb) > n {
-		n = len(pb)
-	}
+	aCore, aPre := splitPre(a)
+	bCore, bPre := splitPre(b)
+	pa, pb := numericFields(aCore), numericFields(bCore)
+	n := max(len(pa), len(pb))
 	for i := 0; i < n; i++ {
 		var da, db int
 		if i < len(pa) {
@@ -77,11 +75,56 @@ func compareVersionStrings(a, b string) int {
 			return 1
 		}
 	}
+	// cores equal: release beats prerelease
+	if len(aPre) == 0 && len(bPre) > 0 {
+		return 1
+	}
+	if len(aPre) > 0 && len(bPre) == 0 {
+		return -1
+	}
+	// both prereleases: field by field
+	m := max(len(aPre), len(bPre))
+	for i := 0; i < m; i++ {
+		var sa, sb string
+		if i < len(aPre) {
+			sa = aPre[i]
+		}
+		if i < len(bPre) {
+			sb = bPre[i]
+		}
+		if sa == sb {
+			continue
+		}
+		na, ea := strconv.Atoi(sa)
+		nb, eb := strconv.Atoi(sb)
+		if ea == nil && eb == nil {
+			if na != nb {
+				if na < nb {
+					return -1
+				}
+				return 1
+			}
+			continue
+		}
+		if sa < sb {
+			return -1
+		}
+		return 1
+	}
 	return 0
 }
 
-func versionFields(v string) []int {
-	parts := strings.FieldsFunc(v, func(r rune) bool { return r == '.' || r == '-' })
+// splitPre divides "1.1.0-native.2" into ("1.1.0", ["native","2"]).
+func splitPre(v string) (string, []string) {
+	dash := strings.IndexByte(v, '-')
+	if dash < 0 {
+		return v, nil
+	}
+	return v[:dash], strings.FieldsFunc(v[dash+1:], func(r rune) bool { return r == '.' || r == '-' })
+}
+
+func numericFields(v string) []int {
+	parts := strings.Split(v, ".")
 	out := make([]int, 0, len(parts))
 	for _, p := range parts {
 		n, err := strconv.Atoi(p)

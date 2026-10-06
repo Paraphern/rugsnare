@@ -12,7 +12,9 @@ import (
 // external-URL rule which needs code (RE2 has no negative lookahead) and
 // lives in containsExternalURL.
 var dangerousPatterns = []*regexp.Regexp{
-	regexp.MustCompile(`(?i)\.env|credentials?|api[_-]?key|secret|password|token`),
+	// "token" alone false-positives on LLM prose ("count the tokens"), so it
+	// requires credential context
+	regexp.MustCompile(`(?i)\.env|credentials?|api[_-]?key|secrets?|passwords?|\b(api|access|auth|refresh|session)[_-]?tokens?\b|\btokens?\s*[:=]`),
 	// (external URL rule: containsExternalURL)
 	regexp.MustCompile(`(?i)do\s+not\s+tell|don'?t\s+tell|do\s+not\s+inform|don'?t\s+inform|hide\s+from\s+(the\s+)?(user|owner)`),
 	regexp.MustCompile(`(?i)\b(curl|wget|rm\s+-rf|chmod\s+777|eval|exec|system\s*\()`),
@@ -90,8 +92,15 @@ func DiffLines(oldText, newText string) Changes {
 
 // ClassifySeverity classifies by what was ADDED (not the whole file).
 // Mirrors classifySeverity in skills-pin.js.
-func ClassifySeverity(added []string) string {
+// ClassifySeverity classifies by what changed. Added lines drive the
+// DANGEROUS checks; pure deletions are REVIEW at minimum — silently REMOVED
+// safety language (the "Requires confirmation" strip) must never read as SAFE.
+func ClassifySeverity(ch Changes) string {
+	added := ch.Added
 	if len(added) == 0 {
+		if len(ch.Removed) > 0 {
+			return "REVIEW"
+		}
 		return "SAFE"
 	}
 	addedText := joinLines(added)
@@ -184,7 +193,7 @@ func DiffSkills(pins SkillPinMap, cwd, home string) []DiffResult {
 				}
 			}
 			ch := DiffLines(oldContent, newContent)
-			sev := ClassifySeverity(ch.Added)
+			sev := ClassifySeverity(ch)
 			results = append(results, DiffResult{
 				Key: key, Status: "DRIFT", OldHash: strPtr(pin.Hash), NewHash: strPtr(newHash),
 				Severity: sevPtr(sev), Changes: &ch, Advisory: ScanContentAdvisory(newContent), App: pin.App,

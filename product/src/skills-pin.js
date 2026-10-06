@@ -84,7 +84,19 @@ export function discoverSkills(cwd = process.cwd(), home = os.homedir()) {
     const base = loc.scope === 'user' ? path.join(home, loc.pattern) : path.join(cwd, loc.pattern);
     if (!fs.existsSync(base)) continue;
 
-    const files = walkSkillDir(base, 0);
+    // some patterns are FILES, not directories (copilot-instructions.md,
+    // CONVENTIONS.md): readdir on a file throws ENOTDIR, so handle them directly
+    let files;
+    const st = fs.statSync(base);
+    if (st.isFile()) {
+      if (st.size > 0 && st.size <= MAX_FILE_SIZE && TEXT_EXTENSIONS.has(path.extname(base).toLowerCase())) {
+        files = [base];
+      } else {
+        continue;
+      }
+    } else {
+      files = walkSkillDir(base, 0);
+    }
     for (const file of files) {
       const resolved = path.resolve(file);
       if (seen.has(resolved)) continue; // same file found via multiple patterns
@@ -93,7 +105,7 @@ export function discoverSkills(cwd = process.cwd(), home = os.homedir()) {
         path: file,
         app: loc.app,
         scope: loc.scope,
-        relative: path.relative(base, file),
+        relative: st.isFile() ? path.basename(base) : path.relative(base, file),
       });
     }
   }
@@ -186,7 +198,9 @@ export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir()) {
 // ---- diff & severity ---------------------------------------------------------
 
 const DANGEROUS_PATTERNS = [
-  { re: /\.env|credentials?|api[_-]?key|secret|password|token/i, desc: 'references sensitive files or credentials' },
+  // "token" alone false-positives on LLM prose ("count the tokens"), so it
+  // requires credential context
+  { re: /\.env|credentials?|api[_-]?key|secrets?|passwords?|\b(api|access|auth|refresh|session)[_-]?tokens?\b|\btokens?\s*[:=]/i, desc: 'references sensitive files or credentials' },
   { re: /https?:\/\/(?!.*\b(github\.com|npmjs|readthedocs|wikipedia)\b)/i, desc: 'communicates with an external URL' },
   { re: /do\s+not\s+tell|don'?t\s+tell|do\s+not\s+inform|don'?t\s+inform|hide\s+from\s+(the\s+)?(user|owner)/i, desc: 'instructs the AI to hide information from the user' },
   { re: /\b(curl|wget|rm\s+-rf|chmod\s+777|eval|exec|system\s*\()/i, desc: 'executes dangerous commands' },
@@ -227,8 +241,7 @@ export function diffSkills(pins, cwd = process.cwd(), home = os.homedir()) {
       const newContent = fs.readFileSync(live.path, 'utf8');
       const oldContent = pin.content ?? readOldContent(pin) ?? '';
       const changes = diffLines(oldContent, newContent);
-      const severity = classifySeverity(changes);
-      const advisory = scanToolDescription(newContent);
+      const severity = classifySeverity(changes);      const advisory = scanToolDescription(newContent);
       results.push({
         key, status: 'DRIFT', oldHash: pin.hash, newHash,
         severity, changes,
@@ -276,10 +289,40 @@ export function diffLines(oldText, newText) {
 }
 
 /**
- * Classify severity based on what was ADDED (not the whole file).
+ * Cold-start audit: files whose CURRENT content fires advisory signals,
+ * independent of any baseline. Pinning is TOFU — it blesses whatever is on
+ * disk, including a skill poisoned before RugSnare was installed; this
+ * surfaces those pre-existing risks at first contact.
+ * Returns [{ key, app, score, signals }] sorted by score desc, then key.
  */
-export function classifySeverity({ added }) {
-  if (added.length === 0) return 'SAFE';
+export function auditCurrentSkills(cwd = process.cwd(), home = os.homedir()) {
+  const out = [];
+  for (const s of discoverSkills(cwd, home)) {
+    let content;
+    try { content = fs.readFileSync(s.path, 'utf8'); } catch { continue; }
+    const adv = scanToolDescription(content);
+    if (adv.advisory) {
+      out.push({
+        key: `${s.app}/${s.scope}/${s.relative}`,
+        app: s.app,
+        score: adv.score,
+        signals: adv.signals.map((x) => x.id),
+      });
+    }
+  }
+  out.sort((a, b) => (b.score - a.score) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+  return out;
+}
+
+/**
+ * Classify severity based on what changed. Added lines drive the DANGEROUS
+ * checks; pure deletions are REVIEW at minimum — silently REMOVED safety
+ * language (the "Requires confirmation" strip) must never read as SAFE.
+ */
+export function classifySeverity({ added = [], removed = [] }) {
+  if (added.length === 0) {
+    return (removed.length > 0) ? 'REVIEW' : 'SAFE';
+  }
   const addedText = added.join('\n');
 
   for (const p of DANGEROUS_PATTERNS) {

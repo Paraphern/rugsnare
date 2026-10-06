@@ -75,11 +75,53 @@ function recommendation(severity) {
   }
 }
 
+const SIGNAL_PHRASES = {
+  A01: 'tells the model not to inform you',
+  A02: 'references private keys, credentials or .env',
+  A03: 'asks for base64 encoding (common exfiltration pattern)',
+  A04: 'names specific credential variables',
+  A05: 'asks to pass data verbatim into a parameter',
+  A06: 'labelled internal / maintainer note',
+  A07: 'introduces a mandatory context/session/auth parameter',
+  A08: 'instructs to read/send something before calling',
+  A09: 'declares itself preferred over other tools',
+  A10: 'links a non-standard domain',
+  A11: 'asks to send the full environment',
+  A12: 'contains invisible characters (possible hidden instructions)',
+  A13: 'contains text-direction overrides (possible obfuscation)',
+  A14: 'opens with an imperative aimed at the agent',
+  A15: 'contains an instruction-hijack phrase',
+  A17: 'contains a phone number (classic exfil recipient)',
+  A18: 'contains ANSI escape sequences',
+};
+
+/**
+ * Cold-start findings: risk patterns that were in the files BEFORE the
+ * baseline existed (not update drift). Mirrors auditSection in the Go port.
+ */
+function auditSectionHTML(currentAudit) {
+  if (!currentAudit || currentAudit.length === 0) return '';
+  const cards = currentAudit.slice(0, 10).map((f) => `
+<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin:8px 0">
+  <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><b style="font-size:13px">⚠️ ${esc(f.key)}</b><span style="color:#64748b;font-size:11px">score ${f.score}</span></div>
+  <ul style="margin:6px 0 0 16px;padding:0;color:#475569;font-size:12px">
+    ${f.signals.map((id) => `<li><b>${esc(id)}</b> — ${esc(SIGNAL_PHRASES[id] ?? 'risk signal')}</li>`).join('')}
+  </ul>
+</div>`);
+  const more = currentAudit.length > 10 ? `<div style="color:#64748b;font-size:12px;margin-top:6px">... and ${currentAudit.length - 10} more</div>` : '';
+  return `
+<h2 style="font-size:20px;color:#0f172a;margin:24px 0 8px;border-bottom:2px solid #e5e7eb;padding-bottom:8px">🔎 Already on your machine</h2>
+<div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:12px;padding:14px;margin:14px 0">
+<p style="margin:0 0 8px;color:#92400e;font-size:13px">These patterns were in your skill files <b>before</b> the baseline was created — they are not update drift. Review them once; pinning alone would have blessed them silently.</p>
+${cards.join('')}${more}
+</div>`;
+}
+
 /**
  * Generate a self-contained HTML report covering skills drift, MCP tool drift,
  * and optionally audit findings. Returns { html, counts }.
  */
-export function generateSkillsReport(results, { generatedAt, mcpResults } = {}) {
+export function generateSkillsReport(results, { generatedAt, mcpResults, currentAudit } = {}) {
   const dangerous = results.filter((r) => r.severity === 'DANGEROUS');
   const review = results.filter((r) => r.severity === 'REVIEW');
   const safe = results.filter((r) => r.severity === 'SAFE');
@@ -212,6 +254,8 @@ ${mcpFindings.join('\n')}`;
 
   ${mcpSection}
 
+  ${auditSectionHTML(currentAudit)}
+
   ${cards.length > 0 ? `<h2 style="font-size:20px;color:#0f172a;margin:24px 0 8px;border-bottom:2px solid #e5e7eb;padding-bottom:8px">📝 Skill Files</h2>` : ''}
 
   ${cards.join('\n')}
@@ -231,8 +275,8 @@ ${mcpFindings.join('\n')}`;
 /**
  * Write the report to a file and return the path.
  */
-export function writeSkillsReport(results, cwd = process.cwd(), mcpResults = []) {
-  const { html, counts } = generateSkillsReport(results, { mcpResults });
+export function writeSkillsReport(results, cwd = process.cwd(), mcpResults = [], currentAudit = []) {
+  const { html, counts } = generateSkillsReport(results, { mcpResults, currentAudit });
   const reportPath = path.join(rugsnareDir(cwd), 'skills-report.html');
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
   fs.writeFileSync(reportPath, html);

@@ -14,7 +14,7 @@ test('getVersion: matches package.json', () => {
   assert.equal(getVersion(), pkg.version);
 });
 
-test('compareVersions: semver ordering incl. prerelease suffixes', () => {
+test('compareVersions: semver ordering incl. prerelease rules', () => {
   assert.equal(compareVersions('1.0.0', '1.0.1'), -1);
   assert.equal(compareVersions('1.1.0', '1.0.99'), 1);
   assert.equal(compareVersions('1.0.0', '1.0.0'), 0);
@@ -22,6 +22,11 @@ test('compareVersions: semver ordering incl. prerelease suffixes', () => {
   assert.equal(compareVersions('2.0.0', '1.99.99'), 1);
   // different lengths pad with zeros
   assert.equal(compareVersions('1.0', '1.0.0'), 0);
+  // semver: a prerelease is LOWER than the plain release (review 32)
+  assert.equal(compareVersions('1.1.0-native.2', '1.1.0'), -1);
+  assert.equal(compareVersions('1.1.0', '1.1.0-native.2'), 1);
+  // no NaN poisoning from non-numeric prerelease fields
+  assert.equal(compareVersions('1.1.0-native.2', '1.1.0-alpha.1'), 1);
 });
 
 test('fetchLatestVersion: parses registry response (injectable URL)', async () => {

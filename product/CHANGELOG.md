@@ -27,8 +27,26 @@
 - `rugsnare diff` now prints the human-readable WAS/NOW description text for
   description drift (COSMETIC and ANNOTATION) instead of bare hashes — you see
   the exact sentence the agent used to read and the one it reads now.
+- **Scheduled checks** (new, native launcher): `rugsnare-skills
+  install-schedule` registers a logon check (Startup folder) and a daily
+  check (Task Scheduler), no admin rights, no resident process — the binary
+  runs and exits. Quiet mode (`-quiet`) stays silent when everything
+  matches and opens the report only when something changed.
+- **Cold-start audit** (new, both CLIs): pinning is trust-on-first-use — it
+  would bless a skill poisoned before RugSnare was installed. Every skill
+  file's content is now scanned by the advisory engine (A01-A18) at scan
+  and report time; pre-existing risks render as a separate "Already on
+  your machine" section that explicitly says these are not update drift.
 - Security fixes (review 28): P0 canary leak via HTTP, P1 error scrubbing,
   committed verification key for CI, loud policies degradation, P2 guards.
+- Review 32 fixes: P0 `os` not imported — every `rugsnare skills` command
+  crashed for real users without `RUGSNARE_TEST_HOME` set (tests masked it);
+  file-pattern skill locations (`.github/copilot-instructions.md`,
+  `CONVENTIONS.md`) were never discovered (readdir on a file → ENOTDIR);
+  pure-deletion drift is now REVIEW, not SAFE (silently removed safety
+  language must never read as safe); bare "token" no longer trips the
+  credential pattern ("count the tokens" is LLM prose); compareVersions
+  follows semver prerelease ordering (`1.1.0-native.2` < `1.1.0`).
 
 ## [1.0.1] — 2026-10-04
 

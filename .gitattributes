@@ -4,3 +4,6 @@
 *.ico binary
 *.woff2 binary
 *.tgz binary
+*.exe binary
+*.syso binary
+*.zip binary

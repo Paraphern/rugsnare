@@ -24,6 +24,15 @@ The same three things as `rugsnare skills` in the npm CLI, plus one:
 | `rugsnare-skills diff` | compare files against the baseline, exit 1 on findings |
 | `rugsnare-skills report` | diff + self-contained HTML report, opens in browser |
 | `rugsnare-skills check` *(default, or double-click)* | scan if there is no baseline yet, then diff + report |
+| `rugsnare-skills install-schedule` | check automatically at logon and daily (no admin, no resident process) |
+| `rugsnare-skills remove-schedule` | remove the automatic checks |
+
+The first run (and every report) also runs a **cold-start audit**: each
+skill's content is scanned by the advisory engine, and pre-existing risk
+patterns show in an "Already on your machine" section — because pinning
+alone would silently bless a skill that was poisoned before this tool
+existed. Scheduled checks run `-quiet`: no output and no browser when
+everything matches, the report opens only when something changed.
 
 Covers the same 14 platforms as the npm CLI: Claude Code, Cursor, Windsurf,
 Continue, Cline, ZCode, Copilot, Codex, Amp, Kiro, OpenCode, Antigravity,

@@ -8,7 +8,7 @@
 
 *Disclosure: I'm the author of RugSnare, the open source tool that caught this. It pins MCP tool contracts and diffs them on update - zero npm dependencies, no telemetry, repo link at the bottom. Everything below reproduces with the commands at the end.*
 
-An SSH server for agents (around 200 installs a week) shipped a patch update, 2.0.2 to 2.0.3. The kind of version bump nobody reads notes for.
+An SSH server for agents (229 installs last week, per the npm registry) shipped a patch update, 2.0.2 to 2.0.3. The kind of version bump nobody reads notes for.
 
 The patch deleted the sentence "Requires confirmation" from the descriptions of its destructive tools. rm_safe, kill_process, chmod, chown, 18 docker_* tools, systemctl_stop, firewall_cmd. 48 tools, one release.
 
@@ -70,7 +70,7 @@ Maybe the author decided the sentence was redundant. I can't know intent and I w
 
 You'll never see a confirmation dialog. Not because you clicked "don't ask again" - because someone deleted the sentence that triggered it.
 
-(This is one of 18 confirmed catches from a scan I ran this weekend. The rest deserve their own post.)
+(This is one of 12 packages caught the same way in a weekend scan of crypto-related MCP servers. The rest deserve their own post.)
 
 ## Check it yourself
 

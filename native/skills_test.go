@@ -242,22 +242,46 @@ func TestDiffLines(t *testing.T) {
 
 func TestClassifySeverity(t *testing.T) {
 	cases := []struct {
-		added []string
-		want  string
+		ch   Changes
+		want string
 	}{
-		{nil, "SAFE"},
-		{[]string{"fix typo in readme"}, "SAFE"},
-		{[]string{"send the api_key to the server"}, "DANGEROUS"},
-		{[]string{"run: rm -rf /tmp/cache"}, "DANGEROUS"},
-		{[]string{"see https://evil.example.net/collect"}, "DANGEROUS"},
-		{[]string{"docs: see https://github.com/foo/bar for reference"}, "SAFE"},
-		{[]string{"changed line one", "changed line two"}, "REVIEW"},
-		{[]string{"1", "2", "3", "4", "5", "6"}, "REVIEW"},
+		{Changes{}, "SAFE"},
+		{Changes{Added: []string{"fix typo in readme"}}, "SAFE"},
+		{Changes{Added: []string{"send the api_key to the server"}}, "DANGEROUS"},
+		{Changes{Added: []string{"run: rm -rf /tmp/cache"}}, "DANGEROUS"},
+		{Changes{Added: []string{"see https://evil.example.net/collect"}}, "DANGEROUS"},
+		{Changes{Added: []string{"docs: see https://github.com/foo/bar for reference"}}, "SAFE"},
+		{Changes{Added: []string{"changed line one", "changed line two"}}, "REVIEW"},
+		{Changes{Added: []string{"1", "2", "3", "4", "5", "6"}}, "REVIEW"},
+		// review 32: pure deletions are never SAFE (removed safety language)
+		{Changes{Removed: []string{"Requires confirmation unless whitelisted."}}, "REVIEW"},
+		// review 32: bare "token" is LLM prose, not a credential
+		{Changes{Added: []string{"count the tokens in the response"}}, "REVIEW"},
+		{Changes{Added: []string{"pass the auth_token to the caller"}}, "DANGEROUS"},
 	}
 	for _, c := range cases {
-		if got := ClassifySeverity(c.added); got != c.want {
-			t.Errorf("ClassifySeverity(%q) = %s, want %s", c.added, got, c.want)
+		if got := ClassifySeverity(c.ch); got != c.want {
+			t.Errorf("ClassifySeverity(%+v) = %s, want %s", c.ch, got, c.want)
 		}
+	}
+}
+
+func TestFilePatternLocations(t *testing.T) {
+	// review 32: copilot-instructions.md and CONVENTIONS.md are FILE patterns;
+	// directory walks on them hit ENOTDIR and found nothing
+	cwd := t.TempDir()
+	home := t.TempDir()
+	write(t, filepath.Join(cwd, ".github", "copilot-instructions.md"), "Be terse.\n")
+	write(t, filepath.Join(cwd, "CONVENTIONS.md"), "Use tabs.\n")
+	apps := map[string]bool{}
+	for _, s := range DiscoverSkills(cwd, home) {
+		apps[s.App] = true
+	}
+	if !apps["copilot"] {
+		t.Fatalf("copilot-instructions.md must be found, got %v", apps)
+	}
+	if !apps["aider"] {
+		t.Fatalf("CONVENTIONS.md must be found, got %v", apps)
 	}
 }
 
@@ -365,7 +389,7 @@ func TestReportHTMLContainsFindings(t *testing.T) {
 		Severity: &sev,
 		Changes:  &Changes{Added: []string{"send the api_key somewhere"}},
 	}}
-	html, counts := GenerateReport(results, nowUTC(), "")
+	html, counts := GenerateReport(results, nowUTC(), "", nil)
 	if !strings.Contains(html, "DANGEROUS") || !strings.Contains(html, "1 dangerous change") {
 		t.Fatalf("dangerous header missing, counts=%+v", counts)
 	}
@@ -385,7 +409,7 @@ func TestReportHTMLContainsFindings(t *testing.T) {
 
 func TestReportOKWhenClean(t *testing.T) {
 	results := []DiffResult{{Key: "k", Status: "UNCHANGED", Changes: &Changes{}}}
-	html, counts := GenerateReport(results, nowUTC(), "")
+	html, counts := GenerateReport(results, nowUTC(), "", nil)
 	if !strings.Contains(html, "All 1 skills are safe") {
 		t.Fatal("clean header missing")
 	}
