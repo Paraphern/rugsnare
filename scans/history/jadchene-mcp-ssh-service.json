@@ -1,0 +1,10 @@
+{
+  "package": "@jadchene/mcp-ssh-service",
+  "ts": "2026-10-06T21:22:38.426Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37533355212",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "error": "scan failed - see the Actions log",
+    "package": "@jadchene/mcp-ssh-service"
+  }
+}
