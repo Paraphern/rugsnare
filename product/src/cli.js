@@ -1014,9 +1014,10 @@ async function cmdHistory(flags) {
 
   if (flags.json) { console.log(JSON.stringify(result, null, 2)); }
   else {
-    for (const { from, to, findings } of result.pairs) {
+    for (const { from, to, toPublishedAt, findings } of result.pairs) {
       if (findings.length === 0) continue;
-      console.log(`\n${from} -> ${to}: ${findings.length} finding(s)`);
+      const pubDate = toPublishedAt ? ` (published ${String(toPublishedAt).slice(0, 10)})` : '';
+      console.log(`\n${from} -> ${to}${pubDate}: ${findings.length} finding(s)`);
       for (const f of findings) {
         const driftLabel = f.driftType ? ` (${f.driftType})` : '';
         console.log(`  [${f.status}] ${f.tool}${driftLabel}`);

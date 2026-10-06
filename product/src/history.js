@@ -40,9 +40,10 @@ export function parsePackageName(input) {
 /** Fetch the version->tarball map from the registry (abbreviated metadata). */
 export async function fetchRegistryVersions(name, { timeoutMs = 10000 } = {}) {
   // full encodeURIComponent over the whole name: scoped packages become
-  // %40scope%2Fname, which the registry accepts as the canonical form
+  // %40scope%2Fname, which the registry accepts as the canonical form.
+  // NOTE: full metadata (not the abbreviated install doc) because only it
+  // carries the per-version publish timestamps (`time`).
   const res = await fetch(`${REGISTRY}/${encodeURIComponent(name)}`, {
-    headers: { accept: 'application/vnd.npm.install-v1+json' },
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (res.status === 404) throw new Error(`package not found on npm: ${name}`);
@@ -52,7 +53,7 @@ export async function fetchRegistryVersions(name, { timeoutMs = 10000 } = {}) {
   versions.sort((a, b) => compareVersions(a, b));
   const dist = {};
   for (const v of versions) dist[v] = body.versions[v]?.dist?.tarball;
-  return { versions, dist, latest: body['dist-tags']?.latest ?? versions.at(-1) };
+  return { versions, dist, latest: body['dist-tags']?.latest ?? versions.at(-1), time: body.time ?? {} };
 }
 
 /** Download + extract one version tarball into dir; returns the package root. */
@@ -172,7 +173,7 @@ export function diffVersionContracts(older, newer) {
  * fail to start are reported honestly, not silently skipped.
  */
 export async function scanHistory(name, { last = 10, timeoutMs = 15000, onProgress = () => {} } = {}) {
-  const { versions, dist, latest } = await fetchRegistryVersions(name);
+  const { versions, dist, latest, time } = await fetchRegistryVersions(name);
   const chosen = versions.slice(-last);
   onProgress(`${chosen.length} version(s) to check: ${chosen[0]} .. ${chosen.at(-1)} (latest: ${latest})`);
 
@@ -191,7 +192,8 @@ export async function scanHistory(name, { last = 10, timeoutMs = 15000, onProgre
   const pairs = [];
   for (let i = 1; i < ran.length; i++) {
     const findings = diffVersionContracts(ran[i - 1], ran[i]);
-    pairs.push({ from: ran[i - 1].version, to: ran[i].version, findings });
+    // publish date of the NEWER version — when the change became live
+    pairs.push({ from: ran[i - 1].version, to: ran[i].version, toPublishedAt: time[ran[i].version] ?? null, findings });
   }
 
   const silentChanges = pairs.reduce((n, p) => n + p.findings.length, 0);

@@ -11,6 +11,7 @@
 
 import { parseTar, extractContracts, diffContracts, sortVersions, validPackageName } from './history-core.js';
 import { handleHistoryRun, handleHistoryResult } from './run.js';
+import { handleHistoryFeed } from './feed.js';
 
 const REGISTRY_HOST = 'registry.npmjs.org';
 const LAST_N = 5;
@@ -22,6 +23,7 @@ export default {
     if (url.pathname === '/api/history') return handleHistory(url, request);
     if (url.pathname === '/api/history-run') return handleHistoryRun(request, env);
     if (url.pathname === '/api/history-result') return handleHistoryResult(request);
+    if (url.pathname === '/api/history-feed') return handleHistoryFeed(request, env);
     return env.ASSETS.fetch(request);
   },
 };
@@ -46,13 +48,13 @@ async function handleHistory(url, request) {
 }
 
 async function scanHistory(pkg) {
-  // abbreviated metadata: versions + tarball urls, nothing else
-  const meta = await fetchJson(`https://${REGISTRY_HOST}/${pkg}`, {
-    accept: 'application/vnd.npm.install-v1+json',
-  });
+  // full metadata (not the abbreviated install doc): only it carries the
+  // per-version publish timestamps in `time`
+  const meta = await fetchJson(`https://${REGISTRY_HOST}/${pkg}`);
   const allVersions = Object.keys(meta.versions ?? {});
   if (allVersions.length === 0) throw new Error('no published versions');
   const chosen = sortVersions(allVersions).slice(-LAST_N);
+  const time = meta.time ?? {};
 
   const contracts = [];
   for (const v of chosen) {
@@ -71,7 +73,7 @@ async function scanHistory(pkg) {
   for (let i = 1; i < usable.length; i++) {
     const older = new Map(Object.entries(usable[i - 1].tools));
     const newer = new Map(Object.entries(usable[i].tools));
-    pairs.push({ from: usable[i - 1].version, to: usable[i].version, findings: diffContracts(older, newer) });
+    pairs.push({ from: usable[i - 1].version, to: usable[i].version, toPublishedAt: time[usable[i].version] ?? null, findings: diffContracts(older, newer) });
   }
 
   return {

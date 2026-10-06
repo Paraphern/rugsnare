@@ -27,6 +27,8 @@ async function guardFetch(url, init) {
   return fetch(u.href, init);
 }
 
+export { guardFetch };
+
 /**
  * Ask GitHub to run one sandboxed history scan (repository_dispatch).
  * Returns the raw Response for the caller to map to status codes.

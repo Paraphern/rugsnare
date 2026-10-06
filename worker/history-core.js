@@ -151,6 +151,23 @@ export function packageSlug(pkg) {
     .slice(0, 80);
 }
 
+/**
+ * Parse one commit from the `scans` branch into a feed entry.
+ * Commit messages follow "scan(history): <package> [skip ci]".
+ * Returns null for commits that do not match (e.g. branch creation).
+ */
+export function parseScanCommit(commit) {
+  const message = commit?.commit?.message ?? '';
+  const m = message.match(/^scan\(history\): (\S+) \[skip ci\]/);
+  if (!m) return null;
+  return {
+    package: m[1],
+    ts: commit.commit.committer?.date ?? commit.commit.author?.date ?? null,
+    commitUrl: commit.html_url ?? null,
+    slug: packageSlug(m[1]),
+  };
+}
+
 /** Field-free semver sort (numeric fields; prerelease < release). */
 export function sortVersions(versions) {
   const key = (v) => {

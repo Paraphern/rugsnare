@@ -3,7 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug } from '../../worker/history-core.js';
+import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit } from '../../worker/history-core.js';
 
 /** Build a minimal ustar archive from {path, data} entries. */
 function buildTar(entries) {
@@ -104,4 +104,22 @@ test('packageSlug: filesystem-safe, matches the workflow convention', () => {
   // same normalization the workflow applies in its publish step
   const fromWorkflow = 'jadchene-mcp-ssh-service';
   assert.equal(packageSlug('@jadchene/mcp-ssh-service'), fromWorkflow);
+});
+
+test('parseScanCommit: feed entries from scans-branch commits', () => {
+  const commit = {
+    html_url: 'https://github.com/Paraphern/rugsnare/commit/abc',
+    commit: {
+      message: 'scan(history): @jadchene/mcp-ssh-service [skip ci]',
+      committer: { date: '2026-10-06T21:36:38Z' },
+    },
+  };
+  const e = parseScanCommit(commit);
+  assert.equal(e.package, '@jadchene/mcp-ssh-service');
+  assert.equal(e.slug, 'jadchene-mcp-ssh-service');
+  assert.equal(e.ts, '2026-10-06T21:36:38Z');
+  assert.equal(e.commitUrl, 'https://github.com/Paraphern/rugsnare/commit/abc');
+  // branch-creation and unrelated commits are skipped
+  assert.equal(parseScanCommit({ commit: { message: 'Initial commit' } }), null);
+  assert.equal(parseScanCommit(null), null);
 });
