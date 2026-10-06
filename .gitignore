@@ -53,3 +53,6 @@ outreach-ready/
 # Go native launcher build artifacts (sources are public, binaries ship via GitHub Releases)
 native/bin/
 native/rugsnare-skills.exe
+
+# goversioninfo experiment output (rejected by Go 1.27 linker; icon-only syso IS committed)
+native/test-version.syso

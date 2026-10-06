@@ -5,11 +5,14 @@ live in a terminal: no Node.js, no npm, no installation. Download, double-click,
 get a report in your browser.
 
 ```
-3.5 MB  windows-amd64 .exe
-3.2 MB  macos-arm64
-3.4 MB  macos-amd64
-3.4 MB  linux-amd64
+7.3 MB  windows-amd64 .exe
+6.7 MB  macos-arm64
+7.2 MB  macos-amd64
+7.1 MB  linux-amd64
 ```
+
+(Size is stdlib-only; the bulk is `net/http` + `crypto/tls` used for one
+thing: the self-update check below.)
 
 ## What it does
 
@@ -40,6 +43,21 @@ CLI. The two are interchangeable on the same machine:
 One nuance: pin keys use native path separators (backslash on Windows),
 exactly like the npm CLI - do not "normalize" them, the keys must match.
 
+## Update check (no telemetry, both directions)
+
+A downloaded binary never changes on disk — but it also never learns anything,
+so before writing a report it fetches one static text file:
+
+```
+GET https://rugsnare.com/latest-native.txt     # plain version string, nothing else
+```
+
+Nothing is sent (no identifiers, no payload, no counting). If the file names a
+newer version, the report footer and console say so; on any failure (offline,
+404, slow) it stays silent. Opt out with `-no-update-check` or
+`RUGSNARE_NO_UPDATE_CHECK=1`. Bump `site/latest-native.txt` when publishing a
+new build.
+
 ## Building
 
 Requires Go >= 1.27 (any recent Go works; no third-party dependencies -
@@ -60,6 +78,28 @@ GOOS=darwin  GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o bin/rugsnare-sk
 GOOS=darwin  GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o bin/rugsnare-skills-macos-amd64 .
 GOOS=linux   GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o bin/rugsnare-skills-linux-amd64 .
 ```
+
+## Windows icon
+
+`rsrc_windows_amd64.syso` (committed) embeds the RugSnare icon into the
+Windows exe — Go links any `*_windows_amd64.syso` automatically, no flags
+needed. The binary itself stays stdlib-only; the tool below is build-time
+only.
+
+Regenerate after changing the icon:
+
+```bash
+# 1. sized PNGs from site/assets/icon-512.png (any resizer; System.Drawing works)
+# 2. assemble multi-size .ico (16/32/48/256, PNG entries)
+node make-ico.mjs
+# 3. embed into a fresh .syso (build-time tool, pinned: github.com/akavel/rsrc@v0.10.2)
+rsrc -arch amd64 -ico app.ico -o rsrc_windows_amd64.syso
+```
+
+No VERSIONINFO resource: goversioninfo's output is rejected by the Go 1.27
+linker ("unknown relocation type 7"); the running version is printed by
+`rugsnare-skills version` instead. macOS/Linux binaries carry no icon —
+only .app bundles / .desktop files do, and we ship bare binaries.
 
 ## Layout
 

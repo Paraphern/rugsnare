@@ -12,7 +12,7 @@ An SSH server for agents (around 200 installs a week) shipped a patch update, 2.
 
 The patch deleted the sentence "Requires confirmation" from the descriptions of its destructive tools. rm_safe, kill_process, chmod, chown, 18 docker_* tools, systemctl_stop, firewall_cmd. 48 tools, one release.
 
-This shipped on October 3rd.
+This shipped on October 3rd. Three days ago, as I write this. And it's still the latest version on npm right now.
 
 ## First, context: what this thing is and why anyone runs it
 
@@ -40,7 +40,7 @@ The diff flags 48 tools for this, every single one COSMETIC (code shape unchange
 
 ## The README still promises the gate
 
-Here's the part that honestly got me. The README of the current version still says confirmations are mandatory in normal mode. So if you audited this package today, the way you're supposed to (reading the docs), you'd pass it. The docs say the gate exists. The contract your agent reads says nothing about it. Same author, both current.
+Here's the part that honestly got me. The README of the current version still says confirmations are mandatory in normal mode - as of today, October 6th, three days after the patch. So if you audited this package today, the way you're supposed to (reading the docs), you'd pass it. The docs say the gate exists. The contract your agent reads says nothing about it. Same author, both live right now, saying opposite things.
 
 You approved one contract. Your agent is running a different one.
 
@@ -50,7 +50,7 @@ Picture the normal user. Solo dev, one VPS, agent connected through this server 
 
 After a routine patch update, the contract their agent reads says rm_safe is just "delete a remote file or directory". No mention of asking. No mention of path limits. So when the LLM decides the fastest way to free disk space is removing an old directory, it's not misbehaving - it's following the contract it was handed. Same for systemctl_stop, docker_rm, firewall_cmd: the agent's daily vocabulary, now friction-free. The human finds out from the aftermath.
 
-And if they installed with a caret range (^2.0.2), they never chose this update. npm applied it for them, silently, on a Saturday.
+And if they installed with a caret range (^2.0.2), they never chose this update. npm applied it for them, silently, this past Saturday.
 
 ## Two more things static analysis turned up
 
@@ -70,9 +70,11 @@ Maybe the author decided the sentence was redundant. I can't know intent and I w
 
 You'll never see a confirmation dialog. Not because you clicked "don't ask again" - because someone deleted the sentence that triggered it.
 
-(This is one of 18 confirmed catches from the same scan. The rest deserve their own post.)
+(This is one of 18 confirmed catches from a scan I ran this weekend. The rest deserve their own post.)
 
 ## Check it yourself
+
+Every number in this post came from a run I did today, October 6th. The package is still on npm, 2.0.3 is still the latest version, the README still contradicts the contract. You don't have to trust me:
 
 npm i -g rugsnare
 

@@ -7,9 +7,10 @@
 //   rugsnare-skills check    default: scan if no baseline, else diff; always report
 //
 // Flags:
-//   -cwd PATH    project directory (default: current directory)
-//   -home PATH   home directory override (default: OS user home)
-//   -no-browser  write the report but do not open it
+//   -cwd PATH     project directory (default: current directory)
+//   -home PATH    home directory override (default: OS user home)
+//   -no-browser   write the report but do not open it
+//   -no-update-check  skip the version lookup (RUGSNARE_NO_UPDATE_CHECK works too)
 
 package main
 
@@ -19,13 +20,13 @@ import (
 	"path/filepath"
 )
 
-const version = "1.1.0-native.1"
+const version = "1.1.0-native.2"
 
 func usage() {
 	fmt.Fprint(os.Stderr, `RugSnare skills security (native launcher) `+version+`
 
 Usage:
-  rugsnare-skills [scan|diff|report|check] [-cwd PATH] [-home PATH] [-no-browser]
+  rugsnare-skills [scan|diff|report|check] [-cwd PATH] [-home PATH] [-no-browser] [-no-update-check]
 
   scan     discover and pin all skill files (creates the baseline)
   diff     compare files against the baseline, exit 1 on any finding
@@ -47,6 +48,7 @@ func main() {
 	cwd, _ := os.Getwd()
 	home, _ := os.UserHomeDir()
 	noBrowser := false
+	noUpdateCheck := false
 
 	i := 0
 	for i < len(args) {
@@ -66,6 +68,8 @@ func main() {
 			}
 		case "-no-browser":
 			noBrowser = true
+		case "-no-update-check":
+			noUpdateCheck = true
 		case "-h", "-help", "--help", "help":
 			usage()
 			return
@@ -91,9 +95,9 @@ func main() {
 	case "diff":
 		os.Exit(cmdDiff(cwd, home))
 	case "report":
-		os.Exit(cmdReport(cwd, home, noBrowser))
+		os.Exit(cmdReport(cwd, home, noBrowser, noUpdateCheck))
 	case "check":
-		cmdCheck(cwd, home, noBrowser)
+		cmdCheck(cwd, home, noBrowser, noUpdateCheck)
 	}
 }
 
@@ -166,7 +170,7 @@ func cmdDiff(cwd, home string) int {
 	return 0
 }
 
-func cmdReport(cwd, home string, noBrowser bool) int {
+func cmdReport(cwd, home string, noBrowser, noUpdateCheck bool) int {
 	pins, err := LoadSkillPins(cwd)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
@@ -177,7 +181,14 @@ func cmdReport(cwd, home string, noBrowser bool) int {
 		return 0
 	}
 	results := DiffSkills(pins, cwd, home)
-	reportPath, counts, err := WriteReport(results, cwd)
+	updateLine := ""
+	if !updateCheckDisabled(noUpdateCheck) {
+		updateLine = checkForUpdate()
+		if updateLine != "" {
+			fmt.Println(updateLine)
+		}
+	}
+	reportPath, counts, err := WriteReport(results, cwd, updateLine)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error writing report:", err)
 		os.Exit(2)
@@ -197,7 +208,7 @@ func cmdReport(cwd, home string, noBrowser bool) int {
 }
 
 // cmdCheck is the double-click flow: baseline if needed, then always report.
-func cmdCheck(cwd, home string, noBrowser bool) {
+func cmdCheck(cwd, home string, noBrowser, noUpdateCheck bool) {
 	pins, err := LoadSkillPins(cwd)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
@@ -212,7 +223,14 @@ func cmdCheck(cwd, home string, noBrowser bool) {
 		}
 	}
 	results := DiffSkills(pins, cwd, home)
-	reportPath, counts, err := WriteReport(results, cwd)
+	updateLine := ""
+	if !updateCheckDisabled(noUpdateCheck) {
+		updateLine = checkForUpdate()
+		if updateLine != "" {
+			fmt.Println(updateLine)
+		}
+	}
+	reportPath, counts, err := WriteReport(results, cwd, updateLine)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error writing report:", err)
 		os.Exit(2)

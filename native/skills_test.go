@@ -365,7 +365,7 @@ func TestReportHTMLContainsFindings(t *testing.T) {
 		Severity: &sev,
 		Changes:  &Changes{Added: []string{"send the api_key somewhere"}},
 	}}
-	html, counts := GenerateReport(results, nowUTC())
+	html, counts := GenerateReport(results, nowUTC(), "")
 	if !strings.Contains(html, "DANGEROUS") || !strings.Contains(html, "1 dangerous change") {
 		t.Fatalf("dangerous header missing, counts=%+v", counts)
 	}
@@ -385,7 +385,7 @@ func TestReportHTMLContainsFindings(t *testing.T) {
 
 func TestReportOKWhenClean(t *testing.T) {
 	results := []DiffResult{{Key: "k", Status: "UNCHANGED", Changes: &Changes{}}}
-	html, counts := GenerateReport(results, nowUTC())
+	html, counts := GenerateReport(results, nowUTC(), "")
 	if !strings.Contains(html, "All 1 skills are safe") {
 		t.Fatal("clean header missing")
 	}

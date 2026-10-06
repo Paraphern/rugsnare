@@ -75,7 +75,7 @@
     <span><b>Apache-2.0</b></span>
     <span>zero npm dependencies</span>
     <span>no telemetry</span>
-    <span><b>263 tests</b></span>
+    <span><b>269 tests</b></span>
     <span><b>on-chain verified</b> (Base Mainnet)</span>
   </div>
 </div>
@@ -104,14 +104,14 @@
         <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
-          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx rugsnare diff --config .mcp.json</span>
+          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.1.0 diff --config .mcp.json</span>
 <span class="l f">github  (npx -y @modelcontextprotocol/server-github)</span>
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
 <span class="l f">rugsnare diff: clean</span>
 <span class="l f cmt"># exit 0 — but if anything changed after approval:</span>
 <span class="l f cmt"># [DRIFT] search_code (BREAKING) → exit 1, build fails</span></pre>
-          <p>One line in CI. Any tool contract that changed since your last review fails the build. BREAKING vs COSMETIC split, SARIF output for code scanning.</p>
+          <p>One line in CI. Any tool contract that changed since your last review fails the build. BREAKING vs COSMETIC split, SARIF output for code scanning. Pin the version — rugsnare's own floating-version check flags unpinned <code>npx</code> launches, so CI examples pin it too; <code>rugsnare doctor --check-update</code> tells you when a newer release exists.</p>
         </div>
       </div>
       <div class="flow-row">

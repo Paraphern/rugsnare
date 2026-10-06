@@ -8,6 +8,19 @@
   Severity classification (DANGEROUS/REVIEW/SAFE) based on content analysis
   of changed lines. HTML report with plain-language was/became diffs and
   actionable recommendations - designed for non-technical users.
+- **Native launcher** (new): a single Go binary (`native/`) with the whole
+  skills-security half — no Node.js, no npm, double-click and get the HTML
+  report in your browser. Reads/writes the same `.rugsnare/pins.json`
+  `skills` subtree as this CLI (verified interop both directions); the
+  `servers` subtree passes through untouched. Windows/macOS/Linux, ~7 MB.
+- **No silent updates, applied to ourselves**: `rugsnare version` prints the
+  running version; `rugsnare doctor --check-update` compares it against the
+  npm registry (opt-in, one GET, nothing sent) and links the changelog —
+  plain `doctor` stays fully offline. CI examples now pin the version — an
+  unpinned `npx rugsnare` floats to latest on every launch, the exact vector
+  our own floating-version check flags in MCP configs. The native launcher
+  checks `rugsnare.com/latest-native.txt` before writing a report
+  (opt-out: `-no-update-check`).
 - **Undeclared tool detection** (new): the live proxy catches tools called by
   the agent that were never listed in tools/list (progressive-discovery servers).
   Blocked in enforce, one-time advisory in observe.

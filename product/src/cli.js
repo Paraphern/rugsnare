@@ -57,7 +57,9 @@ Usage:
                                                          the real value to the server and scrubs it from results
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
   rugsnare report [--live] [--json]   fleet inventory (never exits 1)
+  rugsnare version                   print the running version (doctor compares it to npm)
   rugsnare doctor                    self-diagnosis: configs, pins, approvals, receipts chain
+                                                         --check-update: also compare your version against npm (one GET)
   rugsnare events [count]            event log size (append-only; local)
   rugsnare events trim --keep-last <n>   shrink the log (receipts stay intact)
   rugsnare config [list] | get <k> | set <k> <v>   validated edits to .rugsnare/config.json
@@ -112,6 +114,7 @@ function parseArgs(argv) {
     else if (a === '--keep-last') flags.keepLast = parseInt(argv[++i], 10);
     else if (a === '--input') flags.input = argv[++i];
     else if (a === '--airgap') flags.airgap = true;
+    else if (a === '--check-update') flags.checkUpdate = true;
     else if (a === '--allow-unsigned-pins') flags.allowUnsignedPins = true;
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else if (a === '--schema-only') flags.schemaOnly = true;
@@ -1174,13 +1177,36 @@ async function cmdReport(flags) {
  * corpus. Informational by design; exit 2 only when the setup itself is broken
  * (unusable environment, unreadable pin store, broken receipts chain).
  */
-async function cmdDoctor() {
+async function cmdDoctor(flags) {
   const problems = [];
   const warn = (m) => console.log(`  [warn] ${m}`);
 
   console.log(`node ${process.versions.node} (${process.platform})`);
   const [major] = process.versions.node.split('.').map(Number);
   if (major < 18) problems.push(`node >= 18 required, running ${process.versions.node}`);
+
+  // version section: the "no silent updates" promise, applied to ourselves.
+  // Offline by default (doctor must never depend on the network); the registry
+  // comparison is one user-initiated GET via --check-update, nothing is sent.
+  const { getVersion, fetchLatestVersion, compareVersions } = await import('./version.js');
+  const current = getVersion();
+  if (flags?.checkUpdate) {
+    const latest = await fetchLatestVersion({ timeoutMs: 5000 });
+    if (latest === null) {
+      console.log(`\nversion: ${current} (registry unreachable — try again later)`);
+    } else if (compareVersions(current, latest) < 0) {
+      console.log(`\nversion: ${current}`);
+      warn(`newer release on npm: ${latest} — npx without a pin floats to latest every launch;`);
+      warn(`  review the changelog, then pin: npx --yes rugsnare@${latest}`);
+      console.log(`  changelog: https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md`);
+    } else if (compareVersions(current, latest) > 0) {
+      console.log(`\nversion: ${current} (ahead of npm's ${latest} — local/dev build)`);
+    } else {
+      console.log(`\nversion: ${current} (up to date)`);
+    }
+  } else {
+    console.log(`\nversion: ${current} (run \`rugsnare doctor --check-update\` to compare against npm)`);
+  }
 
   const configs = discoverConfigs().filter((c) => c.servers && Object.keys(c.servers).length > 0);
   console.log(`\nconfigs: ${configs.length} source(s) with servers`);
@@ -1618,7 +1644,14 @@ async function main() {
     }
     case 'report': return cmdReport(flags);
     case 'skills': return cmdSkills(flags);
-    case 'doctor': return cmdDoctor();
+    case 'version':
+    case '--version':
+    case '-v': {
+      const { getVersion } = await import('./version.js');
+      console.log(`rugsnare ${getVersion()}`);
+      return;
+    }
+    case 'doctor': return cmdDoctor(flags);
     case 'events': return cmdEvents(flags);
     case 'config': return cmdConfig(flags);
     case 'hook': return cmdHook(flags);
