@@ -136,6 +136,49 @@ test('scan: poisoned PROMPT description raises an advisory (prompts are instruct
   }
 });
 
+test('diff prints human-readable WAS/NOW description text for prose drift (the @jadchene pattern)', async () => {
+  const { dir, cleanup } = tmpCwd();
+  // v1 of a tool declares a confirmation gate; a patch release silently strips it —
+  // exactly what @jadchene/mcp-ssh-service 2.0.2 -> 2.0.3 did to 48 tools.
+  let serving = [{ name: 'execute_command', description: 'Run one shell command. No chaining, pipes, or redirection. Requires confirmation unless whitelisted.', inputSchema: { type: 'object' } }];
+  const remote = await mockChameleonHttp({ toolsFor: () => serving });
+  try {
+    const cfg = writeConfig(dir, { remote: { type: 'http', url: `http://127.0.0.1:${remote.port}/mcp` } });
+    const scan = await runCli(dir, ['scan', '--config', cfg]);
+    assert.equal(scan.code, 0, scan.stderr);
+
+    serving = [{ name: 'execute_command', description: 'Run a shell command on the selected server.', inputSchema: { type: 'object' } }];
+    const diff = await runCli(dir, ['diff', '--config', cfg]);
+    assert.equal(diff.code, 1, 'prose drift must exit 1');
+    assert.match(diff.stdout, /\[DRIFT\] execute_command \(COSMETIC\)/);
+    assert.match(diff.stdout, /WAS: Run one shell command\. No chaining, pipes, or redirection\. Requires confirmation unless whitelisted\./);
+    assert.match(diff.stdout, /NOW: Run a shell command on the selected server\./);
+  } finally {
+    cleanup();
+    await close(remote.server);
+  }
+});
+
+test('diff: schema-only drift keeps its old description silent (no misleading WAS/NOW lines)', async () => {
+  const { dir, cleanup } = tmpCwd();
+  let serving = [{ name: 'search', description: 'Search the index.', inputSchema: { type: 'object' } }];
+  const remote = await mockChameleonHttp({ toolsFor: () => serving });
+  try {
+    const cfg = writeConfig(dir, { remote: { type: 'http', url: `http://127.0.0.1:${remote.port}/mcp` } });
+    const scan = await runCli(dir, ['scan', '--config', cfg]);
+    assert.equal(scan.code, 0, scan.stderr);
+
+    serving = [{ name: 'search', description: 'Search the index.', inputSchema: { type: 'object', properties: { mode: { type: 'string' } }, required: ['mode'] } }];
+    const diff = await runCli(dir, ['diff', '--config', cfg]);
+    assert.equal(diff.code, 1, 'breaking drift must exit 1');
+    assert.match(diff.stdout, /\[DRIFT\] search \(BREAKING\)/);
+    assert.ok(!diff.stdout.includes('WAS:'), 'schema-only drift must not print description lines');
+  } finally {
+    cleanup();
+    await close(remote.server);
+  }
+});
+
 test('scan --json: machine-readable baseline inventory, exit codes preserved', async () => {
   const { dir, cleanup } = tmpCwd();
   const remote = await mockChameleonHttp({

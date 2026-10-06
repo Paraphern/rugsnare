@@ -11,6 +11,8 @@ flights-search  (node ./server.js)
   [DRIFT] search_flights 8c5ab922df5932ba -> fcc6d291d8ef4ab2  (BREAKING: added required parameter 'mode')
   [NEW ] _search_flights_pro 589ef74a38bb8d07
   [DRIFT] get_booking 189261ab4cc7f0b6 -> 12da36af80ac39e5  (COSMETIC: description edited)
+      WAS: Get booking details. Requires confirmation for paid bookings.
+      NOW: Get booking details.
 rugsnare diff: DRIFT DETECTED (3 finding(s))   # exit 1 — CI fails
 ```
 
@@ -164,7 +166,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 261 tests, `node --test` only.
+- 263 tests, `node --test` only.
 
 ## Exit codes
 

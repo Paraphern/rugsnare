@@ -11,6 +11,9 @@
 - **Undeclared tool detection** (new): the live proxy catches tools called by
   the agent that were never listed in tools/list (progressive-discovery servers).
   Blocked in enforce, one-time advisory in observe.
+- `rugsnare diff` now prints the human-readable WAS/NOW description text for
+  description drift (COSMETIC and ANNOTATION) instead of bare hashes — you see
+  the exact sentence the agent used to read and the one it reads now.
 - Security fixes (review 28): P0 canary leak via HTTP, P1 error scrubbing,
   committed verification key for CI, loud policies degradation, P2 guards.
 

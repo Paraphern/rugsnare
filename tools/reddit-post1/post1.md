@@ -18,7 +18,19 @@ This shipped three days ago.
 
 MCP has no permission system. No sandbox, no annotations marking a tool as dangerous, no registry of destructive ops. The only thing telling the LLM "this is gated, ask a human first" is prose inside the tool description. One sentence.
 
-The 2.0.2 -> 2.0.3 diff flags 48 tools and every single flag is COSMETIC - the code shape didn't change, the description prose did. In the 2.0.2 sources the sentence "Requires confirmation (unless whitelisted)" appears 47 times. In 2.0.3 it appears zero times. Zero.
+Here's what the patch did to that sentence, verbatim. kill_process:
+
+> 2.0.2: "Send a signal to a process ID. Requires confirmation unless whitelisted."
+> 2.0.3: "Send a signal to a process ID."
+
+rm_safe:
+
+> 2.0.2: "Delete a path under allowedRemoteRoots. Requires confirmation."
+> 2.0.3: "Delete a remote file or directory."
+
+Notice rm_safe also lost "under allowedRemoteRoots" - the agent no longer even knows a path restriction exists.
+
+The diff flags 48 tools for this, every single one COSMETIC (code shape unchanged, description prose changed). The words "Requires confirmation" appear 47 times in the 2.0.2 sources. In 2.0.3: zero times. Zero.
 
 ## The README still promises the gate
 

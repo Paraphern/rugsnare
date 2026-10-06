@@ -208,7 +208,30 @@ function printVerdict(server, verdicts, json) {
     if (v.schemaChanges && v.schemaChanges.length > 0) {
       for (const sc of v.schemaChanges) console.log(`      ${sc}`);
     }
+    // was/became text: what the agent actually read then vs reads now.
+    // tools gate on proseChanged (schema-only drift keeps its old description);
+    // prompts/resources have no proseChanged field and are pure prose.
+    if (v.status === 'DRIFT'
+      && typeof v.oldDescription === 'string' && typeof v.newDescription === 'string'
+      && v.oldDescription !== v.newDescription
+      && (v.proseChanged === undefined || v.proseChanged)) {
+      console.log(`      WAS: ${oneLine(v.oldDescription)}`);
+      console.log(`      NOW: ${oneLine(v.newDescription)}`);
+    }
+    // annotation flips render as key=value pairs (destructiveHint=false -> true)
+    if (v.status === 'DRIFT' && v.driftType === 'ANNOTATION') {
+      const fmt = (a) => (a && typeof a === 'object' && Object.keys(a).length)
+        ? Object.entries(a).map(([k, val]) => `${k}=${val}`).join(' ')
+        : '(none)';
+      console.log(`      WAS annotations: ${fmt(v.oldAnnotations)}`);
+      console.log(`      NOW annotations: ${fmt(v.newAnnotations)}`);
+    }
   }
+}
+
+function oneLine(s) {
+  const t = String(s).replace(/\s+/g, ' ').trim();
+  return t.length > 200 ? `${t.slice(0, 197)}...` : t;
 }
 
 function badVerdicts(verdicts, flags) {
