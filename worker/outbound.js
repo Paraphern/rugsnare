@@ -7,7 +7,8 @@
 import { packageSlug } from './history-core.js';
 
 const GH_DISPATCH_URL = 'https://api.github.com/repos/Paraphern/rugsnare/dispatches';
-const GH_RAW_RESULTS = 'https://raw.githubusercontent.com/Paraphern/rugsnare/main/scans/history/';
+// results live on the dedicated `scans` branch (the bot never touches main)
+const GH_RAW_RESULTS = 'https://raw.githubusercontent.com/Paraphern/rugsnare/scans/history/';
 const OUTBOUND_HOSTS = new Set(['api.github.com', 'raw.githubusercontent.com', 'registry.npmjs.org']);
 const NAME_RE = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
 

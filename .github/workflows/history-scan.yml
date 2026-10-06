@@ -52,7 +52,17 @@ jobs:
           SLUG: ${{ github.event.client_payload.slug }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          mkdir -p scans/history
+          # results live on a dedicated `scans` branch: the bot never commits
+          # to main, so it can never reject the maintainer's pushes
+          git config user.name "rugsnare-bot"
+          git config user.email "releases@rugsnare.com"
+          git fetch origin scans || true
+          if git rev-parse --verify origin/scans >/dev/null 2>&1; then
+            git checkout -B scans origin/scans
+          else
+            git checkout -B scans
+          fi
+          mkdir -p history
           node -e '
             const fs = require("node:fs");
             const scan = JSON.parse(fs.readFileSync("/tmp/scan.json", "utf8"));
@@ -64,11 +74,9 @@ jobs:
               result: scan,
             };
             const slug = (process.env.SLUG || process.env.PKG).toLowerCase().replace(/^@/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-            fs.writeFileSync(`scans/history/${slug}.json`, JSON.stringify(out, null, 2) + "\n");
-            console.log(`wrote scans/history/${slug}.json`);
+            fs.writeFileSync(`history/${slug}.json`, JSON.stringify(out, null, 2) + "\n");
+            console.log(`wrote history/${slug}.json`);
           '
-          git config user.name "rugsnare-bot"
-          git config user.email "releases@rugsnare.com"
-          git add scans/history
+          git add history
           git commit -m "scan(history): ${PKG} [skip ci]" || echo "nothing to commit"
-          git push
+          git push -u origin scans
