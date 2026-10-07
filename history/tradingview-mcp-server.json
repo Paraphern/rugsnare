@@ -1,0 +1,217 @@
+{
+  "package": "tradingview-mcp-server",
+  "ts": "2026-10-07T11:27:47.990Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37614054236",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "package": "tradingview-mcp-server",
+    "checked": 10,
+    "planned": 10,
+    "unreachable": [],
+    "pairs": [
+      {
+        "from": "0.1.2",
+        "to": "0.1.3",
+        "toPublishedAt": "2025-10-26T20:21:57.090Z",
+        "findings": []
+      },
+      {
+        "from": "0.1.3",
+        "to": "0.2.0",
+        "toPublishedAt": "2025-10-28T22:20:49.488Z",
+        "findings": [
+          {
+            "tool": "screen_forex",
+            "status": "NEW"
+          },
+          {
+            "tool": "screen_crypto",
+            "status": "NEW"
+          },
+          {
+            "tool": "screen_etf",
+            "status": "NEW"
+          },
+          {
+            "tool": "lookup_symbols",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "0.2.0",
+        "to": "0.2.1",
+        "toPublishedAt": "2025-10-31T21:16:31.320Z",
+        "findings": []
+      },
+      {
+        "from": "0.2.1",
+        "to": "0.3.0",
+        "toPublishedAt": "2025-11-02T13:31:54.426Z",
+        "findings": []
+      },
+      {
+        "from": "0.3.0",
+        "to": "0.4.0",
+        "toPublishedAt": "2026-01-05T23:34:43.889Z",
+        "findings": []
+      },
+      {
+        "from": "0.4.0",
+        "to": "0.5.0",
+        "toPublishedAt": "2026-03-17T23:38:12.989Z",
+        "findings": [
+          {
+            "tool": "screen_stocks",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen stocks based on fundamental and technical criteria. Returns stocks matching the specified filters.",
+            "newDescription": "Screen stocks based on fundamental and technical criteria. Returns stocks matching the specified filters."
+          },
+          {
+            "tool": "list_fields",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List available fields for filtering and display. Use this to discover what fields you can filter and sort by.",
+            "newDescription": "List available fields for filtering and display. Use this to discover what fields you can filter and sort by."
+          },
+          {
+            "tool": "get_preset",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Get a pre-configured screening strategy. Returns filter configuration for common screening strategies like quality stocks, value stocks, etc.",
+            "newDescription": "Get a pre-configured screening strategy. Returns filter configuration for the strategy.\n\nAvailable presets:\n- quality_stocks: High-quality low-volatility stocks (conservative)\n- value_stocks: Undervalued stocks with low P/E and P/B\n- dividend_stocks: High dividend yield with consistent payout\n- momentum_stocks: Strong recent performance and technical momentum\n- growth_stocks: High-growth companies with expanding revenue/earnings\n- quality_growth_screener: Comprehensive quality+growth screen with technical filters\n- market_indexes: Global market indexes for regime analysis (use lookup_symbols)"
+          },
+          {
+            "tool": "list_presets",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "List all available preset screening strategies",
+            "newDescription": "List all available preset screening strategies. Returns key, name, and description for each preset. Use the key with get_preset."
+          },
+          {
+            "tool": "screen_forex",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen forex pairs based on technical criteria. Returns forex pairs matching the specified filters.",
+            "newDescription": "Screen forex pairs based on technical criteria. Returns forex pairs matching the specified filters."
+          },
+          {
+            "tool": "screen_crypto",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen cryptocurrencies based on technical and market criteria. Returns cryptocurrencies matching the specified filters.",
+            "newDescription": "Screen cryptocurrencies based on technical and market criteria. Returns cryptocurrencies matching the specified filters."
+          },
+          {
+            "tool": "screen_etf",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen ETFs (Exchange-Traded Funds) based on performance and technical criteria. Returns ETFs matching the specified filters.",
+            "newDescription": "Screen ETFs (Exchange-Traded Funds) based on performance and technical criteria. Returns ETFs matching the specified filters."
+          },
+          {
+            "tool": "lookup_symbols",
+            "status": "DRIFT",
+            "driftType": "ANNOTATION",
+            "oldDescription": "Look up specific symbols (stocks, indexes, ETFs) by ticker. Use this for direct symbol lookup including market indexes like TVC:SPX, TVC:DJI, OMXSTO:OMXS30 that cannot be found via screening. Returns comprehensive data including ATH, 52-week highs/lows.",
+            "newDescription": "Look up specific symbols (stocks, indexes, ETFs) by ticker. Use this for direct symbol lookup including market indexes like TVC:SPX, TVC:DJI, OMXSTO:OMXS30 that cannot be found via screening. Returns comprehensive data including ATH, 52-week highs/lows."
+          }
+        ]
+      },
+      {
+        "from": "0.5.0",
+        "to": "0.6.1",
+        "toPublishedAt": "2026-03-28T00:06:33.383Z",
+        "findings": []
+      },
+      {
+        "from": "0.6.1",
+        "to": "0.7.0",
+        "toPublishedAt": "2026-08-16T20:29:09.235Z",
+        "findings": [
+          {
+            "tool": "screen_stocks",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen stocks based on fundamental and technical criteria. Returns stocks matching the specified filters.",
+            "newDescription": "Screen stocks based on fundamental and technical criteria. Returns stocks matching the specified filters."
+          },
+          {
+            "tool": "list_fields",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List available fields for filtering and display. Use this to discover what fields you can filter and sort by.",
+            "newDescription": "List available fields for filtering and display. Use this to discover what fields you can filter and sort by."
+          },
+          {
+            "tool": "get_preset",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Get a pre-configured screening strategy. Returns filter configuration for the strategy.\n\nAvailable presets:\n- quality_stocks: High-quality low-volatility stocks (conservative)\n- value_stocks: Undervalued stocks with low P/E and P/B\n- dividend_stocks: High dividend yield with consistent payout\n- momentum_stocks: Strong recent performance and technical momentum\n- growth_stocks: High-growth companies with expanding revenue/earnings\n- quality_growth_screener: Comprehensive quality+growth screen with technical filters\n- market_indexes: Global market indexes for regime analysis (use lookup_symbols)",
+            "newDescription": "Get a pre-configured screening strategy. Returns filter configuration for the strategy.\n\nAvailable presets:\n- quality_stocks: High-quality low-volatility stocks (conservative)\n- value_stocks: Undervalued stocks with low P/E and P/B\n- dividend_stocks: High dividend yield with consistent payout\n- momentum_stocks: Strong recent performance and technical momentum\n- growth_stocks: High-growth companies with expanding revenue/earnings\n- quality_growth_screener: Comprehensive quality+growth screen with technical filters\n- market_indexes: Global market indexes for regime analysis (use lookup_symbols)"
+          },
+          {
+            "tool": "list_presets",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "List all available preset screening strategies. Returns key, name, and description for each preset. Use the key with get_preset.",
+            "newDescription": "List all available preset screening strategies. Returns key, name, and description for each preset. Use the key with get_preset."
+          },
+          {
+            "tool": "screen_forex",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen forex pairs based on technical criteria. Returns forex pairs matching the specified filters.",
+            "newDescription": "Screen forex pairs based on technical criteria. Returns forex pairs matching the specified filters."
+          },
+          {
+            "tool": "screen_crypto",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen cryptocurrencies based on technical and market criteria. Returns cryptocurrencies matching the specified filters.",
+            "newDescription": "Screen cryptocurrencies based on technical and market criteria. Returns cryptocurrencies matching the specified filters."
+          },
+          {
+            "tool": "screen_etf",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Screen ETFs (Exchange-Traded Funds) based on performance and technical criteria. Returns ETFs matching the specified filters.",
+            "newDescription": "Screen ETFs (Exchange-Traded Funds) based on performance and technical criteria. Returns ETFs matching the specified filters."
+          },
+          {
+            "tool": "lookup_symbols",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Look up specific symbols (stocks, indexes, ETFs) by ticker. Use this for direct symbol lookup including market indexes like TVC:SPX, TVC:DJI, OMXSTO:OMXS30 that cannot be found via screening. Returns comprehensive data including ATH, 52-week highs/lows.",
+            "newDescription": "Look up specific symbols (stocks, indexes, ETFs) by ticker. Use this for direct symbol lookup including market indexes like TVC:SPX, TVC:DJI, OMXSTO:OMXS30 that cannot be found via screening. Returns comprehensive data including ATH, 52-week highs/lows."
+          },
+          {
+            "tool": "search_symbols",
+            "status": "NEW"
+          },
+          {
+            "tool": "get_market_metainfo",
+            "status": "NEW"
+          },
+          {
+            "tool": "get_ta_summary",
+            "status": "NEW"
+          },
+          {
+            "tool": "rank_by_ta",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "0.7.0",
+        "to": "0.7.1",
+        "toPublishedAt": "2026-08-21T21:15:10.303Z",
+        "findings": []
+      }
+    ],
+    "silentChanges": 24,
+    "clean": false
+  }
+}
