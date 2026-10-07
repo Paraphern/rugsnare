@@ -36,7 +36,7 @@ test('fetchLatestVersion: parses registry response (injectable URL)', async () =
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   try {
-    const v = await fetchLatestVersion({ registry: `http://127.0.0.1:${server.address().port}/latest` });
+    const v = await fetchLatestVersion({ registry: `http://127.0.0.1:${server.address().port}/latest`, timeoutMs: 15000 });
     assert.equal(v, '9.9.9');
   } finally {
     await new Promise((resolve) => server.close(resolve));
