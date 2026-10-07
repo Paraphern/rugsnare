@@ -1034,6 +1034,10 @@ async function cmdHistory(flags) {
     }
     console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${result.clean ? '— CLEAN' : '— SILENT CHANGES FOUND'}`);
   }
+  if (result.checked === 0) {
+    console.error(`history: no version of ${result.package} could be scanned — "no data" is not "no changes" (exit 2)`);
+    process.exit(2);
+  }
   process.exit(result.clean ? 0 : 1);
 }
 

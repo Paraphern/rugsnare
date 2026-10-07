@@ -4,8 +4,13 @@ name: history-scan
 # website's "Runtime scan" button via repository_dispatch (worker holds a
 # fine-grained token, Contents:RW, repo-only). Runs `rugsnare history` on
 # every published version of the requested package and commits the result
-# to scans/history/<slug>.json — the site polls that file, and the Actions
-# log is the public evidence the scan really ran.
+# to the `scans` BRANCH at history/<slug>.json — the site polls that file,
+# and the Actions log is the public evidence the scan really ran.
+#
+# Architecture (review 34): the job that EXECUTES foreign code (the scanned
+# package) never holds push credentials — checkout runs with
+# persist-credentials:false and no token is mapped into its environment.
+# Publishing is a separate job that runs no foreign code.
 
 on:
   repository_dispatch:
@@ -25,6 +30,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -34,7 +41,6 @@ jobs:
         env:
           # env-var indirection: never interpolate the payload into a shell
           PKG: ${{ github.event.client_payload.package }}
-          SLUG: ${{ github.event.client_payload.slug }}
         run: |
           node product/src/cli.js version
           set +e
@@ -46,21 +52,41 @@ jobs:
             echo '{"error": "scan failed (exit '"$code"') - see the Actions log", "package": "'"$PKG"'"}' > /tmp/scan.json
           fi
 
-      - name: Publish result
-        env:
-          PKG: ${{ github.event.client_payload.package }}
-          SLUG: ${{ github.event.client_payload.slug }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - name: Upload scan result (no git credentials in this job)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-json
+          path: /tmp/scan.json
+          retention-days: 7
+
+  publish:
+    needs: scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PKG: ${{ github.event.client_payload.package }}
+      SLUG: ${{ github.event.client_payload.slug }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Download scan result
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-json
+          path: /tmp
+
+      - name: Publish to the scans branch
         run: |
-          # results live on a dedicated `scans` branch: the bot never commits
-          # to main, so it can never reject the maintainer's pushes
           git config user.name "rugsnare-bot"
           git config user.email "releases@rugsnare.com"
-          git fetch origin scans || true
-          if git rev-parse --verify origin/scans >/dev/null 2>&1; then
-            git checkout -B scans origin/scans
+          # shallow-fetch only the scans branch (no working tree of main)
+          git init -q repo
+          cd repo
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/Paraphern/rugsnare.git"
+          if git fetch --depth=1 origin scans; then
+            git checkout -q -B scans FETCH_HEAD
           else
-            git checkout -B scans
+            git checkout -q --orphan scans
+            git rm -rq --ignore-unmatch . 2>/dev/null || true
           fi
           mkdir -p history
           node -e '
@@ -80,3 +106,5 @@ jobs:
           git add history
           git commit -m "scan(history): ${PKG} [skip ci]" || echo "nothing to commit"
           git push -u origin scans
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

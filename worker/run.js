@@ -1,4 +1,5 @@
 ﻿import { dispatchHistoryScan, fetchHistoryResult, cleanPackageName } from './outbound.js';
+import { normalizePackageInput } from './history-core.js';
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 3;
@@ -25,7 +26,8 @@ export async function handleHistoryRun(request, env) {
 
   let body = {};
   try { body = JSON.parse(await request.text()); } catch { body = {}; }
-  const pkg = cleanPackageName(body.package);
+  // users paste what their MCP config says ("npx -y server-name") — normalize first
+  const pkg = cleanPackageName(normalizePackageInput(body.package));
   if (!pkg) return jsonResponse({ error: 'pass a valid npm package name' }, 400);
 
   const ip = request.headers.get('cf-connecting-ip') ?? 'unknown';

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fetchTools } from './rpc.js';
 import { toolHash, schemaHash, proseHash } from './hash.js';
+import { annotationsEqual } from './pins.js';
 import { compareVersions } from './version.js';
 import { extractTgz } from './tarball.js';
 
@@ -24,9 +25,19 @@ import { extractTgz } from './tarball.js';
 
 const REGISTRY = 'https://registry.npmjs.org';
 
-/** Accepts "pkg", "@scope/pkg", full npm URLs; returns the bare name. */
+/** Accepts "pkg", "@scope/pkg", full npm URLs, and raw config lines like
+ *  "npx -y pkg" (runner + flags stripped); returns the bare name. */
 export function parsePackageName(input) {
   let s = String(input).trim();
+  // strip an npx/uvx-style runner and its leading flags: people paste what
+  // their MCP config says, not the bare package name
+  const runners = new Set(['npx', 'npm', 'pnpm', 'yarn', 'bunx', 'bun', 'deno', 'uvx', 'pipx', 'dlx']);
+  const toks = s.split(/\s+/).filter(Boolean);
+  let i = 0;
+  if (toks.length > 1 && runners.has(toks[0].toLowerCase())) i = 1;
+  while (i < toks.length && (toks[i].startsWith('-') || runners.has(toks[i].toLowerCase()))) i++;
+  if (i < toks.length) s = toks[i];
+
   const urlMatch = s.match(/^https?:\/\/(?:www\.)?npmjs\.com\/package\/((?:@[^/?#]+\/)?[^/?#]+)/i);
   if (urlMatch) s = decodeURIComponent(urlMatch[1]);
   const regMatch = s.match(/^https?:\/\/registry\.npmjs\.org\/((?:@[^/?#]+\/)?[^/?#]+)/i);
@@ -58,10 +69,7 @@ export async function fetchRegistryVersions(name, { timeoutMs = 10000 } = {}) {
 
 /** Download + extract one version tarball into dir; returns the package root. */
 async function extractVersion(tarballUrl, dir, { timeoutMs = 30000 } = {}) {
-  const url = new URL(tarballUrl);
-  if (url.hostname !== 'registry.npmjs.org') throw new Error(`refusing non-registry tarball host: ${url.hostname}`);
-  const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
-  if (!res.ok) throw new Error(`tarball fetch ${res.status}`);
+  const res = await fetchValidated(tarballUrl, 'registry.npmjs.org', timeoutMs);
   const files = extractTgz(Buffer.from(await res.arrayBuffer()));
   // npm tarball members already carry the "package/" prefix — extract into
   // the temp dir itself, every member guarded to stay inside it
@@ -77,6 +85,28 @@ async function extractVersion(tarballUrl, dir, { timeoutMs = 30000 } = {}) {
   }
   if (wrote === 0) throw new Error('empty tarball');
   return path.join(root, 'package');
+}
+
+/**
+ * Fetch a tarball following redirects, but re-validating the host after
+ * every hop (review 34): a redirect must never smuggle us off the registry.
+ */
+export async function fetchValidated(url, allowedHost, timeoutMs) {
+  let current = url;
+  for (let hop = 0; hop < 3; hop++) {
+    const u = new URL(current);
+    if (u.hostname !== allowedHost) throw new Error(`refusing non-${allowedHost} host: ${u.hostname}`);
+    const res = await fetch(u, { redirect: 'manual', signal: AbortSignal.timeout(timeoutMs) });
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get('location');
+      if (!loc) throw new Error('redirect without location');
+      current = new URL(loc, u).href;
+      continue;
+    }
+    if (!res.ok) throw new Error(`tarball fetch ${res.status}`);
+    return res;
+  }
+  throw new Error('too many redirects');
 }
 
 /** Resolve the server entry from the extracted package.json bin field. */
@@ -143,7 +173,9 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
 
 /**
  * Diff two consecutive version contracts. Returns findings in the same
- * shape as compareTools: { tool, status, driftType, oldDescription, newDescription }
+ * shape as compareTools: { tool, status, driftType, oldDescription, newDescription }.
+ * Annotation-only flips (e.g. a dropped destructiveHint) are DRIFT/ANNOTATION,
+ * mirroring `rugsnare diff`.
  */
 export function diffVersionContracts(older, newer) {
   const findings = [];
@@ -152,7 +184,21 @@ export function diffVersionContracts(older, newer) {
   for (const [name, pin] of Object.entries(b)) {
     const prev = a[name];
     if (!prev) { findings.push({ tool: name, status: 'NEW' }); continue; }
-    if (prev.hash === pin.hash) continue;
+    if (prev.hash === pin.hash) {
+      // byte-identical text+schema, but behavioral hints may have flipped
+      if (prev.annotations !== undefined || pin.annotations !== undefined) {
+        if (!annotationsEqual(prev.annotations, pin.annotations)) {
+          findings.push({
+            tool: name,
+            status: 'DRIFT',
+            driftType: 'ANNOTATION',
+            oldDescription: prev.description,
+            newDescription: pin.description,
+          });
+        }
+      }
+      continue;
+    }
     const schemaChanged = prev.schemaHash !== pin.schemaHash;
     findings.push({
       tool: name,
@@ -204,6 +250,8 @@ export async function scanHistory(name, { last = 10, timeoutMs = 15000, onProgre
     unreachable,
     pairs,
     silentChanges,
-    clean: silentChanges === 0,
+    // a scan where NOTHING could be started must never read as clean —
+    // "no data" is not "no changes" (review 34)
+    clean: ran.length > 0 && silentChanges === 0,
   };
 }

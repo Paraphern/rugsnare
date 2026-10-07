@@ -12,11 +12,15 @@ import zlib from 'node:zlib';
  */
 
 const MAX_MEMBER = 512 * 1024;
+// decompression-bomb guard: refuse archives that unpack beyond this (review 34)
+const MAX_TOTAL = 64 * 1024 * 1024;
 
 export function extractTgz(buffer) {
   const tar = zlib.gunzipSync(buffer);
+  if (tar.length > MAX_TOTAL) throw new Error('tarball unpacks beyond the size cap');
   const files = [];
   let off = 0;
+  let seen = 0;
   let pendingName = null; // from pax 'x' or GNU 'L' records
 
   while (off + 512 <= tar.length) {
@@ -44,6 +48,8 @@ export function extractTgz(buffer) {
       pendingName = null;
       const keep = Math.min(size, MAX_MEMBER);
       files.push({ path: finalName.replace(/^\.\//, ''), data: tar.subarray(dataStart, dataStart + keep) });
+      seen += keep;
+      if (seen > MAX_TOTAL) throw new Error('tarball unpacks beyond the size cap');
     } else {
       pendingName = null; // dir ('5'), symlink ('2'), etc: skip
     }

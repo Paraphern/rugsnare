@@ -161,6 +161,21 @@ export function validPackageName(s) {
   return /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i.test(s);
 }
 
+/**
+ * People paste what their MCP config says: "npx -y kubectl-mcp-server".
+ * Strip the runner command (npx/uvx/bunx/...) and its leading flags, and
+ * hand back the first non-flag token — a bare (or scoped) package name.
+ */
+export function normalizePackageInput(input) {
+  const runners = new Set(['npx', 'npm', 'pnpm', 'yarn', 'bunx', 'bun', 'deno', 'uvx', 'pipx', 'dlx']);
+  const toks = String(input ?? '').trim().split(/\s+/).filter(Boolean);
+  let i = 0;
+  if (toks.length > 1 && runners.has(toks[0].toLowerCase())) i = 1;
+  while (i < toks.length && (toks[i].startsWith('-') || runners.has(toks[i].toLowerCase()))) i++;
+  const candidate = toks[i];
+  return candidate ?? String(input ?? '').trim();
+}
+
 /** Filesystem-safe slug for a package name: @scope/pkg -> scope-pkg. */
 export function packageSlug(pkg) {
   return String(pkg)
@@ -174,12 +189,14 @@ export function packageSlug(pkg) {
 /**
  * Parse one commit from the `scans` branch into a feed entry.
  * Commit messages follow "scan(history): <package> [skip ci]".
- * Returns null for commits that do not match (e.g. branch creation).
+ * Returns null for commits that do not match (branch creation) AND for
+ * messages whose "package" is not a valid npm name (forged/edited text —
+ * the value is interpolated into the page, so it must be whitelist-shaped).
  */
 export function parseScanCommit(commit) {
   const message = commit?.commit?.message ?? '';
   const m = message.match(/^scan\(history\): (\S+) \[skip ci\]/);
-  if (!m) return null;
+  if (!m || !validPackageName(m[1])) return null;
   return {
     package: m[1],
     ts: commit.commit.committer?.date ?? commit.commit.author?.date ?? null,

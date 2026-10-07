@@ -76,7 +76,7 @@
     <span><b>Apache-2.0</b></span>
     <span>zero npm dependencies</span>
     <span>no telemetry</span>
-    <span><b>285 tests</b></span>
+    <span><b>289 tests</b></span>
     <span><b>on-chain verified</b> (Base Mainnet)</span>
   </div>
 </div>
@@ -370,9 +370,11 @@ function findingsHtml(findings, prefix) {
   return html;
 }
 function findingRow(f) {
-  var html = '<div style="margin-top:6px;font-size:12px"><b>' + esc(f.tool) + '</b> [' + f.status + (f.driftType ? ' ' + f.driftType : '') + ']';
+  var html = '<div style="margin-top:6px;font-size:12px"><b>' + esc(f.tool) + '</b> [' + esc(f.status) + (f.driftType ? ' ' + esc(f.driftType) : '') + ']';
   if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
-    html += '<div style="color:#ef4444">− ' + esc(f.oldDescription) + '</div><div style="color:#22c55e">+ ' + esc(f.newDescription || '') + '</div>';
+    // security-verdict coloring: WAS = the contract you approved (trusted),
+    // NOW = what it silently became (the thing to review)
+    html += '<div style="color:#22c55e">WAS: ' + esc(f.oldDescription) + '</div><div style="color:#ef4444">NOW: ' + esc(f.newDescription || '') + '</div>';
   }
   var c = findingConsequence(f);
   if (c) html += '<div style="margin-top:3px;padding:4px 8px;border-radius:6px;font-size:11.5px;background:' + c.bg + ';color:' + c.fg + '"><b>' + c.icon + '</b> ' + esc(c.text) + '</div>';
@@ -472,6 +474,9 @@ function renderRuntimeResult(res) {
 function runtimeResultHtml(res) {
   var r = res.result || {};
   if (r.error) return card('#fef2f2,#dc2626', 'Scan failed: ' + esc(r.error) + ' — details in the <a href="' + esc(res.runUrl || '#') + '" target="_blank" rel="noopener">run log</a>.');
+  if (!r.checked) {
+    return card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(res.package) + ': 0 of ' + esc(r.planned || '?') + ' version(s) could be started — this server needs specific environment (credentials, config files) to boot, so runtime contracts are unavailable. The instant static scan may still read its published files. "No data" is not "no changes".');
+  }
   var head = (r.silentChanges === 0)
     ? card('#f0fdf4,#10b981', '✅ ' + esc(res.package) + ': ' + r.checked + ' version(s) actually started and listed their tools — no silent contract changes.')
     : card('#fff7ed,#ea580c', '⚠️ ' + esc(res.package) + ': ' + r.silentChanges + ' silent change(s) found across ' + r.checked + ' runtime-checked version(s)');

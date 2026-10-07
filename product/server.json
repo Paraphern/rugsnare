@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Paraphern/rugsnare",
-  "description": "Pin MCP tool contracts, catch silent drift, replay calls before upgrades. Zero deps.",
+  "description": "Pin MCP tool contracts, catch silent drift, scan a package's whole published history. Zero deps.",
   "repository": {
     "url": "https://github.com/Paraphern/rugsnare",
     "source": "github"
   },
-  "version": "0.4.0",
+  "version": "1.1.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "rugsnare",
-      "version": "0.4.0",
+      "version": "1.1.0",
       "transport": {
         "type": "stdio"
       }

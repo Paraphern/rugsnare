@@ -9,13 +9,14 @@
 // from a strict npm-name whitelist. The runtime side (actually starting
 // each version) runs in an ephemeral GitHub Actions runner — never here.
 
-import { parseTar, extractContracts, diffContracts, sortVersions, validPackageName, parseGitHubRepo, semverTag } from './history-core.js';
+import { parseTar, extractContracts, diffContracts, sortVersions, validPackageName, parseGitHubRepo, semverTag, normalizePackageInput } from './history-core.js';
 import { handleHistoryRun, handleHistoryResult } from './run.js';
 import { handleHistoryFeed } from './feed.js';
 
 const REGISTRY_HOST = 'registry.npmjs.org';
 const LAST_N = 5;
 const MAX_TARBALL = 5 * 1024 * 1024;
+const MAX_UNPACKED = 32 * 1024 * 1024; // decompression-bomb guard
 
 export default {
   async fetch(request, env) {
@@ -32,7 +33,8 @@ async function handleHistory(url, request, env) {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return json({ error: 'GET only' }, 405);
   }
-  const raw = (url.searchParams.get('package') ?? url.searchParams.get('repo') ?? '').trim();
+  // users paste what their MCP config says ("npx -y server-name") — normalize
+  const raw = normalizePackageInput(url.searchParams.get('package') ?? url.searchParams.get('repo') ?? '');
   const repo = raw ? parseGitHubRepo(raw) : null;
   if (repo && !validPackageName(raw)) {
     return handleGitHubHistory(repo, env);
@@ -137,6 +139,7 @@ async function contractsOfGitHubTag(repo, tag) {
   const tarBytes = new Uint8Array(
     await new Response(new Response(gz).body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(),
   );
+  if (tarBytes.length > MAX_UNPACKED) throw new Error('source tarball unpacks beyond the size cap');
   // source tarballs are rooted at "<repo>-<tag>/": strip it, keep code files;
   // demo/corpus fixtures are excluded — they define fake tools for tests
   const files = parseTar(tarBytes)
@@ -188,7 +191,15 @@ async function scanHistory(pkg) {
 async function contractsOfTarball(tarballUrl) {
   const u = new URL(tarballUrl);
   if (u.hostname !== REGISTRY_HOST) throw new Error(`refusing non-registry host: ${u.hostname}`);
-  const res = await fetch(u, { redirect: 'follow' });
+  // manual redirects: every hop must stay on the registry (review 34)
+  let res = await fetch(u, { redirect: 'manual' });
+  for (let hop = 0; res.status >= 300 && res.status < 400 && hop < 3; hop++) {
+    const loc = res.headers.get('location');
+    if (!loc) throw new Error('redirect without location');
+    const next = new URL(loc, u);
+    if (next.hostname !== REGISTRY_HOST) throw new Error(`redirect leaves the registry: ${next.hostname}`);
+    res = await fetch(next, { redirect: 'manual' });
+  }
   if (!res.ok) throw new Error(`tarball fetch ${res.status}`);
   const len = Number(res.headers.get('content-length') ?? 0);
   if (len > MAX_TARBALL) throw new Error('tarball too large for the static scan');
@@ -198,6 +209,8 @@ async function contractsOfTarball(tarballUrl) {
   const tarBytes = new Uint8Array(
     await new Response(new Response(gz).body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(),
   );
+  // decompression-bomb guard (review 34)
+  if (tarBytes.length > MAX_UNPACKED) throw new Error('tarball unpacks beyond the size cap');
 
   const files = parseTar(tarBytes).filter((f) => f.path.startsWith('package/'));
   return extractContracts(files);

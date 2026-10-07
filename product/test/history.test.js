@@ -12,6 +12,15 @@ test('parsePackageName: bare, scoped, and URL forms', () => {
   assert.throws(() => parsePackageName('https://evil.example.com/pkg'), /not a valid npm package name/);
 });
 
+test('parsePackageName: accepts raw config lines people paste ("npx -y pkg")', () => {
+  assert.equal(parsePackageName('npx -y kubectl-mcp-server'), 'kubectl-mcp-server');
+  assert.equal(parsePackageName('npx kubectl-mcp-server'), 'kubectl-mcp-server');
+  assert.equal(parsePackageName('npx --yes @scope/server'), '@scope/server');
+  assert.equal(parsePackageName('npx -y --quiet @scope/pkg'), '@scope/pkg'); // boolean flags only
+  // a bare single word is still a bare single word
+  assert.equal(parsePackageName('rugsnare'), 'rugsnare');
+});
+
 test('diffVersionContracts: unchanged, drift, new, removed', () => {
   const older = {
     tools: {
@@ -45,6 +54,26 @@ test('diffVersionContracts: schema change is BREAKING', () => {
   const newer = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x' } } };
   const [f] = diffVersionContracts(older, newer);
   assert.equal(f.driftType, 'BREAKING');
+});
+
+test('diffVersionContracts: annotation-only flip is DRIFT/ANNOTATION (review 34)', () => {
+  const older = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x', annotations: { destructiveHint: false } } } };
+  const newer = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x' } } };
+  const findings = diffVersionContracts(older, newer);
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].status, 'DRIFT');
+  assert.equal(findings[0].driftType, 'ANNOTATION');
+  // identical annotations stay silent
+  const same = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x', annotations: { destructiveHint: false } } } };
+  assert.equal(diffVersionContracts(older, same).length, 0);
+});
+
+test('fetchValidated: a redirect off the registry is refused (review 34)', async () => {
+  const { fetchValidated } = await import('../src/history.js');
+  await assert.rejects(
+    () => fetchValidated('https://evil.example.com/x.tgz', 'registry.npmjs.org', 2000),
+    /refusing non-registry/,
+  );
 });
 
 test('history scan orders versions with the shared semver comparator', () => {

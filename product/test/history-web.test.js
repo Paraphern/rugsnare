@@ -3,7 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit, parseGitHubRepo, semverTag } from '../../worker/history-core.js';
+import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit, parseGitHubRepo, semverTag, normalizePackageInput } from '../../worker/history-core.js';
 
 /** Build a minimal ustar archive from {path, data} entries. */
 function buildTar(entries) {
@@ -122,6 +122,19 @@ test('parseScanCommit: feed entries from scans-branch commits', () => {
   // branch-creation and unrelated commits are skipped
   assert.equal(parseScanCommit({ commit: { message: 'Initial commit' } }), null);
   assert.equal(parseScanCommit(null), null);
+  // forged "package" values in the message are rejected (they render on the page)
+  assert.equal(parseScanCommit({ commit: { message: 'scan(history): <img src=x onerror=1> [skip ci]' } }), null);
+  assert.equal(parseScanCommit({ commit: { message: 'scan(history): ../etc/passwd [skip ci]' } }), null);
+});
+
+test('normalizePackageInput: strips npx-style runners and flags', () => {
+  assert.equal(normalizePackageInput('npx -y kubectl-mcp-server'), 'kubectl-mcp-server');
+  assert.equal(normalizePackageInput('npx @scope/server'), '@scope/server');
+  assert.equal(normalizePackageInput('uvx some-python-tool'), 'some-python-tool');
+  assert.equal(normalizePackageInput('plain-name'), 'plain-name');
+  assert.equal(normalizePackageInput('@scope/pkg'), '@scope/pkg');
+  // nothing usable left after flags — falls back to the original string
+  assert.equal(normalizePackageInput('npx -y'), 'npx -y');
 });
 
 test('parseGitHubRepo: URLs, ssh, .git, and bare owner/repo', () => {
