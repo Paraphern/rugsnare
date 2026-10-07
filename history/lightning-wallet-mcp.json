@@ -1,0 +1,216 @@
+{
+  "package": "lightning-wallet-mcp",
+  "ts": "2026-10-07T11:34:55.097Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37614952884",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "package": "lightning-wallet-mcp",
+    "checked": 10,
+    "planned": 10,
+    "unreachable": [],
+    "pairs": [
+      {
+        "from": "1.4.0",
+        "to": "1.4.1",
+        "toPublishedAt": "2026-06-15T19:22:43.617Z",
+        "findings": [
+          {
+            "tool": "register_operator",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Register a new operator account. Returns API key and recovery code. SAVE THESE - they cannot be retrieved later!",
+            "newDescription": "Register a new operator account. Returns API key and recovery code. SAVE THESE - they cannot be retrieved later! Tip: pass an email to claim the 100 free-sats install promo."
+          },
+          {
+            "tool": "claim_promo",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Claim the free-sats install promo (100 sats, first 100 installs). Requires a verified email (set one with update_operator, then click the emailed link) and an operator account at least 24 hours old. REQUIRES OPERATOR KEY.",
+            "newDescription": "Claim the free-sats install promo (100 sats, first 100 installs). Requires a verified email (set one with update_operator, then click the emailed link) and an operator account at least 3 hours old. REQUIRES OPERATOR KEY."
+          }
+        ]
+      },
+      {
+        "from": "1.4.1",
+        "to": "1.5.0",
+        "toPublishedAt": "2026-06-15T23:19:53.670Z",
+        "findings": []
+      },
+      {
+        "from": "1.5.0",
+        "to": "1.5.1",
+        "toPublishedAt": "2026-07-01T16:12:39.166Z",
+        "findings": []
+      },
+      {
+        "from": "1.5.1",
+        "to": "1.5.2",
+        "toPublishedAt": "2026-07-01T20:21:57.169Z",
+        "findings": [
+          {
+            "tool": "get_transactions",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Get the agent transaction history. Returns both incoming and outgoing payments.",
+            "newDescription": "Get the agent transaction history. Returns both incoming and outgoing payments."
+          }
+        ]
+      },
+      {
+        "from": "1.5.2",
+        "to": "1.5.3",
+        "toPublishedAt": "2026-07-02T15:37:08.995Z",
+        "findings": [
+          {
+            "tool": "get_info",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Get service information including version, status, limits, and supported features.",
+            "newDescription": "Get service information including version, status, limits, and supported features. No API key required — works before registering."
+          },
+          {
+            "tool": "decode_invoice",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Decode a BOLT11 invoice without paying it. Returns amount, description, expiry, and destination.",
+            "newDescription": "Decode a BOLT11 invoice without paying it. Returns amount, description, expiry, and destination. No API key required — works before registering."
+          }
+        ]
+      },
+      {
+        "from": "1.5.3",
+        "to": "1.6.0",
+        "toPublishedAt": "2026-09-11T00:56:09.934Z",
+        "findings": [
+          {
+            "tool": "pay_l402_api",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Make a request to a paid API. Supports L402 (Lightning) and X402 (USDC on Base) protocols. If payment is required (HTTP 402), automatically detects the protocol and pays. L402 is preferred when both are available. REQUIRES AGENT KEY.",
+            "newDescription": "Make a request to a paid API. Supports L402 (Lightning) and X402 (USDC on Base) protocols. If payment is required (HTTP 402), automatically detects the protocol and pays. L402 is preferred when both are available. Works with an operator key (pays from the operator wallet; a default agent is provisioned automatically) or an agent key."
+          },
+          {
+            "tool": "pay_invoice",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Pay a BOLT11 Lightning invoice from the agent balance. Returns preimage as proof of payment. REQUIRES AGENT KEY.",
+            "newDescription": "Pay a BOLT11 Lightning invoice. Returns the preimage as proof of payment. Works with an operator key (pays from the operator wallet; a default agent is provisioned automatically) or an agent key. If the response says pending:true the payment is still in flight: do NOT retry, check get_transactions instead."
+          },
+          {
+            "tool": "forget_credentials",
+            "status": "NEW"
+          },
+          {
+            "tool": "withdraw",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Withdraw funds from operator account to external Lightning invoice. REQUIRES OPERATOR KEY. Subject to security cooldown.",
+            "newDescription": "Withdraw funds from the operator account to an external Lightning invoice (minimum 10 sats; 1% platform fee, none under 100 sats; unused routing reserve refunded). REQUIRES OPERATOR KEY. Subject to a security cooldown after key rotation."
+          },
+          {
+            "tool": "create_withdraw_link",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Create an LNURL-withdraw link for the operator to receive funds. Opens in browser for QR code scanning with any Lightning wallet. Omit amount_sats to sweep full balance. REQUIRES OPERATOR KEY.",
+            "newDescription": "Create an LNURL-withdraw link for the operator to receive funds. Opens in browser for QR code scanning with any Lightning wallet. Omit amount_sats to sweep full balance (minimum 10 sats after fees). REQUIRES OPERATOR KEY."
+          },
+          {
+            "tool": "sweep_agent",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Sweep funds from agent back to operator balance. REQUIRES OPERATOR KEY.",
+            "newDescription": "Sweep funds from agent back to operator balance. REQUIRES OPERATOR KEY."
+          },
+          {
+            "tool": "pay_lightning_address",
+            "status": "DRIFT",
+            "driftType": "COSMETIC",
+            "oldDescription": "Pay to a Lightning address (user@domain.com format). REQUIRES AGENT KEY.",
+            "newDescription": "Pay to a Lightning address (user@domain.com format). Works with an operator key (pays from the operator wallet) or an agent key."
+          }
+        ]
+      },
+      {
+        "from": "1.6.0",
+        "to": "1.6.1",
+        "toPublishedAt": "2026-09-11T02:57:01.860Z",
+        "findings": []
+      },
+      {
+        "from": "1.6.1",
+        "to": "1.7.0",
+        "toPublishedAt": "2026-09-15T21:20:38.884Z",
+        "findings": [
+          {
+            "tool": "arena_list",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_join",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_play",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_entry",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_leaderboard",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_fairness",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_set_client_seed",
+            "status": "NEW"
+          },
+          {
+            "tool": "arena_reveal_seed",
+            "status": "NEW"
+          }
+        ]
+      },
+      {
+        "from": "1.7.0",
+        "to": "1.8.0",
+        "toPublishedAt": "2026-09-22T21:38:27.140Z",
+        "findings": [
+          {
+            "tool": "register_webhook",
+            "status": "DRIFT",
+            "driftType": "BREAKING",
+            "oldDescription": "Register a webhook URL to receive payment notifications. Max 5 webhooks per agent. REQUIRES AGENT KEY.",
+            "newDescription": "Register a webhook URL to receive payment notifications. Max 5 webhooks per agent. REQUIRES AGENT KEY."
+          },
+          {
+            "tool": "prediction_markets",
+            "status": "NEW"
+          },
+          {
+            "tool": "prediction_market",
+            "status": "NEW"
+          },
+          {
+            "tool": "prediction_place_bet",
+            "status": "NEW"
+          },
+          {
+            "tool": "prediction_my_bets",
+            "status": "NEW"
+          },
+          {
+            "tool": "prediction_positions",
+            "status": "NEW"
+          }
+        ]
+      }
+    ],
+    "silentChanges": 26,
+    "clean": false
+  }
+}
