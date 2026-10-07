@@ -180,7 +180,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** — a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue — that's the license working as intended.
-- 293 tests, `node --test` only.
+- 294 tests, `node --test` only.
 
 ## Exit codes
 
