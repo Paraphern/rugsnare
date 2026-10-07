@@ -1,4 +1,4 @@
-# Reddit Post 1 (r/mcp, [Showcase]) - jadchene case (rewritten 2026-10-06)
+# Reddit Post 2 (r/mcp, [Showcase]) - jadchene/mcp-ssh-service: 359 silent changes across its whole history (2026-10-07)
 
 **Title:**
 

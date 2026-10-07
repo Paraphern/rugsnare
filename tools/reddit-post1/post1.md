@@ -1,4 +1,4 @@
-# Reddit Post 1 (r/mcp, [Showcase]) - lightning-wallet-mcp sportsbook case (2026-10-07)
+# Reddit Post 1 (r/mcp, [Showcase]) - lightning-wallet-mcp: the wallet became the bookmaker (2026-10-07)
 
 **Title:**
 
