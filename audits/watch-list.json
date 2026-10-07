@@ -1,0 +1,56 @@
+{
+  "comment": "Weekly drift watch list. 'pinned' is the baseline version whose contract users approved at audit time (2026-10-07). Advance a pin deliberately via PR when you intentionally accept the new contract - the weekly report always shows drift since the recorded baseline.",
+  "servers": [
+    {
+      "name": "chrome-devtools",
+      "package": "chrome-devtools-mcp",
+      "pinned": "1.8.0",
+      "entry": "node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js",
+      "env": {}
+    },
+    {
+      "name": "azure-devops",
+      "package": "@azure-devops/mcp",
+      "pinned": "2.5.0",
+      "entry": "node_modules/@azure-devops/mcp/dist/index.js",
+      "args": ["dummy-org", "--authentication", "envvar"],
+      "env": { "AZURE_DEVOPS_EXT_PAT": "dummy_for_scan" },
+      "note": "newer versions pull native keytar; CI installs libsecret-1-dev and runs npm rebuild keytar"
+    },
+    {
+      "name": "currents",
+      "package": "@currents/mcp",
+      "pinned": "2.3.3",
+      "entry": "node_modules/@currents/mcp/dist/index.mjs",
+      "env": { "CURRENTS_API_KEY": "dummy_for_scan", "CURRENTS_PROJECT_ID": "dummy" }
+    },
+    {
+      "name": "hostinger",
+      "package": "hostinger-api-mcp",
+      "pinned": "2.4.0",
+      "entry": "node_modules/hostinger-api-mcp/src/servers/all.js",
+      "env": { "HOSTINGER_API_KEY": "dummy_for_scan" }
+    },
+    {
+      "name": "notion",
+      "package": "@notionhq/notion-mcp-server",
+      "pinned": "2.4.1",
+      "entry": "node_modules/@notionhq/notion-mcp-server/bin/cli.mjs",
+      "env": { "NOTION_TOKEN": "dummy_for_scan", "OPEN_API_MCP_MODE": "1" }
+    },
+    {
+      "name": "heroku",
+      "package": "@heroku/mcp-server",
+      "pinned": "1.2.5",
+      "entry": "node_modules/@heroku/mcp-server/bin/heroku-mcp-server.mjs",
+      "env": { "HEROKU_API_KEY": "dummy_for_scan" }
+    },
+    {
+      "name": "context7",
+      "package": "@upstash/context7-mcp",
+      "pinned": "4.0.4",
+      "entry": "node_modules/@upstash/context7-mcp/dist/index.js",
+      "env": {}
+    }
+  ]
+}
