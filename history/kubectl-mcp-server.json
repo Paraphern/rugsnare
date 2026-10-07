@@ -1,0 +1,56 @@
+{
+  "package": "kubectl-mcp-server",
+  "ts": "2026-10-07T10:34:10.355Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37608106345",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "package": "kubectl-mcp-server",
+    "checked": 0,
+    "planned": 10,
+    "unreachable": [
+      {
+        "version": "1.18.0",
+        "reason": "MCP server timed out after 15000ms"
+      },
+      {
+        "version": "1.19.0",
+        "reason": "MCP server timed out after 15000ms"
+      },
+      {
+        "version": "1.19.1",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.19.2",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.19.3",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.21.0",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.22.0",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.23.0",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.23.1",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.24.0",
+        "reason": "MCP server exited early (code 1)"
+      }
+    ],
+    "pairs": [],
+    "silentChanges": 0,
+    "clean": true
+  }
+}
