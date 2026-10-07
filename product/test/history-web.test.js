@@ -3,6 +3,8 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import zlib from 'node:zlib';
+import { extractTgz } from '../src/tarball.js';
 import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit, parseGitHubRepo, semverTag, normalizePackageInput } from '../../worker/history-core.js';
 
 /** Build a minimal ustar archive from {path, data} entries. */
@@ -45,6 +47,21 @@ test('parseTar: reads ustar members with sizes and names', () => {
   assert.equal(files[0].path, 'package/package.json');
   assert.equal(dec(files[0].bytes), '{"name":"x"}');
   assert.equal(files[1].path, 'package/dist/index.js');
+});
+
+test('extractTgz: big bundled members are NOT truncated (chrome-devtools-mcp regression)', async () => {
+  // 700KB member — above the old 512KB cap that silently corrupted bundles
+  const big = 'x'.repeat(700 * 1024);
+  const entries = [
+    { path: 'package/package.json', data: '{"name":"x"}' },
+    { path: 'package/build/big-bundle.js', data: big },
+  ];
+  const tar = buildTar(entries);
+  const gz = zlib.gzipSync(Buffer.from(tar));
+  const files = extractTgz(gz);
+  const bundle = files.find((f) => f.path === 'package/build/big-bundle.js');
+  assert.ok(bundle, 'member present');
+  assert.equal(bundle.data.length, big.length, 'member must keep its FULL size');
 });
 
 test('extractContracts: finds name/description pairs in dist bundles', () => {

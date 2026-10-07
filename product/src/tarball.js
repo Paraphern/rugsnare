@@ -11,7 +11,11 @@ import zlib from 'node:zlib';
  * only the first 512 KB per file is kept.
  */
 
-const MAX_MEMBER = 512 * 1024;
+// members must NEVER be truncated here: the CLI extracts to disk and RUNS
+// the code — a cut-off bundle breaks the server (found on chrome-devtools-mcp,
+// whose third_party bundle exceeds the old 512KB cap). Only the TOTAL cap
+// guards against bombs.
+const MAX_MEMBER = 48 * 1024 * 1024;
 // decompression-bomb guard: refuse archives that unpack beyond this (review 34)
 const MAX_TOTAL = 64 * 1024 * 1024;
 
