@@ -104,7 +104,8 @@ jobs:
             console.log(`wrote history/${slug}.json`);
           '
           git add history
-          git commit -m "scan(history): ${PKG} [skip ci]" || echo "nothing to commit"
+          SUMMARY=$(node -e 'const s=JSON.parse(require("node:fs").readFileSync("/tmp/scan.json","utf8"));console.log(((s.result&&s.result.silentChanges)??(s.silentChanges??0))+"c/"+((s.result&&s.result.checked)??(s.checked??0))+"v")' 2>/dev/null || echo "0c/0v")
+          git commit -m "scan(history): ${PKG} [skip ci] — ${SUMMARY}" || echo "nothing to commit"
           git push -u origin scans
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

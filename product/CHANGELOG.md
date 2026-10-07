@@ -7,11 +7,11 @@
   directly, deps installed with --ignore-scripts), actually runs each
   version, takes tools/list, and diffs consecutive versions with the same
   split-hash logic. Prints was/became per drifted tool; exit 1 on silent
-  changes. Plus a free static web version at rugsnare.com/#history
-  (Cloudflare Worker, reads tarballs without executing anything) and a
-  runtime web version: the "Runtime scan" button runs the same CLI in an
-  ephemeral GitHub Actions sandbox and publishes the result with a link
-  to the public run log as evidence.
+  changes, exit 2 when no version could be started. On the web: the
+  Runtime scan button runs the same CLI in an ephemeral GitHub Actions
+  sandbox and publishes the result with a link to the public run log as
+  evidence; every scan lands in the public archive at rugsnare.com/scans
+  (the instant static scan was retired — runtime truth only).
 
 - **Skills Security** (new): `rugsnare skills scan|diff|report` — pin, diff, and
   visually report on AI agent skill files (SKILL.md, .mdc, etc.) across Claude

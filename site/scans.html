@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runtime scan archive — RugSnare</title>
+<meta name="description" content="Every runtime MCP history scan ever run through RugSnare: each result actually started every published version in an ephemeral sandbox and links to its public run log.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+</head>
+<body id="top">
+
+<header class="site-head">
+  <div class="shell nav-row">
+    <a class="brand" href="/"><img src="assets/logo-128.png" alt="RugSnare logo" width="30" height="30"><span>RugSnare</span></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/#start">Quick start</a>
+      <a href="/#history">Runtime scan</a>
+      <a href="https://github.com/Paraphern/rugsnare" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <a class="btn btn-sm" href="https://github.com/Paraphern/rugsnare" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<section style="padding:40px 0 10px">
+  <div class="shell">
+    <div class="sec-head">
+      <h2>Runtime scan archive</h2>
+      <p>Every runtime scan ever run through this site, newest first. Each one downloaded every published version, actually started it in an ephemeral GitHub Actions sandbox, took its real tools/list, and diffed the contracts pair by pair. Every row links to the public run log — the evidence cannot be forged after the fact.</p>
+    </div>
+    <div id="scanArchive" style="max-width:860px">
+      <div style="color:#64748b;font-size:13px">loading the archive...</div>
+    </div>
+    <div style="margin:20px 0">
+      <button id="archMore" class="btn btn-sm" type="button" onclick="loadArchivePage()" style="display:none">Load more</button>
+    </div>
+    <p style="font-size:12px;color:#94a3b8;max-width:860px">Public by design: every scan is a commit in the open <a href="https://github.com/Paraphern/rugsnare/tree/scans" target="_blank" rel="noopener" style="color:#64748b">scans</a> branch of the repository. Nothing here is recorded about visitors — only the scans themselves exist. Run your own from the <a href="/#history" style="color:#64748b">home page</a>.</p>
+  </div>
+</section>
+
+<script src="/history.js"></script>
+<script>
+var archPage = 0;
+var archSeq = 0;
+function loadArchivePage() {
+  archPage++;
+  var btn = document.getElementById('archMore');
+  if (btn) btn.style.display = 'none';
+  fetch('/api/history-archive?page=' + archPage)
+    .then(function (r) { return r.json(); })
+    .then(function (a) {
+      if (a.error) {
+        document.getElementById('scanArchive').innerHTML = card('#fef2f2,#dc2626', 'Archive unavailable: ' + esc(a.error));
+        return;
+      }
+      var host = document.getElementById('scanArchive');
+      if (archPage === 1) host.innerHTML = '';
+      if (!a.entries.length && archPage === 1) {
+        host.innerHTML = card('#eff6ff,#3b82f6', 'No runtime scans yet — <a href="/#history">run the first one</a>.');
+        return;
+      }
+      a.entries.forEach(function (e) {
+        var when = e.ts ? timeAgo(new Date(e.ts)) : '';
+        var rowId = 'arch-' + (++archSeq);
+        var safePkg = esc(e.package).replace(/'/g, '&#39;');
+        var verdict = '';
+        if (e.silentChanges !== undefined) {
+          verdict = (e.silentChanges === 0)
+            ? '<span style="color:#059669;font-size:12px">✅ ' + e.silentChanges + ' changes / ' + e.checked + ' versions</span>'
+            : '<span style="color:#ea580c;font-size:12px;font-weight:600">⚠️ ' + e.silentChanges + ' change(s) / ' + e.checked + ' versions</span>';
+        }
+        var row = document.createElement('div');
+        row.style.cssText = 'padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:13px';
+        row.innerHTML = '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">'
+          + '<span style="font-family:var(--font-mono);cursor:pointer" onclick="toggleArchiveRow(\'' + rowId + '\', \'' + safePkg + '\')"><b>▾</b> ' + esc(e.package) + '</span>'
+          + '<span style="color:#64748b;font-size:12px">' + verdict
+          + (verdict ? ' · ' : '') + esc(when)
+          + ' · <a href="#" onclick="toggleArchiveRow(\'' + rowId + '\', \'' + safePkg + '\');return false;" style="color:#2563eb">details</a>'
+          + (e.commitUrl ? ' · <a href="' + esc(e.commitUrl) + '" target="_blank" rel="noopener" style="color:#64748b">log</a>' : '')
+          + '</span></div>'
+          + '<div id="' + rowId + '" style="display:none;margin-top:8px"></div>';
+        host.appendChild(row);
+      });
+      if (a.hasMore && btn) btn.style.display = 'inline-block';
+    })
+    .catch(function (e) {
+      document.getElementById('scanArchive').innerHTML = card('#fef2f2,#dc2626', 'Archive load failed: ' + esc(String(e)));
+    });
+}
+loadArchivePage();
+</script>
+
+</body>
+</html>

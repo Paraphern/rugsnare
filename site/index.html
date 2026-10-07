@@ -171,20 +171,18 @@
 <section id="history">
   <div class="shell">
     <div class="sec-head">
-      <h2>Has this MCP server ever rug-pulled? Check its whole history.</h2>
-      <p>Paste an npm package name. We download its published tarballs and diff every tool contract between versions — without running any code. See what changed, when, and what the description used to say.</p>
+      <h2>Has this MCP server ever rug-pulled? Run its whole history.</h2>
+      <p>Paste an npm package name (an npx line works too). We download every published version, actually start each one in an ephemeral sandbox, and diff the tool contracts your agent reads — descriptions, schemas, annotations. Every result links to its public run log as evidence. Takes 2-3 minutes.</p>
     </div>
     <div class="callout">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <input id="histPkg" type="text" placeholder="npm package (@scope/server) or github.com/owner/repo" spellcheck="false"
+        <input id="histPkg" type="text" placeholder="npm package (@scope/server), npx line, or github.com/owner/repo" spellcheck="false"
                style="flex:1;min-width:240px;padding:12px 14px;border:1px solid #cbd5e1;border-radius:10px;font:14px/1.3 var(--font-mono);background:#fff;color:#0f172a" />
-        <button id="histBtn" class="btn" type="button" onclick="scanHistory()">Check history</button>
-        <button id="histRunBtn" class="btn btn-sm" type="button" onclick="runHistory()" title="Downloads, installs and actually starts each published version in an ephemeral GitHub Actions sandbox. Takes 2-3 minutes; every result links to its public run log.">⚙️ Runtime scan</button>
+        <button id="histRunBtn" class="btn" type="button" onclick="runHistory()">⚙️ Runtime scan</button>
       </div>
       <div id="histStatus" style="margin-top:10px;font-size:13px;color:#64748b"></div>
       <div id="histResult" style="margin-top:12px"></div>
-      <div id="histFeed" style="margin-top:20px"></div>
-      <p style="margin-top:14px;font-size:12px;color:#94a3b8">Static scan over the last 5 published versions: it reads the published files, never executes them, so tools assembled at runtime can be invisible to it. For runtime-exact scanning — every version actually started and its tools/list taken — run <code style="background:#e2e8f0;padding:1px 4px;border-radius:3px">npx rugsnare history &lt;package&gt;</code> locally.</p>
+      <p style="margin-top:14px;font-size:12px;color:#94a3b8">Runtime-exact: every version is actually started and its tools/list taken. All scans land in the public <a href="/scans" style="color:#64748b">runtime archive</a>. The same truth locally: <code style="background:#e2e8f0;padding:1px 4px;border-radius:3px">npx rugsnare history &lt;package&gt;</code>.</p>
     </div>
   </div>
 </section>
@@ -310,129 +308,6 @@
   });
 })();
 
-/* package history scanner: calls /api/history (static scan, no code execution) */
-function scanHistory() {
-  const pkg = document.getElementById('histPkg').value.trim();
-  const status = document.getElementById('histStatus');
-  const out = document.getElementById('histResult');
-  const btn = document.getElementById('histBtn');
-  if (!pkg) { status.textContent = 'Type a package name first.'; return; }
-  btn.disabled = true; status.textContent = 'Downloading published tarballs and diffing contracts...'; out.innerHTML = '';
-  fetch('/api/history?package=' + encodeURIComponent(pkg))
-    .then(function (r) { return r.json(); })
-    .then(function (r) {
-      btn.disabled = false;
-      if (r.error) { status.textContent = ''; out.innerHTML = card('#fef2f2,#dc2626', 'Could not scan: ' + esc(r.error)); return; }
-      status.textContent = '';
-      if (r.source === 'github' && !r.contractsFound) {
-        out.innerHTML = card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(r.package) + ': scanned ' + r.scanned + ' tag(s), but no tool definitions were found in the repo sources. The static reader is blind to this repo\'s style — if it publishes to npm, run the Runtime scan on the npm package instead.');
-        return;
-      }
-      if (r.silentChanges === 0) {
-        var toolsNote = (r.source === 'github') ? ' (up to ' + r.contractsFound + ' tools per tag)' : '';
-        out.innerHTML = card('#f0fdf4,#10b981', '✅ ' + esc(r.package) + ': ' + r.scanned + ' version(s) checked' + toolsNote + ', no silent contract changes found.');
-        return;
-      }
-      var html = card('#fff7ed,#ea580c', '⚠️ ' + esc(r.package) + ': ' + r.silentChanges + ' silent change(s) across ' + r.scanned + ' version(s)');
-      r.pairs.forEach(function (p, pi) {
-        if (!p.findings.length) return;
-        html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin:8px 0">';
-        html += '<b style="font-size:13px">' + esc(p.from) + ' → ' + esc(p.to) + '</b> <span style="color:#64748b;font-size:12px">' + pairMeta(p) + p.findings.length + ' finding(s)</span>';
-        html += findingsHtml(p.findings, 's' + pi);
-        html += '</div>';
-      });
-      out.innerHTML = html;
-    })
-    .catch(function (e) {
-      btn.disabled = false; status.textContent = '';
-      out.innerHTML = card('#fef2f2,#dc2626', 'Scan failed: ' + esc(String(e)));
-    });
-}
-function card(cs, text) {
-  var p = cs.split(',');
-  return '<div style="background:' + p[0] + ';border:1px solid ' + p[1] + ';border-radius:10px;padding:12px;margin:8px 0;color:#374151;font-size:13px">' + text + '</div>';
-}
-/* findings list with expandable tail: first 12 inline, the rest behind a button */
-var FINDINGS_SHOWN = 12;
-var findingsSeq = 0;
-function findingsHtml(findings, prefix) {
-  var id = prefix + '-' + (++findingsSeq);
-  var html = '';
-  findings.slice(0, FINDINGS_SHOWN).forEach(function (f) { html += findingRow(f); });
-  if (findings.length > FINDINGS_SHOWN) {
-    html += '<div id="' + id + '" style="display:none">';
-    findings.slice(FINDINGS_SHOWN).forEach(function (f) { html += findingRow(f); });
-    html += '</div>';
-    html += '<button type="button" id="' + id + '-btn" onclick="toggleFindings(\'' + id + '\')" '
-      + 'style="margin-top:8px;padding:5px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font-size:12px;cursor:pointer">'
-      + 'Show all ' + findings.length + '</button>';
-  }
-  return html;
-}
-function findingRow(f) {
-  var html = '<div style="margin-top:6px;font-size:12px"><b>' + esc(f.tool) + '</b> [' + esc(f.status) + (f.driftType ? ' ' + esc(f.driftType) : '') + ']';
-  if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
-    // security-verdict coloring: WAS = the contract you approved (trusted),
-    // NOW = what it silently became (the thing to review)
-    html += '<div style="color:#22c55e">WAS: ' + esc(f.oldDescription) + '</div><div style="color:#ef4444">NOW: ' + esc(f.newDescription || '') + '</div>';
-  }
-  var c = findingConsequence(f);
-  if (c) html += '<div style="margin-top:3px;padding:4px 8px;border-radius:6px;font-size:11.5px;background:' + c.bg + ';color:' + c.fg + '"><b>' + c.icon + '</b> ' + esc(c.text) + '</div>';
-  return html + '</div>';
-}
-/* plain-language consequences: what this change means for the user's agent */
-function findingConsequence(f) {
-  var DANGER = { bg: '#fef2f2', fg: '#b91c1c', icon: '⚠' };
-  var WARN = { bg: '#fffbeb', fg: '#b45309', icon: 'ⓘ' };
-  var INFO = { bg: '#f1f5f9', fg: '#64748b', icon: 'ⓘ' };
-  var was = String(f.oldDescription ?? '');
-  var now = String(f.newDescription ?? '');
-  var gone = function (re) { return re.test(was) && !re.test(now); };
-  var came = function (re) { return re.test(now) && !re.test(was); };
-
-  if (f.status === 'NEW') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'A tool your agent can now call that did not exist in the previous version — nobody has reviewed or approved it yet.' };
-  if (f.status === 'REMOVED') return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'This tool disappeared. Workflows that rely on it will break — and a vanishing tool can also be cleanup after something grabbed its access.' };
-  if (f.driftType === 'BREAKING') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'The parameters changed (schema drift): calls that worked before may now fail — or silently behave differently.' };
-
-  var lines = [];
-  if (gone(/requires? confirmation|needs? (your )?approval|approval (is )?required|unless whitelisted|requires? review/i)) {
-    lines.push('the agent is no longer told to ask you before this runs — it can execute straight away');
-  }
-  if (gone(/allowed\s*roots|allowedRemoteRoots|allowed director|path (is )?restricted|sandbox/i)) {
-    lines.push('the stated path boundary vanished — the agent no longer knows this was supposed to stay limited');
-  }
-  if (gone(/no chaining|no pipes|no redirection|single command|one command per|no multiline/i)) {
-    lines.push('the stated command limits (no chaining / pipes / redirection) were dropped from the text');
-  }
-  if (came(/https?:\/\/(?!.*(github\.com|npmjs|readthedocs|wikipedia))/i)) {
-    lines.push('the new description points to an external URL');
-  }
-  if (came(/\.env|credentials?|api[_-]?key|secrets?|private key|id_rsa|passwords?|auth[_-]?tokens?\b/i)) {
-    lines.push('the new text references credentials or secrets');
-  }
-  if (came(/do not tell|don'?t tell|hide (this )?from|without (telling|informing)/i)) {
-    lines.push('the new text tells the agent to keep this from you');
-  }
-  if (came(/ignore (all|any|the)? ?(previous|prior|above) instructions/i)) {
-    lines.push('instruction-hijack phrasing appeared');
-  }
-
-  if (lines.length > 0) {
-    return { bg: DANGER.bg, fg: DANGER.fg, icon: DANGER.icon, text: 'Consequence: ' + lines.join('; ') + '.' };
-  }
-  return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'Only the wording changed (schema intact) — but descriptions are the instructions your agent follows, so the edit still matters.' };
-}
-function toggleFindings(id) {
-  var box = document.getElementById(id);
-  var btn = document.getElementById(id + '-btn');
-  var open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  btn.textContent = open ? ('Show all') : ('Show less');
-}
-function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 /* runtime scan: dispatch a sandboxed GitHub Actions run, poll for the result */
 function runHistory() {
   var pkg = document.getElementById('histPkg').value.trim();
@@ -470,101 +345,13 @@ function runHistory() {
 function renderRuntimeResult(res) {
   document.getElementById('histResult').innerHTML = runtimeResultHtml(res);
 }
-/* shared renderer: verdict + findings cards + evidence links (feed rows reuse it) */
-function runtimeResultHtml(res) {
-  var r = res.result || {};
-  if (r.error) return card('#fef2f2,#dc2626', 'Scan failed: ' + esc(r.error) + ' — details in the <a href="' + esc(res.runUrl || '#') + '" target="_blank" rel="noopener">run log</a>.');
-  if (!r.checked) {
-    return card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(res.package) + ': 0 of ' + esc(r.planned || '?') + ' version(s) could be started — this server needs specific environment (credentials, config files) to boot, so runtime contracts are unavailable. The instant static scan may still read its published files. "No data" is not "no changes".');
-  }
-  var head = (r.silentChanges === 0)
-    ? card('#f0fdf4,#10b981', '✅ ' + esc(res.package) + ': ' + r.checked + ' version(s) actually started and listed their tools — no silent contract changes.')
-    : card('#fff7ed,#ea580c', '⚠️ ' + esc(res.package) + ': ' + r.silentChanges + ' silent change(s) found across ' + r.checked + ' runtime-checked version(s)');
-  var body = '';
-  (r.pairs || []).forEach(function (p, pi) {
-    if (!p.findings || !p.findings.length) return;
-    body += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin:8px 0">';
-    body += '<b style="font-size:13px">' + esc(p.from) + ' → ' + esc(p.to) + '</b> <span style="color:#64748b;font-size:12px">' + pairMeta(p) + p.findings.length + ' finding(s)</span>';
-    body += findingsHtml(p.findings, 'r' + pi);
-    body += '</div>';
-  });
-  if (r.unreachable && r.unreachable.length) {
-    body += '<div style="color:#64748b;font-size:12px;margin-top:6px">' + r.unreachable.length + ' version(s) could not be started (no bin, missing env, crash) — excluded from the diff; see the log.</div>';
-  }
-  var slug = String(res.package || '').toLowerCase().replace(/^@/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact — every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/scans/history/' + esc(slug) + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
-  return head + body + evidence;
-}
-
-/* public feed: the latest runtime scans (they are public git commits by design) */
-var feedSeq = 0;
-var feedLoaded = {}; // rowId -> html (fetched once, then toggled)
-(function loadFeed() {
-  var el = document.getElementById('histFeed');
-  if (!el) return;
-  fetch('/api/history-feed').then(function (r) { return r.json(); }).then(function (f) {
-    if (!f.entries || !f.entries.length) { el.innerHTML = ''; return; }
-    var rows = f.entries.map(function (e) {
-      var when = e.ts ? timeAgo(new Date(e.ts)) : '';
-      var rowId = 'feedrow-' + (++feedSeq);
-      var safePkg = esc(e.package).replace(/'/g, '&#39;');
-      return '<div style="padding:7px 0;border-bottom:1px solid #e5e7eb;font-size:13px">'
-        + '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">'
-        + '<span style="font-family:var(--font-mono);cursor:pointer" onclick="toggleFeedRow(\'' + rowId + '\', \'' + safePkg + '\')"><b>▾</b> ' + esc(e.package) + '</span>'
-        + '<span style="color:#64748b;font-size:12px">' + esc(when)
-        + ' · <a href="#history" onclick="toggleFeedRow(\'' + rowId + '\', \'' + safePkg + '\');return false;" style="color:#2563eb">details</a>'
-        + ' · <a href="https://github.com/Paraphern/rugsnare/blob/scans/history/' + esc(e.slug) + '.json" target="_blank" rel="noopener" style="color:#64748b">result</a>'
-        + (e.commitUrl ? ' · <a href="' + esc(e.commitUrl) + '" target="_blank" rel="noopener" style="color:#64748b">log</a>' : '')
-        + ' · <a href="#history" onclick="fillPkg(\'' + safePkg + '\')" style="color:#64748b">re-check</a></span></div>'
-        + '<div id="' + rowId + '" style="display:none;margin-top:8px"></div></div>';
-    }).join('');
-    el.innerHTML = '<div style="margin-top:18px;padding-top:12px;border-top:1px solid #e5e7eb">'
-      + '<b style="font-size:13px;color:#0f172a">Latest runtime scans</b>'
-      + ' <span style="color:#94a3b8;font-size:12px">— public by design: every scan is a git commit in the <a href="https://github.com/Paraphern/rugsnare/tree/scans" target="_blank" rel="noopener" style="color:#64748b">scans</a> branch. Click a package for the readable result. Instant checks are not recorded.</span>'
-      + rows + '</div>';
-  }).catch(function () { el.innerHTML = ''; });
-})();
-function toggleFeedRow(rowId, pkg) {
-  var box = document.getElementById(rowId);
-  if (!box) return;
-  var open = box.style.display !== 'none';
-  if (open) { box.style.display = 'none'; return; }
-  box.style.display = 'block';
-  if (feedLoaded[rowId] !== undefined) return; // already fetched
-  feedLoaded[rowId] = null; // mark in-flight
-  box.innerHTML = '<div style="color:#64748b;font-size:12px">loading the scan result...</div>';
-  fetch('/api/history-result?package=' + encodeURIComponent(pkg))
-    .then(function (r) { return r.json(); })
-    .then(function (res) {
-      var html;
-      if (res.status === 'pending') html = card('#eff6ff,#3b82f6', 'This scan has not landed yet — check again in a moment.');
-      else html = runtimeResultHtml(res);
-      feedLoaded[rowId] = html;
-      box.innerHTML = html;
-    })
-    .catch(function () {
-      feedLoaded[rowId] = undefined; // allow retry
-      box.innerHTML = card('#fef2f2,#dc2626', 'Could not load the result — try again.');
-    });
-}
-function timeAgo(d) {
-  var s = Math.max(1, Math.floor((Date.now() - d.getTime()) / 1000));
-  if (s < 60) return s + 's ago';
-  if (s < 3600) return Math.floor(s / 60) + 'm ago';
-  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
-  return Math.floor(s / 86400) + 'd ago';
-}
-/* pair header meta: publish date of the newer version, when the registry has it */
-function pairMeta(p) {
-  if (!p.toPublishedAt) return '';
-  return 'published ' + String(p.toPublishedAt).slice(0, 10) + ' · ';
-}
 function fillPkg(name) {
   document.getElementById('histPkg').value = name;
   document.getElementById('histStatus').textContent = '';
   document.getElementById('histResult').innerHTML = '';
 }
 </script>
+<script src="/history.js"></script>
 
 </body>
 </html>
