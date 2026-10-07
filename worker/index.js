@@ -9,7 +9,7 @@
 // from a strict npm-name whitelist. The runtime side (actually starting
 // each version) runs in an ephemeral GitHub Actions runner — never here.
 
-import { parseTar, extractContracts, diffContracts, sortVersions, validPackageName } from './history-core.js';
+import { parseTar, extractContracts, diffContracts, sortVersions, validPackageName, parseGitHubRepo, semverTag } from './history-core.js';
 import { handleHistoryRun, handleHistoryResult } from './run.js';
 import { handleHistoryFeed } from './feed.js';
 
@@ -20,7 +20,7 @@ const MAX_TARBALL = 5 * 1024 * 1024;
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname === '/api/history') return handleHistory(url, request);
+    if (url.pathname === '/api/history') return handleHistory(url, request, env);
     if (url.pathname === '/api/history-run') return handleHistoryRun(request, env);
     if (url.pathname === '/api/history-result') return handleHistoryResult(request);
     if (url.pathname === '/api/history-feed') return handleHistoryFeed(request, env);
@@ -28,23 +28,121 @@ export default {
   },
 };
 
-async function handleHistory(url, request) {
+async function handleHistory(url, request, env) {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return json({ error: 'GET only' }, 405);
   }
-  const pkg = (url.searchParams.get('package') ?? '').trim();
-  if (!pkg || !validPackageName(pkg)) {
-    return json({ error: 'pass a valid npm package name, e.g. @scope/server or my-mcp-server' }, 400);
+  const raw = (url.searchParams.get('package') ?? url.searchParams.get('repo') ?? '').trim();
+  const repo = raw ? parseGitHubRepo(raw) : null;
+  if (repo && !validPackageName(raw)) {
+    return handleGitHubHistory(repo, env);
+  }
+  if (!raw || !validPackageName(raw)) {
+    return json({ error: 'pass a valid npm package name or a github.com repo URL' }, 400);
   }
 
   try {
-    const result = await scanHistory(pkg);
+    const result = await scanHistory(raw);
     return json(result, 200, { 'cache-control': 'public, max-age=3600' });
   } catch (e) {
     // log the real reason for `wrangler tail`; the API answer stays generic
     console.error('history scan failed:', e && e.stack ? e.stack : e);
     return json({ error: 'scan failed — the package may be unreachable or malformed' }, 502);
   }
+}
+
+/**
+ * Static history scan over a GitHub repo's semver tags: each tag's SOURCE
+ * tarball is parsed (nothing executed) and contracts are diffed tag to tag.
+ * Sources ≠ built npm dist: TypeScript literals are caught, but runtime-
+ * generated tools are invisible — the runtime scan stays npm-only.
+ */
+async function handleGitHubHistory(repo, env) {
+  try {
+    const result = await scanGitHubHistory(repo, env);
+    return json(result, 200, { 'cache-control': 'public, max-age=3600' });
+  } catch (e) {
+    console.error('github scan failed:', e && e.stack ? e.stack : e);
+    return json({ error: 'scan failed — the repo may be unreachable, private, or have no semver tags' }, 502);
+  }
+}
+
+async function scanGitHubHistory(repo, env) {
+  // fixed hosts only: api.github.com for tags, codeload for source tarballs
+  const headers = {
+    accept: 'application/vnd.github+json',
+    'user-agent': 'rugsnare-history',
+    ...(env.GH_DISPATCH_TOKEN ? { authorization: `Bearer ${env.GH_DISPATCH_TOKEN}` } : {}),
+  };
+  const tagsRes = await fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`, { headers });
+  if (tagsRes.status === 404) throw new Error('repo not found (or private)');
+  if (!tagsRes.ok) throw new Error(`github responded ${tagsRes.status}`);
+  const tags = await tagsRes.json();
+  const seen = new Set();
+  const versioned = [];
+  for (const t of tags) {
+    const v = semverTag(t.name);
+    if (v && !seen.has(v)) { seen.add(v); versioned.push({ tag: t.name, version: v }); }
+  }
+  if (versioned.length < 2) throw new Error('fewer than 2 semver tags published');
+  versioned.sort((a, b) => {
+    const ka = a.version.split('.').map(Number);
+    const kb = b.version.split('.').map(Number);
+    for (let i = 0; i < 3; i++) { if (ka[i] !== kb[i]) return ka[i] - kb[i]; }
+    return 0;
+  });
+  const chosen = versioned.slice(-LAST_N);
+
+  const contracts = [];
+  for (const { tag } of chosen) {
+    try {
+      const map = await contractsOfGitHubTag(repo, tag);
+      contracts.push({ tag, tools: Object.fromEntries(map) });
+    } catch (e) {
+      contracts.push({ tag, error: String(e && e.message ? e.message : e) });
+    }
+  }
+
+  const usable = contracts.filter((c) => c.tools);
+  const pairs = [];
+  for (let i = 1; i < usable.length; i++) {
+    const older = new Map(Object.entries(usable[i - 1].tools));
+    const newer = new Map(Object.entries(usable[i].tools));
+    pairs.push({ from: usable[i - 1].tag, to: usable[i].tag, toPublishedAt: null, findings: diffContracts(older, newer) });
+  }
+  // honesty guard: a scan that found ZERO tool definitions in the sources
+  // must not read as "clean" — it means the extractor is blind to this repo
+  const contractsFound = usable.reduce((n, c) => Math.max(n, Object.keys(c.tools).length), 0);
+
+  return {
+    package: repo,
+    source: 'github',
+    scanned: usable.length,
+    planned: chosen.length,
+    pairs,
+    contractsFound,
+    silentChanges: pairs.reduce((n, p) => n + p.findings.length, 0),
+    note: 'static scan of the repo source at each semver tag; runtime-exact scanning (actually starting every version) is npm-only — if this repo publishes to npm, run the Runtime scan on the package',
+    poweredBy: 'https://rugsnare.com',
+  };
+}
+
+async function contractsOfGitHubTag(repo, tag) {
+  const u = new URL(`https://codeload.github.com/${repo}/tar.gz/refs/tags/${encodeURIComponent(tag)}`);
+  if (u.hostname !== 'codeload.github.com') throw new Error('refusing non-codeload host');
+  const res = await fetch(u);
+  if (!res.ok) throw new Error(`source tarball fetch ${res.status}`);
+  const gz = await res.arrayBuffer();
+  if (gz.byteLength > MAX_TARBALL) throw new Error('source tarball too large for the static scan');
+  const tarBytes = new Uint8Array(
+    await new Response(new Response(gz).body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(),
+  );
+  // source tarballs are rooted at "<repo>-<tag>/": strip it, keep code files;
+  // demo/corpus fixtures are excluded — they define fake tools for tests
+  const files = parseTar(tarBytes)
+    .map((f) => ({ ...f, path: f.path.replace(/^[^/]+\//, '') }))
+    .filter((f) => !/(^|\/)(node_modules|\.git|test|tests|__tests__|corpus|fixtures|examples?|demo)(\/|$)/i.test(f.path));
+  return extractContracts(files);
 }
 
 async function scanHistory(pkg) {

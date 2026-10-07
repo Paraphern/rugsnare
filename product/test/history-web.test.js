@@ -3,7 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit } from '../../worker/history-core.js';
+import { parseTar, extractContracts, diffContracts, validPackageName, sortVersions, packageSlug, parseScanCommit, parseGitHubRepo, semverTag } from '../../worker/history-core.js';
 
 /** Build a minimal ustar archive from {path, data} entries. */
 function buildTar(entries) {
@@ -122,4 +122,32 @@ test('parseScanCommit: feed entries from scans-branch commits', () => {
   // branch-creation and unrelated commits are skipped
   assert.equal(parseScanCommit({ commit: { message: 'Initial commit' } }), null);
   assert.equal(parseScanCommit(null), null);
+});
+
+test('parseGitHubRepo: URLs, ssh, .git, and bare owner/repo', () => {
+  assert.equal(parseGitHubRepo('https://github.com/Paraphern/rugsnare'), 'Paraphern/rugsnare');
+  assert.equal(parseGitHubRepo('https://github.com/Paraphern/rugsnare/tree/main'), 'Paraphern/rugsnare');
+  assert.equal(parseGitHubRepo('git@github.com:user/repo.git'), 'user/repo');
+  assert.equal(parseGitHubRepo('github.com/user/repo'), 'user/repo');
+  assert.equal(parseGitHubRepo('user/repo'), 'user/repo');
+  // npm inputs must NOT be mistaken for repos
+  assert.equal(parseGitHubRepo('@scope/pkg'), null);
+  assert.equal(parseGitHubRepo('my-mcp-server'), null);
+  assert.equal(parseGitHubRepo('https://evil.example.com/user/repo'), null);
+});
+
+test('semverTag: v-prefix stripped, non-semver tags rejected', () => {
+  assert.equal(semverTag('v1.2.3'), '1.2.3');
+  assert.equal(semverTag('1.10.0'), '1.10.0');
+  assert.equal(semverTag('v2.0.0-rc.1'), '2.0.0');
+  assert.equal(semverTag('latest'), null);
+  assert.equal(semverTag('2026-10-03'), null);
+  assert.equal(semverTag('main'), null);
+});
+
+test('extractContracts: TypeScript sources are scanned too (GitHub source scans)', () => {
+  const src = `server.tool(\n  { name: 'deploy_app', description: 'Deploy the app. Requires confirmation.' },\n  handler,\n);`;
+  const files = [{ path: 'src/tools/deploy.ts', bytes: new TextEncoder().encode(src) }];
+  const contracts = extractContracts(files);
+  assert.equal(contracts.get('deploy_app'), 'Deploy the app. Requires confirmation.');
 });

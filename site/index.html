@@ -176,7 +176,7 @@
     </div>
     <div class="callout">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <input id="histPkg" type="text" placeholder="@scope/mcp-server or my-mcp-server" spellcheck="false"
+        <input id="histPkg" type="text" placeholder="npm package (@scope/server) or github.com/owner/repo" spellcheck="false"
                style="flex:1;min-width:240px;padding:12px 14px;border:1px solid #cbd5e1;border-radius:10px;font:14px/1.3 var(--font-mono);background:#fff;color:#0f172a" />
         <button id="histBtn" class="btn" type="button" onclick="scanHistory()">Check history</button>
         <button id="histRunBtn" class="btn btn-sm" type="button" onclick="runHistory()" title="Downloads, installs and actually starts each published version in an ephemeral GitHub Actions sandbox. Takes 2-3 minutes; every result links to its public run log.">⚙️ Runtime scan</button>
@@ -324,8 +324,13 @@ function scanHistory() {
       btn.disabled = false;
       if (r.error) { status.textContent = ''; out.innerHTML = card('#fef2f2,#dc2626', 'Could not scan: ' + esc(r.error)); return; }
       status.textContent = '';
+      if (r.source === 'github' && !r.contractsFound) {
+        out.innerHTML = card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(r.package) + ': scanned ' + r.scanned + ' tag(s), but no tool definitions were found in the repo sources. The static reader is blind to this repo\'s style — if it publishes to npm, run the Runtime scan on the npm package instead.');
+        return;
+      }
       if (r.silentChanges === 0) {
-        out.innerHTML = card('#f0fdf4,#10b981', '✅ ' + esc(r.package) + ': ' + r.scanned + ' version(s) checked, no silent contract changes found.');
+        var toolsNote = (r.source === 'github') ? ' (up to ' + r.contractsFound + ' tools per tag)' : '';
+        out.innerHTML = card('#f0fdf4,#10b981', '✅ ' + esc(r.package) + ': ' + r.scanned + ' version(s) checked' + toolsNote + ', no silent contract changes found.');
         return;
       }
       var html = card('#fff7ed,#ea580c', '⚠️ ' + esc(r.package) + ': ' + r.silentChanges + ' silent change(s) across ' + r.scanned + ' version(s)');

@@ -46,19 +46,39 @@ export function parseTar(u8) {
 /**
  * Statically extract { toolName -> description } pairs from dist sources.
  * Catches the dominant pattern (name: 'x', ... description: 'y' literals in
- * server bundles). This is deliberately labeled static: tools assembled at
- * runtime are invisible to it — the CLI (`rugsnare history`) covers those
- * by actually running every version.
+ * server bundles — built JS or TypeScript sources alike). This is
+ * deliberately labeled static: tools assembled at runtime are invisible to
+ * it — the CLI (`rugsnare history`) covers those by actually running every
+ * version.
  */
 export function extractContracts(files) {
   const contracts = new Map();
   for (const f of files) {
-    if (!/\.(js|cjs|mjs|json)$/i.test(f.path)) continue;
+    if (!/\.(js|cjs|mjs|ts|json)$/i.test(f.path)) continue;
     if (f.bytes.length > 262144) continue;
     const text = new TextDecoder('utf-8', { fatal: false }).decode(f.bytes);
     scanTextForContracts(text, contracts);
   }
   return contracts;
+}
+
+/** Parse "github.com/owner/repo" (any URL form or bare "owner/repo"). */
+export function parseGitHubRepo(input) {
+  let s = String(input ?? '').trim().replace(/\.git$/, '');
+  const m = s.match(/(?:git@|https?:\/\/)?(?:www\.)?github\.com[/:]([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)/i);
+  if (m) return `${m[1]}/${m[2]}`;
+  const bare = s.match(/^([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/);
+  if (bare) return `${bare[1]}/${bare[2]}`;
+  return null;
+}
+
+/**
+ * Normalize a git tag to a bare semver version ("v1.2.3" -> "1.2.3"),
+ * null when the tag is not semver-like (branches, "latest", dates...).
+ */
+export function semverTag(tag) {
+  const m = String(tag ?? '').match(/^v?(\d+)\.(\d+)\.(\d+)(?:[-+][\w.-]+)?$/i);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : null;
 }
 
 /** Find name: 'x' literals followed by a description: '...' within a window. */
