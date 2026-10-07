@@ -76,11 +76,11 @@ jobs:
 
       - name: Publish to the scans branch
         run: |
-          git config user.name "rugsnare-bot"
-          git config user.email "releases@rugsnare.com"
           # shallow-fetch only the scans branch (no working tree of main)
           git init -q repo
           cd repo
+          git config user.name "rugsnare-bot"
+          git config user.email "releases@rugsnare.com"
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/Paraphern/rugsnare.git"
           if git fetch --depth=1 origin scans; then
             git checkout -q -B scans FETCH_HEAD
