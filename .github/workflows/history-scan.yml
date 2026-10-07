@@ -44,12 +44,13 @@ jobs:
         run: |
           node product/src/cli.js version
           set +e
-          node product/src/cli.js history "$PKG" --last 10 --json > /tmp/scan.json
+          node product/src/cli.js history "$PKG" --last 10 --json > /tmp/scan.json 2>/tmp/scan.err
           code=$?
           set -e
           # exit 0 = clean, exit 1 = findings found — BOTH are successful scans
           if [ "$code" -ge 2 ] || [ ! -s /tmp/scan.json ]; then
-            echo '{"error": "scan failed (exit '"$code"') - see the Actions log", "package": "'"$PKG"'"}' > /tmp/scan.json
+            REASON=$(tail -n 3 /tmp/scan.err | tr -d '\000' | tr '\n' ' ' | cut -c1-300)
+            echo '{"error": "scan failed (exit '"$code"'): '"$REASON"'", "package": "'"$PKG"'"}' > /tmp/scan.json
           fi
 
       - name: Upload scan result (no git credentials in this job)

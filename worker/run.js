@@ -2,8 +2,8 @@
 import { normalizePackageInput } from './history-core.js';
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 3;
-const rateBuckets = new Map();
+const RATE_MAX = 10;
+const rateBuckets = new Map(); // ip -> [timestamps]; isolate-local, best effort
 
 function rateLimited(ip) {
   const now = Date.now();
@@ -31,7 +31,7 @@ export async function handleHistoryRun(request, env) {
   if (!pkg) return jsonResponse({ error: 'pass a valid npm package name' }, 400);
 
   const ip = request.headers.get('cf-connecting-ip') ?? 'unknown';
-  if (rateLimited(ip)) return jsonResponse({ error: 'too many runtime scans - try again in a few minutes' }, 429);
+  if (rateLimited(ip)) return jsonResponse({ error: 'you have started 10 scans in the last 10 minutes - give it a couple of minutes. Scans run one at a time in a shared queue, so everyone gets a turn.' }, 429);
 
   let res;
   try {

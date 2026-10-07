@@ -1032,7 +1032,10 @@ async function cmdHistory(flags) {
       for (const u of result.unreachable.slice(0, 5)) console.log(`  ${u.version}: ${u.reason}`);
       if (result.unreachable.length > 5) console.log(`  ... +${result.unreachable.length - 5} more`);
     }
-    console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${result.clean ? '— CLEAN' : '— SILENT CHANGES FOUND'}`);
+    const verdict = result.checked === 0
+      ? '— NO DATA (nothing could be scanned)'
+      : result.clean ? '— CLEAN' : '— SILENT CHANGES FOUND';
+    console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${verdict}`);
   }
   if (result.checked === 0) {
     console.error(`history: no version of ${result.package} could be scanned — "no data" is not "no changes" (exit 2)`);

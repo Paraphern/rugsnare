@@ -122,10 +122,13 @@ function serverEntry(pkgDir) {
 
 /**
  * Install production deps of the extracted package WITHOUT running any
- * lifecycle script (--ignore-scripts). Command and arguments are fully
- * static literals; the only dynamic input is cwd (a temp dir we created).
+ * lifecycle script (--ignore-scripts). --legacy-peer-deps: we are a scanner,
+ * not a production install — peer-conflicting real-world packages (common
+ * among Claude Code companions) must still be scannable. Command and
+ * arguments are fully static literals; the only dynamic input is cwd
+ * (a temp dir we created).
  */
-const NPM_INSTALL_ARGS = ['install', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--loglevel=error'];
+const NPM_INSTALL_ARGS = ['install', '--omit=dev', '--ignore-scripts', '--legacy-peer-deps', '--no-audit', '--no-fund', '--loglevel=error'];
 
 function installDeps(pkgDir) {
   const npmCli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
