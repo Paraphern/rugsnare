@@ -221,9 +221,13 @@ export function diffVersionContracts(older, newer) {
  * Full history scan. last N published versions (default 10). Versions that
  * fail to start are reported honestly, not silently skipped.
  */
-export async function scanHistory(name, { last = 10, timeoutMs = 15000, onProgress = () => {} } = {}) {
+export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000, onProgress = () => {} } = {}) {
   const { versions, dist, latest, time } = await fetchRegistryVersions(name);
-  const chosen = versions.slice(-last);
+  // --from/--to: inclusive semver window (surveys quote exact ranges);
+  // falls back to the last N when no window is given
+  const inWindow = versions.filter((v) =>
+    (!from || compareVersions(v, from) >= 0) && (!to || compareVersions(v, to) <= 0));
+  const chosen = inWindow.slice(-last);
   onProgress(`${chosen.length} version(s) to check: ${chosen[0]} .. ${chosen.at(-1)} (latest: ${latest})`);
 
   const ran = [];

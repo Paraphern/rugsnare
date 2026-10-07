@@ -124,6 +124,8 @@ function parseArgs(argv) {
     else if (a === '--allow-unsigned-pins') flags.allowUnsignedPins = true;
     else if (a === '--timeout') flags.timeout = parseInt(argv[++i], 10) || 15000;
     else if (a === '--last') flags.last = argv[++i];
+    else if (a === '--from') flags.from = argv[++i];
+    else if (a === '--to') flags.to = argv[++i];
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
@@ -1004,11 +1006,14 @@ async function cmdHistory(flags) {
   let name;
   try { name = parsePackageName(raw); } catch (e) { console.error(e.message); process.exit(2); }
   const last = Number(flags.last) > 0 ? Number(flags.last) : 10;
+  const { from, to } = flags;
 
   console.error(`history scan: ${name} (last ${last} versions)`);
   console.error('NOTE: this downloads and RUNS each version locally — the same code you would run by installing it.');
   const result = await scanHistory(name, {
     last,
+    from,
+    to,
     onProgress: (m) => { if (!flags.json) console.error(`  ${m}`); },
   });
 

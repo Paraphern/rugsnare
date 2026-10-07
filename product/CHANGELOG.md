@@ -2,12 +2,13 @@
 
 ## [1.1.0] — 2026-10-06
 
-- **Whole-history scanning** (new): `rugsnare history <package> [--last N]` —
-  downloads every published version from the registry (tarballs pulled
-  directly, deps installed with --ignore-scripts), actually runs each
-  version, takes tools/list, and diffs consecutive versions with the same
-  split-hash logic. Prints was/became per drifted tool; exit 1 on silent
-  changes, exit 2 when no version could be started. On the web: the
+- **Whole-history scanning** (new): `rugsnare history <package> [--last N]
+  [--from X --to Y]` — downloads every published version from the registry
+  (tarballs pulled directly, deps installed with --ignore-scripts and
+  --legacy-peer-deps), actually runs each version, takes tools/list, and
+  diffs consecutive versions with the same split-hash logic. Prints
+  was/became per drifted tool; exit 1 on silent changes, exit 2 when no
+  version could be started. On the web: the
   Runtime scan button runs the same CLI in an ephemeral GitHub Actions
   sandbox and publishes the result with a link to the public run log as
   evidence; every scan lands in the public archive at rugsnare.com/scans
