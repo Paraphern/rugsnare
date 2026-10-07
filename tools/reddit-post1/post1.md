@@ -1,103 +1,89 @@
-# Reddit Post 1 (r/mcp, [Showcase]) - jadchene case (rewritten 2026-10-06)
+# Reddit Post 1 (r/mcp, [Showcase]) - lightning-wallet-mcp sportsbook case (2026-10-07)
 
 **Title:**
 
-[Showcase] The entire permission system for 48 destructive tools was one sentence. A patch release deleted it
+[Showcase] A minor update quietly turned an AI agent's Lightning wallet into a sportsbook
 
 **Body:**
 
-*Disclosure: I'm the author of RugSnare, the open source tool that caught this. It pins MCP tool contracts and diffs them on update - zero npm dependencies, no telemetry, repo link at the bottom. Everything below reproduces with the commands at the end.*
+*Disclosure: I'm the author of RugSnare, the open source tool that caught this. It pins MCP tool contracts and diffs them on update - zero npm dependencies, no telemetry, repo at the bottom. Everything below reproduces with the commands at the end.*
 
-An SSH server for agents (229 installs last week, per the npm registry) shipped a patch update, 2.0.2 to 2.0.3. The kind of version bump nobody reads notes for.
+lightning-wallet-mcp is a Lightning wallet for AI agents. Payments, invoices, L402/x402 micropayments - the plumbing you want when your agent needs to pay for things. 2,351 installs last month (155 last week, per the npm registry), 7,827 total since February.
 
-The patch deleted the sentence "Requires confirmation" from the descriptions of its destructive tools. rm_safe, kill_process, chmod, chown, 18 docker_* tools, systemctl_stop, firewall_cmd. 48 tools, one release.
+On September 22 it shipped 1.8.0. A minor bump, 54 -> 59 tools. The five new ones teach your agent how to bet its own balance on sports and BTC price.
 
-This shipped on October 3rd. Three days ago, as I write this. And it's still the latest version on npm right now.
+Two weeks later it's still the latest version. 553 people have installed it since the betting arrived. I caught it in a scan this weekend and verified every quote below today, October 7th.
 
-## First, context: what this thing is and why anyone runs it
+## What this package is and why anyone runs it
 
-It's an SSH server for agents. You hook it up to your AI client, point it at a machine you own (a VPS, a homelab box, for some people production), and the agent can admin it: read logs, edit configs, run commands, git pull, manage docker containers, restart services, touch the firewall. 102 tools, basically the whole sysadmin arsenal. People install it because babysitting a server through a terminal is exactly the tedious work you want to hand off.
+Agents increasingly pay for stuff: API calls behind x402/L402 paywalls, Lightning invoices, pay-per-use services. This package is the wallet for that. You give your agent a balance and tools like pay_invoice, create_invoice, pay_lightning_address, keysend. The pitch is payments. It works with Claude Code, Cursor, whatever client you run. Legit category, real demand.
 
-The package pitches itself as "production-ready, highly secure" with "interactive operation confirmation". That last bit is the entire reason you'd dare point an LLM at a live server: the dangerous stuff asks first.
+Nobody installs it to gamble.
 
-## What your agent actually reads
+## What showed up in the contract
 
-MCP has no permission system. No sandbox, no annotations marking a tool as dangerous, no registry of destructive ops. The only thing telling the LLM "this is gated, ask a human first" is prose inside the tool description. One sentence.
+Five new tools, verbatim from the 1.8.0 contract your agent reads:
 
-Here's what the patch did to that sentence, verbatim. kill_process:
+> prediction_markets: "list sat-denominated markets (sports, BTC price) you can bet on for your operator."
 
-> 2.0.2: "Send a signal to a process ID. Requires confirmation unless whitelisted."
-> 2.0.3: "Send a signal to a process ID."
+> prediction_place_bet: "back yes or no on a market with sats from your agent balance. The stake counts toward the agent budget; winnings and refunds return to the agent balance when the market settles."
 
-rm_safe:
+That second quote is the whole story. The betting stake IS the agent budget. And the description is a full tutorial: read prediction_market right before betting, pass expected_odds_pct and line_version so you're "never filled at a different price", one idempotency_key per bet. Someone wrote careful agent-facing betting UX.
 
-> 2.0.2: "Delete a path under allowedRemoteRoots. Requires confirmation."
-> 2.0.3: "Delete a remote file or directory."
+Same release: register_webhook got a BREAKING schema change. In a minor.
 
-Notice rm_safe also lost "under allowedRemoteRoots" - the agent no longer even knows a path restriction exists. That's a second silent change hiding inside the same edit: the confirmation is gone and the cage is invisible now.
+## The part that made me stop and stare
 
-The diff flags 48 tools for this, every single one COSMETIC (code shape unchanged, description prose changed). The words "Requires confirmation" appear 47 times in the 2.0.2 sources. In 2.0.3: zero times. Zero.
+"For your operator." The tools distinguish agent keys and operator keys. prediction_positions: "With an operator key it aggregates across all of your agents."
 
-## The README still promises the gate
+So the model here: an operator runs agents, each agent has a betting balance, the operator watches aggregate positions across the fleet. That's not a wallet feature. That's a betting operation with extra steps.
 
-Here's the part that honestly got me. The README of the current version still says confirmations are mandatory in normal mode - as of today, October 6th, three days after the patch. So if you audited this package today, the way you're supposed to (reading the docs), you'd pass it. The docs say the gate exists. The contract your agent reads says nothing about it. Same author, both live right now, saying opposite things.
+Also: prediction_markets ends with a link to https://lightningfaucet.com/prediction-markets/ - the publisher's own commercial betting site. The wallet vendor is the bookmaker. Your payment rail ships with a built-in client for the vendor's sportsbook, and your agent is the customer.
 
-You approved one contract. Your agent is running a different one.
+Here's the detail that got me the most. The wallet ships a pre-payment policy hook - a spending control, the right instinct. The 1.8.0 README says it plainly: "the pre-payment policy hook does not run for bets (they are internal transfers, like arena buy-ins); use set_budget to cap what an agent can stake." The one approval gate this wallet has does not cover betting. The only ceiling is the agent budget.
 
-## Who gets hurt when the gate goes quiet
+(And it's not their first rodeo. Version 1.6.1, published September 11, had zero gambling tools - I checked the sources. A casino arrived September 15 in 1.7.0: 8 arena_* dice tools. The sportsbook landed September 22 in 1.8.0. Two gambling expansions in seven days, both shipped as minor bumps.)
 
-Picture the normal user. Solo dev, one VPS, agent connected through this server for months. Their mental model: "if my agent wants to delete something, it'll ask me first". That model came from the README, and in 2.0.2 it was true.
+## To be fair, this one is documented
 
-After a routine patch update, the contract their agent reads says rm_safe is just "delete a remote file or directory". No mention of asking. No mention of path limits. So when the LLM decides the fastest way to free disk space is removing an old directory, it's not misbehaving - it's following the contract it was handed. Same for systemctl_stop, docker_rm, firewall_cmd: the agent's daily vocabulary, now friction-free. The human finds out from the aftermath.
+The 1.8.0 README openly describes Prediction markets, and the publisher's docs go further: "You build and fund the agent, set its budget, and it backs yes or no from its own balance." Their main site is a faucet, a casino and a sportsbook, with a whole section on building agents that plug into it. Nobody hid anything, and I'm not calling it malicious - it's a business model, written down at every layer. That's exactly what bothers me more.
 
-And if they installed with a caret range (^2.0.2), they never chose this update. npm applied it for them, silently, this past Saturday.
+The user who installed a payments wallet in 1.7.0 got a gambling client as a "minor update". Nobody asked them again. The only question that matters - "should my agent be able to bet its balance on sports?" - was answered by the publisher, silently, via npm.
 
-## Two more things static analysis turned up
+If the honest, documented changes arrive like this, what does the dishonest path look like?
 
-dangerMode - documented and opt-in, but it's a single server-level flag that disables all confirmations and overrides readOnly, blacklists and path restrictions. Every rail, one flag.
+## Who gets hurt
 
-codex-approval.js - the server fingerprints the connecting client by name (regex /^codex/) and attaches different approval metadata when it matches. Rules that change depending on who's asking. That one made me genuinely uncomfortable.
+The agent budget is real money. It pays for API calls today, and after this update it can be staked on tonight's game - by the agent itself, following tool descriptions that actively teach it how. Whether that's a bug or a feature depends on who owns the sats.
 
-## Why nothing flagged this
-
-There is no malicious code here. No weird domain, no obfuscated blob. It's a text edit in a description field, and text edits don't trip code scanners. npm audit reports zero vulnerabilities for this package. It's right, technically. The only reader of that text is your agent.
-
-You never read tool descriptions. Your agent does. That's the whole problem.
-
-## I'm not calling this malicious
-
-Maybe the author decided the sentence was redundant. I can't know intent and I won't guess. What I know is structural: the only safety mechanism is prose, patch releases install silently, and nothing diffs the contract your agent sees against the one you approved. Any package can do this, any day.
-
-You'll never see a confirmation dialog. Not because you clicked "don't ask again" - because someone deleted the sentence that triggered it.
-
-(This is one of 12 packages caught the same way in a weekend scan of crypto-related MCP servers. The rest deserve their own post.)
+And in multi-agent setups the operator view aggregates every agent's bets. Nice for the operator. The agents' owners might want a word.
 
 ## Check it yourself
 
-Every number in this post came from a run I did today, October 6th. The package is still on npm, 2.0.3 is still the latest version, the README still contradicts the contract. You don't have to trust me:
-
 npm i -g rugsnare
 
-mkdir jadchene-check && cd jadchene-check
-npm i --ignore-scripts @jadchene/mcp-ssh-service@2.0.2
+mkdir lightning-check && cd lightning-check
+npm i --ignore-scripts lightning-wallet-mcp@1.7.0
 
 save this as mcp.json in that folder (rugsnare talks to servers through a config):
 
 {
   "mcpServers": {
-    "jadchene-ssh": {
+    "lightning-wallet": {
       "command": "node",
-      "args": ["node_modules/@jadchene/mcp-ssh-service/dist/index.js"]
+      "args": ["node_modules/lightning-wallet-mcp/dist/index.js"]
     }
   }
 }
 
 rugsnare scan --config mcp.json
-npm i --ignore-scripts @jadchene/mcp-ssh-service@2.0.3
+npm i --ignore-scripts lightning-wallet-mcp@1.8.0
 rugsnare diff --config mcp.json
 
-exit 1, 48 findings, all COSMETIC - and the diff prints the was/became text for each drifted tool, so you can read the edits yourself instead of trusting my quotes.
+exit 1, 6 findings: 5 NEW prediction_* tools plus a BREAKING schema change on register_webhook. 54 tools become 59.
 
 Same pin-then-diff works on any MCP package you depend on. That's the whole idea.
+
+(Same scan also caught an SSH server whose patch release deleted "Requires confirmation" from 48 destructive tools. That one deserves its own post.)
 
 Repo (Apache-2.0, runs locally): https://github.com/Paraphern/rugsnare

@@ -105,7 +105,7 @@ jobs:
             console.log(`wrote history/${slug}.json`);
           '
           git add history
-          SUMMARY=$(node -e 'const s=JSON.parse(require("node:fs").readFileSync("/tmp/scan.json","utf8"));console.log(((s.result&&s.result.silentChanges)??(s.silentChanges??0))+"c/"+((s.result&&s.result.checked)??(s.checked??0))+"v")' 2>/dev/null || echo "0c/0v")
+          SUMMARY=$(node -e 'const s=JSON.parse(require("node:fs").readFileSync("/tmp/scan.json","utf8"));if(s.error||(s.result&&s.result.error)){console.log("fail")}else{console.log(((s.result&&s.result.silentChanges)??(s.silentChanges??0))+"c/"+((s.result&&s.result.checked)??(s.checked??0))+"v")}' 2>/dev/null || echo "fail")
           git commit -m "scan(history): ${PKG} [skip ci] — ${SUMMARY}" || echo "nothing to commit"
           git push -u origin scans
         env:

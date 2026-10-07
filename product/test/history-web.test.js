@@ -125,6 +125,14 @@ test('parseScanCommit: feed entries from scans-branch commits', () => {
   // forged "package" values in the message are rejected (they render on the page)
   assert.equal(parseScanCommit({ commit: { message: 'scan(history): <img src=x onerror=1> [skip ci]' } }), null);
   assert.equal(parseScanCommit({ commit: { message: 'scan(history): ../etc/passwd [skip ci]' } }), null);
+  // review 35: failed scans carry "fail" instead of a misleading 0c/0v
+  const failed = parseScanCommit({ commit: { message: 'scan(history): token-goat [skip ci] — fail', committer: { date: '2026-10-07T10:00:00Z' } } });
+  assert.equal(failed.failed, true);
+  assert.equal(failed.silentChanges, undefined);
+  // and 0c/0v still parses with numbers
+  const nodata = parseScanCommit({ commit: { message: 'scan(history): some-pkg [skip ci] — 0c/10v' } });
+  assert.equal(nodata.silentChanges, 0);
+  assert.equal(nodata.checked, 10);
 });
 
 test('normalizePackageInput: strips npx-style runners and flags', () => {

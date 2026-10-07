@@ -189,4 +189,4 @@ If an attacker changes the code but not the contract, no description hash can se
 | **RugSnare as an MCP tool** | ✅ shipped | `rugsnare mcp` — read-only stdio server (`drift_feed_status` over the public drift-feed, `pins_report` over local pins) for marketplaces and agents; pinned by its own gate (dogfood baseline in corpus/03); Docker image (`docker/`) + registry entry (`registry/`) prepared |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · Secret vault (AI sees placeholders, proxy injects real keys) |
 
-*289 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*293 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

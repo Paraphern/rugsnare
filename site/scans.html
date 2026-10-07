@@ -62,9 +62,12 @@ function loadArchivePage() {
       a.entries.forEach(function (e) {
         var when = e.ts ? timeAgo(new Date(e.ts)) : '';
         var rowId = 'arch-' + (++archSeq);
-        var safePkg = esc(e.package).replace(/'/g, '&#39;');
         var verdict = '';
-        if (e.silentChanges !== undefined) {
+        if (e.failed) {
+          verdict = '<span style="color:#b45309;font-size:12px">⚠ scan failed — see the log</span>';
+        } else if (e.silentChanges !== undefined && e.checked === 0) {
+          verdict = '<span style="color:#64748b;font-size:12px">⊘ no data — 0 of 0 versions could start</span>';
+        } else if (e.silentChanges !== undefined) {
           verdict = (e.silentChanges === 0)
             ? '<span style="color:#059669;font-size:12px">✅ ' + e.silentChanges + ' changes / ' + e.checked + ' versions</span>'
             : '<span style="color:#ea580c;font-size:12px;font-weight:600">⚠️ ' + e.silentChanges + ' change(s) / ' + e.checked + ' versions</span>';
@@ -72,13 +75,18 @@ function loadArchivePage() {
         var row = document.createElement('div');
         row.style.cssText = 'padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:13px';
         row.innerHTML = '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">'
-          + '<span style="font-family:var(--font-mono);cursor:pointer" onclick="toggleArchiveRow(\'' + rowId + '\', \'' + safePkg + '\')"><b>▾</b> ' + esc(e.package) + '</span>'
+          + '<span style="font-family:var(--font-mono);cursor:pointer"><b>▾</b> ' + esc(e.package) + '</span>'
           + '<span style="color:#64748b;font-size:12px">' + verdict
           + (verdict ? ' · ' : '') + esc(when)
-          + ' · <a href="#" onclick="toggleArchiveRow(\'' + rowId + '\', \'' + safePkg + '\');return false;" style="color:#2563eb">details</a>'
+          + ' · <a href="#" data-row="' + rowId + '" class="arch-toggle" style="color:#2563eb">details</a>'
           + (e.commitUrl ? ' · <a href="' + esc(e.commitUrl) + '" target="_blank" rel="noopener" style="color:#64748b">log</a>' : '')
           + '</span></div>'
           + '<div id="' + rowId + '" style="display:none;margin-top:8px"></div>';
+        // listeners with closures: no inline JS built from external values
+        (function (id, pkg) {
+          row.querySelector('.arch-toggle').addEventListener('click', function (ev) { ev.preventDefault(); toggleArchiveRow(id, pkg); });
+          row.querySelector('span[style*="cursor:pointer"]').addEventListener('click', function () { toggleArchiveRow(id, pkg); });
+        })(rowId, e.package);
         host.appendChild(row);
       });
       if (a.hasMore && btn) btn.style.display = 'inline-block';

@@ -188,20 +188,21 @@ export function packageSlug(pkg) {
 
 /**
  * Parse one commit from the `scans` branch into an archive entry.
- * Messages: "scan(history): <pkg> [skip ci] — 359c/10v" (new, with summary)
- * or "scan(history): <pkg> [skip ci]" (old). Returns null when the "package"
- * is not whitelist-shaped — the value renders on the page.
+ * Messages: "scan(history): <pkg> [skip ci] — 359c/10v" (summary),
+ * "scan(history): <pkg> [skip ci] — fail" (scan could not run), or the old
+ * suffix-less form. Returns null when the "package" is not whitelist-shaped
+ * — the value renders on the page.
  */
 export function parseScanCommit(commit) {
   const message = commit?.commit?.message ?? '';
-  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+—\s+(\d+)c\/(\d+)v)?/);
+  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+—\s+(?:(\d+)c\/(\d+)v|(fail)))?/);
   if (!m || !validPackageName(m[1])) return null;
   return {
     package: m[1],
     ts: commit.commit.committer?.date ?? commit.commit.author?.date ?? null,
     commitUrl: commit.html_url ?? null,
     slug: packageSlug(m[1]),
-    ...(m[2] !== undefined ? { silentChanges: Number(m[2]), checked: Number(m[3]) } : {}),
+    ...(m[4] ? { failed: true } : m[2] !== undefined ? { silentChanges: Number(m[2]), checked: Number(m[3]) } : {}),
   };
 }
 

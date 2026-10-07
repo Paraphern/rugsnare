@@ -10,6 +10,12 @@ function rateLimited(ip) {
   const hits = (rateBuckets.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
   hits.push(now);
   rateBuckets.set(ip, hits);
+  // opportunistic prune: keep the map from growing forever across isolates
+  if (rateBuckets.size > 1000) {
+    for (const [k, v] of rateBuckets) {
+      if (v.every((t) => now - t >= RATE_WINDOW_MS)) rateBuckets.delete(k);
+    }
+  }
   return hits.length > RATE_MAX;
 }
 
