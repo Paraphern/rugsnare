@@ -11,7 +11,7 @@ This report documents *what changed* and *whether the publisher announced it*. I
 | server | installs/week* | window | findings | announced? |
 |---|---|---|---|---|
 | [@azure-devops/mcp](https://www.npmjs.com/package/@azure-devops/mcp) (Microsoft) | 120,379 | 2.5.0 → 2.10.0 (6 months of minors) | **110**: 75 tools GONE, 29 NEW, 6 BREAKING drifts | warning shipped one version *after* the change |
-| [chrome-devtools-mcp](https://www.npmjs.com/package/chrome-devtools-mcp) (Chrome DevTools team) | 1,731,154 | 1.8.0 → 1.10.1 (5 weeks) | **30**: 28 schema changes + 1 cosmetic + 1 new tool; **file-write sandbox off by default since 1.9.0** | blog + config doc, not at update time |
+| [chrome-devtools-mcp](https://www.npmjs.com/package/chrome-devtools-mcp) (Chrome DevTools team) | 1,731,154 | 1.8.0 → 1.10.1 (5 weeks) | **30**: 28 schema changes + 1 cosmetic + 1 new tool; **file-write security story inconsistent across changelog/blog/behavior since 1.9.0** | changelog + blog + docs mutually inconsistent |
 | [@currents/mcp](https://www.npmjs.com/package/@currents/mcp) | 102,850 | 2.3.3 → 2.6.1 (minors) | **45**: 37 drifts (mostly BREAKING), 7 new, 1 gone | changelog never says "breaking" |
 | [hostinger-api-mcp](https://www.npmjs.com/package/hostinger-api-mcp) | 264,539 | 2.4.0 → 2.9.0 (one week, 6 releases) | **6**: agent-skill (SKILL.md) resources injected | not mentioned in docs or changelog |
 | [@hubspot/mcp-server](https://www.npmjs.com/package/@hubspot/mcp-server) | 37,206 | 0.1.0 → 0.4.0 (2025, pre-1.0) | 23: 15 drifts, 6 new, 2 gone | old window; package dormant since Jun 2025 |
@@ -68,13 +68,18 @@ Findings 1.8.0 → 1.10.1, decomposed honestly:
 
 1. **28 tools flagged BREAKING** - schema serialization changed across the board (declared dialect draft-07 → 2020-12, `additionalProperties` form, key order) from the MCP SDK v2 migration. A normalized diff shows 6 tools with edits beyond the dialect/ordering (fill_form, list_console_messages, list_network_requests, navigate_page, new_page, wait_for); spot-checked top-level parameters were unchanged. Mechanical - but every hash-level gate fires, and nothing was labeled breaking.
 2. **1 new tool** (`get_css_styles`) - announced in the changelog.
-3. **The security default flip (not mechanical):** 1.8.0 prints at startup:
+3. **The file-write security story stopped matching (not mechanical):** 1.8.0 prints at startup:
 
    > File-writing tools will be restricted to the OS temp directory.
 
-   From 1.9.0 on, that restriction is gone. [CHANGELOG 1.9.0](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/CHANGELOG.md): "Add --allow-unrestricted-paths by default for CLI" (PR #2618). The [official Chrome blog](https://developer.chrome.com/blog/new-in-devtools-october-2026): "The CLI now includes --allow-unrestricted-paths by default." The [configuration docs](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/configuration.md) still describe the temp-dir restriction as the safety behavior, to be lifted "only when connecting a trusted local client."
+   From 1.9.0 on, that warning is gone. What actually happened to the restriction depends on which source you believe - and that inconsistency is the finding:
 
-   Net effect: the agent's file-write scope went from the OS temp directory to the entire filesystem, in a minor update, with no prompt. Documented in a blog and a config doc - discovered at update time by nobody.
+   - [CHANGELOG 1.9.0](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/CHANGELOG.md): "Add --allow-unrestricted-paths by default for CLI" (PR #2618)
+   - [official Chrome blog](https://developer.chrome.com/blog/new-in-devtools-october-2026): "The CLI now includes --allow-unrestricted-paths by default"
+   - [configuration docs](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/configuration.md): still document the flag default as `false` and describe the temp-dir restriction as the safety behavior ("Use this only when connecting a trusted local client")
+   - observed behavior per the repo's own open issues: [#2917](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2917) reports writes outside temp still refused under default flags (the startup warning never prints - guard bug), while [#2909](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2909) reports `--allowUnrestrictedPaths=false` failing to restrict
+
+   An operator reading the changelog, the blog and `--help` gets three different stories about the same security property, and the one signal that stated it at runtime - the startup warning - went silent in a minor update. Whatever the intended semantics, "which files can my agent write" became unauditable from the outside between 1.8.0 and 1.10.1. A drift gate is how an operator would even notice the story changed.
 
 **Repro:**
 

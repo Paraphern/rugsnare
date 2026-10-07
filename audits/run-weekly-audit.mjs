@@ -16,7 +16,8 @@ function run(cmd, args, opts = {}) {
 }
 
 function sh(cmd, opts = {}) {
-  try { return { ok: true, out: execFileSync('bash', ['-c', cmd], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 15 * 60 * 1000, ...opts }) }; }
+  // 2>&1 merged: rugsnare prints its DRIFT DETECTED summary to stderr
+  try { return { ok: true, out: execFileSync('bash', ['-c', cmd + ' 2>&1'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 15 * 60 * 1000, ...opts }) }; }
   catch (e) { return { ok: false, out: (e.stdout || '') + (e.stderr || ''), code: e.status }; }
 }
 

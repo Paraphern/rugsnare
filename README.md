@@ -27,7 +27,7 @@ We pinned the most-installed MCP servers on npm, ran the update, and diffed. One
 | server | installs/wk | findings |
 |---|---|---|
 | @azure-devops/mcp (Microsoft) | 120k | **110** - 75 tools removed between minor versions; [victims in #1448](https://github.com/microsoft/azure-devops-mcp/issues/1448) |
-| chrome-devtools-mcp (Chrome DevTools team) | 1.7M | **30** - all schemas changed + file-write sandbox turned off by default in a minor |
+| chrome-devtools-mcp (Chrome DevTools team) | 1.7M | **30** - all schemas changed + the file-write security story stopped matching across changelog/blog/behavior |
 | @currents/mcp | 103k | **45** - 37 BREAKING drifts, changelog never says "breaking" |
 | hostinger-api-mcp | 265k | **6** - agent-instruction (SKILL.md) resources injected in one week |
 | @notionhq/notion-mcp-server (official Notion) | 195k | **0** |
