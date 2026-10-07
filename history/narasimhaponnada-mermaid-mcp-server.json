@@ -1,0 +1,24 @@
+{
+  "package": "@narasimhaponnada/mermaid-mcp-server",
+  "ts": "2026-10-07T11:11:43.850Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37612219032",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "package": "@narasimhaponnada/mermaid-mcp-server",
+    "checked": 1,
+    "planned": 3,
+    "unreachable": [
+      {
+        "version": "1.0.0",
+        "reason": "MCP server exited early (code 1)"
+      },
+      {
+        "version": "1.0.1",
+        "reason": "MCP server exited early (code 1)"
+      }
+    ],
+    "pairs": [],
+    "silentChanges": 0,
+    "clean": true
+  }
+}
