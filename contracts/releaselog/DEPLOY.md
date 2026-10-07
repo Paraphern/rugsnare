@@ -137,3 +137,15 @@ Decoded input from the transaction:
 | Проверка | `npx rugsnare verify rugsnare-1.0.1.tgz --version 1.0.1 --chain base` → VERIFIED |
 
 Пост-пин чек строки (decoded input): versionKey keccak("1.0.1"), artifactHash `7630d7be…82fbe00`, строка `"1.0.1"` — пройден.
+
+## Пин 1.1.0 (2026-10-07)
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0xa8ef0d161c4654c48f445ff6774891112d403bfc483641cbeb04d67f75c447ff` (block 52299306, index 60) |
+| artifact sha256 | `21b23f9dd5b64f81a3639775581726cdb56b502a580429b774428a8422e9d335` (= published dist bytes) |
+| versionKey | keccak256("1.1.0") = `0x6815ba53416ba06aff1932cc76b3832272bafab9bc8e066be382e32b06ba5546` |
+| npm | rugsnare@1.1.0, gitHead `cdc9a7b6` (= релизный коммит, тег-паритет), dist.shasum `f11b2d85...` |
+| Проверка | `npx rugsnare verify rugsnare-1.1.0.tgz --version 1.1.0 --chain base` → VERIFIED (18:47 local) |
+
+Пост-пин чек строки: topics[1]=versionKey ✓, data=artifactHash+"1.1.0" ✓ (лог из Remix).
