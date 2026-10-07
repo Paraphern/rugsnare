@@ -63,3 +63,4 @@ native/test-version.syso
 /tools/*.zip
 # wrangler local state (contains account ids)
 .wrangler/
+audits/.weekly-work/

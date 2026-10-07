@@ -11,13 +11,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const work = join(here, '.weekly-work');
 const list = JSON.parse(readFileSync(join(here, 'watch-list.json'), 'utf8')).servers;
 
-function run(cmd, args, opts = {}) {
-  return execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 15 * 60 * 1000, ...opts });
-}
-
 function sh(cmd, opts = {}) {
-  // 2>&1 merged: rugsnare prints its DRIFT DETECTED summary to stderr
-  try { return { ok: true, out: execFileSync('bash', ['-c', cmd + ' 2>&1'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 15 * 60 * 1000, ...opts }) }; }
+  // { ...; } 2>&1: redirection must cover the WHOLE chain - rugsnare prints its
+  // DRIFT DETECTED summary to stderr, and appending 2>&1 to the command string
+  // would bind it to the last statement only
+  try { return { ok: true, out: execFileSync('bash', ['-c', '{ ' + cmd + '; } 2>&1'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 15 * 60 * 1000, ...opts }) }; }
   catch (e) { return { ok: false, out: (e.stdout || '') + (e.stderr || ''), code: e.status }; }
 }
 
@@ -28,8 +26,8 @@ const results = [];
 for (const s of list) {
   const entry = { server: s.name, package: s.package, pinned: s.pinned, latest: null, findings: null, status: 'ok', excerpt: [] };
   try {
-    // resolve latest
-    entry.latest = run('npm', ['view', s.package, 'version']).trim();
+    // resolve latest (via sh: execFileSync('npm') fails with ENOENT on Windows)
+    entry.latest = sh(`npm view ${s.package} version`).out.trim().split('\n').pop() || null;
 
     // mcp.json (always fresh per server)
     const cfg = { mcpServers: { [s.name]: { command: 'node', args: [s.entry, ...(s.args || [])], env: s.env || {} } } };
