@@ -45,7 +45,7 @@ for (const s of list) {
     sh('npm rebuild keytar'); // no-op when absent
     const diff = sh('rugsnare diff --config mcp.json; echo "EXIT:$?"');
 
-    const m = diff.out.match(/DRIFT DETECTED \((\d+) finding/;
+    const m = diff.out.match(/DRIFT DETECTED \((\d+) finding/);
     entry.findings = m ? Number(m[1]) : 0;
     entry.clean = /rugsnare diff: clean/.test(diff.out);
     entry.excerpt = diff.out.split('\n').filter(l => /\[DRIFT\]|\[NEW \]|\[GONE\]/.test(l)).slice(0, 12);
