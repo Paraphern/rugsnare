@@ -4,6 +4,23 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose — this is a roadmap, not a secret.)
 
+## History scanner gaps (found while verifying the survey post, 07.10)
+
+The survey reproduction exposed three honest limits of `rugsnare history`:
+
+- **Env-gated servers** (currents, hubspot): they refuse to boot without
+  credentials, so tools/list is unreachable. Idea: `--stub-env` mode that
+  injects obviously-fake values (CURRENTS_API_KEY=rugsnare-stub) — servers
+  that only check presence will enumerate tools; servers that validate
+  against an API still won't. Document which class each falls into.
+- **Native modules** (azure-devops/mcp via keytar): the binary is built by
+  install scripts, which --ignore-scripts forbids by design. The scan should
+  report "requires native build — excluded" instead of a bare start failure,
+  so users know why.
+- **Resources/skills drift**: hostinger injected 6 SKILL.md resources — a
+  real rug vector our history ignores (tools only today). Extend
+  diffVersionContracts with resources/list and prompts/list counts.
+
 ## History scanning (`rugsnare history` + rugsnare.com/#history, added in 1.1.0)
 
 What exists: CLI runs every version locally (runtime truth, was/became per
