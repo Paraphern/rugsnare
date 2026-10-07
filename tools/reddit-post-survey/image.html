@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1200px; height:630px; }
+  body { background:#0D1117; font-family:Consolas,'Cascadia Mono','Courier New',monospace; color:#E6EDF3; display:flex; }
+  .left { width:680px; padding:26px 0 26px 26px; }
+  .term { background:#161B22; border:1px solid #30363D; border-radius:10px; height:578px; box-shadow:0 10px 34px rgba(0,0,0,.55); display:flex; flex-direction:column; overflow:hidden; }
+  .bar { background:#21262D; padding:11px 14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #30363D; }
+  .dot { width:11px; height:11px; border-radius:50%; flex:none; }
+  .r{background:#F85149} .y{background:#D29922} .g{background:#3FB950}
+  .title { margin-left:10px; font-size:13px; color:#8B949E; white-space:nowrap; overflow:hidden; }
+  .body { padding:16px 18px; font-size:14.5px; line-height:1.78; }
+  .p { color:#3FB950; }
+  .drift { color:#F85149; font-weight:bold; }
+  .row { white-space:nowrap; display:flex; }
+  .nm { color:#C9D1D9; display:inline-block; width:255px; }
+  .ct { display:inline-block; width:48px; text-align:right; margin-right:14px; font-weight:bold; }
+  .note { color:#8B949E; }
+  .bad .ct, .bad .nm { color:#F85149; }
+  .warn .ct, .warn .nm { color:#E3B341; }
+  .ok .ct, .ok .nm { color:#3FB950; }
+  .ok .note { color:#3FB950; opacity:.75; }
+  .right { flex:1; padding:60px 44px 34px 38px; display:flex; flex-direction:column; min-width:0; }
+  .right h1 { font-size:36px; line-height:1.24; font-weight:800; }
+  .right h1 .q { color:#E3B341; }
+  .red { margin-top:18px; font-size:22px; line-height:1.35; font-weight:700; color:#F85149; }
+  .big { margin-top:24px; font-size:68px; font-weight:800; color:#F85149; }
+  .big span { font-size:19px; color:#8B949E; font-weight:400; display:block; margin-top:4px; }
+  .foot { margin-top:auto; color:#8B949E; font-size:13.5px; line-height:1.7; }
+  .foot b { color:#C9D1D9; }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="term">
+      <div class="bar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <div class="title">rugsnare diff - npm MCP top audit - 2026-10-07</div>
+      </div>
+      <div class="body">
+        <div><span class="p">$</span> rugsnare diff --config audit.json</div>
+        <div class="drift">DRIFT DETECTED (218 findings)</div>
+        <div>&nbsp;</div>
+        <div class="row bad"><span class="nm">azure-devtools (Microsoft)</span><span class="ct">110</span><span class="note">75 tools GONE + 6 BREAKING</span></div>
+        <div class="row bad"><span class="nm">chrome-devtools (Google)</span><span class="ct">30</span><span class="note">28 schemas + sandbox OFF</span></div>
+        <div class="row bad"><span class="nm">currents</span><span class="ct">45</span><span class="note">37 BREAKING, unannounced</span></div>
+        <div class="row warn"><span class="nm">hostinger</span><span class="ct">6</span><span class="note">+6 agent skills injected</span></div>
+        <div class="row warn"><span class="nm">hubspot (old window)</span><span class="ct">23</span><span class="note">12 BREAKING</span></div>
+        <div class="row warn"><span class="nm">pandacss (real major)</span><span class="ct">4</span><span class="note">semver-legit</span></div>
+        <div class="row ok"><span class="nm">notion (official)</span><span class="ct">0</span><span class="note">3 months, clean</span></div>
+        <div class="row ok"><span class="nm">heroku</span><span class="ct">0</span><span class="note">6 patches, clean</span></div>
+        <div>&nbsp;</div>
+        <div class="note">npm page, @azure-devops/mcp:</div>
+        <div style="color:#E3B341; white-space:nowrap;">"temporarily pin the version to @2.8.1"</div>
+        <div>&nbsp;</div>
+        <div class="note">exit 1</div>
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <h1>Even <span class="q">Microsoft</span> says:<br>"pin the version."</h1>
+    <div class="red">75 tools gone in a minor.<br>Sandbox off by default.<br>Agent skills injected.</div>
+    <div class="big">218<span>silent contract changes in the npm MCP top</span></div>
+    <div class="foot"><b>8 vendors audited</b> · pin -&gt; update -&gt; diff · Oct 7, 2026<br>rugsnare diff: exit 1</div>
+  </div>
+</body>
+</html>
