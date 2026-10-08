@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+- **BREAKING gradation (P3, idea by Jakub Hecht / KyttoMCP)**: schema drift
+  now grades as `BREAKING` (parameter-level: added/removed/typed/required/
+  enum) or `NOTATION` (schema bytes changed but parameters did not — $schema
+  dialect switches, additionalProperties form). Validated live on
+  chrome-devtools-mcp 1.8.0→1.10.1: 30 former BREAKING findings now read
+  30 NOTATION + 0 BREAKING (the MCP SDK v2 migration wave was pure notation).
+  Same gradation in `rugsnare history` pair diffs. Weakening changes (dropped
+  `additionalProperties:false`) carry a `[weakens validation]` prefix in the
+  notation note — still NOTATION, but the reader sees validation loosened.
+- **`--stub-env` flag for `rugsnare history`**: injects presence-only dummy
+  values for common credential env vars (CURRENTS_API_KEY, HOSTINGER_API_KEY,
+  AZURE_DEVOPS_EXT_PAT, PRIVATE_APP_ACCESS_TOKEN, CURRENTS_PROJECT_ID) —
+  servers that only check key presence at boot now enumerate their
+  tools/list. Proven in the field by the October 2026 top-npm audit:
+  @currents/mcp (previously unreachable) scans clean with the flag.
+- Open **Pin Format specification** drafted at `docs/PIN-SPEC.md` (internal;
+  publication gated on ecosystem timing).
+
 ## [1.1.0] — 2026-10-06
 
 - **Whole-history scanning** (new): `rugsnare history <package> [--last N]

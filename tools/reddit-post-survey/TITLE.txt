@@ -1,0 +1,1 @@
+[Showcase] Microsoft broke 75 MCP tools between minor versions - its own npm page says "pin the version". I audited the top MCP servers on npm. It gets worse.

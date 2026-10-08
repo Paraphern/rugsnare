@@ -11,7 +11,7 @@ This report documents *what changed* and *whether the publisher announced it*. I
 | server | installs/week* | window | findings | announced? |
 |---|---|---|---|---|
 | [@azure-devops/mcp](https://www.npmjs.com/package/@azure-devops/mcp) (Microsoft) | 120,379 | 2.5.0 → 2.10.0 (6 months of minors) | **110**: 75 tools GONE, 29 NEW, 6 BREAKING drifts | warning shipped one version *after* the change |
-| [chrome-devtools-mcp](https://www.npmjs.com/package/chrome-devtools-mcp) (Chrome DevTools team) | 1,731,154 | 1.8.0 → 1.10.1 (5 weeks) | **30**: 28 schema changes + 1 cosmetic + 1 new tool; **file-write security story inconsistent across changelog/blog/behavior since 1.9.0** | changelog + blog + docs mutually inconsistent |
+| [chrome-devtools-mcp](https://www.npmjs.com/package/chrome-devtools-mcp) (Chrome DevTools team) | 1,731,154 | 1.8.0 → 1.10.1 (5 weeks) | **30**: 28 schema changes (re-graded 2026-10-08: **all notation, 0 parameter-level**) + 1 cosmetic + 1 new tool; **file-write security story inconsistent across changelog/blog/behavior since 1.9.0** | changelog + blog + docs mutually inconsistent |
 | [@currents/mcp](https://www.npmjs.com/package/@currents/mcp) | 102,850 | 2.3.3 → 2.6.1 (minors) | **45**: 37 drifts (mostly BREAKING), 7 new, 1 gone | changelog never says "breaking" |
 | [hostinger-api-mcp](https://www.npmjs.com/package/hostinger-api-mcp) | 264,539 | 2.4.0 → 2.9.0 (one week, 6 releases) | **6**: agent-skill (SKILL.md) resources injected | not mentioned in docs or changelog |
 | [@hubspot/mcp-server](https://www.npmjs.com/package/@hubspot/mcp-server) | 37,206 | 0.1.0 → 0.4.0 (2025, pre-1.0) | 23: 15 drifts, 6 new, 2 gone | old window; package dormant since Jun 2025 |
@@ -40,7 +40,7 @@ Announcements: [2.9.0](https://github.com/microsoft/azure-devops-mcp/releases) s
 
 Risk beyond inconvenience: (1) allowlists retain 75 dead names - a future (or tampered) release reusing an old name inherits stale trust; (2) the rename redrew the read/write boundary - a pre-rename `pipelines_*` allowlist pattern now matches write tools that didn't exist when it was written; (3) `string → untyped` is where validation quietly stops protecting.
 
-**Repro** (note: 2.10.0 pulls `keytar`, a native OS-keychain module - with `--ignore-scripts` it needs a rebuild to start; that dependency arriving silently in a minor is its own finding):
+**Repro** (note: 2.10.0 pulls `keytar`, a native OS-keychain module - with `--ignore-scripts` it needs a rebuild to start; that dependency arriving silently in a minor is its own finding. The rebuild stays manual deliberately: automating it would run a third party's native install scripts and defeat the `--ignore-scripts` guarantee this method rests on):
 
 ```bash
 npm i -g rugsnare
@@ -66,7 +66,7 @@ rugsnare diff --config mcp.json        # DRIFT DETECTED (110 findings), exit 1
 
 Findings 1.8.0 → 1.10.1, decomposed honestly:
 
-1. **28 tools flagged BREAKING** - schema serialization changed across the board (declared dialect draft-07 → 2020-12, `additionalProperties` form, key order) from the MCP SDK v2 migration. A normalized diff shows 6 tools with edits beyond the dialect/ordering (fill_form, list_console_messages, list_network_requests, navigate_page, new_page, wait_for); spot-checked top-level parameters were unchanged. Mechanical - but every hash-level gate fires, and nothing was labeled breaking.
+1. **28 tools flagged BREAKING by schema hash - and on re-grade (NOTATION class, added to rugsnare 2026-10-08): zero parameter-level breaking changes.** No parameter added or removed anywhere across the migration, no type changes, no required changes. The wave decomposes into pure notation: declared dialect (draft-07 → 2020-12), key order, `additionalProperties` form - plus, on close inspection of the residue: SDK-generated integer bounds (`minimum: -9007199254740991` / `maximum: 9007199254740991` appearing on `timeout`, `pageSize`, `pageIdx` in 6 tools - a serialization artifact of MCP SDK v2), parameter-description text edits in several tools, and one loosened validation (`fill_form.elements` dropped `additionalProperties: false` from its array items, widening what passes). An earlier version of this section called the six tools "edits beyond the dialect/ordering" - our misread of residual diffs; corrected 2026-10-08. Every hash-level gate still fires on such a wave, and the release was labeled breaking nowhere - which is the argument for grading, not for ignoring drift.
 2. **1 new tool** (`get_css_styles`) - announced in the changelog.
 3. **The file-write security story stopped matching (not mechanical):** 1.8.0 prints at startup:
 
@@ -104,13 +104,13 @@ Three generic tools (search / execute / multi-execute, up to 20 chained operatio
 
 The tool schemas did not change at all - schema-only gates see nothing. The instruction layer changed, and the instruction layer is what the agent obeys. The API token [inherits the full permissions of the creating user](https://docs.hostinger.com/api-reference/overview) (DNS, billing, VPS).
 
-**Repro:** same pattern with `hostinger-api-mcp@2.4.0` → `@2.9.0`, entry `node_modules/hostinger-api-mcp/src/servers/all.js`, env `HOSTINGER_API_KEY=dummy_for_scan`. Result: DRIFT DETECTED (6 findings), exit 1.
+**Repro:** same pattern with `hostinger-api-mcp@2.4.0` → `@2.9.0`, entry `node_modules/hostinger-api-mcp/src/servers/all.js`, env `HOSTINGER_API_KEY=dummy_for_scan`. Result: DRIFT DETECTED (6 findings), exit 1. Single-command alternative: `rugsnare history hostinger-api-mcp --stub-env`.
 
 ## Case 4: @currents/mcp - 45 findings, zero "breaking" in the changelog
 
 CI tooling. Every action tool drifted across minors 2.3.3 → 2.6.1 (2026-06-15 → 2026-09-23): quarantine/skip/tag actions, webhooks, jira actions, run management - 37 drifts (mostly BREAKING schema changes), 7 new tools, 1 removed. The [changelog](https://currents.dev/changelog) is cheerful and never says "breaking". An agent driving CI quarantines against a stale schema is a 3 a.m. failure with no humans in the room.
 
-**Repro:** `@currents/mcp@2.3.3` → `@2.6.1`, entry `node_modules/@currents/mcp/dist/index.mjs`, env `CURRENTS_API_KEY=dummy_for_scan`, `CURRENTS_PROJECT_ID=dummy`. Result: DRIFT DETECTED (45 findings), exit 1.
+**Repro:** `@currents/mcp@2.3.3` → `@2.6.1`, entry `node_modules/@currents/mcp/dist/index.mjs`, env `CURRENTS_API_KEY=dummy_for_scan`, `CURRENTS_PROJECT_ID=dummy`. Result: DRIFT DETECTED (45 findings), exit 1. Single-command alternative: `rugsnare history @currents/mcp --stub-env` (the same flag unblocks `@hubspot/mcp-server` above).
 
 ## Notes on the rest
 

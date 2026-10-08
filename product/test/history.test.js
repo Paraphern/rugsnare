@@ -49,11 +49,22 @@ test('diffVersionContracts: unchanged, drift, new, removed', () => {
   assert.equal(diffVersionContracts(older, older).length, 0);
 });
 
-test('diffVersionContracts: schema change is BREAKING', () => {
-  const older = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x' } } };
-  const newer = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x' } } };
+test('diffVersionContracts: schema change is BREAKING (with real schemas); hash-only change without schemas is NOTATION (P3)', () => {
+  // real parameter change → BREAKING
+  const older = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x', inputSchema: { type: 'object', properties: { q: {} } } } } };
+  const newer = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x', inputSchema: { type: 'object', properties: { q: {}, mode: {} }, required: ['mode'] } } } };
   const [f] = diffVersionContracts(older, newer);
   assert.equal(f.driftType, 'BREAKING');
+  assert.equal(f.schemaChanges.length, 1);
+
+  // no schemas stored (legacy pins): schema hash changed but nothing to
+  // compare structurally → conservatively NOTATION (bytes changed, params
+  // unverifiable) — softer than BREAKING but still flagged
+  const older2 = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x' } } };
+  const newer2 = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x' } } };
+  const [f2] = diffVersionContracts(older2, newer2);
+  assert.equal(f2.driftType, 'NOTATION');
+  assert.deepEqual(f2.notationChanges, []);
 });
 
 test('diffVersionContracts: annotation-only flip is DRIFT/ANNOTATION (review 34)', () => {

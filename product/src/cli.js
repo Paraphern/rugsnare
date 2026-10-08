@@ -126,6 +126,7 @@ function parseArgs(argv) {
     else if (a === '--last') flags.last = argv[++i];
     else if (a === '--from') flags.from = argv[++i];
     else if (a === '--to') flags.to = argv[++i];
+    else if (a === '--stub-env') flags.stubEnv = true;
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
@@ -219,6 +220,11 @@ function printVerdict(server, verdicts, json) {
     // human-readable schema changes ("added required parameter 'mode'" not just "schema changed")
     if (v.schemaChanges && v.schemaChanges.length > 0) {
       for (const sc of v.schemaChanges) console.log(`      ${sc}`);
+    }
+    // notation-only drift ($schema dialect / additionalProperties form): the
+    // schema bytes changed but no parameter did — shown softer, not scary
+    if (v.driftType === 'NOTATION' && v.notationChanges) {
+      for (const nc of v.notationChanges) console.log(`      ~ ${nc} (parameters unchanged)`);
     }
     // was/became text: what the agent actually read then vs reads now.
     // tools gate on proseChanged (schema-only drift keeps its old description);
@@ -1014,6 +1020,7 @@ async function cmdHistory(flags) {
     last,
     from,
     to,
+    stubEnv: Boolean(flags.stubEnv),
     onProgress: (m) => { if (!flags.json) console.error(`  ${m}`); },
   });
 

@@ -4,6 +4,23 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose — this is a roadmap, not a secret.)
 
+## Ideas taken from KyttoMCP review (07.10, config-manager neighbor)
+
+- **`rugsnare pin-config`**: rewrite unpinned npx/uvx/@latest entries in MCP
+  configs to exact versions (+ record in pins). We preach against floating
+  versions (floating.js); close the loop by fixing them.
+- **Client tool-limit footprint**: "server exposes N tools; VS Code caps at
+  128" advisory line in scan output.
+- **Digest-check before config writes**: wrap/unwrap should refuse to write
+  if the config file changed externally since we read it (we keep backups;
+  add the guard).
+- **Comment/order-preserving config edits**: their span-level writes keep
+  comments; our JSON.stringify likely flattens JSONC. Audit wrap on
+  VS Code-style configs.
+- Their open issues #12 (raw schema diff, key-reorder false positives) and
+  #13 (no bidi detection) are solved here (canonical hashing, A13) —
+  positioning talking points, not work items.
+
 ## History scanner gaps (found while verifying the survey post, 07.10)
 
 The survey reproduction exposed three honest limits of `rugsnare history`:

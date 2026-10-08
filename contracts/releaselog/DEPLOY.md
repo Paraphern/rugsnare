@@ -149,3 +149,12 @@ Decoded input from the transaction:
 | Проверка | `npx rugsnare verify rugsnare-1.1.0.tgz --version 1.1.0 --chain base` → VERIFIED (18:47 local) |
 
 Пост-пин чек строки: topics[1]=versionKey ✓, data=artifactHash+"1.1.0" ✓ (лог из Remix).
+
+## Чек-лист релиза (для AutoClav: проверять при каждом релизе)
+
+1. `package.json` version + `product/CHANGELOG.md` запись с датой
+2. **README (корень): секция Status & roadmap** — строка новой версии добавлена, «Later» не содержит уже вышедшего
+3. README×2 + сайт: счётчик тестов синхронизирован с фактическим прогоном
+4. `site/latest-native.txt` = версия native-бинарников в Release-ассетах
+5. Тег = publish-коммит = npm gitHead; Base-пин: sha256 тарболла, versionKey, строка версии
+6. `product/server.json` = версия релиза (MCP Registry)

@@ -27,7 +27,7 @@ We pinned the most-installed MCP servers on npm, ran the update, and diffed. One
 | server | installs/wk | findings |
 |---|---|---|
 | @azure-devops/mcp (Microsoft) | 120k | **110** - 75 tools removed between minor versions; [victims in #1448](https://github.com/microsoft/azure-devops-mcp/issues/1448) |
-| chrome-devtools-mcp (Chrome DevTools team) | 1.7M | **30** - all schemas changed + the file-write security story stopped matching across changelog/blog/behavior |
+| chrome-devtools-mcp (Chrome DevTools team) | 1.7M | **30** - all 28 schemas changed (re-graded: pure notation, 0 parameter-level) + the file-write security story stopped matching across changelog/blog/behavior |
 | @currents/mcp | 103k | **45** - 37 BREAKING drifts, changelog never says "breaking" |
 | hostinger-api-mcp | 265k | **6** - agent-instruction (SKILL.md) resources injected in one week |
 | @notionhq/notion-mcp-server (official Notion) | 195k | **0** |
@@ -208,4 +208,4 @@ Since v1.1.0 the same check exists for **any npm package** — `rugsnare history
 | **v1.1.0** | ✅ shipped | **Skills Security**: `skills scan/diff/report` across 14 AI platforms — SHA-256 pinning of instruction files, severity classification, cold-start audit ("already on your machine"), self-contained HTML report · **Whole-history scanning**: `rugsnare history <pkg> [--from --to]` downloads and actually starts every published version and diffs contracts pair by pair (annotation-aware, with publish dates); on the web the ⚙️ Runtime scan runs it in an ephemeral GitHub Actions sandbox — public run logs as evidence, every scan lands in the open [archive](https://rugsnare.com/scans) · undeclared-tool detection in both proxies · `rugsnare version` + `doctor --check-update` (offline by default) · **native launcher** (Go, 7 MB, icon, scheduled checks without admin rights, no Node.js needed) · pinned CI examples (we eat our own floating-version advice) · [on-chain pin](https://basescan.org/tx/0xa8ef0d161c4654c48f445ff6774891112d403bfc483641cbeb04d67f75c447ff) |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · env-stub scanning for credential-gated servers (see `docs/future.md`) |
 
-*294 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*300 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

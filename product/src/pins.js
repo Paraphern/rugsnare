@@ -167,6 +167,32 @@ export function schemaDiff(oldSchema, newSchema) {
   return changes;
 }
 
+/**
+ * Notation-level schema differences: things that change the schema's bytes
+ * (and its hash) but not what a caller can send — $schema dialect switches
+ * (draft-07 → 2020-12, the MCP SDK v2 migration wave) and additionalProperties
+ * form changes. Called out separately from parameter changes so drift can be
+ * graded: parameters = BREAKING, notation-only = NOTATION (P3, idea by
+ * Jakub Hecht / KyttoMCP, validated on chrome-devtools-mcp 1.8.0→1.10.1).
+ *
+ * Weakening notes (e.g. a dropped additionalProperties:false inside an items
+ * schema) are marked with a [weakens validation] prefix — still NOTATION
+ * (no parameter changed) but the reader sees the validation loosened.
+ */
+export function schemaNotationDiff(oldSchema, newSchema) {
+  if (!oldSchema || !newSchema) return [];
+  const notes = [];
+  if (oldSchema.$schema !== newSchema.$schema) {
+    notes.push(`$schema dialect ${oldSchema.$schema ?? 'undeclared'} → ${newSchema.$schema ?? 'undeclared'}`);
+  }
+  const fmt = (v) => (v === undefined ? 'undeclared' : JSON.stringify(v));
+  if (fmt(oldSchema.additionalProperties) !== fmt(newSchema.additionalProperties)) {
+    const tightened = oldSchema.additionalProperties === undefined && newSchema.additionalProperties !== undefined;
+    notes.push(`${tightened ? '' : '[weakens validation] '}additionalProperties ${fmt(oldSchema.additionalProperties)} → ${fmt(newSchema.additionalProperties)}`);
+  }
+  return notes;
+}
+
 export function compareTools(serverPin, liveTools, toolHashFn) {
   const result = [];
   for (const tool of liveTools) {
@@ -178,15 +204,23 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
       const liveProseHash = computeProseHash(tool);
       const schemaChanged = pin.schemaHash !== liveSchemaHash;
       const proseChanged = pin.proseHash !== liveProseHash;
+      const paramChanges = schemaChanged && pin.inputSchema ? schemaDiff(pin.inputSchema, tool.inputSchema) : [];
+      // P3 gradation: schema bytes changed, but no parameter/type/required/
+      // enum difference → notation-only (dialect switch, additionalProperties
+      // form). Lower severity than parameter drift: what a caller can send
+      // did not change.
+      const notationOnly = schemaChanged && paramChanges.length === 0;
+      const notationChanges = notationOnly && pin.inputSchema ? schemaNotationDiff(pin.inputSchema, tool.inputSchema) : [];
       result.push({
         tool: tool.name,
         status: 'DRIFT',
-        driftType: schemaChanged ? 'BREAKING' : 'COSMETIC',
+        driftType: schemaChanged ? (notationOnly ? 'NOTATION' : 'BREAKING') : 'COSMETIC',
         oldHash: pin.hash,
         hash,
         schemaChanged,
         proseChanged,
-        schemaChanges: schemaChanged && pin.inputSchema ? schemaDiff(pin.inputSchema, tool.inputSchema) : [],
+        schemaChanges: paramChanges,
+        ...(notationOnly ? { notationChanges } : {}),
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });

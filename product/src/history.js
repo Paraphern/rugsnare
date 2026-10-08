@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fetchTools } from './rpc.js';
 import { toolHash, schemaHash, proseHash } from './hash.js';
-import { annotationsEqual } from './pins.js';
+import { annotationsEqual, schemaDiff, schemaNotationDiff } from './pins.js';
 import { compareVersions } from './version.js';
 import { extractTgz } from './tarball.js';
 
@@ -130,6 +130,28 @@ function serverEntry(pkgDir) {
  */
 const NPM_INSTALL_ARGS = ['install', '--omit=dev', '--ignore-scripts', '--legacy-peer-deps', '--no-audit', '--no-fund', '--loglevel=error'];
 
+/**
+ * Stub env var NAMES for credential-gated servers (P3 followup, proven in
+ * the field by the Oct 2026 audit): many MCP servers validate only the
+ * PRESENCE of an API key at boot — a dummy marker value lets tools/list
+ * enumerate without any real credential. Var names only; the value is a
+ * fixed non-secret marker string, not a credential.
+ */
+export const STUB_ENV_VARS = [
+  'CURRENTS_API_KEY',
+  'CURRENTS_PROJECT_ID',
+  'HOSTINGER_API_KEY',
+  'AZURE_DEVOPS_EXT_PAT',
+  'PRIVATE_APP_ACCESS_TOKEN',
+];
+const STUB_MARKER = 'rugsnare_stub';
+
+function buildStubEnv() {
+  const env = {};
+  for (const name of STUB_ENV_VARS) env[name] = STUB_MARKER;
+  return env;
+}
+
 function installDeps(pkgDir) {
   const npmCli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const useCli = fs.existsSync(npmCli);
@@ -144,7 +166,7 @@ function installDeps(pkgDir) {
 }
 
 /** List the tool contracts of one version by actually running it. */
-export async function contractOfVersion(name, version, tarballUrl, { timeoutMs = 15000 } = {}) {
+export async function contractOfVersion(name, version, tarballUrl, { timeoutMs = 15000, stubEnv = false } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `rugsnare-hist-${version}-`));
   try {
     const pkgDir = await extractVersion(tarballUrl, dir);
@@ -153,7 +175,7 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
     const { tools } = await fetchTools({
       command: process.execPath,
       args: [entry],
-      env: { ...process.env, RUGSNARE_HISTORY: version },
+      env: { ...process.env, RUGSNARE_HISTORY: version, ...(stubEnv ? buildStubEnv() : {}) },
       cwd: pkgDir,
       timeoutMs,
     });
@@ -203,10 +225,20 @@ export function diffVersionContracts(older, newer) {
       continue;
     }
     const schemaChanged = prev.schemaHash !== pin.schemaHash;
+    // P3 gradation (same rules as `rugsnare diff`): schema bytes changed, but
+    // no parameter/type/required/enum difference → notation-only (dialect
+    // switch, additionalProperties form) — lower severity than BREAKING
+    const paramChanges = schemaChanged && prev.inputSchema && pin.inputSchema
+      ? schemaDiff(prev.inputSchema, pin.inputSchema) : [];
+    const notationOnly = schemaChanged && paramChanges.length === 0;
+    const notationChanges = notationOnly && prev.inputSchema && pin.inputSchema
+      ? schemaNotationDiff(prev.inputSchema, pin.inputSchema) : [];
     findings.push({
       tool: name,
       status: 'DRIFT',
-      driftType: schemaChanged ? 'BREAKING' : 'COSMETIC',
+      driftType: schemaChanged ? (notationOnly ? 'NOTATION' : 'BREAKING') : 'COSMETIC',
+      schemaChanges: paramChanges,
+      ...(notationOnly ? { notationChanges } : {}),
       oldDescription: prev.description,
       newDescription: pin.description,
     });
@@ -221,21 +253,21 @@ export function diffVersionContracts(older, newer) {
  * Full history scan. last N published versions (default 10). Versions that
  * fail to start are reported honestly, not silently skipped.
  */
-export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000, onProgress = () => {} } = {}) {
+export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000, stubEnv = false, onProgress = () => {} } = {}) {
   const { versions, dist, latest, time } = await fetchRegistryVersions(name);
   // --from/--to: inclusive semver window (surveys quote exact ranges);
   // falls back to the last N when no window is given
   const inWindow = versions.filter((v) =>
     (!from || compareVersions(v, from) >= 0) && (!to || compareVersions(v, to) <= 0));
   const chosen = inWindow.slice(-last);
-  onProgress(`${chosen.length} version(s) to check: ${chosen[0]} .. ${chosen.at(-1)} (latest: ${latest})`);
+  onProgress(`${chosen.length} version(s) to check: ${chosen[0]} .. ${chosen.at(-1)} (latest: ${latest})${stubEnv ? ' [stub-env]' : ''}`);
 
   const ran = [];
   const unreachable = [];
   for (const v of chosen) {
     onProgress(`running ${v} ...`);
     try {
-      const c = await contractOfVersion(name, v, dist[v], { timeoutMs });
+      const c = await contractOfVersion(name, v, dist[v], { timeoutMs, stubEnv });
       ran.push(c);
     } catch (e) {
       unreachable.push({ version: v, reason: e.message });
