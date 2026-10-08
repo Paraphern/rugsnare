@@ -20,7 +20,7 @@
 - Open **Pin Format specification** drafted at `docs/PIN-SPEC.md` (internal;
   publication gated on ecosystem timing).
 
-## [1.1.0] — 2026-10-06
+## [1.1.0] — 2026-10-07
 
 - **Whole-history scanning** (new): `rugsnare history <package> [--last N]
   [--from X --to Y]` — downloads every published version from the registry

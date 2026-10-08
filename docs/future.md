@@ -4,6 +4,13 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose — this is a roadmap, not a secret.)
 
+## Release hygiene (from review 42)
+
+- **Native binaries must be built from a clean tree** (ideally the tag): the
+  1.1.0 exe was built from a dirty tree (`vcs.modified=true`). Add a build
+  step that refuses `go build` when `git status` is dirty, or always build
+  from the tag checkout.
+
 ## Ideas taken from KyttoMCP review (07.10, config-manager neighbor)
 
 - **`rugsnare pin-config`**: rewrite unpinned npx/uvx/@latest entries in MCP
