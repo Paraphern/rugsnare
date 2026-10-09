@@ -125,6 +125,12 @@ export { annotationsEqual };
  * Human-readable schema diff: what exactly changed between two inputSchema objects.
  * Returns ["added required parameter 'mode'", "narrowed enum of 'sort' from [asc,desc] to [asc]"] etc.
  */
+/**
+ * Schema diff with direction tagging. Each change carries a direction:
+ * 'tighten' (new/restrictive — more demanded from the agent or less accepted)
+ * or 'loosen' (permissive — constraints removed, channels opened).
+ * Returns [{ text, direction }] for grading BREAKING vs LOOSENED.
+ */
 export function schemaDiff(oldSchema, newSchema) {
   if (!oldSchema || !newSchema) return [];
   const changes = [];
@@ -133,36 +139,40 @@ export function schemaDiff(oldSchema, newSchema) {
   const oldReq = new Set(oldSchema.required ?? []);
   const newReq = new Set(newSchema.required ?? []);
 
-  // added params
+  // added params: new data channel — always tighten (exfil vector risk)
   for (const name of Object.keys(newProps)) {
     if (!oldProps[name]) {
       changes.push(newReq.has(name)
-        ? `added required parameter '${name}' (${newProps[name].type ?? 'unknown'})`
-        : `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`);
+        ? { text: `added required parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' }
+        : { text: `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' });
     }
   }
-  // removed params
+  // removed params: data channel closed — loosen
   for (const name of Object.keys(oldProps)) {
-    if (!newProps[name]) changes.push(`removed parameter '${name}'`);
+    if (!newProps[name]) changes.push({ text: `removed parameter '${name}'`, direction: 'loosen' });
   }
   // changed params
   for (const name of Object.keys(oldProps)) {
     if (!newProps[name]) continue;
     const o = oldProps[name];
     const n = newProps[name];
-    if (o.type !== n.type) changes.push(`changed type of '${name}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`);
-    if (!oldReq.has(name) && newReq.has(name)) changes.push(`'${name}' became required`);
-    if (oldReq.has(name) && !newReq.has(name)) changes.push(`'${name}' became optional`);
+    if (o.type !== n.type) {
+      // widen = loosen (more accepted), narrow = tighten (less accepted)
+      const widen = o.type !== undefined && (n.type === undefined || (Array.isArray(n.type) && !Array.isArray(o.type)));
+      changes.push({ text: `changed type of '${name}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`, direction: widen ? 'loosen' : 'tighten' });
+    }
+    if (!oldReq.has(name) && newReq.has(name)) changes.push({ text: `'${name}' became required`, direction: 'tighten' });
+    if (oldReq.has(name) && !newReq.has(name)) changes.push({ text: `'${name}' became optional`, direction: 'loosen' });
     const oEnum = Array.isArray(o.enum) ? o.enum : null;
     const nEnum = Array.isArray(n.enum) ? n.enum : null;
     if (oEnum && nEnum) {
       const narrowed = oEnum.filter((v) => !nEnum.includes(v));
-      if (narrowed.length > 0) changes.push(`narrowed enum of '${name}': removed ${narrowed.map((v) => String(v)).join(', ')}`);
+      if (narrowed.length > 0) changes.push({ text: `narrowed enum of '${name}': removed ${narrowed.map((v) => String(v)).join(', ')}`, direction: 'tighten' });
       const expanded = nEnum.filter((v) => !oEnum.includes(v));
-      if (expanded.length > 0) changes.push(`expanded enum of '${name}': added ${expanded.map((v) => String(v)).join(', ')}`);
+      if (expanded.length > 0) changes.push({ text: `expanded enum of '${name}': added ${expanded.map((v) => String(v)).join(', ')}`, direction: 'loosen' });
     }
-    if (oEnum && !nEnum) changes.push(`removed enum constraint from '${name}'`);
-    if (!oEnum && nEnum) changes.push(`added enum constraint to '${name}'`);
+    if (oEnum && !nEnum) changes.push({ text: `removed enum constraint from '${name}'`, direction: 'loosen' });
+    if (!oEnum && nEnum) changes.push({ text: `added enum constraint to '${name}'`, direction: 'tighten' });
   }
   return changes;
 }
@@ -170,14 +180,9 @@ export function schemaDiff(oldSchema, newSchema) {
 /**
  * Notation-level schema differences: things that change the schema's bytes
  * (and its hash) but not what a caller can send — $schema dialect switches
- * (draft-07 → 2020-12, the MCP SDK v2 migration wave) and additionalProperties
- * form changes. Called out separately from parameter changes so drift can be
- * graded: parameters = BREAKING, notation-only = NOTATION (P3, idea by
- * Jakub Hecht / KyttoMCP, validated on chrome-devtools-mcp 1.8.0→1.10.1).
- *
- * Weakening notes (e.g. a dropped additionalProperties:false inside an items
- * schema) are marked with a [weakens validation] prefix — still NOTATION
- * (no parameter changed) but the reader sees the validation loosened.
+ * (draft-07 → 2020-12, the MCP SDK v2 migration wave). additionalProperties
+ * changes are NOT here — they moved to LOOSENED (P4 gradation, second round
+ * from Jakub Hecht: direction matters, not just presence).
  */
 export function schemaNotationDiff(oldSchema, newSchema) {
   if (!oldSchema || !newSchema) return [];
@@ -185,12 +190,41 @@ export function schemaNotationDiff(oldSchema, newSchema) {
   if (oldSchema.$schema !== newSchema.$schema) {
     notes.push(`$schema dialect ${oldSchema.$schema ?? 'undeclared'} → ${newSchema.$schema ?? 'undeclared'}`);
   }
-  const fmt = (v) => (v === undefined ? 'undeclared' : JSON.stringify(v));
-  if (fmt(oldSchema.additionalProperties) !== fmt(newSchema.additionalProperties)) {
-    const tightened = oldSchema.additionalProperties === undefined && newSchema.additionalProperties !== undefined;
-    notes.push(`${tightened ? '' : '[weakens validation] '}additionalProperties ${fmt(oldSchema.additionalProperties)} → ${fmt(newSchema.additionalProperties)}`);
-  }
   return notes;
+}
+
+/**
+ * Direction-aware schema grading (P4, second Jakub proposal):
+ * - tighten (new/restrictive) changes → BREAKING (agent must send more,
+ *   new data channels = exfil risk)
+ * - loosen (permissive) changes → LOOSENED (constraints dropped, validation
+ *   weakened — still drift, still exit 1, but a different failure mode)
+ * - mixed (both directions) → BREAKING (conservative: the most severe wins)
+ * - notation-only (dialect switch, no parameter change) → NOTATION
+ */
+export function gradeSchemaDrift(paramChanges, notationChanges) {
+  const hasTighten = paramChanges.some((c) => c.direction === 'tighten');
+  const hasLoosen = paramChanges.some((c) => c.direction === 'loosen');
+  if (hasTighten) return 'BREAKING';
+  if (hasLoosen) return 'LOOSENED';
+  return 'NOTATION';
+}
+
+/**
+ * Detect additionalProperties direction change and return it as a graded
+ * paramChange (moved from notation in P4): dropping additionalProperties:false
+ * = loosen (validation weakened, LOOSENED class); adding it = tighten
+ * (BREAKING class).
+ */
+export function detectAdditionalPropertiesDirection(oldSchema, newSchema) {
+  if (!oldSchema || !newSchema) return null;
+  const fmt = (v) => (v === undefined ? 'undeclared' : JSON.stringify(v));
+  if (fmt(oldSchema.additionalProperties) === fmt(newSchema.additionalProperties)) return null;
+  const dropped = oldSchema.additionalProperties !== undefined && newSchema.additionalProperties === undefined;
+  return {
+    text: `additionalProperties ${fmt(oldSchema.additionalProperties)} → ${fmt(newSchema.additionalProperties)}`,
+    direction: dropped ? 'loosen' : 'tighten',
+  };
 }
 
 export function compareTools(serverPin, liveTools, toolHashFn) {
@@ -205,22 +239,26 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
       const schemaChanged = pin.schemaHash !== liveSchemaHash;
       const proseChanged = pin.proseHash !== liveProseHash;
       const paramChanges = schemaChanged && pin.inputSchema ? schemaDiff(pin.inputSchema, tool.inputSchema) : [];
-      // P3 gradation: schema bytes changed, but no parameter/type/required/
-      // enum difference → notation-only (dialect switch, additionalProperties
-      // form). Lower severity than parameter drift: what a caller can send
-      // did not change.
-      const notationOnly = schemaChanged && paramChanges.length === 0;
-      const notationChanges = notationOnly && pin.inputSchema ? schemaNotationDiff(pin.inputSchema, tool.inputSchema) : [];
+
+      // additionalProperties direction check (moved from notation to grading)
+      const apChange = detectAdditionalPropertiesDirection(pin.inputSchema, tool.inputSchema);
+      if (apChange) paramChanges.push(apChange);
+
+      const notationChanges = schemaChanged && pin.inputSchema && paramChanges.length === 0
+        ? schemaNotationDiff(pin.inputSchema, tool.inputSchema) : [];
+      const driftType = schemaChanged
+        ? gradeSchemaDrift(paramChanges, notationChanges)
+        : 'COSMETIC';
       result.push({
         tool: tool.name,
         status: 'DRIFT',
-        driftType: schemaChanged ? (notationOnly ? 'NOTATION' : 'BREAKING') : 'COSMETIC',
+        driftType,
         oldHash: pin.hash,
         hash,
         schemaChanged,
         proseChanged,
         schemaChanges: paramChanges,
-        ...(notationOnly ? { notationChanges } : {}),
+        ...(notationChanges.length ? { notationChanges } : {}),
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });

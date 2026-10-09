@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "notes-api": {
+      "command": "node",
+      "args": ["server-v1-benign.js"]
+    }
+  }
+}

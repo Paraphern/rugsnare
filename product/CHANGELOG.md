@@ -2,7 +2,21 @@
 
 ## [Unreleased]
 
-- **BREAKING gradation (P3, idea by Jakub Hecht / KyttoMCP)**: schema drift
+- **Direction-aware drift grading (P4, second Jakub Hecht / KyttoMCP
+  proposal)**: schema changes now grade by direction, not just by whether
+  parameters changed. **BREAKING** = tighten (new/restrictive: added
+  parameters, narrowed types, added constraints — new data channels are
+  exfil-risk). **LOOSENED** (new) = loosen (constraints dropped, types
+  widened, parameters removed — validation weakened, still exit 1 but a
+  distinct failure mode). **NOTATION** = semantically empty (dialect
+  switch only). Mixed tighten+loosen → BREAKING (conservative).
+  The fill_form.elements case (dropped `additionalProperties:false`) now
+  correctly grades LOOSENED, not NOTATION-with-note.
+- **Corpus 05: key-reorder fixture** (`corpus/05-key-reorder/`) — two
+  servers with semantically identical schemas in different key order;
+  rugsnare diff reports clean (canonicalization proof). Requested by
+  Jakub Hecht as a fixture for KyttoMCP#12.
+- **BREAKING gradation (P3, first Jakub proposal)**: schema drift
   now grades as `BREAKING` (parameter-level: added/removed/typed/required/
   enum) or `NOTATION` (schema bytes changed but parameters did not — $schema
   dialect switches, additionalProperties form). Validated live on

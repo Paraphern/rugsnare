@@ -219,12 +219,20 @@ function printVerdict(server, verdicts, json) {
     console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${target}${driftLabel}${hashes}`);
     // human-readable schema changes ("added required parameter 'mode'" not just "schema changed")
     if (v.schemaChanges && v.schemaChanges.length > 0) {
-      for (const sc of v.schemaChanges) console.log(`      ${sc}`);
+      for (const sc of v.schemaChanges) {
+        const text = typeof sc === 'string' ? sc : sc.text;
+        const dir = typeof sc === 'string' ? '' : ` [${sc.direction}]`;
+        console.log(`      ${text}${dir}`);
+      }
     }
-    // notation-only drift ($schema dialect / additionalProperties form): the
-    // schema bytes changed but no parameter did — shown softer, not scary
+    // notation-only drift ($schema dialect): the schema bytes changed but no
+    // parameter did — shown softer, not scary
     if (v.driftType === 'NOTATION' && v.notationChanges) {
       for (const nc of v.notationChanges) console.log(`      ~ ${nc} (parameters unchanged)`);
+    }
+    // LOOSENED: constraints dropped — still drift, different failure mode
+    if (v.driftType === 'LOOSENED') {
+      console.log(`      ↳ validation loosened (constraints removed, exit 1)`);
     }
     // was/became text: what the agent actually read then vs reads now.
     // tools gate on proseChanged (schema-only drift keeps its old description);

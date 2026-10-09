@@ -64,7 +64,7 @@ test('diffVersionContracts: schema change is BREAKING (with real schemas); hash-
   const newer2 = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x' } } };
   const [f2] = diffVersionContracts(older2, newer2);
   assert.equal(f2.driftType, 'NOTATION');
-  assert.deepEqual(f2.notationChanges, []);
+  assert.ok(!f2.notationChanges || f2.notationChanges.length === 0);
 });
 
 test('diffVersionContracts: annotation-only flip is DRIFT/ANNOTATION (review 34)', () => {

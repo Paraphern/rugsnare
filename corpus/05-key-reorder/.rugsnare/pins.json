@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "servers": {
+    "notes-api": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "server-v1-benign.js"
+        ]
+      },
+      "pinnedAt": "2026-10-09T18:35:09.930Z",
+      "tools": {
+        "create_note": {
+          "hash": "6866a495436567a077a4dbbdb906b7b43512c699468c2d0480a96f9fc5515c2c",
+          "schemaHash": "2d48d073eb268968c7d72f8ac75440ebd7a83a44b1298d09e75bc18058e149e4",
+          "proseHash": "0da20ace7eb9be169267bbdaa70c9da7f1c1fc714498b5aedcd086527b843690",
+          "description": "Create a note with a title and optional tags.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The note title"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional tags"
+              },
+              "content": {
+                "type": "string",
+                "description": "The note body"
+              }
+            },
+            "required": [
+              "title",
+              "content"
+            ]
+          },
+          "firstSeen": "2026-10-09T18:35:09.931Z",
+          "pinnedAt": "2026-10-09T18:35:09.931Z",
+          "approved": true
+        },
+        "search_notes": {
+          "hash": "0e4dc78e959f1504e6af98d546caa7acd0767e4b55bd52a41b648f343f3616f5",
+          "schemaHash": "27f73c883d79a826a0a53fcdf25c52fad01d4c4f201e82ae84cdc1a06de863e8",
+          "proseHash": "ac1eba27bce8a670f3f024f9e84b1f3301a670f2e3dff3524ad177b1e825c370",
+          "description": "Search notes by query.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "number",
+                "description": "Max results"
+              },
+              "query": {
+                "type": "string",
+                "description": "Search text"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
+          "firstSeen": "2026-10-09T18:35:09.931Z",
+          "pinnedAt": "2026-10-09T18:35:09.931Z",
+          "approved": true
+        }
+      },
+      "prompts": {},
+      "resources": {}
+    }
+  }
+}

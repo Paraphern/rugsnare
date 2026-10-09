@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fetchTools } from './rpc.js';
 import { toolHash, schemaHash, proseHash } from './hash.js';
-import { annotationsEqual, schemaDiff, schemaNotationDiff } from './pins.js';
+import { annotationsEqual, schemaDiff, schemaNotationDiff, gradeSchemaDrift, detectAdditionalPropertiesDirection } from './pins.js';
 import { compareVersions } from './version.js';
 import { extractTgz } from './tarball.js';
 
@@ -225,20 +225,25 @@ export function diffVersionContracts(older, newer) {
       continue;
     }
     const schemaChanged = prev.schemaHash !== pin.schemaHash;
-    // P3 gradation (same rules as `rugsnare diff`): schema bytes changed, but
-    // no parameter/type/required/enum difference → notation-only (dialect
-    // switch, additionalProperties form) — lower severity than BREAKING
+    // P4 direction-aware gradation (same rules as `rugsnare diff`):
+    // tighten → BREAKING, loosen → LOOSENED, neither → NOTATION
     const paramChanges = schemaChanged && prev.inputSchema && pin.inputSchema
       ? schemaDiff(prev.inputSchema, pin.inputSchema) : [];
-    const notationOnly = schemaChanged && paramChanges.length === 0;
-    const notationChanges = notationOnly && prev.inputSchema && pin.inputSchema
+    // additionalProperties direction (moved from notation to grading)
+    const apChange = schemaChanged && prev.inputSchema && pin.inputSchema
+      ? detectAdditionalPropertiesDirection(prev.inputSchema, pin.inputSchema) : null;
+    if (apChange) paramChanges.push(apChange);
+    const notationChanges = schemaChanged && paramChanges.length === 0 && prev.inputSchema && pin.inputSchema
       ? schemaNotationDiff(prev.inputSchema, pin.inputSchema) : [];
+    const driftType = schemaChanged
+      ? gradeSchemaDrift(paramChanges, notationChanges)
+      : 'COSMETIC';
     findings.push({
       tool: name,
       status: 'DRIFT',
-      driftType: schemaChanged ? (notationOnly ? 'NOTATION' : 'BREAKING') : 'COSMETIC',
+      driftType,
       schemaChanges: paramChanges,
-      ...(notationOnly ? { notationChanges } : {}),
+      ...(notationChanges.length ? { notationChanges } : {}),
       oldDescription: prev.description,
       newDescription: pin.description,
     });

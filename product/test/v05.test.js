@@ -88,7 +88,7 @@ test('schemaDiff: added required, removed, type change, enum narrowing', () => {
     required: ['q', 'mode'],
   };
   const changes = schemaDiff(old, newS);
-  const all = changes.join('; ');
+  const all = changes.map((c) => c.text).join('; ');
   assert.match(all, /added required parameter 'mode'/);
   assert.match(all, /removed parameter 'extra'/);
   assert.match(all, /changed type of 'q' from string to number/);
@@ -104,8 +104,8 @@ test('schemaDiff: identical schemas produce zero changes', () => {
 test('schemaDiff: became required / became optional', () => {
   const old = { type: 'object', properties: { x: { type: 'string' } }, required: [] };
   const newS = { type: 'object', properties: { x: { type: 'string' } }, required: ['x'] };
-  assert.match(schemaDiff(old, newS).join('; '), /'x' became required/);
-  assert.match(schemaDiff(newS, old).join('; '), /'x' became optional/);
+  assert.match(schemaDiff(old, newS).map((c) => c.text).join('; '), /'x' became required/);
+  assert.match(schemaDiff(newS, old).map((c) => c.text).join('; '), /'x' became optional/);
 });
 
 test('compareTools: BREAKING drift now includes schemaChanges list', () => {
@@ -121,6 +121,6 @@ test('compareTools: BREAKING drift now includes schemaChanges list', () => {
     assert.equal(verdicts[0].status, 'DRIFT');
     assert.equal(verdicts[0].driftType, 'BREAKING');
     assert.ok(Array.isArray(verdicts[0].schemaChanges));
-    assert.match(verdicts[0].schemaChanges.join('; '), /added required parameter 'b'/);
+    assert.match(verdicts[0].schemaChanges.map((c) => c.text ?? c).join('; '), /added required parameter 'b'/);
   } finally { cleanup(); }
 });
