@@ -23,9 +23,40 @@ test('schemaDiff returns direction-tagged changes', () => {
 test('gradeSchemaDrift: pure tighten = BREAKING, pure loosen = LOOSENED, mixed = BREAKING', () => {
   assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'tighten' }], []), 'BREAKING');
   assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'loosen' }], []), 'LOOSENED');
+  assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'expand' }], []), 'BREAKING'); // expand rides at BREAKING severity
   assert.equal(gradeSchemaDrift([{ text: 'a', direction: 'loosen' }, { text: 'b', direction: 'tighten' }], []), 'BREAKING');
+  assert.equal(gradeSchemaDrift([{ text: 'a', direction: 'loosen' }, { text: 'b', direction: 'expand' }], []), 'BREAKING');
   assert.equal(gradeSchemaDrift([], ['dialect note']), 'NOTATION');
   assert.equal(gradeSchemaDrift([], []), 'NOTATION');
+});
+
+test('P5: added optional parameter = EXPANDED direction (not tighten)', () => {
+  const a = { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] };
+  const b = { type: 'object', properties: { q: { type: 'string' }, context: { type: 'string' } }, required: ['q'] };
+  const changes = schemaDiff(a, b);
+  const added = changes.find((c) => c.text.includes("added optional parameter 'context'"));
+  assert.equal(added.direction, 'expand', 'optional param gets expand direction');
+  // but the overall grade is still BREAKING (expand = same severity slot)
+  assert.equal(gradeSchemaDrift(changes, []), 'BREAKING');
+});
+
+test('P5: removed guard parameter (dry_run) triggers guardWarning', () => {
+  const a = { type: 'object', properties: { q: { type: 'string' }, dry_run: { type: 'boolean' } } };
+  const b = { type: 'object', properties: { q: { type: 'string' } } };
+  const changes = schemaDiff(a, b);
+  const removed = changes.find((c) => c.text.includes("removed parameter 'dry_run'"));
+  assert.equal(removed.direction, 'loosen');
+  assert.ok(removed.guardWarning, 'guard parameter gets a warning');
+  assert.match(removed.guardWarning, /guard-style parameter removed/);
+  assert.match(removed.guardWarning, /dry_run/);
+});
+
+test('P5: removed non-guard parameter has no guardWarning', () => {
+  const a = { type: 'object', properties: { q: { type: 'string' }, color: { type: 'string' } } };
+  const b = { type: 'object', properties: { q: { type: 'string' } } };
+  const changes = schemaDiff(a, b);
+  const removed = changes.find((c) => c.text.includes("removed parameter 'color'"));
+  assert.equal(removed.guardWarning, undefined);
 });
 
 test('P4: dropped additionalProperties:false = LOOSENED (fill_form.elements case)', async () => {

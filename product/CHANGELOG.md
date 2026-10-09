@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- **EXPANDED direction** (P5, third KyttoMCP dialogue round): a new
+  *optional* parameter now labels EXPANDED instead of riding under tighten —
+  backwards-compatible for callers but attack surface widened (a new
+  `context` or `session_data` param is a classic exfil vector). Same exit 1,
+  same severity slot as BREAKING; the label just stops semver-literate
+  reviewers from reading "breaking" on a non-breaking change.
+- **Guard-parameter removal warning** (P5 security gap, found by Jakub
+  Hecht): when a schema removes a guard parameter (dry_run, confirm, force,
+  safe_mode, preview, verify, require_approval...), the diff adds a warning —
+  agents trained on the old contract still pass the parameter; servers that
+  don't reject unknown keys silently ignore it; the call executes for real
+  when the agent asked for a dry-run. Pattern list is extensible.
+
 - **Direction-aware drift grading (P4, second Jakub Hecht / KyttoMCP
   proposal)**: schema changes now grade by direction, not just by whether
   parameters changed. **BREAKING** = tighten (new/restrictive: added

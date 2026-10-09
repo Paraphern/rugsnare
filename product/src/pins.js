@@ -126,6 +126,29 @@ export { annotationsEqual };
  * Returns ["added required parameter 'mode'", "narrowed enum of 'sort' from [asc,desc] to [asc]"] etc.
  */
 /**
+ * Guard parameter patterns (P5, security gap found by Jakub Hecht):
+ * parameter names that, when REMOVED from a schema, create a silent-failure
+ * vector: agents trained on the old contract still pass them; servers that
+ * don't reject unknown keys silently ignore them, and the call executes
+ * for real when the agent asked for a dry-run / confirmation / safe mode.
+ */
+const GUARD_PARAM_PATTERNS = [
+  /^dry[_-]?run$/i,
+  /^confirm$/i,
+  /^force$/i,
+  /^skip[_-]?validation$/i,
+  /^no[_-]?op$/i,
+  /^noop$/i,
+  /^test[_-]?mode$/i,
+  /^safe[_-]?mode$/i,
+  /^preview$/i,
+  /^verify$/i,
+  /^require[_-]?approval$/i,
+  /^ask[_-]?user$/i,
+];
+const GUARD_PARAM_RE = new RegExp(`(?:${GUARD_PARAM_PATTERNS.map((p) => p.source).join('|')})`);
+
+/**
  * Schema diff with direction tagging. Each change carries a direction:
  * 'tighten' (new/restrictive — more demanded from the agent or less accepted)
  * or 'loosen' (permissive — constraints removed, channels opened).
@@ -139,17 +162,29 @@ export function schemaDiff(oldSchema, newSchema) {
   const oldReq = new Set(oldSchema.required ?? []);
   const newReq = new Set(newSchema.required ?? []);
 
-  // added params: new data channel — always tighten (exfil vector risk)
+  // added params: new data channel — required = tighten, optional = expand
+  // (EXPANDED: backwards-compatible for callers but widens attack surface;
+  // same exit 1, same severity slot as BREAKING, more honest label)
   for (const name of Object.keys(newProps)) {
     if (!oldProps[name]) {
       changes.push(newReq.has(name)
         ? { text: `added required parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' }
-        : { text: `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' });
+        : { text: `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'expand' });
     }
   }
-  // removed params: data channel closed — loosen
+  // removed params: data channel closed — loosen (but guard-params get a warning)
   for (const name of Object.keys(oldProps)) {
-    if (!newProps[name]) changes.push({ text: `removed parameter '${name}'`, direction: 'loosen' });
+    if (!newProps[name]) {
+      const change = { text: `removed parameter '${name}'`, direction: 'loosen' };
+      // P5 (Jakub's security gap): removing a guard parameter (dry_run,
+      // confirm, force...) while the server doesn't reject unknown keys
+      // means agents still passing it get it silently ignored — the call
+      // executes for real when the agent asked for a dry-run
+      if (GUARD_PARAM_RE.test(name)) {
+        change.guardWarning = `guard-style parameter removed — agents may still pass '${name}'; server will silently ignore it (unknown keys not rejected)`;
+      }
+      changes.push(change);
+    }
   }
   // changed params
   for (const name of Object.keys(oldProps)) {
@@ -194,18 +229,21 @@ export function schemaNotationDiff(oldSchema, newSchema) {
 }
 
 /**
- * Direction-aware schema grading (P4, second Jakub proposal):
- * - tighten (new/restrictive) changes → BREAKING (agent must send more,
- *   new data channels = exfil risk)
- * - loosen (permissive) changes → LOOSENED (constraints dropped, validation
- *   weakened — still drift, still exit 1, but a different failure mode)
- * - mixed (both directions) → BREAKING (conservative: the most severe wins)
- * - notation-only (dialect switch, no parameter change) → NOTATION
+ * Direction-aware schema grading (P4+P5, from the KyttoMCP dialogue):
+ * - tighten (required/restrictive) → BREAKING (agent must send more)
+ * - expand (added optional param) → EXPANDED (new data channel = exfil
+ *   risk; backwards-compatible for callers but attack surface widened;
+ *   same exit 1, same severity slot as BREAKING, more honest label)
+ * - loosen (permissive) → LOOSENED (constraints dropped, still exit 1)
+ * - mixed (any tighten or expand) → BREAKING (conservative: expand rides
+ *   at BREAKING severity when mixed with other changes)
+ * - notation-only (dialect switch) → NOTATION
  */
 export function gradeSchemaDrift(paramChanges, notationChanges) {
   const hasTighten = paramChanges.some((c) => c.direction === 'tighten');
+  const hasExpand = paramChanges.some((c) => c.direction === 'expand');
   const hasLoosen = paramChanges.some((c) => c.direction === 'loosen');
-  if (hasTighten) return 'BREAKING';
+  if (hasTighten || hasExpand) return 'BREAKING';
   if (hasLoosen) return 'LOOSENED';
   return 'NOTATION';
 }

@@ -223,6 +223,10 @@ function printVerdict(server, verdicts, json) {
         const text = typeof sc === 'string' ? sc : sc.text;
         const dir = typeof sc === 'string' ? '' : ` [${sc.direction}]`;
         console.log(`      ${text}${dir}`);
+        // P5: removed guard parameter — agent passes dry_run, server ignores it
+        if (typeof sc === 'object' && sc.guardWarning) {
+          console.log(`      ⚠ ${sc.guardWarning}`);
+        }
       }
     }
     // notation-only drift ($schema dialect): the schema bytes changed but no
