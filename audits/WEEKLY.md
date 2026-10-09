@@ -1,18 +1,18 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-10-07 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-10-09 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
-**Total findings since baselines: 191**
+**Total findings since baselines: 192**
 
 | server | package | pinned -> latest | findings | status |
 |---|---|---|---|---|
 | chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.10.1 | 30 | ok |
 | azure-devops | @azure-devops/mcp | 2.5.0 -> 2.10.0 | 110 | ok |
 | currents | @currents/mcp | 2.3.3 -> 2.6.1 | 45 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 2.9.0 | 6 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 2.11.0 | 6 | ok |
 | notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.5.2 | 0 | clean |
 | heroku | @heroku/mcp-server | 1.2.5 -> 1.2.11 | 0 | clean |
-| context7 | @upstash/context7-mcp | 4.0.4 -> 4.2.0 | 0 | clean |
+| context7 | @upstash/context7-mcp | 4.0.4 -> 4.3.0 | 1 | ok |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
 
@@ -76,4 +76,10 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
   [NEW ] maintain-wordpress/SKILL.md (resource) 110bc0369451bdd3
   [NEW ] migrate-to-hosting/SKILL.md (resource) 93d40883073c2d16
   [NEW ] troubleshoot-website/SKILL.md (resource) 1ed262038535c9d6
+```
+
+## context7 - drift excerpt
+
+```
+  [DRIFT] query-docs (BREAKING) f2e95030d4e00be6 -> fc3018160ad356fb
 ```
