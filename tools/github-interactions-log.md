@@ -14,8 +14,9 @@
 | KyttoMCP (наш discussion #1) | **2026-10-09 вечер: наш финальный ответ Якубу (18840536)** - LOOSENED принят (таблица направлений 12 строк, exit 1, BREAKING-побеждает-в-смешанных; спорный пункт: added optional = BREAKING у нас vs возможный LOOSENED у него); bidi U+2066-2069 - уже есть с v0.2 (A13, forced), независимая сходимость; corpus/05-key-reorder - едет от продукт-чата. Теперь мяч у Якуба: спор по пункту В + реакция на таблицу | Якуб |
 | awesome PR #15692 | Наш Glama-ответ отправлен (6082404527); ждём реакции punkpeye | punkpeye (мерж) |
 | **bybit #38 (НОВОЕ, 2026-10-09)** | Открыт нами issue про килл-свитч: forced-latest + манифест-гейт api.bybit.com + fail-open + 9 тихих изменений контракта в патчах. Черновик согласов | Bybit |
-| **cline#14924 (НОВОЕ, 2026-10-09)** | Наш коммент (6082633800): секьюрити-измерение игнора list_changed - слепота на изменённые описания, дифф при refresh, данные аудита, low-cost дизайн | cline |
-| **cline PR#14946 (НОВОЕ, 2026-10-09)** | Ревью-коммент (6082746775): PR akushonkamen (фикс #14924) делает тихую подмену - предложили расширить onToolsChanged(serverName, changes) с классификацией added/removed/changed + оффер follow-up PR с helper'ом. Если возьмут оффер - мы контрибьюторы cline | akushonkamen / мейнтейнеры |
+| **cline#14924 (2026-10-09)** | Наш коммент (6082633800): секьюрити-измерение list_changed | cline |
+| **cline PR#14946 (2026-10-09)** | Ревью-коммент (6082746775): дизайн-предложение + оффер follow-up PR | akushonkamen |
+| **google/sam #561 (НОВОЕ, 2026-10-09 поздно)** | Наш комментарий (6087845489): ответы на все 3 open questions автора (canonicalization: chrome-кейс; opt-in: 4/9 данных; TOFU+approve: наша модель) + градировка BREAKING/LOOSENED/NOTATION + corpus + prior-art. Автор HosniBelfeki; мейнтейнер aojea готовит архитектурные изменения | aojea / HosniBelfeki |
 | rugsnare репо | 3 stars, 0 forks | - |
 
 ## Планируемое
