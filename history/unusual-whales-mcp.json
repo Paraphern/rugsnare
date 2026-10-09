@@ -1,0 +1,10 @@
+{
+  "package": "unusual-whales-mcp",
+  "ts": "2026-10-09T06:02:35.857Z",
+  "runUrl": "https://github.com/Paraphern/rugsnare/actions/runs/37891464815",
+  "mode": "runtime (GitHub Actions sandbox)",
+  "result": {
+    "error": "scan failed (exit 2): history scan: unusual-whales-mcp (last 10 versions) NOTE: this downloads and RUNS each version locally — the same code you would run by installing it. rugsnare: package not found on npm: unusual-whales-mcp ",
+    "package": "unusual-whales-mcp"
+  }
+}
