@@ -149,6 +149,18 @@ const GUARD_PARAM_PATTERNS = [
 const GUARD_PARAM_RE = new RegExp(`(?:${GUARD_PARAM_PATTERNS.map((p) => p.source).join('|')})`);
 
 /**
+ * True when the schema REJECTS unknown keys (additionalProperties:false or
+ * a value that evaluates to false). False when it accepts them (true or
+ * absent — the JSON Schema default). Used to decide whether a removed
+ * guard parameter creates a SILENT failure (warning needed) or a LOUD
+ * one (the call errors out, no silent-ignore warning).
+ */
+function rejectsUnknownKeys(schema) {
+  if (!schema) return false;
+  return schema.additionalProperties === false;
+}
+
+/**
  * Schema diff with direction tagging. Each change carries a direction:
  * 'tighten' (new/restrictive — more demanded from the agent or less accepted)
  * or 'loosen' (permissive — constraints removed, channels opened).
@@ -176,11 +188,11 @@ export function schemaDiff(oldSchema, newSchema) {
   for (const name of Object.keys(oldProps)) {
     if (!newProps[name]) {
       const change = { text: `removed parameter '${name}'`, direction: 'loosen' };
-      // P5 (Jakub's security gap): removing a guard parameter (dry_run,
-      // confirm, force...) while the server doesn't reject unknown keys
-      // means agents still passing it get it silently ignored — the call
-      // executes for real when the agent asked for a dry-run
-      if (GUARD_PARAM_RE.test(name)) {
+      // P5+P6 (Jakub): removing a guard parameter is only a SILENT failure
+      // if the new schema accepts unknown keys (additionalProperties:true or
+      // absent = JSON Schema default). With additionalProperties:false the
+      // server loudly rejects the old call — no silent-ignore warning needed.
+      if (GUARD_PARAM_RE.test(name) && !rejectsUnknownKeys(newSchema)) {
         change.guardWarning = `guard-style parameter removed — agents may still pass '${name}'; server will silently ignore it (unknown keys not rejected)`;
       }
       changes.push(change);
@@ -197,7 +209,31 @@ export function schemaDiff(oldSchema, newSchema) {
       changes.push({ text: `changed type of '${name}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`, direction: widen ? 'loosen' : 'tighten' });
     }
     if (!oldReq.has(name) && newReq.has(name)) changes.push({ text: `'${name}' became required`, direction: 'tighten' });
-    if (oldReq.has(name) && !newReq.has(name)) changes.push({ text: `'${name}' became optional`, direction: 'loosen' });
+    if (oldReq.has(name) && !newReq.has(name)) {
+      const change = { text: `'${name}' became optional`, direction: 'loosen' };
+      // P6: guard-param became optional = the guard is defanged
+      if (GUARD_PARAM_RE.test(name)) {
+        change.guardWarning = `guard-style parameter defanged: '${name}' is no longer required — agent may omit the confirmation, action executes without it`;
+      }
+      changes.push(change);
+    }
+
+    // P6: default value changes — tracked for ALL parameters (previously
+    // invisible: schemaHash changed but schemaDiff returned [], grade=NOTATION).
+    // Guard params with weakening flip (true→false) get a guardWarning.
+    if (o.default !== undefined && n.default !== undefined && o.default !== n.default) {
+      const isGuard = GUARD_PARAM_RE.test(name);
+      const weakened = isGuard && o.default === true && n.default === false;
+      const change = {
+        text: `default of '${name}' changed from ${JSON.stringify(o.default)} to ${JSON.stringify(n.default)}`,
+        direction: 'loosen',
+      };
+      if (weakened) {
+        change.guardWarning = `guard-style parameter defanged: '${name}' default changed ${JSON.stringify(o.default)} → ${JSON.stringify(n.default)} — agent relying on the old default will execute the real action`;
+      }
+      changes.push(change);
+    }
+
     const oEnum = Array.isArray(o.enum) ? o.enum : null;
     const nEnum = Array.isArray(n.enum) ? n.enum : null;
     if (oEnum && nEnum) {

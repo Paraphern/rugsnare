@@ -59,6 +59,81 @@ test('P5: removed non-guard parameter has no guardWarning', () => {
   assert.equal(removed.guardWarning, undefined);
 });
 
+// P6: conditional guard-warning by additionalProperties
+test('P6: guard removal + AP:false = NO warning (server rejects loudly)', () => {
+  const a = { type: 'object', properties: { q: {}, dry_run: { type: 'boolean' } }, additionalProperties: false };
+  const b = { type: 'object', properties: { q: {} }, additionalProperties: false };
+  const changes = schemaDiff(a, b);
+  const removed = changes.find((c) => c.text.includes("removed parameter 'dry_run'"));
+  assert.equal(removed.guardWarning, undefined, 'AP:false means loud failure, no silent-ignore warning');
+});
+
+test('P6: guard removal + AP absent = warning (JSON Schema default accepts unknown keys)', () => {
+  const a = { type: 'object', properties: { q: {}, dry_run: { type: 'boolean' } } };
+  const b = { type: 'object', properties: { q: {} } };
+  const changes = schemaDiff(a, b);
+  const removed = changes.find((c) => c.text.includes("removed parameter 'dry_run'"));
+  assert.ok(removed.guardWarning, 'absent AP = accepts unknown keys = warning');
+});
+
+test('P6: guard removal + AP:true = warning (explicitly accepts unknown keys)', () => {
+  const a = { type: 'object', properties: { q: {}, dry_run: { type: 'boolean' } }, additionalProperties: true };
+  const b = { type: 'object', properties: { q: {} }, additionalProperties: true };
+  const changes = schemaDiff(a, b);
+  const removed = changes.find((c) => c.text.includes("removed parameter 'dry_run'"));
+  assert.ok(removed.guardWarning);
+});
+
+// P6: default-flip on guard parameter
+test('P6: guard default-flip true→false = LOOSENED with guardWarning', () => {
+  const a = { type: 'object', properties: { dry_run: { type: 'boolean', default: true } } };
+  const b = { type: 'object', properties: { dry_run: { type: 'boolean', default: false } } };
+  const changes = schemaDiff(a, b);
+  const flip = changes.find((c) => c.text.includes("default of 'dry_run'"));
+  assert.ok(flip, 'default change detected');
+  assert.equal(flip.direction, 'loosen');
+  assert.ok(flip.guardWarning, 'weakening default-flip gets guardWarning');
+  assert.match(flip.guardWarning, /default changed true → false/);
+  assert.equal(gradeSchemaDrift(changes, []), 'LOOSENED');
+});
+
+test('P6: guard default-flip false→true = tracked but NO guardWarning (strengthening)', () => {
+  const a = { type: 'object', properties: { dry_run: { type: 'boolean', default: false } } };
+  const b = { type: 'object', properties: { dry_run: { type: 'boolean', default: true } } };
+  const changes = schemaDiff(a, b);
+  const flip = changes.find((c) => c.text.includes("default of 'dry_run'"));
+  assert.ok(flip, 'default change tracked');
+  assert.equal(flip.guardWarning, undefined, 'strengthening does not get guardWarning');
+});
+
+test('P6: non-guard default-flip = tracked but NO guardWarning', () => {
+  const a = { type: 'object', properties: { color: { type: 'string', default: 'red' } } };
+  const b = { type: 'object', properties: { color: { type: 'string', default: 'blue' } } };
+  const changes = schemaDiff(a, b);
+  const flip = changes.find((c) => c.text.includes("default of 'color'"));
+  assert.ok(flip, 'default change tracked for non-guard too');
+  assert.equal(flip.guardWarning, undefined);
+});
+
+// P6: guard-param became optional = guardWarning
+test('P6: guard became optional = loosen with guardWarning', () => {
+  const a = { type: 'object', properties: { confirm: { type: 'boolean' }, q: {} }, required: ['confirm', 'q'] };
+  const b = { type: 'object', properties: { confirm: { type: 'boolean' }, q: {} }, required: ['q'] };
+  const changes = schemaDiff(a, b);
+  const opt = changes.find((c) => c.text.includes("'confirm' became optional"));
+  assert.equal(opt.direction, 'loosen');
+  assert.ok(opt.guardWarning, 'guard became optional gets warning');
+  assert.match(opt.guardWarning, /defanged/);
+});
+
+test('P6: non-guard became optional = no guardWarning', () => {
+  const a = { type: 'object', properties: { color: { type: 'string' }, q: {} }, required: ['color', 'q'] };
+  const b = { type: 'object', properties: { color: { type: 'string' }, q: {} }, required: ['q'] };
+  const changes = schemaDiff(a, b);
+  const opt = changes.find((c) => c.text.includes("'color' became optional"));
+  assert.equal(opt.guardWarning, undefined);
+});
+
 test('P4: dropped additionalProperties:false = LOOSENED (fill_form.elements case)', async () => {
   const oldTool = {
     name: 'fill_form',

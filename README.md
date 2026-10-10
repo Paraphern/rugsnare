@@ -217,4 +217,4 @@ Since v1.1.0 the same check exists for **any npm package** — `rugsnare history
 | **v1.2.0 (dev)** | 🔨 in progress | **Drift gradation** (P3+P4+P5, from the KyttoMCP dialogue): BREAKING (tighten: new required params, narrowed types, added constraints) · **EXPANDED** (new optional param — attack surface widened, backwards-compatible) · **LOOSENED** (constraints dropped, validation weakened) · NOTATION (dialect switch only) · **guard-parameter removal warning** (dry_run/confirm/force removed → ⚠ agents may still pass them, server silently ignores) · corpus/05 key-reorder fixture · `--stub-env` flag for history · `--from --to` version windows |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · open Pin Format spec (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
 
-*306 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*314 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

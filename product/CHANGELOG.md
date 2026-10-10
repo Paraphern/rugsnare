@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- **Guard-warning refinements (P6, fourth KyttoMCP dialogue round)**:
+  - guard-warning on parameter removal is now **conditional on
+    additionalProperties**: only shown when the new schema accepts unknown
+    keys (AP:true or absent = JSON Schema default). With AP:false the server
+    loudly rejects the old call — no silent-ignore warning needed.
+  - **default-flip detection**: `schemaDiff` now tracks default value
+    changes for ALL parameters (previously invisible — schemaHash changed
+    but schemaDiff returned [], grade=NOTATION). A guard parameter whose
+    default weakened (e.g. dry_run true→false) gets a guardWarning.
+  - **guard-param became optional**: when a guard parameter (confirm,
+    dry_run...) transitions from required to optional, a guardWarning
+    explains the agent may omit the confirmation.
 - **EXPANDED direction** (P5, third KyttoMCP dialogue round): a new
   *optional* parameter now labels EXPANDED instead of riding under tighten —
   backwards-compatible for callers but attack surface widened (a new
