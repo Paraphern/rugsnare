@@ -26,7 +26,7 @@ Our backtest over 66 consecutive version pairs of official `modelcontextprotocol
 
 Zero dependencies. Node >= 18. Nothing leaves your machine.
 
-> **This README documents `main`.** The latest npm release is **1.0.1**; if you installed 1.0.0, upgrade — it shipped without the Base Mainnet contract default (`verify --chain base` needed a manual `--contract`).
+> **This README documents `main`.** The latest npm release is **1.1.0** (Skills Security, whole-history scanning, native launcher, drift gradation). For the release changelog see [CHANGELOG.md](CHANGELOG.md).
 
 ```bash
 npx rugsnare init                    # scaffold .rugsnare/, show discovered MCP configs
