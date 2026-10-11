@@ -57,3 +57,14 @@
 - mcp-pin: реди релизы (0.2.2, темп недельный), фичи сближаются (session-long checks ~ наш live proxy; team lockfile ~ наши закоммиченные пины; package pinning).
 - AAtomless: ждёт реакции на #3466; если гитхаб-мейнтейнеры попросят таблицы - он опубликует scheme; наш коммент-подтверждение там уже стоит.
 - awesome-copilot: его сабмит OPEN - посмотреть, как проходит ревью, скопировать формат для нас.
+
+## Дистрибуция: статус каналов (2026-10-11, вечер)
+
+- MCP Registry (официальный): ОПУБЛИКОВАНО - io.github.Paraphern/rugsnare v1.1.0 живая (проверено API /v0/servers/.../versions). Неймспейс с заглавной P (из GitHub-логина дословно, регистр критичен). Републикация 1.2.0 одной командой: C:\tmp\mcp-pub\mcp-publisher.exe publish C:\GlobalWork\server.json (бинарь v1.8.1, логин сохранён).
+- GitHub Marketplace: ОПУБЛИКОВАНО - github.com/marketplace/actions/rugsnare-pr-diff, категория Security, экшен в отдельном репо Paraphern/rugsnare-pr-diff (action.yml в корне - требование маркетплейса), теги v1.0.0+v1 на коммите 13ccb8f, дефолт rugsnare-ref запинен на v1.1.0. Лимит описания < 125 символов.
+- awesome-copilot: В РЕВЬЮ - github/awesome-copilot#4882 (SHA 82650f08).
+- mcpservers.org: ЖИВОЙ листинг (сабмит юзера), автопул README с HEAD.
+- punkpeye awesome-mcp-servers: в списке (PR смержён ранее), ждём Glama-скан.
+- Docker-хаб и Smithery (каналы Gautam): НЕ ЗАКРЫТЫ, взяли паузу.
+
+Итог блица: четыре параллельных канала вместо одного - сделано за один день.

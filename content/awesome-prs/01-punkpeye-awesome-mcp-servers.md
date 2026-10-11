@@ -1,7 +1,7 @@
 # PR в punkpeye/awesome-mcp-servers (95.8k звёзд)
 
 Статус: ГОТОВ К ОТПРАВКЕ. Правила: нет минимума звёзд; скоуп «servers with a public
-GitHub repository — something you install and run yourself» — мы проходим как
+GitHub repository - something you install and run yourself» - мы проходим как
 `rugsnare mcp` (реальный устанавливаемый MCP-сервер). Формат снят с живых записей.
 
 ## Точная правка (README.md, секция `### 🔒 Security`)
@@ -13,7 +13,7 @@ GitHub repository — something you install and run yourself» — мы прох
 - [Paraphern/rugsnare](https://github.com/Paraphern/rugsnare) [![rugsnare MCP server](https://glama.ai/mcp/servers/Paraphern/rugsnare/badges/score.svg)](https://glama.ai/mcp/servers/Paraphern/rugsnare) 📇 🏠 - Pin MCP tool contracts by hash and catch silent drift, rug pulls and per-client bait-and-switch after approval, with a CI gate, live stdio/HTTP proxies, canary replay, call policies and on-chain release verification.
 ```
 
-Проверено: 📇 = TypeScript (их легенда), 🏠 = self-hosted/local. Бейдж Glama —
+Проверено: 📇 = TypeScript (их легенда), 🏠 = self-hosted/local. Бейдж Glama -
 наша страница существует (HTTP 200, https://glama.ai/mcp/servers/Paraphern/rugsnare).
 Эмодзи ОС (🍎🪟🐧) НЕ включены: macOS нами не протестирована (CI ubuntu+windows),
 не заявляем непроверенное.
@@ -24,8 +24,8 @@ GitHub repository — something you install and run yourself» — мы прох
 Add rugsnare 🤖🤖🤖
 ```
 
-(Суффикс 🤖🤖🤖 — их собственный механизм fast-track для agent-made PR; наш PR
-готовится агентом при прожиме владельцем, маркер честный. Если не хочешь маркировать — убери суффикс.)
+(Суффикс 🤖🤖🤖 - их собственный механизм fast-track для agent-made PR; наш PR
+готовится агентом при прожиме владельцем, маркер честный. Если не хочешь маркировать - убери суффикс.)
 
 ## Тело PR
 

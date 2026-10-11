@@ -7,7 +7,7 @@
 
 - **Name:** RugSnare
 - **GitHub:** https://github.com/Paraphern/rugsnare
-- **Category:** Security (если список категорий формы позволяет; иначе — Developer Tools)
+- **Category:** Security (если список категорий формы позволяет; иначе - Developer Tools)
 - **Description (одна строка, в их стиле коротких описаний):**
 
 ```
@@ -19,4 +19,4 @@ RugSnare - Pin MCP tool contracts by hash; catch silent drift, rug pulls and per
 ## Примечание
 
 Форма может требовать подтверждения владения репозиторием или ручной ревью
-мейнтейнером — ждать мержа неделями нормально. Никаких действий кроме сабмита.
+мейнтейнером - ждать мержа неделями нормально. Никаких действий кроме сабмита.
