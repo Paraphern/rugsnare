@@ -150,6 +150,17 @@ test('parseScanCommit: feed entries from scans-branch commits', () => {
   const nodata = parseScanCommit({ commit: { message: 'scan(history): some-pkg [skip ci] - 0c/10v' } });
   assert.equal(nodata.silentChanges, 0);
   assert.equal(nodata.checked, 10);
+
+  // P1 (review 52): old commits on the scans branch carry em-dash (U+2014);
+  // the parser must accept both separators
+  const emDashSummary = parseScanCommit({ commit: { message: 'scan(history): @jadchene/mcp-ssh-service [skip ci] \u2014 359c/10v' } });
+  assert.equal(emDashSummary.silentChanges, 359, 'em-dash separator must parse');
+  assert.equal(emDashSummary.checked, 10);
+  const emDashFail = parseScanCommit({ commit: { message: 'scan(history): token-goat [skip ci] \u2014 fail' } });
+  assert.equal(emDashFail.failed, true, 'em-dash fail must parse');
+  // en-dash also tolerated
+  const enDash = parseScanCommit({ commit: { message: 'scan(history): some-pkg [skip ci] \u2013 5c/8v' } });
+  assert.equal(enDash.silentChanges, 5);
 });
 
 test('normalizePackageInput: strips npx-style runners and flags', () => {

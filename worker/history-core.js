@@ -195,7 +195,10 @@ export function packageSlug(pkg) {
  */
 export function parseScanCommit(commit) {
   const message = commit?.commit?.message ?? '';
-  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+-\s+(?:(\d+)c\/(\d+)v|(fail)))?/);
+  // tolerate em-dash (U+2014), en-dash (U+2013), and hyphen in the summary
+  // separator: the workflow used em-dash before the cleanup, and existing
+  // scans-branch commits still carry it (P1 from review 52)
+  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+[\u2014\u2013-]\s+(?:(\d+)c\/(\d+)v|(fail)))?/);
   if (!m || !validPackageName(m[1])) return null;
   return {
     package: m[1],

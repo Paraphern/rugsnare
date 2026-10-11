@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.paraphern/rugsnare",
+  "title": "RugSnare",
+  "description": "Pin the MCP tool contracts your agent was approved on (name + description + inputSchema, sha-256) and fail CI when a server silently changes them. This MCP surface serves two read-only tools: drift_feed_status (current versions and contract-change events of popular MCP servers, from the public RugSnare drift feed) and pins_report (the local pin store). The CLI behind it adds scan/diff/approve for CI gating.",
+  "repository": {
+    "url": "https://github.com/Paraphern/rugsnare",
+    "source": "github"
+  },
+  "version": "1.2.0",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "rugsnare",
+      "version": "1.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
