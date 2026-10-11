@@ -37,7 +37,7 @@ drift_feed_status, pins_report) and a runtime integrity gateway: it pins tool
 contracts (name/description/inputSchema) by sha-256, fails CI on silent drift
 after approval, and ships live stdio + HTTP proxies with quarantine, canary
 replay, call policies and on-chain release verification. Zero npm dependencies,
-no telemetry. 238 tests.
+no telemetry.
 
 Entry follows the existing format: repo link + Glama badge + legend emojis
 (📇 TypeScript, 🏠 self-hosted) + one-line description.
