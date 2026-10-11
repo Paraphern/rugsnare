@@ -1,4 +1,4 @@
-# wong2/awesome-mcp-servers → сабмит через сайт (НЕ PR)
+# wong2/awesome-mcp-servers -> сабмит через сайт (НЕ PR)
 
 Статус: ТЕКСТ ГОТОВ, отправляется руками через форму https://mcpservers.org/submit
 (их README: «We do not accept PRs. Please submit your MCP on the website»).
