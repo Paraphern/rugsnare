@@ -6,3 +6,23 @@
 {"ts":"2026-09-29T20:31:59.887Z","server":"server-git","type":"ERROR","detail":"Command failed: npm view @modelcontextprotocol/server-git version\nnpm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@modelcontextprotocol%2fserver-git - Not found\nnpm error "}
 {"ts":"2026-09-30T11:25:57.450Z","server":"notion-mcp-server","type":"ERROR","detail":"MCP server exited early (code 1)"}
 {"ts":"2026-09-30T11:25:59.814Z","server":"chrome-devtools-mcp","type":"ERROR","detail":"MCP server exited early (code 0)"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"read_file","oldHash":"1a19f9c66da82344","newHash":"bfa6773d445effc6"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"read_text_file","oldHash":"1d8b2b6ca5e10737","newHash":"d98fc9eb9d4286c5"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"read_media_file","oldHash":"661d2d1d9e2a5550","newHash":"80b8f1c4d633c50e"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"read_multiple_files","oldHash":"4c8a0ffe6571a32f","newHash":"ae64a7d8ad480051"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"write_file","oldHash":"7b912840bf28bc44","newHash":"a2402bc2d925d1d0"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"edit_file","oldHash":"fcbcdc0249981d41","newHash":"6f70636ab53a0a9b"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"create_directory","oldHash":"2d7848f9113d21f5","newHash":"5ab31286975a25a6"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"list_directory","oldHash":"488944e6d821c9e6","newHash":"e46666317609f1f2"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"list_directory_with_sizes","oldHash":"6a88e86c3c59f13f","newHash":"852c81d97f619e97"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"directory_tree","oldHash":"25f83f24b499219f","newHash":"a929c1452c632dde"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"move_file","oldHash":"ccd3a2f3e8712165","newHash":"58bf2e2a81b10a40"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"search_files","oldHash":"41f144836f5e7860","newHash":"f187f8ed89f8ec51"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"get_file_info","oldHash":"6ff64b49d487d69c","newHash":"55b5ae1f709a045a"}
+{"ts":"2026-10-11T11:39:36.716Z","server":"server-filesystem","type":"DRIFT","tool":"list_allowed_directories","oldHash":"fe7d40d713a335fa","newHash":"6f355ffa54b847d0"}
+{"ts":"2026-10-11T11:39:38.912Z","server":"server-memory","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
+{"ts":"2026-10-11T11:39:38.912Z","server":"server-memory","type":"DRIFT","tool":"create_entities","oldHash":"6ce7dc5b45d4e6c2","newHash":"c37be6f3a1fef10b"}
+{"ts":"2026-10-11T11:39:38.912Z","server":"server-memory","type":"DRIFT","tool":"search_nodes","oldHash":"f931cc8a5ae4584a","newHash":"6d7747a733a7d3ef"}
+{"ts":"2026-10-11T11:39:41.370Z","server":"server-everything","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
+{"ts":"2026-10-11T11:39:43.860Z","server":"server-sequential-thinking","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
