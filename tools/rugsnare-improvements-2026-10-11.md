@@ -106,3 +106,28 @@ Hosted-сервер и npm-пакет версионируются раздел�
 6. Sentry 0.39.0 -> 0.40.0: ожидание EXPANDED (assignedTo widening) + COSMETIC (search_events проза).
 7. Прогнать history playwright + netlify начисто для чистых счётчиков в issue-текстах.
 8. Встроить градуированные выводы инструмента в драфты issue (заменить ручную декомпозицию там, где вывод совпадает).
+
+---
+
+# Реран на rugsnare 1.2.0 (выполнен 2026-10-12)
+
+## Результаты по чеклисту
+
+| Кейс | Ожидание | Факт 1.2.0 | Вердикт |
+|---|---|---|---|
+| playwright 0.0.80 -> 0.0.81 | 7 NOTATION | 7 NOTATION + 2 NEW (browser_webmcp_list/call) | ГРАДАЦИЯ ВАЛИДИРОВАНА (1.1.0 давал 7 BREAKING) |
+| Netlify 1.15.0 -> 1.15.1 | LOOSENED | 8 NOTATION, schemaChanges пустой | ГРЕЙД ПОНИЖЕН ОШИБОЧНО: реальный required-drop на depth-2 (см. R21) |
+| Netlify 1.15.1 -> 1.16.0 | EXPANDED | 9 LOOSENED (additionalProperties false -> undeclared на всех 9) + prose-канал get-team-env-vars | ТОЧНО; история сильнее ожидания (сервер перестал отвергать неизвестные ключи) |
+| MongoDB 2.1.2 -> 3.0.0 | 13 NOTATION + 7 BREAKING | 4 BREAKING + 16 NOTATION | 4 корректны с листами (pipeline minItems; limit integer+1..1024; pattern ASCII; limit 1..100); aggregate $vectorSearch number->integer на depth-5 ушёл в NOTATION (R21); 13 из 16 NOTATION = свап $schema dialect draft-07 -> 2020-12, разложен верно |
+| Sentry 0.39.0 -> 0.40.0 | EXPANDED + COSMETIC | update_issue LOOSENED (assignedTo string -> untyped + unassign в prose) + search_events COSMETIC | ТОЧНО |
+| LaunchDarkly 0.6.1 -> 0.6.2 | граница 19 -> 20 инструментов | 1 NEW get-audit-log-entries, 19/19 ok | ТОЧНО, хирургический релиз |
+
+Дополнительно: ворнинг версии ("pins taken against X, current install is Y") сработал во всех 6 кейсах - защита от context7-класса ошибок работает вживую.
+
+## Новые рекомендации (по прогонам 1.2.0)
+
+- R21 (ГЛАВНАЯ): рекурсивная декомпозиция схем. Декомпозер классифицирует только constraint-ключи верхнего уровня (properties.X). Доказательства: (а) Netlify 1.15.1: properties.selectSchema.required потерял "params" (depth 2) - грейд NOTATION вместо LOOSENED, schemaChanges пустой при schemaChanged:true; (б) MongoDB 3.0.0: properties.pipeline.items.anyOf[0].properties.$vectorSearch.anyOf[*].properties.{numCandidates,limit} получили number -> integer + max (depth 5) - грейд NOTATION вместо BREAKING. Фикс: рекурсивный обход properties/items/anyOf/oneOf/allOf на любую глубину, сообщения с полным путём ("pipeline.$vectorSearch.numCandidates: number -> integer [tighten]"). Единственная находка, меняющая грейд реальных кейсов.
+- R22: Windows-spawn конфигов. "command":"npx" -> spawn ENOENT; "command":"npx.cmd" -> spawn EINVAL (Node >= 18.20 требует shell для .cmd-файлов). Клиенты (Claude Desktop, Cursor) на Windows спавнят с shell - rugsnare нет. Фикс: на win32 spawn с shell:true или резолв npx через node + путь к npm cli. До фикса: llms-install.md должен советовать юзерам Windows писать command: node + прямой путь к cli.
+- R23: строгий парсинг флагов. (а) неизвестный флаг молча игнорируется (diff --pins <path> не ошибка, а "No pinned servers"); (б) scan --help НЕ печатает помощь, а запускает скан; (в) scan без --config молча свипает ВСЕ найденные конфиги машины (18 серверов, включая требующие auth). Фикс: unknown flag = ошибка; help = всегда печать; авто-discovery только по явному флагу.
+- R24: таймаут по умолчанию. 15с мало для холодного старта (Netlify dist не успел). --timeout 45000 решил. Предложение: дефолт 30-45с на scan.
+- Мелочь: diff --json отдаёт объект с числовым ключом "0" вместо массива - неудобно парсить.

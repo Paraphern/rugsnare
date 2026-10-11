@@ -190,35 +190,45 @@ function rejectsUnknownKeys(schema) {
  * 'tighten' (new/restrictive - more demanded from the agent or less accepted)
  * or 'loosen' (permissive - constraints removed, channels opened).
  * Returns [{ text, direction }] for grading BREAKING vs LOOSENED.
+ *
+ * R21: recursively traverses properties, items, anyOf/oneOf at ANY depth,
+ * with the path in the message. Previously only top-level properties were
+ * compared; changes at depth 2+ (Netlify selectSchema.required, MongoDB
+ * $vectorSearch.numCandidates at depth 5) were invisible to direction
+ * grading - schemaHash caught them but classified as NOTATION.
  */
 export function schemaDiff(oldSchema, newSchema) {
   if (!oldSchema || !newSchema) return [];
   const changes = [];
-  const oldProps = oldSchema.properties ?? {};
-  const newProps = newSchema.properties ?? {};
-  const oldReq = new Set(oldSchema.required ?? []);
-  const newReq = new Set(newSchema.required ?? []);
+  diffLevel(oldSchema, newSchema, '', changes);
+  return changes;
+}
 
-  // added params: new data channel - required = tighten, optional = expand
-  // (EXPANDED: backwards-compatible for callers but widens attack surface;
-  // same exit 1, same severity slot as BREAKING, more honest label)
+/**
+ * Compare one level of a schema (properties + required) and recurse into
+ * nested structures (items, anyOf/oneOf, sub-properties).
+ */
+function diffLevel(oldSchema, newSchema, path, changes) {
+  const prefix = path ? path + '.' : '';
+  const oldProps = oldSchema?.properties ?? {};
+  const newProps = newSchema?.properties ?? {};
+  const oldReq = new Set(oldSchema?.required ?? []);
+  const newReq = new Set(newSchema?.required ?? []);
+
+  // added params
   for (const name of Object.keys(newProps)) {
     if (!oldProps[name]) {
       changes.push(newReq.has(name)
-        ? { text: `added required parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' }
-        : { text: `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'expand' });
+        ? { text: `added required parameter '${prefix}${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'tighten' }
+        : { text: `added optional parameter '${prefix}${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'expand' });
     }
   }
-  // removed params: data channel closed - loosen (but guard-params get a warning)
+  // removed params
   for (const name of Object.keys(oldProps)) {
     if (!newProps[name]) {
-      const change = { text: `removed parameter '${name}'`, direction: 'loosen' };
-      // P5+P6 (Jakub): removing a guard parameter is only a SILENT failure
-      // if the new schema accepts unknown keys (additionalProperties:true or
-      // absent = JSON Schema default). With additionalProperties:false the
-      // server loudly rejects the old call - no silent-ignore warning needed.
+      const change = { text: `removed parameter '${prefix}${name}'`, direction: 'loosen' };
       if (GUARD_PARAM_RE.test(name) && !rejectsUnknownKeys(newSchema)) {
-        change.guardWarning = `guard-style parameter removed - agents may still pass '${name}'; server will silently ignore it (unknown keys not rejected)`;
+        change.guardWarning = `guard-style parameter removed - agents may still pass '${prefix}${name}'; server will silently ignore it (unknown keys not rejected)`;
       }
       changes.push(change);
     }
@@ -228,74 +238,149 @@ export function schemaDiff(oldSchema, newSchema) {
     if (!newProps[name]) continue;
     const o = oldProps[name];
     const n = newProps[name];
-    if (o.type !== n.type) {
-      // widen = loosen (more accepted), narrow = tighten (less accepted)
-      const widen = o.type !== undefined && (n.type === undefined || (Array.isArray(n.type) && !Array.isArray(o.type)));
-      changes.push({ text: `changed type of '${name}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`, direction: widen ? 'loosen' : 'tighten' });
-    }
-    if (!oldReq.has(name) && newReq.has(name)) changes.push({ text: `'${name}' became required`, direction: 'tighten' });
-    if (oldReq.has(name) && !newReq.has(name)) {
-      const change = { text: `'${name}' became optional`, direction: 'loosen' };
-      // P6: guard-param became optional = the guard is defanged
-      if (GUARD_PARAM_RE.test(name)) {
-        change.guardWarning = `guard-style parameter defanged: '${name}' is no longer required - agent may omit the confirmation, action executes without it`;
-      }
-      changes.push(change);
-    }
+    const p = prefix + name;
+    diffProperty(o, n, p, oldReq.has(name), newReq.has(name), changes);
+  }
+}
 
-    // P6: default value changes - tracked for ALL parameters (previously
-    // invisible: schemaHash changed but schemaDiff returned [], grade=NOTATION).
-    // Guard params with weakening flip (true→false) get a guardWarning.
-    if (o.default !== undefined && n.default !== undefined && o.default !== n.default) {
-      const isGuard = GUARD_PARAM_RE.test(name);
-      const weakened = isGuard && o.default === true && n.default === false;
-      const change = {
-        text: `default of '${name}' changed from ${JSON.stringify(o.default)} to ${JSON.stringify(n.default)}`,
-        direction: 'loosen',
-      };
-      if (weakened) {
-        change.guardWarning = `guard-style parameter defanged: '${name}' default changed ${JSON.stringify(o.default)} → ${JSON.stringify(n.default)} - agent relying on the old default will execute the real action`;
-      }
-      changes.push(change);
+/**
+ * Compare a single property (type, required, enum, default, constraints,
+ * guard patterns) and recurse into nested schemas.
+ */
+function diffProperty(o, n, p, wasRequired, isRequired, changes) {
+  if (o.type !== n.type) {
+    const widen = o.type !== undefined && (n.type === undefined || (Array.isArray(n.type) && !Array.isArray(o.type)));
+    changes.push({ text: `changed type of '${p}' from ${o.type ?? 'untyped'} to ${n.type ?? 'untyped'}`, direction: widen ? 'loosen' : 'tighten' });
+  }
+  if (!wasRequired && isRequired) changes.push({ text: `'${p}' became required`, direction: 'tighten' });
+  if (wasRequired && !isRequired) {
+    const change = { text: `'${p}' became optional`, direction: 'loosen' };
+    if (GUARD_PARAM_RE.test(p)) {
+      change.guardWarning = `guard-style parameter defanged: '${p}' is no longer required - agent may omit the confirmation, action executes without it`;
     }
+    changes.push(change);
+  }
 
-    const oEnum = Array.isArray(o.enum) ? o.enum : null;
-    const nEnum = Array.isArray(n.enum) ? n.enum : null;
-    if (oEnum && nEnum) {
-      const narrowed = oEnum.filter((v) => !nEnum.includes(v));
-      if (narrowed.length > 0) changes.push({ text: `narrowed enum of '${name}': removed ${narrowed.map((v) => String(v)).join(', ')}`, direction: 'tighten' });
-      const expanded = nEnum.filter((v) => !oEnum.includes(v));
-      if (expanded.length > 0) changes.push({ text: `expanded enum of '${name}': added ${expanded.map((v) => String(v)).join(', ')}`, direction: 'loosen' });
+  // default value changes
+  if (o.default !== undefined && n.default !== undefined && o.default !== n.default) {
+    const isGuard = GUARD_PARAM_RE.test(p);
+    const weakened = isGuard && o.default === true && n.default === false;
+    const change = {
+      text: `default of '${p}' changed from ${JSON.stringify(o.default)} to ${JSON.stringify(n.default)}`,
+      direction: 'loosen',
+    };
+    if (weakened) {
+      change.guardWarning = `guard-style parameter defanged: '${p}' default changed ${JSON.stringify(o.default)} -> ${JSON.stringify(n.default)} - agent relying on the old default will execute the real action`;
     }
-    if (oEnum && !nEnum) changes.push({ text: `removed enum constraint from '${name}'`, direction: 'loosen' });
-    if (!oEnum && nEnum) changes.push({ text: `added enum constraint to '${name}'`, direction: 'tighten' });
+    changes.push(change);
+  }
 
-    // R3: constraint keys (minItems, minimum, maximum, minLength, maxLength,
-    // pattern) - previously invisible (schemaHash changed, schemaDiff returned
-    // [], grade=NOTATION). Real MongoDB 3.0.0 case: minItems:1 on pipeline,
-    // number->integer + minimum/maximum on limit, pattern on deploymentName.
-    for (const ck of CONSTRAINT_KEYS) {
-      const ov = o[ck];
-      const nv = n[ck];
-      if (ov === nv) continue;
-      if (ov === undefined && nv !== undefined) {
-        changes.push({ text: `added ${ck}=${JSON.stringify(nv)} to '${name}'`, direction: 'tighten' });
-      } else if (ov !== undefined && nv === undefined) {
-        changes.push({ text: `removed ${ck}=${JSON.stringify(ov)} from '${name}'`, direction: 'loosen' });
-      } else {
-        changes.push({ text: `${ck} of '${name}' changed from ${JSON.stringify(ov)} to ${JSON.stringify(nv)}`, direction: 'tighten' });
-      }
-    }
+  // enum changes
+  const oEnum = Array.isArray(o.enum) ? o.enum : null;
+  const nEnum = Array.isArray(n.enum) ? n.enum : null;
+  if (oEnum && nEnum) {
+    const narrowed = oEnum.filter((v) => !nEnum.includes(v));
+    if (narrowed.length > 0) changes.push({ text: `narrowed enum of '${p}': removed ${narrowed.map((v) => String(v)).join(', ')}`, direction: 'tighten' });
+    const expanded = nEnum.filter((v) => !oEnum.includes(v));
+    if (expanded.length > 0) changes.push({ text: `expanded enum of '${p}': added ${expanded.map((v) => String(v)).join(', ')}`, direction: 'loosen' });
+  }
+  if (oEnum && !nEnum) changes.push({ text: `removed enum constraint from '${p}'`, direction: 'loosen' });
+  if (!oEnum && nEnum) changes.push({ text: `added enum constraint to '${p}'`, direction: 'tighten' });
 
-    // R3: number → integer is a tighten (integer is a subtype of number)
-    if (o.type === 'number' && n.type === 'integer') {
-      changes.push({ text: `'${name}' narrowed from number to integer`, direction: 'tighten' });
-    }
-    if (o.type === 'integer' && n.type === 'number') {
-      changes.push({ text: `'${name}' widened from integer to number`, direction: 'loosen' });
+  // constraint keys (R3)
+  for (const ck of CONSTRAINT_KEYS) {
+    const ov = o[ck];
+    const nv = n[ck];
+    if (ov === nv) continue;
+    if (ov === undefined && nv !== undefined) {
+      changes.push({ text: `added ${ck}=${JSON.stringify(nv)} to '${p}'`, direction: 'tighten' });
+    } else if (ov !== undefined && nv === undefined) {
+      changes.push({ text: `removed ${ck}=${JSON.stringify(ov)} from '${p}'`, direction: 'loosen' });
+    } else {
+      changes.push({ text: `${ck} of '${p}' changed from ${JSON.stringify(ov)} to ${JSON.stringify(nv)}`, direction: 'tighten' });
     }
   }
-  return changes;
+
+  // number -> integer
+  if (o.type === 'number' && n.type === 'integer') {
+    changes.push({ text: `'${p}' narrowed from number to integer`, direction: 'tighten' });
+  }
+  if (o.type === 'integer' && n.type === 'number') {
+    changes.push({ text: `'${p}' widened from integer to number`, direction: 'loosen' });
+  }
+
+  // R21: recurse into nested structures
+  // nested properties (object within object)
+  if ((o.properties && Object.keys(o.properties).length > 0) || (n.properties && Object.keys(n.properties).length > 0)) {
+    diffLevel(o, n, p, changes);
+  }
+  // array items (may contain anyOf/oneOf/properties at the item level)
+  if (o.items || n.items) {
+    diffLevel({ properties: o.items?.properties, required: o.items?.required }, { properties: n.items?.properties, required: n.items?.required }, p + '[]', changes);
+    diffUnion(o.items?.anyOf, n.items?.anyOf, p + '[]', 'anyOf', changes);
+    diffUnion(o.items?.oneOf, n.items?.oneOf, p + '[]', 'oneOf', changes);
+  }
+  // union branches directly on this property
+  diffUnion(o.anyOf, n.anyOf, p, 'anyOf', changes);
+  diffUnion(o.oneOf, n.oneOf, p, 'oneOf', changes);
+}
+
+/**
+ * Compare union branches (anyOf/oneOf). Each branch is a subschema that
+ * may have its own properties, required, and nested structures. Matched
+ * by const discriminator when available, otherwise compared pairwise.
+ */
+function diffUnion(oldBranches, newBranches, parentPath, unionKind, changes) {
+  if (!Array.isArray(oldBranches) || !Array.isArray(newBranches)) return;
+  if (oldBranches.length === 0 && newBranches.length === 0) return;
+
+  // build a map by const discriminator (operation name) for efficient matching
+  const oldByConst = new Map();
+  const newByConst = new Map();
+  const oldNoConst = [];
+  const newNoConst = [];
+  for (const b of oldBranches) {
+    const c = findConst(b);
+    if (c) oldByConst.set(c, b); else oldNoConst.push(b);
+  }
+  for (const b of newBranches) {
+    const c = findConst(b);
+    if (c) newByConst.set(c, b); else newNoConst.push(b);
+  }
+
+  // compare branches matched by const
+  for (const [constVal, oldB] of oldByConst) {
+    const newB = newByConst.get(constVal);
+    if (!newB) {
+      changes.push({ text: `removed ${unionKind} branch '${constVal}' from '${parentPath}'`, direction: 'loosen' });
+      continue;
+    }
+    diffLevel(oldB, newB, `${parentPath}[${constVal}]`, changes);
+  }
+  for (const constVal of newByConst.keys()) {
+    if (!oldByConst.has(constVal)) {
+      changes.push({ text: `added ${unionKind} branch '${constVal}' to '${parentPath}'`, direction: 'expand' });
+    }
+  }
+
+  // R21 fallback: branches without const discriminators, compared by index.
+  // MongoDB's anyOf is a wrapper around one subschema (not a discriminated
+  // union) - just recurse into its properties at any depth.
+  for (let i = 0; i < Math.min(oldNoConst.length, newNoConst.length); i++) {
+    diffLevel(oldNoConst[i], newNoConst[i], `${parentPath}[${i}]`, changes);
+  }
+}
+
+/**
+ * Find the const discriminator value in a union branch (e.g. the value of
+ * properties.operation.const = "get-teams"). Checks properties.*.const.
+ */
+function findConst(branch) {
+  if (!branch?.properties) return null;
+  for (const prop of Object.values(branch.properties)) {
+    if (prop?.const !== undefined) return String(prop.const);
+  }
+  return null;
 }
 
 /**

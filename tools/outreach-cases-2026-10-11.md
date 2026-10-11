@@ -111,15 +111,24 @@ We pin MCP tool contracts (sha-256 over name + description + inputSchema) and di
 
 One more observation from pinning this server: per PR #60 the surface itself is client-dependent (openai-mcp user agents get 21 granular tools; everyone else gets the 9 grouped tools). Documented, but it means a contract pin taken by one client does not cover what another client sees.
 
-Repro:
+Repro (graded output from rugsnare 1.2.0):
 
 ```bash
 mkdir nm && cd nm && npm init -y
 # mcp.json: {"mcpServers":{"netlify":{"command":"node","args":["node_modules/@netlify/mcp/dist/netlify-mcp.js"]}}}
 npm i @netlify/mcp@1.15.0
-npx rugsnare@latest scan --config mcp.json --server netlify
+npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
+npm i @netlify/mcp@1.15.1
+npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+#   8 [DRIFT] findings (all 8 router tools), exit 1
 npm i @netlify/mcp@1.16.0
-npx rugsnare@latest diff --config mcp.json --server netlify   # 9 findings incl. team-reader, exit 1
+npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+#   9 [DRIFT] findings, all LOOSENED, exit 1, e.g.:
+#   [DRIFT] netlify-coding-rules (LOOSENED) 4e82cb8d -> 132cc820
+#       additionalProperties false -> undeclared [loosen]
+#   [DRIFT] netlify-team-services-reader (LOOSENED) 3a6bc060 -> 0f6268ae
+#       WAS: ...read operations (read-only) get-teams, get-team
+#       NOW: ...read operations (read-only) get-teams, get-team, get-team-env-vars
 ```
 
 Suggestion: when the operation set of a router tool changes (added, removed, or moved between reader/updater), a line in the release notes would make these visible to pinned users. We detect these with rugsnare (open source, Apache-2.0); happy to share the per-version map of all 24 scanned versions.
@@ -144,15 +153,24 @@ Real input tightenings (7 tools), verified with canonicalized comparison:
 
 None of this is discoverable from the package: the GitHub release notes for 3.0.0 and the whole 3.0.x line are empty, the repo has no CHANGELOG.md, and #1047 announced breaking changes for library usage only. A schema-valid 2.1.2 caller (say, `search-knowledge` with `limit: 150`, or an aggregate with an empty pipeline) is now invalid, and nothing tells them.
 
-Repro:
+Repro (graded output from rugsnare 1.2.0):
 
 ```bash
 mkdir mm && cd mm && npm init -y
 # mcp.json: {"mcpServers":{"mongodb":{"command":"node","args":["node_modules/mongodb-mcp-server/dist/esm/index.js","--readOnly"],"env":{"MDB_MCP_CONNECTION_STRING":"mongodb://x:27017"}}}}
 npm i mongodb-mcp-server@2.1.2
-npx rugsnare@latest scan --config mcp.json --server mongodb
+npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
 npm i mongodb-mcp-server@3.0.0
-npx rugsnare@latest diff --config mcp.json --server mongodb   # 20 DRIFT findings, exit 1
+npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+#   20 [DRIFT] findings: 4 BREAKING + 16 NOTATION, exit 1, e.g.:
+#   [DRIFT] mongodb-logs (BREAKING) d441d608 -> 2d21a549
+#       changed type of 'limit' from number to integer [tighten]
+#       added minimum=1 to 'limit' [tighten]
+#       added maximum=1024 to 'limit' [tighten]
+#   [DRIFT] aggregate-db (BREAKING) d557c1e5 -> 749a99af
+#       added minItems=1 to 'pipeline' [tighten]
+#   [DRIFT] aggregate (NOTATION) ... (the $vectorSearch narrowing above lives 5 levels
+#   deep inside pipeline.items.anyOf - hash-caught, leaf shown by canonicalized diff)
 ```
 
 Suggestion: a changelog line separating the two classes ("schemas regenerated for dialect; input tightenings: integer typing + bounds on X, minItems on pipeline") would close this for everyone who pins. Happy to share the full decomposition of all 20 diffs.

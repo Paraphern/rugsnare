@@ -93,7 +93,7 @@ test('P6: guard default-flip true→false = LOOSENED with guardWarning', () => {
   assert.ok(flip, 'default change detected');
   assert.equal(flip.direction, 'loosen');
   assert.ok(flip.guardWarning, 'weakening default-flip gets guardWarning');
-  assert.match(flip.guardWarning, /default changed true → false/);
+  assert.match(flip.guardWarning, /default changed true -> false/);
   assert.equal(gradeSchemaDrift(changes, []), 'LOOSENED');
 });
 
@@ -273,4 +273,115 @@ test('R3: added pattern = tighten', () => {
 test('schemaDiff: unchanged parameters produce no findings', () => {
   const s = { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] };
   assert.equal(schemaDiff(s, s).length, 0);
+});
+
+// R21: recursive schema traversal
+test('R21: nested required change at depth 2 is detected (Netlify case)', () => {
+  const a = {
+    type: 'object',
+    properties: {
+      selectSchema: {
+        type: 'object',
+        properties: { operation: { type: 'string' }, params: { type: 'object' } },
+        required: ['operation', 'params'],
+      },
+    },
+  };
+  const b = {
+    type: 'object',
+    properties: {
+      selectSchema: {
+        type: 'object',
+        properties: { operation: { type: 'string' }, params: { type: 'object' } },
+        required: ['operation'],
+      },
+    },
+  };
+  const changes = schemaDiff(a, b);
+  const opt = changes.find((c) => c.text.includes('selectSchema.params') && c.text.includes('became optional'));
+  assert.ok(opt, 'nested required change detected with path');
+  assert.equal(opt.direction, 'loosen');
+});
+
+test('R21: constraint at depth 5 through items+anyOf is detected (MongoDB case)', () => {
+  const a = {
+    type: 'object',
+    properties: {
+      pipeline: {
+        type: 'array',
+        items: {
+          anyOf: [
+            {
+              properties: {
+                $vectorSearch: {
+                  type: 'object',
+                  properties: {
+                    numCandidates: { type: 'number' },
+                    limit: { type: 'number' },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  };
+  const b = {
+    type: 'object',
+    properties: {
+      pipeline: {
+        type: 'array',
+        items: {
+          anyOf: [
+            {
+              properties: {
+                $vectorSearch: {
+                  type: 'object',
+                  properties: {
+                    numCandidates: { type: 'integer', maximum: 10000 },
+                    limit: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  };
+  const changes = schemaDiff(a, b);
+  // should find: numCandidates number->integer, limit number->integer, added maximum
+  const narrowed = changes.filter((c) => c.text.includes('narrowed from number to integer'));
+  assert.ok(narrowed.length >= 2, `expected 2+ integer narrowings, got ${narrowed.length}: ${changes.map(c=>c.text).join('; ')}`);
+  assert.ok(changes.some((c) => c.text.includes('added maximum') && c.direction === 'tighten'));
+  assert.ok(changes.every((c) => c.text.includes('pipeline')), 'all paths include pipeline prefix');
+});
+
+test('R21: union branch added/removed detected by const discriminator', () => {
+  const a = {
+    type: 'object',
+    properties: {
+      tool_input: {
+        anyOf: [
+          { properties: { operation: { type: 'string', const: 'get-teams' }, params: { type: 'object' } }, required: ['operation'] },
+          { properties: { operation: { type: 'string', const: 'init-db' }, params: { type: 'object' } }, required: ['operation'] },
+        ],
+      },
+    },
+  };
+  const b = {
+    type: 'object',
+    properties: {
+      tool_input: {
+        anyOf: [
+          { properties: { operation: { type: 'string', const: 'get-teams' }, params: { type: 'object' } }, required: ['operation'] },
+          { properties: { operation: { type: 'string', const: 'get-env-vars' }, params: { type: 'object' } }, required: ['operation'] },
+        ],
+      },
+    },
+  };
+  const changes = schemaDiff(a, b);
+  assert.ok(changes.some((c) => c.text.includes("removed anyOf branch 'init-db'") && c.direction === 'loosen'));
+  assert.ok(changes.some((c) => c.text.includes("added anyOf branch 'get-env-vars'") && c.direction === 'expand'));
 });

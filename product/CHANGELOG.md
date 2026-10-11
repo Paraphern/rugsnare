@@ -7,6 +7,14 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
 
 ### Drift gradation (P3-P6: BREAKING / LOOSENED / EXPANDED / NOTATION)
 
+- **R21 Recursive schema traversal**: schemaDiff now recurses into
+  `properties`, `items`, `anyOf`/`oneOf` at ANY depth, with the full path
+  in the message (e.g. `pipeline[][0].$vectorSearch.numCandidates`).
+  Previously only top-level properties were compared - changes at depth 2+
+  (Netlify `selectSchema.required`, MongoDB `$vectorSearch` at depth 5)
+  were invisible to direction grading (schemaHash caught them but
+  classified as NOTATION). Union branches matched by const discriminator
+  (operation name) with index-based fallback for non-discriminated unions.
 - **Direction-aware grading** (P3+P4): schema drift now grades by direction.
   BREAKING = tighten (new required params, narrowed types, added constraints -
   agent must send more, new data channels are exfil-risk). LOOSENED = loosen
