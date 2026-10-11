@@ -158,3 +158,13 @@ Decoded input from the transaction:
 4. `site/latest-native.txt` = версия native-бинарников в Release-ассетах
 5. Тег = publish-коммит = npm gitHead; Base-пин: sha256 тарболла, versionKey, строка версии
 6. `product/server.json` = версия релиза (MCP Registry)
+
+## Пин 1.2.0 (2026-10-11)
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x5c3557b52db98523735dd5bbd867f8fff37706af211967731e76e948a8254b13` (block 52481123, index 686) |
+| artifact sha256 | `68d08748f9a64bc5b4f0885e9c27e7d5713379d6151ce04aac5c2d7af1b607ae` |
+| versionKey | keccak256("1.2.0") = `0xe374587661e69268352d25204d81b23ce801573f4b09f3545e69536dc085a37a` |
+| npm | rugsnare@1.2.0, gitHead `3cd65718` |
+| Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
