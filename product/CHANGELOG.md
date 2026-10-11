@@ -3,7 +3,7 @@
 ## [1.2.0] - 2026-10-11
 
 Four rounds of drift-gradation improvements from the KyttoMCP dialogue
-(P3-P6, all from Jakub Hecht's feedback), plus scanner robustness.
+(P3-P6, all from [@heyitsjakub](https://github.com/heyitsjakub)'s feedback), plus scanner robustness.
 
 ### Drift gradation (P3-P6: BREAKING / LOOSENED / EXPANDED / NOTATION)
 
@@ -68,7 +68,7 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
 - **Corpus 05: key-reorder fixture** (`corpus/05-key-reorder/`): two
   servers with semantically identical schemas in different key order;
   rugsnare diff reports clean (canonicalization proof). Requested by
-  Jakub Hecht as a fixture for KyttoMCP#12.
+  [@heyitsjakub](https://github.com/heyitsjakub) as a fixture for KyttoMCP#12.
 - Open **Pin Format specification** drafted at `docs/PIN-SPEC.md` (internal;
   publication gated on ecosystem timing).
 - Em-dash cleanup: all long dashes replaced with short hyphens across
