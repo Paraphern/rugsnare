@@ -105,7 +105,7 @@
         <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
-          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.1.0 diff --config .mcp.json</span>
+          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.2.0 diff --config .mcp.json</span>
 <span class="l f">github  (npx -y @modelcontextprotocol/server-github)</span>
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
@@ -226,16 +226,16 @@
 <section id="new">
   <div class="shell">
     <div class="sec-head">
-      <h2>What's new in 1.1</h2>
-      <p>Skills Security, whole-history scanning, and a native launcher that needs no Node.js.</p>
+      <h2>What's new in 1.2</h2>
+      <p>Drift gradation born from community dialogue, plus scanner hardening from field scans.</p>
     </div>
     <div class="pledges">
-      <div class="pledge"><b>Skills Security</b><p><code>rugsnare skills scan/diff/report</code> - pin, diff, and visually report on AI instruction files across 14 platforms. Severity classification (DANGEROUS/REVIEW/SAFE). HTML report with plain-language was/became diffs. Cold-start audit: files that already contained risk patterns before your first scan are flagged separately.</p></div>
-      <div class="pledge"><b>Whole-History Scanning</b><p><code>rugsnare history &lt;package&gt;</code> - download every published version, actually start each one in a sandbox, diff the contracts pair by pair. On this site: paste an npm package above, get the full drift history with public CI evidence.</p></div>
-      <div class="pledge"><b>Native Launcher</b><p>A 7 MB binary (Windows/macOS/Linux) - no Node.js needed. Double-click, get a browser report. Scheduled checks without admin rights. <a href="https://github.com/Paraphern/rugsnare/releases/tag/v1.1.0" target="_blank" rel="noopener">Download from Releases</a></p></div>
-      <div class="pledge"><b>Drift Gradation</b><p>Schema drift now grades as BREAKING (parameter changed) or NOTATION (dialect switch, parameters unchanged) - fewer false alarms on SDK migrations, same guarantees. Weakening changes (dropped <code>additionalProperties:false</code>) carry a visible flag.</p></div>
-      <div class="pledge"><b>Undeclared Tool Detection</b><p>The live proxy catches tools called by the agent that were never in tools/list (progressive-discovery servers). Blocked in enforce mode.</p></div>
-      <div class="pledge"><b>Base Mainnet</b><p>Release artifact hashes pinned on-chain. <a href="https://basescan.org/address/0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e" target="_blank" rel="noopener">View contract</a></p></div>
+      <div class="pledge"><b>Drift Gradation</b><p>Schema drift now grades by direction: <b>BREAKING</b> (parameters changed), <b>LOOSENED</b> (constraints dropped, validation weakened), <b>EXPANDED</b> (new optional param = wider attack surface), <b>NOTATION</b> (dialect switch, harmless). Guard-parameter warnings: removing <code>dry_run</code>, flipping its default, or making <code>confirm</code> optional triggers a context-specific security warning.</p></div>
+      <div class="pledge"><b>Rename Inference</b><p>When a tool disappears and an identical one appears under a new name, RugSnare collapses them into <code>RENAMED a -&gt; b</code> instead of two separate findings. The azure-devops case: 104 lines become ~10 renames + ~5 gone + ~29 new.</p></div>
+      <div class="pledge"><b>Kill-Switch Detection</b><p>Servers that refuse to start on older versions (remote kill-switch) are now classified separately: <code>KILLSWITCH</code>, <code>GATED</code>, <code>GIT_DEPS</code>, <code>CRASH</code>, <code>TIMEOUT</code>. A systematic detector for remote-gated packages, not a generic error.</p></div>
+      <div class="pledge"><b>Constraint Keys</b><p><code>minItems</code>, <code>minimum</code>, <code>maximum</code>, <code>pattern</code>, number-integer transitions - all previously invisible, now graded as tighten/loosen. Real case: MongoDB 3.0.0 added <code>minItems:1</code> on pipeline arrays.</p></div>
+      <div class="pledge"><b>Skills Security</b><p><code>rugsnare skills scan/diff/report</code> across 14 platforms. HTML report with was/became diffs and severity. Cold-start audit catches pre-existing risks. Native launcher (Go, 7 MB) for non-technical users - <a href="https://github.com/Paraphern/rugsnare/releases/tag/v1.1.0" target="_blank" rel="noopener">download</a>.</p></div>
+      <div class="pledge"><b>Whole-History Scanning</b><p><code>rugsnare history &lt;package&gt;</code> - actually starts every published version, diffs contracts pair by pair. <code>--stub-env</code> for credential-gated servers, <code>--server-args</code> for CLI-subcommand servers. On this site: paste a package above.</p></div>
     </div>
   </div>
 </section>
@@ -280,7 +280,7 @@
       <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener" style="color:var(--ink-2)">Releases</a>
     </div>
   </div>
-  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.1.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
+  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.2.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
 </footer>
 
 <script>
