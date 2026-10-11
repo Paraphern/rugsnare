@@ -168,3 +168,17 @@ Decoded input from the transaction:
 | versionKey | keccak256("1.2.0") = `0xe374587661e69268352d25204d81b23ce801573f4b09f3545e69536dc085a37a` |
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
+
+## Пин 1.3.0 (2026-10-12) - подготовлено, ждёт пина
+
+| Parameter | Value |
+|---|---|
+| Pin tx | _заполнить после Remix_ |
+| artifact sha256 | `5331c37e5c01bf942474d05e65717033cc41dda2bb8bd6a7a6c644efa8df0761` (тарболл собран локально, публикуется этот же файл) |
+| versionKey | keccak256("1.3.0") = `0x6a08c3e203132c561752255a4d52ffae85bb9c5d33cb3291520dea1b84356389` |
+| npm | rugsnare@1.3.0, gitHead _заполнить после publish_ |
+| Проверка | `npx rugsnare verify rugsnare-1.3.0.tgz --version 1.3.0 --chain base` -> _ожидает_ |
+
+Состав релиза: R21 (рекурсивный schemaDiff), R2/R4/R5 (router-union), R26 (advisory parity),
+R27 (.agents/skills), ATR cross-references. JS 334/334, Go ok. Native: 1.3.0-native.1
+(R25+R27 в таблице локаций).

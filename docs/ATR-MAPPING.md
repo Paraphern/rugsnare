@@ -59,16 +59,25 @@ Weights and forced-fire logic are unchanged; the `atr` field is additive metadat
 | A17 (w3) | international phone number in a tool description | none yet - see gaps |
 | A18 (w3, forced) | ANSI escape sequences | `ATR-2026-00259` - ANSI Escape Code Terminal Injection; related `ATR-2026-00393` |
 
-## Gaps: rules that do not exist yet
+## Gaps: filed upstream, pending review
 
-These are candidate contributions from RugSnare to the ATR catalog (tracked for the
-community PR):
+Rules that did not exist when this table was written. We filed proposals via the ATR
+Red Team Probe path (issues, per their CONTRIBUTING) on 2026-10-12:
 
-1. **A17 phone-number exfil endpoint.** A phone number in a tool description is the classic
-   WhatsApp/SMS exfiltration recipient; no ATR rule covers it today.
-2. **Pre-invocation contract drift.** ATR detects redefined text content; no rule expresses
-   "the contract hash changed after approval, regardless of content". The P3-P6 gradation
-   (BREAKING / LOOSENED / EXPANDED / NOTATION) is a taxonomy contribution, not a regex.
+1. [Agent-Threat-Rule/agent-threat-rules#653](https://github.com/Agent-Threat-Rule/agent-threat-rules/issues/653) -
+   invisible Unicode / bidi in STATIC tool descriptions. Existing rules 00129/00276
+   cover SKILL.md content and tool responses; the static description surface was
+   uncovered. On acceptance, the issued rule ID joins the `atr` arrays of A12/A13.
+2. [Agent-Threat-Rule/agent-threat-rules#654](https://github.com/Agent-Threat-Rule/agent-threat-rules/issues/654) -
+   the phone-number exfil channel (our A17, honestly empty today). On acceptance,
+   A17 gains its first rule ID.
+3. [Agent-Threat-Rule/agent-threat-rules#655](https://github.com/Agent-Threat-Rule/agent-threat-rules/issues/655) -
+   floating-version references in MCP configs (our FLOATING advisory in `rugsnare scan`).
+
+A fourth gap remains unfiled as a rule because it is not a content pattern:
+**pre-invocation contract drift** - no ATR rule expresses "the contract hash changed
+after approval, regardless of content". The P3-P6 gradation (BREAKING / LOOSENED /
+EXPANDED / NOTATION) is a taxonomy contribution, not a regex.
 
 ## Machine-readable consumption
 

@@ -1,4 +1,4 @@
-// RugSnare native launcher — skills security in a single binary.
+// RugSnare native launcher - skills security in a single binary.
 //
 // Commands:
 //   rugsnare-skills scan     pin all discovered skill files (baseline)
@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 )
 
-const version = "1.1.0-native.3"
+const version = "1.3.0-native.1"
 
 func usage() {
 	fmt.Fprint(os.Stderr, `RugSnare skills security (native launcher) `+version+`
@@ -39,7 +39,7 @@ Usage:
   check    (default) scan if there is no baseline yet, then diff + report
   install-schedule   check automatically at every logon and daily at 12:00
                      (silent when clean, opens the report when something
-                     changed; no resident process — run from the folder
+                     changed; no resident process - run from the folder
                      holding your baseline, usually the exe's folder)
   remove-schedule    remove the automatic checks
 
@@ -159,11 +159,11 @@ func cmdScan(cwd, home string, quiet bool) {
 		fmt.Println("Run again any time to check for changes (diff), or just double-click this program (check).")
 	}
 
-	// cold-start audit: pinning blesses whatever is on disk — also tell the
+	// cold-start audit: pinning blesses whatever is on disk - also tell the
 	// user what ALREADY looks suspicious before the baseline existed
 	audit := AuditCurrentSkills(cwd, home)
 	if len(audit) > 0 {
-		fmt.Printf("\n%d file(s) in your current skills contain risk patterns (they were like this BEFORE pinning — not update drift):\n", len(audit))
+		fmt.Printf("\n%d file(s) in your current skills contain risk patterns (they were like this BEFORE pinning - not update drift):\n", len(audit))
 		for j, f := range audit {
 			if j >= 10 {
 				fmt.Printf("  ... +%d more\n", len(audit)-10)

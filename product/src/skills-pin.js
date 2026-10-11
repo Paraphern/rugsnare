@@ -43,6 +43,12 @@ export const SKILL_LOCATIONS = [
   // R25: canonical skills/ at repo root - the layout of the most popular
   // skills repos on GitHub (anthropics/skills, 297k+ stars): skills/<name>/SKILL.md
   { app: 'skills-dir', scope: 'project', pattern: 'skills' },
+  // R27: the .agents/ cross-platform skill standard. Zed (91.6k+ stars) reads
+  // ~/.agents/skills and has five open skill bugs about it; superpowers ships
+  // .agents/ at repo root. Both scopes - it is a user-level AND project-level
+  // convention, unlike most platform dirs which are one or the other.
+  { app: 'agents', scope: 'user', pattern: '.agents/skills' },
+  { app: 'agents', scope: 'project', pattern: '.agents/skills' },
   // Cursor
   { app: 'cursor', scope: 'project', pattern: '.cursor/rules' },
   { app: 'cursor', scope: 'user', pattern: '.cursor/rules' },

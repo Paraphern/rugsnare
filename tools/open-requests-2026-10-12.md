@@ -248,3 +248,40 @@ EventRelay-контекст), 3 ATR-пробы, вход в 2 клуба (skills
   только фич-реквесты.
 ИТОГ ВСЕХ 5 ВОЛН + ATR ДНЯ: 18 касаний. Microsoft затронут ТРИЖДЫ за день (azure#200 данные, mcp#3674 гейт,
 scope#533 дизайн) - разными продуктами, разными углами, без пересечений.
+
+## IBM mcp-context-forge: глубокое изучение и вход (2026-10-12, ночь)
+
+- Цепочка выяснена: #5046 (Merck CONTRIBUTOR, per-server forbidden patterns, MUST) закрыт как дубль
+  -> #5862 (extension framework epic) тоже закрыт -> решение живёт в #7010 (CEL-эпик, work-queue,
+  коммент мейнтейнера: "prioritize resolution of #5046"). #7082 (питч heldfast) - 11 дней без
+  реакции IBM, мёртв, не входили.
+- МЫ ВОШЛИ В #7010 (issuecomment-6114931656): (1) паттерны на ДЕЛЬТЕ от пин-базовой линии, а не на
+  всём описании - FP-поверхность схлопывается, иерархия переопределений почти не нужна; (2) карта
+  классов паттернов из production: near-zero-FP (unicode/hijack/ANSI/phone - глобальные дефолты) vs
+  требующие per-server (шелл-метасимволы, credential-имена, домены - ровно текущий глобальный список);
+  оффер полного набора CEL-выражениями с ATR-кроссреференсами. rugsnare как reference пин-дельты.
+- Позиционирование против heldfast в этом сегменте: он питчит внешний фид (зависимость от сервиса),
+  мы - внутреннюю механику шлюза (digest + delta) - для enterprise-форджа это разные классы предложений.
+- Счёт дня: 19 касаний. Ждём реакцию jonpspri (COLLABORATOR, активен).
+
+## Волна 7: класс шлюзов/прокси, глубокий протокол (ночь 2026-10-12)
+
+- ГЛАВНОЕ: BerriAI/litellm (60979★) УЖЕ ВШИЛ наш концепт: PR #43283 (merged 29.09, Devin-бот,
+  +1969 строк) - пин каталога инструментов админом + алерт mcp_pinned_tools_changed + freeze-serve
+  пин-значений при дрейфе. ДЫРА #44093 (наша экспертиза): пин хранит только description+input_schema;
+  annotations/outputSchema/title/_meta не пинятся и не сравниваются; дашборд при этом показывает
+  "pinned, unchanged". Параллельно #44245 (Devin-PR, 33 коммента, BerriAI матёрит bugbot) строит
+  версии/ченджлоги/deprecation с классами initial/non-breaking/breaking/removed.
+- МЫ ОТВЕТИЛИ в #44093 (issuecomment-6115002978) ПОСЛЕ ГЛУБОКОЙ ВЕРИФИКАЦИИ: прочитали их
+  tool_catalog_guard.py (_drifted = dict-compare -> совет про сортировку ключей убрали как
+  неприменимый), сверили себя (annotations пиним через SPEC-ДЕФОЛТЫ - козырь: absent-vs-default
+  мина; outputSchema НЕ пиним и сами - подано как честная общая дыра; freeze-serve убрали из
+  описания себя). Три калиброванных урока + градация с рекурсией + ссылка.
+- WSO2: ЧЕТЫРЕ репо активно строят MCP tool poisoning guardrails (api-platform typesafe guardrail,
+  gateway policy, classifier sample, agent-manager filters) - вони фронт корпоративного класса,
+  копнуть отдельно.
+- Portkey #1833 "external evidence/PDP hook before MCP tool execution" (0c) - pre-exec policy hook,
+  смежный. Higress/Camel - шум.
+- СЧЁТ ДНЯ: 20 касаний. LiteLLM = крупнейший адресат за весь проект (61k★). Пятый шлюз с пиннингом
+  (scope/teleport/forge/litellm + CF-скиллы) - категория мейнстримится; наш ров: канонизация,
+  spec-default annotations, расщеплённые хэши, рекурсивная градация, честность про собственные дыры.

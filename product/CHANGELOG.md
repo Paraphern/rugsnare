@@ -29,22 +29,19 @@ and scanner hardening from field scans of 10+ npm MCP servers.
 - **R5: nested required** - covered by R21's recursion (Netlify's
   `selectSchema.required` losing `params` now grades LOOSENED).
 
-### Scanner improvements
+### Skills coverage and integrations
 
-- **R25: canonical `skills/` directory** - `skills scan` now discovers
-  `skills/<name>/SKILL.md` at the repo root, the layout of the most
-  popular skills repos on GitHub (297k+ stars).
-- **R10: publish-time version ordering** - `rugsnare history` sorts by npm
-  timestamp, not semver (playwright's two versioning epochs no longer
-  produce phantom cross-epoch pairs).
-- **R11: rename inference** - GONE+NEW tools with identical contracts
-  collapse into `RENAMED a -> b` (azure-devops: 104 lines -> ~10 renames).
-- **R12: kill-switch classification** - unreachable versions carry a cause
-  (KILLSWITCH / GATED / GIT_DEPS / CRASH / TIMEOUT).
-- **Version stamp in output** - `rugsnare diff` and `rugsnare history` print
-  the running version in the footer.
-- **Pins-version mismatch warning** - `scan` records the package version;
-  `diff` warns when pins were taken against a different version.
+- **R26: advisory-layer parity** - `rugsnare scan`'s skill advisory scan
+  now uses the SAME location table as the pin layer (`SKILL_LOCATIONS`),
+  covering all 16 platforms in project and user scope. Before R26 the
+  advisory layer had its own hand-copied list of 3 platforms, so R25's
+  canonical `skills/` dir was pinned but never advisory-scanned; two
+  lists always drift, so now there is one. The native launcher's Go copy
+  of the table gained the R25 entry in the same pass.
+- **R27: the `.agents/skills` standard** (user + project scope) - Zed
+  (91.6k+ stars) reads `~/.agents/skills` with five open skill bugs about
+  it; superpowers ships `.agents/` at repo root; the native launcher's
+  copy of the location table is updated too.
 - **ATR cross-references** - every advisory signal (A01-A18) and SARIF rule
   (RS001-RS004) now carries the ID of the [Agent Threat Rules](https://github.com/Agent-Threat-Rule/agent-threat-rules)
   rule covering the same technique (zero-width Unicode -> `ATR-2026-00129`,

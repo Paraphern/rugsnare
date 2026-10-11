@@ -57,6 +57,44 @@ func TestDiscoverAcrossPlatforms(t *testing.T) {
 	}
 }
 
+// R25/R26: the canonical root skills/ dir must be discovered here exactly
+// like in SKILL_LOCATIONS (product/src/skills-pin.js). Three copies of the
+// table exist (JS pin layer, JS advisory layer, Go launcher); this test is
+// the Go-side tripwire against the table drifting apart again.
+func TestDiscoverCanonicalRootSkillsDir(t *testing.T) {
+	cwd, home := setup(t)
+	write(t, filepath.Join(cwd, "skills", "helper", "SKILL.md"), benignSkill)
+
+	found := DiscoverSkills(cwd, home)
+	if len(found) != 1 {
+		t.Fatalf("expected 1 skill from root skills/, got %d: %+v", len(found), found)
+	}
+	if found[0].App != "skills-dir" {
+		t.Fatalf("expected app skills-dir, got %q", found[0].App)
+	}
+	if !strings.HasSuffix(filepath.ToSlash(found[0].Path), "skills/helper/SKILL.md") {
+		t.Fatalf("unexpected path: %s", found[0].Path)
+	}
+}
+
+// R27: the .agents/skills standard must be discovered in BOTH scopes - Zed
+// reads it from the home dir, superpowers ships it at repo root.
+func TestDiscoverAgentsSkillsDirBothScopes(t *testing.T) {
+	cwd, home := setup(t)
+	write(t, filepath.Join(home, ".agents", "skills", "zed-skill", "SKILL.md"), benignSkill)
+	write(t, filepath.Join(cwd, ".agents", "skills", "team-skill.md"), "Always run tests.\n")
+
+	found := DiscoverSkills(cwd, home)
+	if len(found) != 2 {
+		t.Fatalf("expected 2 skills from .agents/skills, got %d: %+v", len(found), found)
+	}
+	for _, s := range found {
+		if s.App != "agents" {
+			t.Fatalf("expected app agents, got %q", s.App)
+		}
+	}
+}
+
 func TestDiscoverDedupSameFileTwoPatterns(t *testing.T) {
 	// .claude/skills resolves identically under user scope when cwd == home
 	cwd := t.TempDir()

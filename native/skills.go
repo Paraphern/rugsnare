@@ -1,4 +1,4 @@
-// Package main — RugSnare native launcher.
+// Package main - RugSnare native launcher.
 //
 // A single-binary port of the skills-security half of RugSnare (npm CLI):
 // discover skill files across AI platforms, SHA-256 pin them, detect drift,
@@ -42,6 +42,12 @@ var skillLocations = []SkillLocation{
 	{"claude-code", "user", ".claude/commands"},
 	{"claude-code", "project", ".claude/skills"},
 	{"claude-code", "project", ".claude/commands"},
+	// R25: canonical skills/ at repo root - mirrors skills-pin.js SKILL_LOCATIONS
+	{"skills-dir", "project", "skills"},
+	// R27: the .agents/ cross-platform skill standard (Zed ~/.agents/skills,
+	// superpowers ships .agents/ at repo root) - user AND project scope
+	{"agents", "user", ".agents/skills"},
+	{"agents", "project", ".agents/skills"},
 	// Cursor
 	{"cursor", "project", ".cursor/rules"},
 	{"cursor", "user", ".cursor/rules"},
@@ -84,7 +90,7 @@ type Skill struct {
 // DiscoverSkills walks all known skill locations. cwd is the project
 // directory (project-scope locations resolve against it), home the user
 // directory (user-scope locations). Some patterns are FILES, not directories
-// (copilot-instructions.md, CONVENTIONS.md) — those are included directly.
+// (copilot-instructions.md, CONVENTIONS.md) - those are included directly.
 func DiscoverSkills(cwd, home string) []Skill {
 	var found []Skill
 	seen := map[string]bool{} // dedup by resolved absolute path
@@ -247,7 +253,7 @@ func PinSkill(skill Skill) (*SkillPin, error) {
 
 // SkillKey mirrors the JS key format: app/scope/relative, where relative
 // keeps NATIVE path separators (the npm CLI stores them native: backslash
-// on Windows). Do NOT normalize to slashes — the keys must match byte-for-byte
+// on Windows). Do NOT normalize to slashes - the keys must match byte-for-byte
 // with pins written by the JS CLI on the same platform.
 func SkillKey(s Skill) string {
 	return s.App + "/" + s.Scope + "/" + s.Relative

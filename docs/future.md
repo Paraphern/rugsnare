@@ -4,6 +4,55 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose - this is a roadmap, not a secret.)
 
+## Hosted endpoints in the public drift-feed (R30, from the heldfast wave, 2026-10-12)
+
+Verified gap: `driftfeed.mjs` scans a curated list of 4-6 stdio npm packages
+only (`DEFAULT_SERVERS` + `drift-feed/servers.json`); zero hosted HTTP
+endpoints. The capability exists and is fully wired (`scan/diff --url` +
+`--header` passthrough, `fetchToolsHttp` with session-id and SSE handling) -
+we pin remote endpoints ad-hoc but never publish them to the feed. Meanwhile
+heldfast's public sealed log covers 29,458 registry servers (19,746 hosted
+per their data) and two independent feed vendors (AAtomless, heldfast) are
+already answering the registration-pin demand (microsoft/scope#533,
+teleport#61434, IBM forge#7082). Supersedes R18 (which assumed a private
+watch-list with secrets - a public Actions feed cannot carry tokens).
+
+- Second entry type in `servers.json`: `{ name, url, headers? }` ->
+  `fetchToolsHttp` path in `driftfeed.mjs`; entries tagged `transport: 'http'`.
+- Target list: top hosted servers whose `tools/list` answers WITHOUT auth
+  (common MCP pattern: list open, call gated). Start at 25-50 endpoints,
+  curated like the npm list. Auth-gated endpoints are excluded honestly -
+  the feed README states the coverage rule, so nobody mistakes it for the
+  whole hosted registry.
+- Per-endpoint failure = logged event, never fatal (hosted flakiness is not
+  drift); one polite request per endpoint per day from the existing cron.
+- Site: `scans.html`/feed rendering gains a transport badge; no schema change
+  to `changes.jsonl` beyond the transport field.
+
+## Paywall-introduction grade (R31, from the heldfast wave, 2026-10-12)
+
+Verified gap: zero monetization vocabulary anywhere in `pins.js`/`advisory.js`
+(paid/pricing/paywall/subscription/billing/credits - no hits). A
+"now requires a paid plan" rewrite is schema-silent, so today it grades
+NOTATION ("harmless dialect switch") - operationally wrong: the tool the
+user approved is no longer the tool they get. heldfast reports 58 of their
+66 review-events are exactly this class; we have no signal for it at all.
+
+- New prose-level warning, sibling of guard-parameter warnings in
+  `compareTools` (which already exposes `oldDescription`/`newDescription`):
+  `MONETIZATION_PATTERNS` fires on ADDED text - "requires a paid plan",
+  "subscription required", "free tier removed", "upgrade to Pro/Premium",
+  "credits" + purchase/deplete, "per-call pricing", 402 mentions.
+- Anchored phrases only, never bare price words: finance tools describe
+  prices as their SUBJECT ("flight prices"), so `price|pricing` alone must
+  never trigger. Introduction = present in new prose, absent in old.
+- Additive flag (`[PAYWALL]` line + `paywall: true` in JSON) like guard
+  warnings; does not overwrite the schema-direction grade (schema BREAKING
+  stays BREAKING, paywall rides alongside).
+- Schema-side companion signal: a NEW required `api_key`/`token` param
+  appearing together with monetization prose = stronger evidence.
+- Not an ATR rule (economics, not attack) - PIN-SPEC territory instead.
+
 ## Release hygiene (from review 42)
 
 - **Native binaries must be built from a clean tree** (ideally the tag): the
