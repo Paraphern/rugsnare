@@ -385,3 +385,27 @@ test('R21: union branch added/removed detected by const discriminator', () => {
   assert.ok(changes.some((c) => c.text.includes("removed anyOf branch 'init-db'") && c.direction === 'loosen'));
   assert.ok(changes.some((c) => c.text.includes("added anyOf branch 'get-env-vars'") && c.direction === 'expand'));
 });
+
+// R4: anyOf↔oneOf with same branches = NOTATION
+test('R4: anyOf to oneOf with identical branches = union keyword swap, not removed+added', () => {
+  const branch = (op) => ({ properties: { operation: { type: 'string', const: op }, params: { type: 'object' } }, required: ['operation'] });
+  const a = { type: 'object', properties: { input: { anyOf: [branch('read'), branch('write')] } } };
+  const b = { type: 'object', properties: { input: { oneOf: [branch('read'), branch('write')] } } };
+  const changes = schemaDiff(a, b);
+  const swap = changes.find((c) => c.text.includes('anyOf -> oneOf'));
+  assert.ok(swap, 'keyword swap detected');
+  assert.ok(swap.notationOnly, 'marked as notation-only');
+  // must NOT report removed+added branches
+  assert.ok(!changes.some((c) => c.text.includes('removed anyOf')), 'must not report removed anyOf');
+  assert.ok(!changes.some((c) => c.text.includes('added oneOf')), 'must not report added oneOf');
+});
+
+test('R4: anyOf to oneOf with DIFFERENT branches = real add/remove, not notation', () => {
+  const branch = (op) => ({ properties: { operation: { type: 'string', const: op } }, required: ['operation'] });
+  const a = { type: 'object', properties: { input: { anyOf: [branch('read'), branch('delete')] } } };
+  const b = { type: 'object', properties: { input: { oneOf: [branch('read'), branch('create')] } } };
+  const changes = schemaDiff(a, b);
+  assert.ok(!changes.some((c) => c.notationOnly), 'no notationOnly when branches differ');
+  assert.ok(changes.some((c) => c.text.includes('removed') && c.text.includes('delete')), 'delete branch removed');
+  assert.ok(changes.some((c) => c.text.includes('added') && c.text.includes('create')), 'create branch added');
+});

@@ -135,3 +135,116 @@ mcp-pin (Gautam) пока в своих каналах. Наш козырь в �
   Apache-2.0 как reference или JSON-стадия под его критерий "findings link through the graph".
   ЦЕПОЧКА ОТРАБОТАНА ПОЛНОСТЬЮ: 5/5 фронтов (MCP-Bridge, scope, teleport, ai-dev-helm, horustrace) +
   awesome-enterprise #159 в триаже.
+
+## Свип по скиллам у топ-игроков (2026-10-12, вторая волна)
+
+- ГЛАВНОЕ: anthropics/skills#492 (180k звёзд репо, 43 коммента, ноль ответов Anthropic) - тред о
+  namespace-имперсонейшене превратился в КЛУБ инструментов скилл-безопасности: 4 тулзы согласовали
+  interop-базис (raw-octets sha256 = sha256sum, общие фикстуры baseline/drifted/invalid-utf8, SARIF).
+  Карта: Agent-Threat-Rule/agent-threat-rules 410★ (Sigma для агентов - стандарт), skills-lock/skil-lock 6★
+  (ПРЯМОЙ КОНКУРЕНТ skills-pin: "Pin AI Skill behavior. Block unapproved drift in CI"),
+  ppcvote/prompt-defense-audit 5★ (17 векторов, regex, SARIF), aliksir/claude-code-skill-security-check 4★ (спека конверта).
+- МЫ ВОШЛИ ПЯТЫМ (issuecomment-6114223701): пруф совместимости хэша (raw octets = sha256sum байт-в-байт,
+  включая lone 0x80 и WTF-8 суррогат), градация DANGEROUS/REVIEW + живой кейс superpowers 6.4.2->7.0.0,
+  14 платформ + канонический skills/ корень, SARIF, ссылка на docs/servers. Вход как участник interop, не промо.
+- НА ЗАМЕТКУ: aliksir - координатор клуба (автор треда и спеки), с ним стоит выстроить контакт;
+  ATR 410★ - отдельный будущий фронт (маппинг наших находок в их правила); skil-lock - в радаре конкурентов.
+- Вторичное: anthropics/skills #286/#879 - вендоры-измерители постят аудиты и "grades" в репо (как AAtomless);
+  openai/codex#48000 SEP-2640 Skills Extension - процесс стандартизации, сторожевой пункт; Codex/Cursor -
+  баги дискавери, не боли целостности.
+
+## Четвёртый пакет (вечер 2026-10-12): дары + EventRelay + списки
+
+- yagami#69 - ОТВЕЧЕНО (issuecomment-6114338742): дар фикстур под его acceptance-лист
+  (netlify=compatible additions, mongo=5 breaking с листами, attack-корпус=malicious descriptions,
+  docs/servers=per-version maps) + pin-store как reference для pin/warn/deny.
+- agentbench#14 - ОТВЕЧЕНО (issuecomment-6114339209): оффер в help-wanted - данные вместо кода
+  (JSON-кейсы: description/pattern/expected verdict/reason code под их сюит mcp_tool_poisoning.py).
+- EventRelay#2349 - ОТВЕЧЕНО (issuecomment-6114346000): после чтения комментов (stage-one смержен,
+  в остатке прямо значится 'approval-bound tool-catalog digests') - это поле у нас готовый код
+  (scan --json: schemaHash+proseHash на инструмент + версии пакета; цитата официального гида;
+  оффер lift JSON-шапки, не adoption).
+- corca-ai/awesome-llm-security - PR #366 ОТКРЫТ (Tools, после Agentic Radar, их формат + stars-badge).
+  REST-цепочка (fork -> branch -> file -> PR), локальный git не задействован; контент - одна md-строка.
+  Конкурент mcp-safeguard в списке НЕ смержен (их issues #194/196 не доехали).
+- ottosulin/awesome-ai-security - PR #535 ОТКРЫТ (Agent Runtime Security & Sandboxing, после
+  cisco skill-scanner; их формат: звёздочка + курсив). Соседи: cisco-ai-defense/skill-scanner,
+  pipelock - наша позиция 'integrity-слой между approval и execution'.
+ИТОГ ДНЯ: 5 фронтов первой волны + 1 skills-клуб + 5 четвёртого пакета = 11 касаний,
+все по открытым запросам/формам, ни одного нового issue создано.
+
+## ATR-фронт (2026-10-12, вечер): три Red Team Probe отправлены
+
+Разведка перед сабмитом (главное):
+- ATR-2026-00276 (invisible-unicode-bidi) и 00313 (zero-width) УЖЕ покрывают наш A12/A13, но только на
+  tool_response (рантайм). Наша уникальная ниша - СТАТИЧЕСКИЕ tool-описания на регистрации (tools/list,
+  скилл-файлы) - не покрыта никем.
+- Unpinned/floating-версий в правилах НЕТ (только proposals/GHSA-стабы).
+- Телефона-в-описании (наш A17) в правилах НЕТ.
+- ANSI (наш A18) у них есть (00259), cross-tool shadowing (A09) частично (00161) - НЕ сабмитим, не дублируем.
+
+Сабмит по их каноническому пути Path 1 (Red Team Probe issue, не PR - CONTRIBUTING прямо говорит,
+что новые паттерны идут через пробу, мейнтейнер доводит; regex можно предложить прямо в issue):
+- #653: invisible Unicode/bidi в статических tool-описаниях (tool-poisoning, high) + наши regex A12/A13
+- #654: телефон в tool-описании как канал эксфильтрации (context-exfiltration, high) + regex A17
+- #655: floating-ссылка в MCP-конфиге (supply-chain, medium) - конфиг-шейп правило, + официального гида
+  ссылка + полевой факт 6/7 unpinned из EventRelay#2349
+Все три: >=4 позитива, >=5 негативов, "Discovered by rugsnare" с ссылкой на docs/servers.
+Атрибуция попадёт в metadata_provenance.discovered_by + author правила при принятии.
+
+Что дальше: следить ревью (обычно один раунд tighten); при принятии - продукт-чату сигнал на atrRuleId
+поле в advisory-выводе (их половина плана). Прямой PR НЕ нужен - Path 1 правильнее процесса.
+
+## Волна 3: скилл-боли у 10 крупнейших (вечер 2026-10-12)
+
+- ГЛАВНОЕ: microsoft/azure-skills#200 (1558★, 91 SKILL.md) - MEMBER JasonYeMSFT признал: "we don't run
+  risk or security assessments on the skills" + вслух спросил коллегу о запуске своих оценок.
+  МЫ ОТВЕТИЛИ ДАННЫМИ (issuecomment-6114648936): прогон дерева-CLI по их репо - 950 файлов запинено,
+  опасный класс ЧИСТ (0 invisible-unicode/hijack/phone/ANSI на 950), 12 advisory-флагов (топ:
+  foundry-tool-catalog score 8, trace.md 8, 7 finetuning-скриптов 7 - вероятно benign), и факт дрейфа:
+  100 SKILL.md-изменений за 90 дней через 29 bulk-синк PR из GitHub-Copilot-for-Azure. Оффер:
+  two-line CI job на каждый синк-PR. Репо = синк-зеркало Copilot-for-Azure.
+- Google gemini-cli#29548: file:///Users/abhipatel/... в официальном скилле (гигиена, цитируемо).
+- Amazon Kiro: #11726 описание скилла молча теряется (multi-line YAML), #10678 подчёркивания молча
+  исключаются - класс "молчаливой потери метаданных", лёгкий угол опционально.
+- Cursor - трекер вне GitHub; Tencent/Alibaba - репо недоступны; Cisco/NVIDIA/OpenAI/GitHub/Anthropic - закрыты ранее.
+- ПРОДУКТУ (R26, уточнено): advisory-дискавери в skills.js SKILL_DIRS отстаёт от пин-слоя - нет skills/
+  в корне (R25 зеркалить) и только 3 платформы из 14. НО: `skills scan` из дерева уже гоняет advisory
+  по skills-dir (пин-путь покрывает) - R26 касается только главного `rugsnare scan`.
+
+## Волна 4: вторая десятка компаний (2026-10-12, поздний вечер)
+
+- ГЛАВНОЕ: vercel-labs/skills (33803★, npx skills + реестр skills.sh с аудитами Agent Trust Hub + Snyk).
+  Системная боль: аудит привязан к снапшоту; >=6 открытых issue с ручными просьбами re-audit
+  (#2359, #2179, #2382, #1988, #2339, #1497): флаги переживают удалённый код, а отравление после
+  индексации невидимо до ручного ре-аудита.
+  МЫ ОТВЕТИЛИ (issuecomment-6114736527) в #2359: sibling-паттерн + предложение привязать аудит к
+  хэшу содержимого (same hash = кэш действует; новый хэш = авто-ре-аудит + was/became на витрине)
+  + потребительский комплимент rugsnare. Замыкание: Microsoft (azure#200) доверяет оценки skills.sh,
+  skills.sh слеп к дрейфу - мы недостающий слой, обе стороны проговорили своё вслух.
+- Zed: 5 скилл-багов lifecycle (symlink-скиллы не видны #64992, глобальные не появляются #59543,
+  песочница падает после удаления #63476) - класс "заявленное != активное", лёгкий угол на потом.
+- Salesforce agentforce-adlc #10 (пример расходится со скаффолдом) - слабо. JetBrains/ByteDance - минус.
+- Atlassian/Devin/Replit/Mistral/Docker/Trae/Amp - трекеры вне GitHub; Meta - экосистемы нет.
+
+ИТОГ ВСЕХ ВОЛН ДНЯ (1+2+3+4+ATR): 17 касаний, 3 живых прогона по чужим репо (superpowers, azure-skills,
+EventRelay-контекст), 3 ATR-пробы, вход в 2 клуба (skills-interop #492, vercel re-audit поток).
+Ключевые адресаты дня: Microsoft, NVIDIA, Vercel, Anthropic-экосистема, ATR, teleport.
+
+## Волна 5: третья десятка (финал дня)
+
+- ГЛАВНОЕ: microsoft/mcp#3674 (3761★, MEMBER conniey = Connie Yau, Azure SDK) - "[CI] Add CI Gate for
+  validating documentation matches MCP tool changes (description/command name/parameter)". ИЗУЧЕНО ДОСКОНАЛЬНО:
+  ребёнок ЗАКРЫТОГО эпика #2496 ("command contracts... documentation drifts from the executable command surface"),
+  у них уже стоит постмержный doc-gap-detector + агентные workflows; единственный открытый кусок программы -
+  предмержный гейт, назначен на conniey, месяц без движения. МЫ ОТВЕТИЛИ (issuecomment-6114803886):
+  контрактная половина гейта off-the-shelf (пин+дифф+was/became PR Action+exit-код), их doc-gap-детектор
+  валидирует доки против ПИН-контракта версии PR - пре-мерж вместо пост-мерж. Убрал упоминание Azure DevOps
+  из текста (счёл лишним тыкать их же сервером в их треде).
+- Cloudflare/agents: skills.r2() = СКИЛЛЫ ИЗ ОБЛАЧНОГО R2 динамически (#2068 не работают скрипты, #1678
+  wrangler dev, #1683 Artifacts). Архитектурный сигнал: мутабельные удалённые скиллы - будущая задача для
+  пинов (R-кандидат: пин удалённых источников с фиксацией снапшота). HF smolagents #1848 (поддержка скиллов).
+- Stripe/Elastic/Datadog/Snowflake/Postman/Shopify/GitLab - трекеры недоступны по угаданным путям; Linear -
+  только фич-реквесты.
+ИТОГ ВСЕХ 5 ВОЛН + ATR ДНЯ: 18 касаний. Microsoft затронут ТРИЖДЫ за день (azure#200 данные, mcp#3674 гейт,
+scope#533 дизайн) - разными продуктами, разными углами, без пересечений.

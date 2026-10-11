@@ -14,7 +14,7 @@ import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
 import { readJsonFile } from './jsonfile.js';
 import { buildSarif } from './sarif.js';
-import { scanToolsForAdvisories, scanToolDescription } from './advisory.js';
+import { scanToolsForAdvisories, scanToolDescription, atrRuleIds } from './advisory.js';
 import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -335,8 +335,9 @@ async function cmdScan(flags) {
       // advisory signals: catch suspicious descriptions even on first contact
       const advisories = scanToolsForAdvisories(tools);
       for (const adv of advisories) {
-        if (!flags.json) console.error(`  [ADVISORY] ${name}/${adv.tool} - score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
-        logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
+        const atr = atrRuleIds(adv);
+        if (!flags.json) console.error(`  [ADVISORY] ${name}/${adv.tool} - score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}${atr.length ? ` [${atr.join(' ')}]` : ''}`);
+        logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id), ...(atr.length ? { atr } : {}) });
       }
 
       // prompts are instructions too - the same advisory signals apply to
@@ -345,9 +346,10 @@ async function cmdScan(flags) {
       for (const p of prompts ?? []) {
         const r = scanToolDescription(p.description ?? '');
         if (r.advisory) {
-          if (!flags.json) console.error(`  [ADVISORY] ${name}/prompt:${p.name} - score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
-          promptAdvisories.push({ prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
-          logEvent({ kind: 'advisory', server: name, prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
+          const atr = atrRuleIds(r);
+          if (!flags.json) console.error(`  [ADVISORY] ${name}/prompt:${p.name} - score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}${atr.length ? ` [${atr.join(' ')}]` : ''}`);
+          promptAdvisories.push({ prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id), ...(atr.length ? { atr } : {}) });
+          logEvent({ kind: 'advisory', server: name, prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id), ...(atr.length ? { atr } : {}) });
         }
       }
 
@@ -399,7 +401,7 @@ async function cmdScan(flags) {
         tools: tools.map((t) => t.name),
         prompts: (prompts ?? []).map((p) => p.name),
         resources: (resources ?? []).map((r) => r.name ?? r.uri ?? '(unnamed)'),
-        advisories: advisories.map((a) => ({ tool: a.tool, score: a.score, signals: a.signals.map((s) => s.id) })),
+        advisories: advisories.map((a) => ({ tool: a.tool, score: a.score, signals: a.signals.map((s) => s.id), ...(atrRuleIds(a).length ? { atr: atrRuleIds(a) } : {}) })),
         promptAdvisories,
         floating,
         chameleon: chameleonFindings,
@@ -427,8 +429,9 @@ async function cmdScan(flags) {
     const { scanSkills } = await import('./skills.js');
     skillFindings = scanSkills();
     for (const sk of skillFindings) {
-      if (!flags.json) console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} - score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
-      logEvent({ kind: 'skill-advisory', app: sk.app, file: sk.file, score: sk.score, signals: sk.signals.map((s) => s.id) });
+      const atr = atrRuleIds(sk);
+      if (!flags.json) console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} - score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}${atr.length ? ` [${atr.join(' ')}]` : ''}`);
+      logEvent({ kind: 'skill-advisory', app: sk.app, file: sk.file, score: sk.score, signals: sk.signals.map((s) => s.id), ...(atr.length ? { atr } : {}) });
     }
     if (skillFindings.length > 0 && !flags.json) {
       console.error(`rugsnare scan: ${skillFindings.length} skill file(s) with advisory findings (see above)`);
@@ -443,7 +446,7 @@ async function cmdScan(flags) {
       chameleonCount,
       servers: report,
       shadows,
-      skills: skillFindings.map((sk) => ({ app: sk.app, file: path.basename(sk.file), score: sk.score, signals: sk.signals.map((s) => s.id) })),
+      skills: skillFindings.map((sk) => ({ app: sk.app, file: path.basename(sk.file), score: sk.score, signals: sk.signals.map((s) => s.id), ...(atrRuleIds(sk).length ? { atr: atrRuleIds(sk) } : {}) })),
     }, null, 2));
     if (chameleonCount > 0) process.exit(1);
     process.exit(failed > 0 ? 2 : 0);

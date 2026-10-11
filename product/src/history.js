@@ -261,7 +261,55 @@ export function diffVersionContracts(older, newer) {
   // ~29 "new" - the first thing a maintainer would ask about.
   inferRenames(findings, a, b);
 
+  // R2: cross-tool branch movement - a union branch (operation) that
+  // disappeared from one tool and appeared in another = "moved", not
+  // removed+added. Netlify case: initialize-database moved from updater
+  // tool to reader tool.
+  inferBranchMoves(findings, a, b);
+
   return findings;
+}
+
+/**
+ * R2: detect union branches (operations) that moved between tools.
+ * When a schemaChanges entry says "removed anyOf branch 'X'" on one tool
+ * and another tool has "added anyOf branch 'X'" - same const value -
+ * annotate both as MOVED rather than removed+added.
+ */
+function inferBranchMoves(findings, olderTools, newerTools) {
+  // collect removed and added branches across all findings
+  const removedBranches = []; // {tool, branchName, finding}
+  const addedBranches = [];   // {tool, branchName, finding}
+
+  for (const f of findings) {
+    if (!f.schemaChanges || !Array.isArray(f.schemaChanges)) continue;
+    for (const sc of f.schemaChanges) {
+      const text = typeof sc === 'string' ? sc : sc.text ?? '';
+      const removedMatch = text.match(/removed (anyOf|oneOf) branch '([^']+)'/);
+      if (removedMatch) removedBranches.push({ tool: f.tool, branch: removedMatch[2], finding: f, change: sc });
+      const addedMatch = text.match(/added (anyOf|oneOf) branch '([^']+)'/);
+      if (addedMatch) addedBranches.push({ tool: f.tool, branch: addedMatch[2], finding: f, change: sc });
+    }
+  }
+
+  // match by branch name (const discriminator)
+  const usedAdded = new Set();
+  for (const rb of removedBranches) {
+    for (const ab of addedBranches) {
+      if (usedAdded.has(ab)) continue;
+      if (rb.branch === ab.branch && rb.tool !== ab.tool) {
+        // same operation, different tool = moved
+        rb.change.text = `moved branch '${rb.branch}' from this tool to '${ab.tool}'`;
+        rb.change.direction = 'loosen';
+        rb.change.branchMoved = { from: rb.tool, to: ab.tool };
+        ab.change.text = `moved branch '${ab.branch}' from '${rb.tool}' to this tool`;
+        ab.change.direction = 'expand';
+        ab.change.branchMoved = { from: rb.tool, to: ab.tool };
+        usedAdded.add(ab);
+        break;
+      }
+    }
+  }
 }
 
 /**

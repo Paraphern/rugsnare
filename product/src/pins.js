@@ -317,12 +317,60 @@ function diffProperty(o, n, p, wasRequired, isRequired, changes) {
   // array items (may contain anyOf/oneOf/properties at the item level)
   if (o.items || n.items) {
     diffLevel({ properties: o.items?.properties, required: o.items?.required }, { properties: n.items?.properties, required: n.items?.required }, p + '[]', changes);
-    diffUnion(o.items?.anyOf, n.items?.anyOf, p + '[]', 'anyOf', changes);
-    diffUnion(o.items?.oneOf, n.items?.oneOf, p + '[]', 'oneOf', changes);
+    diffUnionCross(o.items?.anyOf, n.items?.anyOf, o.items?.oneOf, n.items?.oneOf, p + '[]', changes);
   }
   // union branches directly on this property
-  diffUnion(o.anyOf, n.anyOf, p, 'anyOf', changes);
-  diffUnion(o.oneOf, n.oneOf, p, 'oneOf', changes);
+  diffUnionCross(o.anyOf, n.anyOf, o.oneOf, n.oneOf, p, changes);
+}
+
+/**
+ * R4+R2: Cross-key union comparison. Handles anyOf↔oneOf swaps:
+ * if old has anyOf branches and new has oneOf branches with the same const
+ * discriminators, this is a NOTATION-level key swap (same branches, different
+ * union keyword) - not removed+added. Also handles normal same-key unions.
+ */
+function diffUnionCross(oldAnyOf, newAnyOf, oldOneOf, newOneOf, parentPath, changes) {
+  const hasOldAny = Array.isArray(oldAnyOf) && oldAnyOf.length > 0;
+  const hasNewAny = Array.isArray(newAnyOf) && newAnyOf.length > 0;
+  const hasOldOne = Array.isArray(oldOneOf) && oldOneOf.length > 0;
+  const hasNewOne = Array.isArray(newOneOf) && newOneOf.length > 0;
+
+  // R4: anyOf→oneOf swap with same const discriminators = NOTATION
+  if (hasOldAny && hasNewOne && !hasNewAny && !hasOldOne) {
+    const oldConsts = new Set(oldAnyOf.map(findConst).filter(Boolean));
+    const newConsts = new Set(newOneOf.map(findConst).filter(Boolean));
+    if (oldConsts.size > 0 && newConsts.size > 0 && oldConsts.size === newConsts.size) {
+      let allMatch = true;
+      for (const c of oldConsts) { if (!newConsts.has(c)) { allMatch = false; break; } }
+      if (allMatch) {
+        changes.push({ text: `union keyword anyOf -> oneOf on '${parentPath}' (branches identical)`, direction: 'loosen', notationOnly: true });
+        return; // same branches, just keyword swap
+      }
+    }
+    // NOT a pure swap (branches differ): compare as merged union
+    diffUnion(oldAnyOf, newOneOf, parentPath, 'branch', changes);
+    return;
+  }
+  // R4: oneOf→anyOf swap (same check in reverse)
+  if (hasOldOne && hasNewAny && !hasNewOne && !hasOldAny) {
+    const oldConsts = new Set(oldOneOf.map(findConst).filter(Boolean));
+    const newConsts = new Set(newAnyOf.map(findConst).filter(Boolean));
+    if (oldConsts.size > 0 && newConsts.size > 0 && oldConsts.size === newConsts.size) {
+      let allMatch = true;
+      for (const c of oldConsts) { if (!newConsts.has(c)) { allMatch = false; break; } }
+      if (allMatch) {
+        changes.push({ text: `union keyword oneOf -> anyOf on '${parentPath}' (branches identical)`, direction: 'loosen', notationOnly: true });
+        return;
+      }
+    }
+    // NOT a pure swap: compare as merged union
+    diffUnion(oldOneOf, newAnyOf, parentPath, 'branch', changes);
+    return;
+  }
+
+  // normal same-key comparison
+  diffUnion(oldAnyOf, newAnyOf, parentPath, 'anyOf', changes);
+  diffUnion(oldOneOf, newOneOf, parentPath, 'oneOf', changes);
 }
 
 /**

@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.3.0] - 2026-10-12
+
+Deep schema analysis: recursive traversal, router-union intelligence,
+and scanner hardening from field scans of 10+ npm MCP servers.
+
+### Recursive schema analysis (R21, the headline feature)
+
+- **schemaDiff now recurses into `properties`, `items`, `anyOf`/`oneOf` at
+  ANY depth**, with the full path in the message. Previously only top-level
+  properties were compared; changes at depth 2+ (Netlify `selectSchema.required`,
+  MongoDB `$vectorSearch` at depth 5 through `pipeline.items.anyOf`) were
+  invisible to direction grading (schemaHash caught them but classified as
+  NOTATION). Now correctly graded as BREAKING or LOOSENED.
+- **Union branches matched by const discriminator** (operation name) with
+  index-based fallback for non-discriminated unions.
+
+### Router-union intelligence (R2, R4, R5)
+
+- **R4: anyOf <-> oneOf detection**: when the union keyword changes but
+  branches are identical (MongoDB's SDK wave), graded as a notation-level
+  keyword swap - not spurious removed+added branches. When branches differ,
+  compared as a merged union across keywords.
+- **R2: cross-tool branch movement**: when a union branch (operation)
+  disappears from one tool and appears in another - Netlify's
+  `initialize-database` moving from updater to reader - both tools'
+  findings are annotated with `moved branch 'X' from tool A to tool B`.
+- **R5: nested required** - covered by R21's recursion (Netlify's
+  `selectSchema.required` losing `params` now grades LOOSENED).
+
+### Scanner improvements
+
+- **R25: canonical `skills/` directory** - `skills scan` now discovers
+  `skills/<name>/SKILL.md` at the repo root, the layout of the most
+  popular skills repos on GitHub (297k+ stars).
+- **R10: publish-time version ordering** - `rugsnare history` sorts by npm
+  timestamp, not semver (playwright's two versioning epochs no longer
+  produce phantom cross-epoch pairs).
+- **R11: rename inference** - GONE+NEW tools with identical contracts
+  collapse into `RENAMED a -> b` (azure-devops: 104 lines -> ~10 renames).
+- **R12: kill-switch classification** - unreachable versions carry a cause
+  (KILLSWITCH / GATED / GIT_DEPS / CRASH / TIMEOUT).
+- **Version stamp in output** - `rugsnare diff` and `rugsnare history` print
+  the running version in the footer.
+- **Pins-version mismatch warning** - `scan` records the package version;
+  `diff` warns when pins were taken against a different version.
+- **ATR cross-references** - every advisory signal (A01-A18) and SARIF rule
+  (RS001-RS004) now carries the ID of the [Agent Threat Rules](https://github.com/Agent-Threat-Rule/agent-threat-rules)
+  rule covering the same technique (zero-width Unicode -> `ATR-2026-00129`,
+  contract drift -> `ATR-2026-00581`, ...). Shown inline in CLI output, as an
+  `atr` array in `--json`, and in `properties.atrRuleIds` in SARIF, so
+  pre-invocation and runtime findings correlate in one pipeline. Full table:
+  `docs/ATR-MAPPING.md` (includes two mapped gaps proposed as new ATR rules).
+
 ## [1.2.0] - 2026-10-11
 
 Four rounds of drift-gradation improvements from the KyttoMCP dialogue

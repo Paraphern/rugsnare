@@ -5,6 +5,9 @@
  *   RS002 NEW     - unapproved new tool (warning)
  *   RS003 REMOVED - approved tool disappeared (warning)
  *   RS004 SHADOW  - same tool name exposed by multiple servers (error)
+ *
+ * Each rule cross-references the Agent Threat Rules that cover the same
+ * technique (properties.atrRuleIds) - full table in docs/ATR-MAPPING.md.
  */
 
 import fs from 'node:fs';
@@ -17,11 +20,13 @@ const VERSION = (() => {
   catch { return '0.2.2'; }
 })();
 
+const ATR_DOC = 'https://github.com/Paraphern/rugsnare/blob/main/docs/ATR-MAPPING.md';
+
 const RULES = [
-  { id: 'RS001', shortDescription: { text: 'MCP tool contract changed after approval (rug pull)' } },
-  { id: 'RS002', shortDescription: { text: 'Unapproved new MCP tool appeared' } },
-  { id: 'RS003', shortDescription: { text: 'Approved MCP tool disappeared' } },
-  { id: 'RS004', shortDescription: { text: 'MCP tool name shadowed across servers' } },
+  { id: 'RS001', helpUri: ATR_DOC, shortDescription: { text: 'MCP tool contract changed after approval (rug pull)' }, properties: { tags: ['mcp', 'supply-chain'], atrRuleIds: ['ATR-2026-00581', 'ATR-2026-02025', 'ATR-2026-01775'] } },
+  { id: 'RS002', helpUri: ATR_DOC, shortDescription: { text: 'Unapproved new MCP tool appeared' }, properties: { tags: ['mcp', 'supply-chain'], atrRuleIds: ['ATR-2026-00581'] } },
+  { id: 'RS003', helpUri: ATR_DOC, shortDescription: { text: 'Approved MCP tool disappeared' }, properties: { tags: ['mcp', 'supply-chain'], atrRuleIds: ['ATR-2026-00581'] } },
+  { id: 'RS004', helpUri: ATR_DOC, shortDescription: { text: 'MCP tool name shadowed across servers' }, properties: { tags: ['mcp', 'privilege-escalation'], atrRuleIds: ['ATR-2026-00161', 'ATR-2026-00715'] } },
 ];
 
 export function buildSarif(report, shadows = []) {

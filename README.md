@@ -131,6 +131,10 @@ The same binary doubles as a stdio MCP server, so agents can call it and marketp
 
 Two read-only tools: `drift_feed_status` (what the public drift-feed currently sees across popular MCP servers - the only outbound call this server ever makes, a fixed public URL, only when explicitly invoked) and `pins_report` (the local pin store of the project the agent works in - never writes, never sends anything). Pinned by our own gate, naturally - the baseline lives in [`corpus/03-rugsnare-self`](corpus/03-rugsnare-self). A Docker image and registry entry are prepared under `docker/` and `registry/`.
 
+### ATR-compatible (cross-references Agent Threat Rules)
+
+Every advisory hit and SARIF rule carries the ID of the [ATR](https://github.com/Agent-Threat-Rule/agent-threat-rules) rule covering the same technique (e.g. a zero-width Unicode hit references `ATR-2026-00129`, contract drift references `ATR-2026-00581`, the post-approval rug-pull rule), so RugSnare pre-invocation findings and ATR runtime findings correlate in one pipeline. CLI output shows the IDs inline; `--json` returns them as an `atr` array; the SARIF export carries them in `properties.atrRuleIds`. Full table and the two mapped gaps we plan to contribute upstream: [`docs/ATR-MAPPING.md`](docs/ATR-MAPPING.md).
+
 ## Trust model
 
 We take our own medicine:

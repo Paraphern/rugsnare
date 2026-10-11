@@ -68,3 +68,26 @@
 - Docker-хаб и Smithery (каналы Gautam): НЕ ЗАКРЫТЫ, взяли паузу.
 
 Итог блица: четыре параллельных канала вместо одного - сделано за один день.
+
+## Enterprise-сканеры скиллов (2026-10-12): частичные конкуренты, валидаторы рынка
+
+- NVIDIA/SkillSpector, 19946★: скилл-сканер (64 паттерна). PR #498 (+10298 строк, в ревью у NVIDIA
+  rng1995, CHANGES_REQUESTED x2, живой) встраивает пин-стор (sha-256+SQLite+version history),
+  security-diff Regression Engine (risk/grade delta + BLOCK), policy-as-code. ВЫВОД: skills
+  pin/diff-уникальность истекает на корпоративном конце (недели). Наше незанятое ядро:
+  MCP TOOL-контракты, chameleon/per-client, дрейф-фид по популярным серверам, cold-start MCP-аудит.
+- cisco-ai-defense/skill-scanner, 2592★: статический скилл-сканер; из смежного - флаг незапиненных
+  зависимостей в манифестах скиллов (#133) - про package.json скилла, НЕ про npx в MCP-конфигах.
+- Пересечение с нами - только advisory-слой (A-сигналы); в нём с ними не тягаться и не нужно.
+  Позиционирование подтверждено: вести пин/дрейф/CI-гейт MCP-контрактов, не "сканер паттернов".
+- 2026-10-12: peer-коммент на PR #498 (issuecomment-6114568265): два выстраданных урока
+  (канонизация хэша; рекурсивная градация по направлению) + оффер фикстур (benign corpus,
+  docs/servers). Помощь контрибьютору, не оппозиция. Ждать реакции rng1995/KodeCharya.
+
+## Тренд недели (2026-10-12): скиллы уходят в remote, integrity не забирает никто
+
+- Cloudflare Agents/Think: skills.r2() (R2 в рантайме) + SkillSource с deterministic fingerprint
+  (design/skills.md), в планах Git-backed источники. NVIDIA PR#498 - пины, но статические.
+  Vercel skills.sh - реестр со снапшот-аудитами (наш hash-keyed proposal в #2359). Microsoft azure-skills
+  - синк-зеркало. ВСЕ строят распространение; approval-vs-runtime разрыв растёт; наш слой становится
+  структурнее, не опциональнее. Watch: design/skills.md evolution, Git-backed sources landing.
