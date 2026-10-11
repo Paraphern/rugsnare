@@ -290,7 +290,7 @@ export function diffLines(oldText, newText) {
 
 /**
  * Cold-start audit: files whose CURRENT content fires advisory signals,
- * independent of any baseline. Pinning is TOFU — it blesses whatever is on
+ * independent of any baseline. Pinning is TOFU - it blesses whatever is on
  * disk, including a skill poisoned before RugSnare was installed; this
  * surfaces those pre-existing risks at first contact.
  * Returns [{ key, app, score, signals }] sorted by score desc, then key.
@@ -316,7 +316,7 @@ export function auditCurrentSkills(cwd = process.cwd(), home = os.homedir()) {
 
 /**
  * Classify severity based on what changed. Added lines drive the DANGEROUS
- * checks; pure deletions are REVIEW at minimum — silently REMOVED safety
+ * checks; pure deletions are REVIEW at minimum - silently REMOVED safety
  * language (the "Requires confirmation" strip) must never read as SAFE.
  */
 export function classifySeverity({ added = [], removed = [] }) {

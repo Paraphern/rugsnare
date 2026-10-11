@@ -9,7 +9,7 @@ import crypto from 'node:crypto';
  *
  * Network rules (hard requirements, not configurable):
  *  - https only
- *  - host must be a public DNS name — localhost, *.local, IP literals in
+ *  - host must be a public DNS name - localhost, *.local, IP literals in
  *    loopback/private/link-local/reserved ranges are refused outright
  */
 
@@ -61,7 +61,7 @@ export function validateRpcUrl(raw) {
     throw new Error(`refusing non-public RPC host: ${host}`);
   }
   if (host.includes(':')) {
-    // IPv6 literal — allow only global unicast 2000::/3 is too strict to
+    // IPv6 literal - allow only global unicast 2000::/3 is too strict to
     // hand-roll here; refuse ALL v6 literals (default RPCs are DNS names).
     throw new Error('refusing IPv6-literal RPC host (use a DNS name)');
   }
@@ -106,7 +106,7 @@ export function sha256File(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
 
-/** Compare a local artifact against the on-chain pin. Never throws on mismatch — returns a verdict. */
+/** Compare a local artifact against the on-chain pin. Never throws on mismatch - returns a verdict. */
 export async function verifyArtifact({ file, rpc, contract, version }) {
   const local = sha256File(file);
   let onchain;

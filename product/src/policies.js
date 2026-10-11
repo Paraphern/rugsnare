@@ -1,8 +1,8 @@
 /**
- * Declarative call policies — runtime enforcement of what MCP tools
+ * Declarative call policies - runtime enforcement of what MCP tools
  * are allowed to do, regardless of whether their contract is pinned.
  *
- * Policies are defined in .rugsnare/policies.json (or .yml — parsed as JSON
+ * Policies are defined in .rugsnare/policies.json (or .yml - parsed as JSON
  * for zero-dep simplicity). Each rule can:
  *   - deny specific argument names/types (e.g. session:object)
  *   - deny patterns in descriptions (e.g. unknown domains)
@@ -104,7 +104,7 @@ export { DEFAULT_POLICIES };
 export function loadPolicies(cwd = process.cwd()) {
   // .rugsnare/policies.json; ABSENT file → built-in defaults (normal, silent).
   // PRESENT but broken (unparseable, invalid budgets/disabled, no `rules`)
-  // → defaults too — enforcement never silently weakens beyond that — but
+  // → defaults too - enforcement never silently weakens beyond that - but
   // LOUDLY: stderr + event, because the operator's custom rules are NOT
   // active and they need to know (review 28, P1).
   const file = path.join(cwd, '.rugsnare', 'policies.json');
@@ -113,14 +113,14 @@ export function loadPolicies(cwd = process.cwd()) {
     raw = readJsonFile(file);
   } catch (err) {
     if (err && err.code === 'ENOENT') return { ...DEFAULT_POLICIES };
-    degrade(`policies.json unreadable (${String(err.message).slice(0, 100)}) — custom rules are NOT active, built-in defaults apply`, cwd);
+    degrade(`policies.json unreadable (${String(err.message).slice(0, 100)}) - custom rules are NOT active, built-in defaults apply`, cwd);
     return { ...DEFAULT_POLICIES };
   }
   try {
     if (!raw || !Array.isArray(raw.rules)) throw new Error('missing "rules" array');
     return validate(raw);
   } catch (err) {
-    degrade(`policies.json invalid (${String(err.message).slice(0, 100)}) — custom rules are NOT active, built-in defaults apply`, cwd);
+    degrade(`policies.json invalid (${String(err.message).slice(0, 100)}) - custom rules are NOT active, built-in defaults apply`, cwd);
     return { ...DEFAULT_POLICIES };
   }
 }
@@ -137,7 +137,7 @@ export function validate(policies) {
   if (!policies || !Array.isArray(policies.rules)) {
     return { version: 1, rules: [] };
   }
-  // user-supplied regexes must COMPILE at load time — a bad pattern then
+  // user-supplied regexes must COMPILE at load time - a bad pattern then
   // fails loudly here (loadPolicies degrades with a reason) instead of
   // throwing inside the proxy hot path on every call (review 28, P2)
   for (const rule of policies.rules) {
@@ -188,7 +188,7 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
     const m = rule.match ?? {};
 
     // Check tool name pattern. Compile guarded (validate pre-checks, but the
-    // hot path must never throw); input length capped — ReDoS is superlinear
+    // hot path must never throw); input length capped - ReDoS is superlinear
     // in input length, so bounding the input bounds the worst case (rev 28 P2)
     if (m.toolName) {
       let re;
@@ -216,7 +216,7 @@ export function evaluateCall({ toolName, arguments: args, description }, policie
     // Check dangerous shell patterns in arguments
     if (m.dangerousInArguments && !dangerResult.dangerous) continue;
 
-    // Rule matched — apply action
+    // Rule matched - apply action
     const entry = { rule: rule.name, reason: rule.reason ?? 'policy violation' };
     if (rule.action === 'deny') {
       result.allowed = false;

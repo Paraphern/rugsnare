@@ -5,7 +5,7 @@ import { scanToolDescription } from './advisory.js';
 
 /**
  * Skill scanning: AI clients (Claude Code, Cursor, Continue) support "skills"
- * — markdown files (SKILL.md) that give the agent instructions. These can be
+ * - markdown files (SKILL.md) that give the agent instructions. These can be
  * poisoned exactly like tool descriptions: hidden instructions, credential
  * exfiltration, instruction hijacking. Snyk agent-scan popularized this check.
  *
@@ -26,7 +26,7 @@ const SKILL_DIRS = [
 
 /**
  * Discover skill files on disk.
- * Returns [{ app, file }] — each file is a markdown skill definition.
+ * Returns [{ app, file }] - each file is a markdown skill definition.
  */
 export function discoverSkills() {
   const found = [];
@@ -38,7 +38,7 @@ export function discoverSkills() {
           found.push({ app, file });
         }
       });
-    } catch { /* permission or missing — fine */ }
+    } catch { /* permission or missing - fine */ }
   }
   return found;
 }

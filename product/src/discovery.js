@@ -5,7 +5,7 @@ import { readJsonFile } from './jsonfile.js';
 
 /**
  * Find MCP client configs known today. Read-only: we never rewrite your
- * client config silently — `rugsnare init` prints the exact lines to change.
+ * client config silently - `rugsnare init` prints the exact lines to change.
  *
  * Claude Code: ~/.claude.json (global mcpServers) and ./.mcp.json (project)
  * Cursor:      ~/.cursor/mcp.json (global) and ./.cursor/mcp.json (project)
@@ -55,7 +55,7 @@ export function discoverZCodePlugins() {
       }
     }
   } catch {
-    // directory not found or permission error — fine
+    // directory not found or permission error - fine
   }
   return found;
 }

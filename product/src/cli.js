@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * rugsnare v0.1 — CI-gate toolkit (the live proxy lands in the next release):
+ * rugsnare v0.1 - CI-gate toolkit (the live proxy lands in the next release):
  *
  *   rugsnare init                     scaffold .rugsnare/ + show discovered MCP configs
  *   rugsnare scan [--config FILE]     pin current tool descriptions (baseline, approved)
@@ -30,7 +30,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * descriptions since your last review fails the build.
  */
 
-const HELP = `rugsnare — runtime integrity for MCP tool descriptions
+const HELP = `rugsnare - runtime integrity for MCP tool descriptions
 
 Usage:
   rugsnare init
@@ -58,7 +58,7 @@ Usage:
                                                          contracts pair by pair; exit 1 = silent changes
   rugsnare audit --input <file-or-dir> [--json] [--airgap]
                                                          scan local files (AI chat exports, notes, .env) for
-                                                         leaked secrets — redacted screen-only output; exit 1 = HIGH
+                                                         leaked secrets - redacted screen-only output; exit 1 = HIGH
   rugsnare vault set <NAME> [VALUE] | get | list | rm   secret vault: model sends {{VAULT:NAME}}, proxy injects
                                                          the real value to the server and scrubs it from results
   rugsnare verify <file> --version <v> --contract <0x...> [--chain base|base-sepolia] [--rpc <url>]
@@ -127,6 +127,7 @@ function parseArgs(argv) {
     else if (a === '--from') flags.from = argv[++i];
     else if (a === '--to') flags.to = argv[++i];
     else if (a === '--stub-env') flags.stubEnv = true;
+    else if (a === '--server-args') flags.serverArgs = argv[++i];
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
     else if (a === '--fail-closed') flags.failClosed = true;
@@ -153,10 +154,10 @@ function readServersFromConfigFile(file) {
 
 /**
  * Ad-hoc remote server (pre-install recon): `scan/diff --server <name> --url <https://...>`
- * [--header "Name: Value"]... — check a remote MCP server BEFORE adding it to
+ * [--header "Name: Value"]... - check a remote MCP server BEFORE adding it to
  * any config. Same trust model as curl: the operator names the target, so
  * local hosts are legitimate (local HTTP MCP servers); only the scheme is
- * restricted — http/https only, everything else is refused.
+ * restricted - http/https only, everything else is refused.
  */
 function adhocServerEntry(flags) {
   if (!flags.url) return null;
@@ -223,18 +224,18 @@ function printVerdict(server, verdicts, json) {
         const text = typeof sc === 'string' ? sc : sc.text;
         const dir = typeof sc === 'string' ? '' : ` [${sc.direction}]`;
         console.log(`      ${text}${dir}`);
-        // P5: removed guard parameter — agent passes dry_run, server ignores it
+        // P5: removed guard parameter - agent passes dry_run, server ignores it
         if (typeof sc === 'object' && sc.guardWarning) {
           console.log(`      ⚠ ${sc.guardWarning}`);
         }
       }
     }
     // notation-only drift ($schema dialect): the schema bytes changed but no
-    // parameter did — shown softer, not scary
+    // parameter did - shown softer, not scary
     if (v.driftType === 'NOTATION' && v.notationChanges) {
       for (const nc of v.notationChanges) console.log(`      ~ ${nc} (parameters unchanged)`);
     }
-    // LOOSENED: constraints dropped — still drift, different failure mode
+    // LOOSENED: constraints dropped - still drift, different failure mode
     if (v.driftType === 'LOOSENED') {
       console.log(`      ↳ validation loosened (constraints removed, exit 1)`);
     }
@@ -334,17 +335,17 @@ async function cmdScan(flags) {
       // advisory signals: catch suspicious descriptions even on first contact
       const advisories = scanToolsForAdvisories(tools);
       for (const adv of advisories) {
-        if (!flags.json) console.error(`  [ADVISORY] ${name}/${adv.tool} — score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
+        if (!flags.json) console.error(`  [ADVISORY] ${name}/${adv.tool} - score ${adv.score}: ${adv.signals.map((s) => s.desc).join('; ')}`);
         logEvent({ kind: 'advisory', server: name, tool: adv.tool, score: adv.score, signals: adv.signals.map((s) => s.id) });
       }
 
-      // prompts are instructions too — the same advisory signals apply to
+      // prompts are instructions too - the same advisory signals apply to
       // prompt descriptions, not just tool descriptions
       const promptAdvisories = [];
       for (const p of prompts ?? []) {
         const r = scanToolDescription(p.description ?? '');
         if (r.advisory) {
-          if (!flags.json) console.error(`  [ADVISORY] ${name}/prompt:${p.name} — score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
+          if (!flags.json) console.error(`  [ADVISORY] ${name}/prompt:${p.name} - score ${r.score}: ${r.signals.map((s) => s.desc).join('; ')}`);
           promptAdvisories.push({ prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
           logEvent({ kind: 'advisory', server: name, prompt: p.name, score: r.score, signals: r.signals.map((s) => s.id) });
         }
@@ -374,14 +375,14 @@ async function cmdScan(flags) {
         for (const client of CHAMELEON_CLIENTS) {
           try {
             if (typeof entry.url === 'string') {
-              // HTTP: per-client serving is trivially easy for a remote server —
+              // HTTP: per-client serving is trivially easy for a remote server -
               // the chameleon check matters MORE here than over stdio
               const { fetchToolsHttp } = await import('./rpc-http.js');
               perClient[client] = (await fetchToolsHttp({ url: entry.url, headers: httpHeaders, env, timeoutMs: flags.timeout, clientName: client })).tools;
             } else {
               perClient[client] = (await fetchTools({ command, args, env, cwd: process.cwd(), timeoutMs: flags.timeout, clientName: client })).tools;
             }
-          } catch { /* client-specific listing failed — skip that client, not the scan */ }
+          } catch { /* client-specific listing failed - skip that client, not the scan */ }
         }
         const found = compareAcrossClients(tools, perClient);
         chameleonFindings = found;
@@ -415,7 +416,7 @@ async function cmdScan(flags) {
   (await import('./receipts.js')).signPinsFile();
   const shadows = detectShadows(pins);
   for (const s of shadows) {
-    if (!flags.json) console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
+    if (!flags.json) console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} - the client's resolution order decides which one runs`);
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
 
@@ -426,13 +427,13 @@ async function cmdScan(flags) {
     const { scanSkills } = await import('./skills.js');
     skillFindings = scanSkills();
     for (const sk of skillFindings) {
-      if (!flags.json) console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} — score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
+      if (!flags.json) console.error(`  [SKILL-ADVISORY] ${sk.app}/${path.basename(sk.file)} - score ${sk.score}: ${sk.signals.map((s) => s.desc).join('; ')}`);
       logEvent({ kind: 'skill-advisory', app: sk.app, file: sk.file, score: sk.score, signals: sk.signals.map((s) => s.id) });
     }
     if (skillFindings.length > 0 && !flags.json) {
       console.error(`rugsnare scan: ${skillFindings.length} skill file(s) with advisory findings (see above)`);
     }
-  } catch { /* skills dir not found or permission — fine */ }
+  } catch { /* skills dir not found or permission - fine */ }
 
   if (flags.json) {
     // machine-readable baseline inventory; exit semantics identical to human mode
@@ -454,7 +455,7 @@ async function cmdScan(flags) {
     process.exit(1);
   }
   if (failed === names.length) {
-    console.log('  ❌ All servers failed — no pins created. Check your config paths and server commands.');
+    console.log('  ❌ All servers failed - no pins created. Check your config paths and server commands.');
   } else if (failed > 0) {
     console.log(`  ⚠️ Partially pinned: ${names.length - failed}/${names.length} succeeded, ${failed} failed.`);
   } else {
@@ -475,7 +476,7 @@ async function cmdDiff(flags) {
   const { verifyPinsFile } = await import('./receipts.js');
   const pinsVerdict = verifyPinsFile();
   if (pinsVerdict.status === 'tampered') {
-    console.error(`rugsnare: pins.sig TAMPERED — ${pinsVerdict.reason}. Refusing to diff against a modified pin store.`);
+    console.error(`rugsnare: pins.sig TAMPERED - ${pinsVerdict.reason}. Refusing to diff against a modified pin store.`);
     process.exit(2);
   }
   if (pinsVerdict.status === 'unsigned' && !flags.allowUnsignedPins) {
@@ -529,7 +530,7 @@ async function cmdDiff(flags) {
 
     try {
       // one connection per server: fetchTools/fetchToolsHttp return tools AND
-      // prompts AND resources — spawning the server twice per diff is waste
+      // prompts AND resources - spawning the server twice per diff is waste
       // (and for HTTP, a second full handshake)
       const { tools, prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
@@ -556,7 +557,7 @@ async function cmdDiff(flags) {
     } catch (err) {
       if (!flags.json && !flags.sarif) console.error(`${name}: FAILED to reach server: ${err.message}`);
       report.push({ server: name, error: err.message });
-      infraErrorCount++; // infrastructure error, not drift — separate exit code
+      infraErrorCount++; // infrastructure error, not drift - separate exit code
     }
   }
   if (flags.sarif) {
@@ -565,10 +566,10 @@ async function cmdDiff(flags) {
     console.log(JSON.stringify(report, null, 2));
   } else {
     for (const s of shadows) {
-      console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} — the client's resolution order decides which one runs`);
+      console.log(`[SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} - the client's resolution order decides which one runs`);
     }
   }
-  // CI contract assertions: --expect-tool X (must be present) / --forbid-tool Y (must NOT appear — catches shadow injection)
+  // CI contract assertions: --expect-tool X (must be present) / --forbid-tool Y (must NOT appear - catches shadow injection)
   let assertionFails = 0;
   if (flags.expectTool || flags.forbidTool) {
     for (const r of report) {
@@ -623,7 +624,7 @@ async function cmdApprove(flags, serverName) {
 
   // Approve re-baselines prompts and resources wholesale: the human reviewed
   // the NEW state, so entries the server dropped must not ghost as REMOVED on
-  // every future diff — and drifted prompt hashes must actually clear.
+  // every future diff - and drifted prompt hashes must actually clear.
   // ensureServer returns the same object: capture the old maps before rewrite.
   const { promptHash, resourceHash } = await import('./prompts.js');
   const prevPrompts = serverPin.prompts ?? {};
@@ -650,7 +651,7 @@ async function cmdApprove(flags, serverName) {
 function ensureGitignore() {
   // Local rugsnare state must never leak into a repo by accident: events.jsonl
   // (tool names), config.json (webhook URL) and canary/calls.jsonl (full call
-  // args + responses) are user data. pins.json is the deliberate exception —
+  // args + responses) are user data. pins.json is the deliberate exception -
   // the CI-gate workflow expects the baseline in the repo.
   const file = '.gitignore';
   const block = '# rugsnare local state (pins may be committed deliberately)\n**/.rugsnare/*\n!**/.rugsnare/pins.json\n!**/.rugsnare/pins.sig\n!**/.rugsnare/pins.pub.pem\n';
@@ -695,7 +696,7 @@ async function cmdVerify(flags) {
     process.exit(2);
   }
   if (!rpcUrl) { console.error(`Unknown chain "${chain}". Pass --rpc <https url> or use base|base-sepolia.`); process.exit(2); }
-  if (!contract) { console.error(`No default ReleaseLog contract for chain "${chain}" — pass --contract <0x...>.`); process.exit(2); }
+  if (!contract) { console.error(`No default ReleaseLog contract for chain "${chain}" - pass --contract <0x...>.`); process.exit(2); }
   console.log(`verifying ${file}\n  version:  ${version}\n  contract: ${contract}\n  rpc:      ${rpcUrl}`);
   const result = await verifyArtifact({ file, rpc: rpcUrl, contract, version });
   logEvent({ kind: 'verify', file, version, verdict: result.verdict });
@@ -708,9 +709,9 @@ async function cmdVerify(flags) {
   };
   switch (result.verdict) {
     case 'verified':
-      return leave(0, `  ✔ VERIFIED — local sha256 matches the on-chain pin (pinned at ${result.pinnedAt})`);
+      return leave(0, `  ✔ VERIFIED - local sha256 matches the on-chain pin (pinned at ${result.pinnedAt})`);
     case 'tampered':
-      return leave(1, `  ✘ TAMPERED — local ${result.local} ≠ on-chain ${result.onchain}`, console.error);
+      return leave(1, `  ✘ TAMPERED - local ${result.local} ≠ on-chain ${result.onchain}`, console.error);
     case 'unpinned':
       return leave(2, `  ? ${result.reason}`, console.error);
     default:
@@ -728,8 +729,8 @@ async function cmdVerify(flags) {
  * Resolve the auth config for an HTTP proxy session (`run --url`,
  * `canary record --url`): from the server's config entry (headers / auth
  * block), with MCP_AUTH_TOKEN as the env fallback. A WRAPPED http entry
- * carries its remote auth inside the wrap marker — the live entry points at
- * localhost — so read it from there.
+ * carries its remote auth inside the wrap marker - the live entry points at
+ * localhost - so read it from there.
  */
 async function httpAuthConfig(name, flags) {
   const { servers } = collectServers({ config: flags.config });
@@ -753,7 +754,7 @@ async function cmdRun(flags) {
     if (flags.failClosed) config.failMode = 'closed';
     // Auth from the server's own config entry (headers / auth block), with
     // MCP_AUTH_TOKEN as the env fallback when the entry has neither.
-    // NOTE: no adhocServerEntry here — in `run`, --url IS the target, not an
+    // NOTE: no adhocServerEntry here - in `run`, --url IS the target, not an
     // ad-hoc scan target; we only look the name up in real configs.
     const authConfig = await httpAuthConfig(name, flags);
     let started;
@@ -784,7 +785,7 @@ async function cmdRun(flags) {
   try {
     ({ spawnServer } = await import('./spawn-server.js'));
   } catch {
-    console.error('Missing src/spawn-server.js — the repo owner creates this file once (see README, "What\'s inside").');
+    console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
   const config = loadConfig();
@@ -796,7 +797,7 @@ async function cmdRun(flags) {
     onExit: () => {},
   });
   // the child process object itself carries real stdin/stdout/stderr streams
-  // and exit/error handlers — the proxy consumes exactly that shape
+  // and exit/error handlers - the proxy consumes exactly that shape
   const streams = { clientIn: process.stdin, server: child };
   console.error(`[rugsnare] proxying "${name}" in ${mode} mode${config.failMode === 'closed' ? ' (fail-closed)' : ''} (Ctrl+C to stop)`);
   createProxy({ name, streams, mode, config, cwd: process.cwd() });
@@ -808,7 +809,7 @@ async function cmdRun(flags) {
  * ONLY (the config file is never touched): every tool call that passes through
  * is written, id-correlated with its response, to .rugsnare/canary/calls.jsonl.
  * That corpus is later replayed by `rugsnare canary replay` against a new
- * version of the server. Local file, capped, gitignored — see src/canary.js.
+ * version of the server. Local file, capped, gitignored - see src/canary.js.
  */
 async function cmdCanaryRecord(flags) {
   const name = flags.name;
@@ -820,7 +821,7 @@ async function cmdCanaryRecord(flags) {
   const args = argv.slice(1).map(String);
 
   // HTTP transport: record through the HTTP reverse proxy (same capture
-  // format as stdio — the replay engine takes either corpus)
+  // format as stdio - the replay engine takes either corpus)
   if (flags.url) {
     if (!name) { console.error('Usage: rugsnare canary record --name <server> --url <https://...>'); process.exit(2); }
     const config = { ...loadConfig(), canaryRecord: true }; // session-only override
@@ -846,7 +847,7 @@ async function cmdCanaryRecord(flags) {
   try {
     ({ spawnServer } = await import('./spawn-server.js'));
   } catch {
-    console.error('Missing src/spawn-server.js — the repo owner creates this file once (see README, "What\'s inside").');
+    console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
   const config = { ...loadConfig(), canaryRecord: true }; // session-only override
@@ -858,14 +859,14 @@ async function cmdCanaryRecord(flags) {
   });
   const streams = { clientIn: process.stdin, server: child };
   console.error(`[rugsnare] recording "${name}" to .rugsnare/canary/calls.jsonl (${mode} mode, Ctrl+C to stop)`);
-  console.error('[rugsnare] the corpus stays on this machine — delete the file any time');
+  console.error('[rugsnare] the corpus stays on this machine - delete the file any time');
   createProxy({ name, streams, mode, config, cwd: process.cwd() });
 }
 
 /**
  * rugsnare canary replay --name <server> [--strict] [--json] [--timeout ms] -- <command> [args...]
  * Replays the recorded corpus against a (usually newer) server, diffs the
- * contract (split hash) AND the behavior (response shapes, error flips) —
+ * contract (split hash) AND the behavior (response shapes, error flips) -
  * deterministic rules only, no LLM, no crying wolf on value-only changes.
  * Exit codes: 0 = safe, 1 = breaking findings (or cosmetic with --strict),
  * 2 = no corpus / config error, 3 = replay infrastructure failure.
@@ -928,7 +929,7 @@ async function cmdCanaryReplay(flags) {
   if (flags.json) {
     console.log(JSON.stringify(summary, null, 2));
   } else {
-    console.log(`RugSnare canary replay — "${name}"`);
+    console.log(`RugSnare canary replay - "${name}"`);
     console.log(`recorded: ${corpus.length} call(s) against ${recordedInfo?.serverInfo?.version ?? 'unknown version'}`);
     console.log(`live:     ${result.serverInfo?.version ?? 'unknown version'} (${result.tools.length} tool(s))`);
     console.log('');
@@ -939,7 +940,7 @@ async function cmdCanaryReplay(flags) {
     console.log(`  ${report.ok}/${result.calls.length} call(s) replayed with identical shape`);
     console.log('');
     if (report.skipped > 0) {
-      console.log(`  ⚠ replay is read-only by default: ${report.skipped} call(s) NOT replayed (${report.skippedWrites} write-class, ${report.skippedDestructive} destructive-looking) — see the SKIPPED lines above`);
+      console.log(`  ⚠ replay is read-only by default: ${report.skipped} call(s) NOT replayed (${report.skippedWrites} write-class, ${report.skippedDestructive} destructive-looking) - see the SKIPPED lines above`);
     }
     console.log(`verdict: ${report.verdict} (breaking: ${report.breaking}, cosmetic: ${report.cosmetic})`);
   }
@@ -950,20 +951,20 @@ async function cmdCanaryReplay(flags) {
 /**
  * rugsnare receipts sign|verify|export (Phase B).
  * Tamper-evident audit trail: Ed25519 hash-chain over the local event log.
- * Keys are generated locally on first sign (.rugsnare/keys/, gitignored) —
+ * Keys are generated locally on first sign (.rugsnare/keys/, gitignored) -
  * they never leave the machine; the fingerprint identifies the key in exports.
  */
 async function cmdReceiptsSign(flags) {
   const { ensureKeys, signEvents, receiptsPath } = await import('./receipts.js');
   const { readEvents } = await import('./events.js');
   const events = readEvents();
-  if (events.length === 0) { console.error('No events in .rugsnare/events.jsonl — run the proxy or scan first.'); process.exit(2); }
+  if (events.length === 0) { console.error('No events in .rugsnare/events.jsonl - run the proxy or scan first.'); process.exit(2); }
   const { privateKey, publicKey, created, fingerprint } = ensureKeys();
   const receipts = signEvents(events, privateKey);
   const fsMod = await import('node:fs');
   fsMod.writeFileSync(receiptsPath(), receipts.map((r) => JSON.stringify(r)).join('\n') + '\n');
   console.log(`signed ${receipts.length} entr(ies) -> .rugsnare/receipts.jsonl`);
-  if (created) console.log(`new Ed25519 key generated (fingerprint ${fingerprint.slice(0, 16)}…) — back it up if receipts must stay verifiable after a machine loss`);
+  if (created) console.log(`new Ed25519 key generated (fingerprint ${fingerprint.slice(0, 16)}…) - back it up if receipts must stay verifiable after a machine loss`);
   console.log(`chain head: ${receipts[receipts.length - 1].entryHash}`);
 }
 
@@ -974,7 +975,7 @@ async function cmdReceiptsVerify(flags) {
   try {
     receipts = (await import('node:fs')).readFileSync(from, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
   } catch { console.error(`cannot read ${from}`); process.exit(2); }
-  if (receipts.length === 0) { console.error('no receipts — run `rugsnare receipts sign` first'); process.exit(2); }
+  if (receipts.length === 0) { console.error('no receipts - run `rugsnare receipts sign` first'); process.exit(2); }
 
   let publicKey;
   let fingerprint;
@@ -988,7 +989,7 @@ async function cmdReceiptsVerify(flags) {
     } catch { console.error(`cannot read public key ${flags.pub}`); process.exit(2); }
   } else {
     const local = loadPublicKey();
-    if (!local) { console.error('no local signing key — pass --pub <ed25519.pub.pem> to verify with an exported key'); process.exit(2); }
+    if (!local) { console.error('no local signing key - pass --pub <ed25519.pub.pem> to verify with an exported key'); process.exit(2); }
     ({ publicKey, fingerprint } = local);
   }
 
@@ -996,7 +997,7 @@ async function cmdReceiptsVerify(flags) {
   console.log(`key fingerprint: ${fingerprint.slice(0, 16)}…`);
   console.log(`entries: ${result.count}   span: ${result.first ?? '?'} → ${result.last ?? '?'}`);
   if (result.ok) {
-    console.log('chain intact — every entry matches its hash, link, and signature');
+    console.log('chain intact - every entry matches its hash, link, and signature');
   } else {
     console.error(`BROKEN: ${result.reason}`);
     process.exit(1);
@@ -1013,7 +1014,7 @@ async function cmdReceiptsVerify(flags) {
  *   rugsnare skills report   → generate HTML report and open in browser
  */
 /**
- * rugsnare history <package> — scan a package's whole published history
+ * rugsnare history <package> - scan a package's whole published history
  * for silent contract changes (runtime truth: every version is run and
  * its tools/list is taken, exactly like a real MCP client would).
  */
@@ -1027,12 +1028,13 @@ async function cmdHistory(flags) {
   const { from, to } = flags;
 
   console.error(`history scan: ${name} (last ${last} versions)`);
-  console.error('NOTE: this downloads and RUNS each version locally — the same code you would run by installing it.');
+  console.error('NOTE: this downloads and RUNS each version locally - the same code you would run by installing it.');
   const result = await scanHistory(name, {
     last,
     from,
     to,
     stubEnv: Boolean(flags.stubEnv),
+    serverArgs: flags.serverArgs ? flags.serverArgs.split(' ') : [],
     onProgress: (m) => { if (!flags.json) console.error(`  ${m}`); },
   });
 
@@ -1057,12 +1059,12 @@ async function cmdHistory(flags) {
       if (result.unreachable.length > 5) console.log(`  ... +${result.unreachable.length - 5} more`);
     }
     const verdict = result.checked === 0
-      ? '— NO DATA (nothing could be scanned)'
-      : result.clean ? '— CLEAN' : '— SILENT CHANGES FOUND';
+      ? '- NO DATA (nothing could be scanned)'
+      : result.clean ? '- CLEAN' : '- SILENT CHANGES FOUND';
     console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${verdict}`);
   }
   if (result.checked === 0) {
-    console.error(`history: no version of ${result.package} could be scanned — "no data" is not "no changes" (exit 2)`);
+    console.error(`history: no version of ${result.package} could be scanned - "no data" is not "no changes" (exit 2)`);
     process.exit(2);
   }
   process.exit(result.clean ? 0 : 1);
@@ -1083,12 +1085,12 @@ async function cmdSkills(flags) {
     (await import('./receipts.js')).signPinsFile();
     console.log(`Pinned ${pinned} skill file(s).`);
     console.log(`Run \`rugsnare skills diff\` to check for changes, or \`rugsnare skills report\` for a visual report.`);
-    // cold-start audit: pinning blesses whatever is on disk — also say what
+    // cold-start audit: pinning blesses whatever is on disk - also say what
     // ALREADY looks suspicious before the baseline existed
     const { auditCurrentSkills } = await import('./skills-pin.js');
     const audit = auditCurrentSkills(cwd, home);
     if (audit.length > 0) {
-      console.log(`\n${audit.length} file(s) in your current skills contain risk patterns (they were like this BEFORE pinning — not update drift):`);
+      console.log(`\n${audit.length} file(s) in your current skills contain risk patterns (they were like this BEFORE pinning - not update drift):`);
       for (const f of audit.slice(0, 10)) {
         console.log(`  [!] ${f.key} (score ${f.score}: ${f.signals.join(', ')})`);
       }
@@ -1127,7 +1129,7 @@ async function cmdSkills(flags) {
             const verdicts = compareTools(sp, tools, toolHash);
             mcpResults.push({ server: name, verdicts: verdicts.filter((v) => v.status !== 'UNCHANGED') });
           }
-        } catch { /* MCP fetch failed — skills report still works */ }
+        } catch { /* MCP fetch failed - skills report still works */ }
       }
 
       const { auditCurrentSkills } = await import('./skills-pin.js');
@@ -1139,7 +1141,7 @@ async function cmdSkills(flags) {
       if (currentAudit.length > 0) {
         console.log(`  ${currentAudit.length} pre-existing risk file(s) (already on your machine before the baseline)`);
       }
-      // open in browser: rundll32 FileProtocolHandler on Windows — no cmd
+      // open in browser: rundll32 FileProtocolHandler on Windows - no cmd
       // shell, no argument re-parsing (same approach as the Go launcher)
       const { execFile } = await import('node:child_process');
       const plat = process.platform;
@@ -1180,9 +1182,9 @@ async function cmdSkills(flags) {
 async function cmdReceiptsExport(flags) {
   const { exportDossier, readReceipts, loadPublicKey } = await import('./receipts.js');
   const receipts = readReceipts();
-  if (receipts.length === 0) { console.error('no receipts — run `rugsnare receipts sign` first'); process.exit(2); }
+  if (receipts.length === 0) { console.error('no receipts - run `rugsnare receipts sign` first'); process.exit(2); }
   const local = loadPublicKey();
-  if (!local) { console.error('no local signing key — receipts were signed elsewhere; export needs its public key context'); process.exit(2); }
+  if (!local) { console.error('no local signing key - receipts were signed elsewhere; export needs its public key context'); process.exit(2); }
   const { markdown, json } = exportDossier(receipts, { fingerprint: local.fingerprint });
   const fsMod = await import('node:fs');
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -1195,7 +1197,7 @@ async function cmdReceiptsExport(flags) {
 }
 
 /**
- * rugsnare mcp — run RugSnare itself as a read-only MCP server (stdio).
+ * rugsnare mcp - run RugSnare itself as a read-only MCP server (stdio).
  * Marketplace distribution entry point: the same binary users install for
  * the CI gate doubles as an agent-callable tool (drift_feed_status over
  * public data, pins_report over the local pin store). See src/mcp-server.js.
@@ -1206,7 +1208,7 @@ async function cmdMcp() {
 }
 
 /**
- * rugsnare report — human-readable inventory of the pinned MCP server fleet.
+ * rugsnare report - human-readable inventory of the pinned MCP server fleet.
  * For compliance, audits, and the natural entry into the hosted panel.
  * Use --live to also check each server against its pins (like diff, but never exits 1).
  */
@@ -1226,7 +1228,7 @@ async function cmdReport(flags) {
     const sp = pins.servers[name];
     const toolCount = Object.keys(sp.tools).length;
     const approvedCount = Object.values(sp.tools).filter((t) => t.approved).length;
-    const lastPinned = Object.values(sp.tools).reduce((latest, t) => (t.pinnedAt > latest ? t.pinnedAt : latest), '') || '—';
+    const lastPinned = Object.values(sp.tools).reduce((latest, t) => (t.pinnedAt > latest ? t.pinnedAt : latest), '') || '-';
 
     let liveStatus = '';
     if (flags.live && sp.cmd) {
@@ -1269,11 +1271,11 @@ async function cmdReport(flags) {
 
   if (flags.json) console.log(JSON.stringify(json, null, 2));
   console.log(`Fleet: ${names.length} server(s), ${names.reduce((acc, n) => acc + Object.keys(pins.servers[n].tools).length, 0)} tool(s), ${shadows.length} shadow(s)`);
-  process.exit(0); // report never fails — it informs
+  process.exit(0); // report never fails - it informs
 }
 
 /**
- * rugsnare doctor — self-diagnosis of the local setup: environment, discovered
+ * rugsnare doctor - self-diagnosis of the local setup: environment, discovered
  * configs, pin-store health, unreviewed pins, policies, receipts chain, canary
  * corpus. Informational by design; exit 2 only when the setup itself is broken
  * (unusable environment, unreadable pin store, broken receipts chain).
@@ -1294,14 +1296,14 @@ async function cmdDoctor(flags) {
   if (flags?.checkUpdate) {
     const latest = await fetchLatestVersion({ timeoutMs: 5000 });
     if (latest === null) {
-      console.log(`\nversion: ${current} (registry unreachable — try again later)`);
+      console.log(`\nversion: ${current} (registry unreachable - try again later)`);
     } else if (compareVersions(current, latest) < 0) {
       console.log(`\nversion: ${current}`);
-      warn(`newer release on npm: ${latest} — npx without a pin floats to latest every launch;`);
+      warn(`newer release on npm: ${latest} - npx without a pin floats to latest every launch;`);
       warn(`  review the changelog, then pin: npx --yes rugsnare@${latest}`);
       console.log(`  changelog: https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md`);
     } else if (compareVersions(current, latest) > 0) {
-      console.log(`\nversion: ${current} (ahead of npm's ${latest} — local/dev build)`);
+      console.log(`\nversion: ${current} (ahead of npm's ${latest} - local/dev build)`);
     } else {
       console.log(`\nversion: ${current} (up to date)`);
     }
@@ -1313,7 +1315,7 @@ async function cmdDoctor(flags) {
   console.log(`\nconfigs: ${configs.length} source(s) with servers`);
   for (const c of configs.slice(0, 10)) console.log(`  ${c.app}/${c.scope}: ${Object.keys(c.servers).length} server(s)`);
   if (configs.length > 10) console.log(`  ... +${configs.length - 10} more`);
-  if (configs.length === 0) warn('no MCP configs discovered — pass --config explicitly');
+  if (configs.length === 0) warn('no MCP configs discovered - pass --config explicitly');
 
   let pins = null;
   try { pins = loadPins(); } catch (e) { problems.push(`pins.json unreadable: ${e.message}`); }
@@ -1328,7 +1330,7 @@ async function cmdDoctor(flags) {
       }
     }
     console.log(`\npins: ${servers.length} server(s), ${toolCount} tool(s)`);
-    if (servers.length === 0) warn('nothing pinned — run `rugsnare scan`');
+    if (servers.length === 0) warn('nothing pinned - run `rugsnare scan`');
     if (unapproved.length > 0) {
       warn(`${unapproved.length} pinned but NEVER APPROVED (first sight, no human review yet):`);
       for (const u of unapproved.slice(0, 10)) console.log(`    ${u}`);
@@ -1347,7 +1349,7 @@ async function cmdDoctor(flags) {
       validatePolicies(readJsonFile(policyFile));
       console.log('policies: valid');
     } catch (e) {
-      warn(`policies.json invalid (${e.message}) — the live proxy falls back to built-in defaults`);
+      warn(`policies.json invalid (${e.message}) - the live proxy falls back to built-in defaults`);
     }
   } else {
     console.log('policies: built-in defaults (no policies.json)');
@@ -1356,8 +1358,8 @@ async function cmdDoctor(flags) {
   const { loadPublicKey, readReceipts, verifyReceipts, verifyPinsFile } = await import('./receipts.js');
   const pinsSig = verifyPinsFile();
   if (pinsSig.status === 'ok') console.log(`pins signature: ok (${(pinsSig.signedAt ?? '').slice(0, 10) || '?'}, key: ${pinsSig.keySource ?? 'local'})`);
-  else if (pinsSig.status === 'tampered') problems.push(`pins.sig TAMPERED: ${pinsSig.reason} — \`rugsnare diff\` will refuse these pins`);
-  else if (pinsSig.status === 'unsigned') warn('pins.json unsigned while a verification key exists — run `rugsnare scan` to re-pin and sign');
+  else if (pinsSig.status === 'tampered') problems.push(`pins.sig TAMPERED: ${pinsSig.reason} - \`rugsnare diff\` will refuse these pins`);
+  else if (pinsSig.status === 'unsigned') warn('pins.json unsigned while a verification key exists - run `rugsnare scan` to re-pin and sign');
   else if (pinsSig.status === 'nokey' && pinsSig.note) warn(pinsSig.note);
   // nokey without note: normal pre-signature state, silent
   const pub = loadPublicKey();
@@ -1366,7 +1368,7 @@ async function cmdDoctor(flags) {
   } else {
     const receipts = readReceipts();
     if (receipts.corrupt > 0) {
-      problems.push(`receipts.jsonl has ${receipts.corrupt} unparseable line(s) — truncated or tampered audit trail; run \`rugsnare receipts sign\` to re-chain the readable part`);
+      problems.push(`receipts.jsonl has ${receipts.corrupt} unparseable line(s) - truncated or tampered audit trail; run \`rugsnare receipts sign\` to re-chain the readable part`);
     }
     if (receipts.length === 0) {
       console.log('receipts: key present, nothing signed yet');
@@ -1386,7 +1388,7 @@ async function cmdDoctor(flags) {
   const evPath = eventsPath();
   if (fs.existsSync(evPath)) {
     const sizeMb = fs.statSync(evPath).size / (1024 * 1024);
-    if (sizeMb > 10) warn(`events.jsonl is ${sizeMb.toFixed(1)} MB — trim old entries: rugsnare events trim --keep-last 5000 (receipts stay intact)`);
+    if (sizeMb > 10) warn(`events.jsonl is ${sizeMb.toFixed(1)} MB - trim old entries: rugsnare events trim --keep-last 5000 (receipts stay intact)`);
   }
 
   console.log('');
@@ -1399,7 +1401,7 @@ async function cmdDoctor(flags) {
 }
 
 /**
- * rugsnare events trim --keep-last <n> — shrink the local event log to the
+ * rugsnare events trim --keep-last <n> - shrink the local event log to the
  * last n entries. Explicit operator action (the log is append-only by
  * contract); receipts.jsonl is hash-chained separately and is never touched.
  */
@@ -1410,7 +1412,7 @@ async function cmdEvents(flags) {
     if (!Number.isInteger(flags.keepLast)) { console.error('Usage: rugsnare events trim --keep-last <n>'); process.exit(2); }
     const { kept, dropped } = trimEvents({ keepLast: flags.keepLast });
     console.log(`events: kept ${kept}, dropped ${dropped} (${eventsPath()})`);
-    if (dropped > 0) console.log('receipts.jsonl was not touched — signed history stays verifiable');
+    if (dropped > 0) console.log('receipts.jsonl was not touched - signed history stays verifiable');
     return;
   }
   if (sub === 'count' || !sub) {
@@ -1479,9 +1481,9 @@ async function cmdConfig(flags) {
 }
 
 /**
- * rugsnare unpin <server> — drop a server's pins entirely. For servers that
+ * rugsnare unpin <server> - drop a server's pins entirely. For servers that
  * left the config: stale pins ghost as SHADOW/REMOVED findings forever
- * otherwise. Destructive to the pin store only — nothing else is touched.
+ * otherwise. Destructive to the pin store only - nothing else is touched.
  */
 async function cmdUnpin(flags, serverName) {
   if (!serverName) { console.error('Usage: rugsnare unpin <server>'); process.exit(2); }
@@ -1522,7 +1524,7 @@ async function cmdAudit(flags) {
   if (flags.json) {
     console.log(JSON.stringify({ input, filesScanned, high, counts, results }, null, 2));
   } else {
-    console.log(`rugsnare audit — ${input} (${filesScanned} file(s), ${Date.now() - t0}ms)`);
+    console.log(`rugsnare audit - ${input} (${filesScanned} file(s), ${Date.now() - t0}ms)`);
     let anyShown = false;
     for (const r of results) {
       if (r.skipped) { console.log(`  ${r.file}: SKIPPED (${r.skipped})`); continue; }
@@ -1530,20 +1532,20 @@ async function cmdAudit(flags) {
       anyShown = true;
       console.log(`  ${r.file}${r.note ? ` (${r.note})` : ''}:`);
       for (const f of r.findings) {
-        console.log(`    [${f.severity}] ${f.id} ${f.kind} @ ${f.location} — ${f.preview}`);
+        console.log(`    [${f.severity}] ${f.id} ${f.kind} @ ${f.location} - ${f.preview}`);
       }
     }
     if (!anyShown) console.log('  (no findings)');
     console.log('');
     const parts = Object.entries(counts).map(([id, n]) => `${id}:${n}`).join('  ') || 'clean';
-    console.log(`findings: ${parts}${high > 0 ? ` — ${high} HIGH` : ''}`);
+    console.log(`findings: ${parts}${high > 0 ? ` - ${high} HIGH` : ''}`);
     console.log(high > 0
-      ? 'audit: SECRETS PRESENT — rotate them before sharing this export'
+      ? 'audit: SECRETS PRESENT - rotate them before sharing this export'
       : 'audit: no high-severity findings');
   }
 
   if (!flags.airgap) {
-    // count-only trace: no paths, no previews — the promise is screen-only
+    // count-only trace: no paths, no previews - the promise is screen-only
     logEvent({ kind: 'audit', files: filesScanned, high, counts });
   }
   process.exit(high > 0 ? 1 : 0);
@@ -1598,9 +1600,9 @@ async function cmdVault(flags) {
     let value = rest[0];
     if (value === undefined) {
       value = await promptHidden(`value for ${name} (input hidden, Enter to confirm): `);
-      if (value === null) { console.error('No TTY for hidden input — pass the value as an argument in scripts.'); process.exit(2); }
+      if (value === null) { console.error('No TTY for hidden input - pass the value as an argument in scripts.'); process.exit(2); }
     }
-    if (typeof value !== 'string' || value.length === 0) { console.error('Empty value — nothing written.'); process.exit(2); }
+    if (typeof value !== 'string' || value.length === 0) { console.error('Empty value - nothing written.'); process.exit(2); }
     const vault = loadVault() ?? {};
     vault[name] = value;
     saveVault(vault);
@@ -1633,7 +1635,7 @@ async function cmdVault(flags) {
 }
 
 /**
- * rugsnare hook install — sets up the pre-commit git hook.
+ * rugsnare hook install - sets up the pre-commit git hook.
  */
 async function cmdHook(flags) {
   const action = flags._[0];
@@ -1661,7 +1663,7 @@ async function cmdHook(flags) {
     }
 
     const precommitPath = path.join(__dirname, 'precommit.mjs');
-    const hookContent = `#!/bin/sh\n# RugSnare pre-commit hook — blocks commits on MCP tool contract drift\nexec node "${precommitPath}"\n`;
+    const hookContent = `#!/bin/sh\n# RugSnare pre-commit hook - blocks commits on MCP tool contract drift\nexec node "${precommitPath}"\n`;
     fs.writeFileSync(hookPath, hookContent);
     fs.chmodSync(hookPath, 0o755);
     console.log(`✅ Pre-commit hook installed at ${hookPath}`);
@@ -1676,7 +1678,7 @@ async function cmdHook(flags) {
         fs.unlinkSync(hookPath);
         console.log('✅ Pre-commit hook removed');
       } else {
-        console.log('Pre-commit hook exists but is not RugSnare\'s — leaving it alone.');
+        console.log('Pre-commit hook exists but is not RugSnare\'s - leaving it alone.');
       }
     } else {
       console.log('No pre-commit hook found.');
@@ -1739,7 +1741,7 @@ async function main() {
       const { unwrapServer } = await import('./wrap.js');
       const r = unwrapServer(name);
       if (r.error) { console.error(r.error); process.exit(2); }
-      console.log(`unwrapped "${r.server}" in ${r.file} — restored original command`);
+      console.log(`unwrapped "${r.server}" in ${r.file} - restored original command`);
       console.log(`restart your MCP client to apply.`);
       return;
     }

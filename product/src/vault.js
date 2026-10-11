@@ -9,16 +9,16 @@ import { readJsonFile } from './jsonfile.js';
  *
  *   client sends:   { "token": "{{VAULT:STRIPE}}" }
  *   server receives:{ "token": "sk_live_…" }
- *   model sees back:{ "result": "…payment … accepted…" } — any exact
+ *   model sees back:{ "result": "…payment … accepted…" } - any exact
  *                    occurrence of the secret is replaced with the
  *                    placeholder again before the result reaches the client.
  *
- * Storage: .rugsnare/vault.json — flat { NAME: value }, chmod 0600 (best
+ * Storage: .rugsnare/vault.json - flat { NAME: value }, chmod 0600 (best
  * effort on Windows), covered by the standard .rugsnare/ gitignore block.
  * Presence of the file = intent; no config flag needed.
  *
  * Guarantees: secrets NEVER appear in events.jsonl, canary traces, pins, or
- * proxy alerts — substitution happens after call logging, redaction before
+ * proxy alerts - substitution happens after call logging, redaction before
  * result inspection. Names only are ever logged.
  */
 
@@ -28,7 +28,7 @@ export function vaultPath(cwd = process.cwd()) {
   return path.join(rugsnareDir(cwd), 'vault.json');
 }
 
-/** Load the vault; null when absent (the common case — passthrough unchanged). */
+/** Load the vault; null when absent (the common case - passthrough unchanged). */
 export function loadVault(cwd = process.cwd()) {
   try {
     const v = readJsonFile(vaultPath(cwd));
@@ -48,7 +48,7 @@ export function saveVault(vault, cwd = process.cwd()) {
   const file = vaultPath(cwd);
   const assertNotSymlink = (p) => {
     try {
-      if (fs.lstatSync(p).isSymbolicLink()) throw new Error(`${path.basename(p)} is a symlink — refusing to write through it (pre-planted link could redirect the write)`);
+      if (fs.lstatSync(p).isSymbolicLink()) throw new Error(`${path.basename(p)} is a symlink - refusing to write through it (pre-planted link could redirect the write)`);
     } catch (e) {
       if (e.code !== 'ENOENT') throw e;
     }
@@ -73,7 +73,7 @@ function substituteString(s, vault, used) {
 
 /**
  * Walk tool-call arguments replacing {{VAULT:name}} tokens (whole values or
- * embedded — "Bearer {{VAULT:KEY}}" works). Returns the new args and the
+ * embedded - "Bearer {{VAULT:KEY}}" works). Returns the new args and the
  * NAMES used (never values).
  */
 export function substituteArgs(args, vault) {

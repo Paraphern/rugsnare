@@ -4,16 +4,16 @@ import crypto from 'node:crypto';
 import { rugsnareDir } from './pins.js';
 
 /**
- * Signed receipts (Phase B — see extensions-verdict.md).
+ * Signed receipts (Phase B - see extensions-verdict.md).
  *
  * `rugsnare receipts sign` turns the local append-only event log
  * (.rugsnare/events.jsonl) into a tamper-evident chain: every entry gets
  *   entryHash = sha256(seq | prevHash | canonical-json(event))
- *   sig       = Ed25519(entryHash)  — key generated locally, never leaves the machine
+ *   sig       = Ed25519(entryHash)  - key generated locally, never leaves the machine
  * `receipts verify` recomputes the chain and every signature; editing ANY
  * entry after signing breaks the chain at that point. `receipts export`
  * produces an auditor dossier (markdown + JSON) with field names aligned to
- * IETF draft-sharif-agent-audit-trail-05 (individual draft — a mapping,
+ * IETF draft-sharif-agent-audit-trail-05 (individual draft - a mapping,
  * not a compliance claim).
  *
  * Zero npm dependencies: node:crypto only. No network. Key files are fixed
@@ -22,9 +22,9 @@ import { rugsnareDir } from './pins.js';
 
 const GENESIS = '0'.repeat(64);
 
-/** Generate/load the local Ed25519 pair. Fixed filenames — never user input. */
+/** Generate/load the local Ed25519 pair. Fixed filenames - never user input. */
 export function ensureKeys(cwd = process.cwd()) {
-  const dir = rugsnareDir(cwd); // <cwd>/.rugsnare — the established local state dir
+  const dir = rugsnareDir(cwd); // <cwd>/.rugsnare - the established local state dir
   const privPath = path.join(dir, 'keys', 'ed25519.pem');
   const pubPath = path.join(dir, 'keys', 'ed25519.pub.pem');
   if (fs.existsSync(privPath) && fs.existsSync(pubPath)) {
@@ -71,7 +71,7 @@ export function loadPrivateKey(cwd = process.cwd()) {
 // access to the repo/CI can edit .rugsnare/pins.json so `diff` reports clean
 // against a poisoned contract. Committed together with pins.json, pins.sig
 // makes that edit detectable: Ed25519 over the exact bytes of pins.json.
-// The signature does NOT travel to the attacker's keyboard — signing happens
+// The signature does NOT travel to the attacker's keyboard - signing happens
 // at the human-review points (scan/approve/unpin) on the operator's machine.
 
 export function pinsSigPath(cwd = process.cwd()) {
@@ -79,7 +79,7 @@ export function pinsSigPath(cwd = process.cwd()) {
 }
 
 /**
- * The COMMITTED public key (`.rugsnare/pins.pub.pem`, tracked — the .gitignore
+ * The COMMITTED public key (`.rugsnare/pins.pub.pem`, tracked - the .gitignore
  * block whitelists it). Committing the key is what makes the CI-attacker
  * defense work in CI itself (review 28, P1): a runner has no local keys dir,
  * so verification must not depend on one. Written by signPinsFile next to the
@@ -119,12 +119,12 @@ function resolveVerifyKey(cwd) {
 /**
  * Verify pins.json against pins.sig.
  * Statuses:
- *   ok          — signature matches the exact bytes (key: committed or local)
- *   tampered    — pins.json changed after signing (or sig forged) — ALWAYS fatal
- *   unsigned    — no pins.sig, but a verification key EXISTS (committed or
- *                 local) — suspicious: fail unless --allow-unsigned-pins
- *   nokey       — no pins.sig and no key anywhere: pre-0.9 / never signed — OK
- *   nopins      — no pins.json at all (caller handles its own "run scan first")
+ *   ok          - signature matches the exact bytes (key: committed or local)
+ *   tampered    - pins.json changed after signing (or sig forged) - ALWAYS fatal
+ *   unsigned    - no pins.sig, but a verification key EXISTS (committed or
+ *                 local) - suspicious: fail unless --allow-unsigned-pins
+ *   nokey       - no pins.sig and no key anywhere: pre-0.9 / never signed - OK
+ *   nopins      - no pins.json at all (caller handles its own "run scan first")
  */
 export function verifyPinsFile(cwd = process.cwd()) {
   const pinsFile = path.join(rugsnareDir(cwd), 'pins.json');
@@ -143,7 +143,7 @@ export function verifyPinsFile(cwd = process.cwd()) {
   if (!key) {
     return {
       status: 'nokey',
-      note: 'pins.sig exists but no verification key (neither committed pins.pub.pem nor local keys/) — commit .rugsnare/pins.pub.pem, or re-run `rugsnare scan` on the machine that holds the key',
+      note: 'pins.sig exists but no verification key (neither committed pins.pub.pem nor local keys/) - commit .rugsnare/pins.pub.pem, or re-run `rugsnare scan` on the machine that holds the key',
     };
   }
   const hash = crypto.createHash('sha256').update(fs.readFileSync(pinsFile)).digest('hex');
@@ -167,7 +167,7 @@ export function readReceipts(cwd = process.cwd()) {
   try {
     text = fs.readFileSync(receiptsPath(cwd), 'utf8');
   } catch {
-    return []; // absent — nothing signed yet, the honest empty case
+    return []; // absent - nothing signed yet, the honest empty case
   }
   const lines = text.trim().split('\n').filter(Boolean);
   const out = [];
@@ -179,7 +179,7 @@ export function readReceipts(cwd = process.cwd()) {
   return out;
 }
 
-// canonical json: sorted keys, no whitespace — same discipline as hash.js stable()
+// canonical json: sorted keys, no whitespace - same discipline as hash.js stable()
 function canonical(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null';
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';

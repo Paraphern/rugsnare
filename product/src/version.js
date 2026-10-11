@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 /**
- * Version awareness — the "are we silently updating?" answer.
+ * Version awareness - the "are we silently updating?" answer.
  *
  * RugSnare flags floating npx/uvx versions in MCP configs (floating.js), so
  * it must be loud about its own: `rugsnare version` prints what you run,
@@ -79,6 +79,6 @@ export async function fetchLatestVersion({ registry = 'https://registry.npmjs.or
     const body = await res.json();
     return typeof body.version === 'string' ? body.version : null;
   } catch {
-    return null; // offline, blocked, slow: silence — doctor must not nag
+    return null; // offline, blocked, slow: silence - doctor must not nag
   }
 }

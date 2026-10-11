@@ -3,7 +3,7 @@ import path from 'node:path';
 import { BIP39_WORDS } from './bip39-words.js';
 
 /**
- * AI Security Audit — zero-knowledge scanner for sensitive data in AI chat
+ * AI Security Audit - zero-knowledge scanner for sensitive data in AI chat
  * exports and other local files (the "did I leak something into the chat"
  * check). Local-only and screen-only BY DESIGN:
  *
@@ -27,7 +27,7 @@ import { BIP39_WORDS } from './bip39-words.js';
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // skip absurdly large files
 
 const KEY_PATTERNS = [
-  // sk-ant- is Anthropic's prefix — the OpenAI pattern must not double-report it
+  // sk-ant- is Anthropic's prefix - the OpenAI pattern must not double-report it
   { name: 'OpenAI API key', re: /\bsk-(?!ant-)(?:proj-)?[A-Za-z0-9_-]{20,}\b/g },
   { name: 'Anthropic API key', re: /\bsk-ant-[A-Za-z0-9_-]{20,}\b/g },
   { name: 'AWS access key', re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g },
@@ -83,7 +83,7 @@ export function scanText(text, locPrefix = '') {
   };
 
   for (const { name, re } of KEY_PATTERNS) {
-    for (const m of text.matchAll(re)) add('AUD01', 'HIGH', `API key — ${name}`, m[0], m.index);
+    for (const m of text.matchAll(re)) add('AUD01', 'HIGH', `API key - ${name}`, m[0], m.index);
   }
   for (const m of text.matchAll(PRIVATE_KEY_BLOCK)) add('AUD02', 'HIGH', 'private key block', m[0], m.index, 'BEGIN … PRIVATE KEY block');
   // AUD05 spans collected first: an email/phone INSIDE a credential-bearing URL
@@ -94,7 +94,7 @@ export function scanText(text, locPrefix = '') {
   for (const m of text.matchAll(RFC1918)) add('AUD06', 'LOW', 'internal IP address (RFC1918)', m[0], m.index);
   for (const m of text.matchAll(INTERNAL_HOST)) add('AUD06', 'LOW', 'internal hostname', m[0], m.index);
   for (const m of text.matchAll(EMAIL)) {
-    if (inDbUrl(m.index)) continue; // inside a db URL — already reported as AUD05
+    if (inDbUrl(m.index)) continue; // inside a db URL - already reported as AUD05
     add('AUD07', 'LOW', 'email address', m[0], m.index);
   }
   for (const m of text.matchAll(PHONE)) {
@@ -114,12 +114,12 @@ export function scanText(text, locPrefix = '') {
   const lines = text.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const lm = lines[i].match(ENV_CRED_NAME);
-    if (lm) findings.push({ id: 'AUD08', severity: 'HIGH', kind: `.env-style credential — ${lm[1]}`, location: locPrefix || `line ${i + 1}`, preview: preview(lm[2]) });
+    if (lm) findings.push({ id: 'AUD08', severity: 'HIGH', kind: `.env-style credential - ${lm[1]}`, location: locPrefix || `line ${i + 1}`, preview: preview(lm[2]) });
   }
 
   // crypto seed phrases: maximal runs of >= 12 consecutive BIP-39 words.
   // A token immediately followed by ':' is a LABEL ("seed:", "card:"), not a
-  // list item — many labels are themselves BIP-39 words and must break the
+  // list item - many labels are themselves BIP-39 words and must break the
   // run instead of inflating it (verifier run 2, P2: "14 words starting card").
   const tokens = [...text.matchAll(/[A-Za-z']+/g)];
   const isLabel = (t) => text[t.index + t[0].length] === ':';
@@ -171,7 +171,7 @@ export function scanFile(file) {
     try {
       return { file, findings: scanJsonValue(JSON.parse(text)) };
     } catch {
-      // malformed JSON — scan as text, it's still user data
+      // malformed JSON - scan as text, it's still user data
       return { file, findings: scanText(text), note: 'malformed JSON, scanned as text' };
     }
   }

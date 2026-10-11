@@ -1,10 +1,10 @@
 /**
  * SARIF 2.1.0 output for GitHub code scanning and other SARIF consumers.
  * Rules:
- *   RS001 DRIFT   — tool contract changed after approval (error)
- *   RS002 NEW     — unapproved new tool (warning)
- *   RS003 REMOVED — approved tool disappeared (warning)
- *   RS004 SHADOW  — same tool name exposed by multiple servers (error)
+ *   RS001 DRIFT   - tool contract changed after approval (error)
+ *   RS002 NEW     - unapproved new tool (warning)
+ *   RS003 REMOVED - approved tool disappeared (warning)
+ *   RS004 SHADOW  - same tool name exposed by multiple servers (error)
  */
 
 import fs from 'node:fs';
@@ -38,7 +38,7 @@ export function buildSarif(report, shadows = []) {
 
   for (const { server, verdicts = [] } of report) {
     for (const v of verdicts) {
-      // tool verdicts carry {tool}; prompt/resource verdicts carry {item, kind} —
+      // tool verdicts carry {tool}; prompt/resource verdicts carry {item, kind} -
       // both must reach code scanning, instructions live in prompts too
       const target = v.tool ?? (v.item !== undefined ? `${v.kind}:${v.item}` : undefined);
       if (target === undefined) continue;
@@ -48,7 +48,7 @@ export function buildSarif(report, shadows = []) {
     }
   }
   for (const s of shadows) {
-    push('RS004', 'error', `Tool name "${s.tool}" is exposed by multiple servers (${s.servers.join(', ')}) — the client's resolution order decides which one runs.`, s.servers[0], s.tool);
+    push('RS004', 'error', `Tool name "${s.tool}" is exposed by multiple servers (${s.servers.join(', ')}) - the client's resolution order decides which one runs.`, s.servers[0], s.tool);
   }
 
   return {

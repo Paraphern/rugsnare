@@ -8,7 +8,7 @@ import { schemaHash as computeSchemaHash, proseHash as computeProseHash } from '
  *
  * servers -> name -> tools -> toolName -> { hash, description, firstSeen, approved }
  * A pin is written by `rugsnare scan` (intentional, approved) or by the
- * proxy on first sight (approved:false — needs `rugsnare approve`).
+ * proxy on first sight (approved:false - needs `rugsnare approve`).
  * Drift = live hash differs from a stored pin. New tool = no pin at all.
  */
 
@@ -40,7 +40,7 @@ export function ensureServer(pins, name, cmd) {
     pins.servers[name] = { cmd: null, pinnedAt: new Date().toISOString(), tools: {} };
   }
   if (cmd && typeof cmd.command === 'string' && Array.isArray(cmd.args)) {
-    // Structured command only — never a joined shell string. Execution
+    // Structured command only - never a joined shell string. Execution
     // always goes through spawn(command, args, { shell: false }).
     pins.servers[name].cmd = { command: cmd.command, args: cmd.args };
   } else if (cmd && typeof cmd.url === 'string') {
@@ -59,7 +59,7 @@ export function commandDisplay(server) {
 /**
  * Cross-server tool shadowing: the same tool name exposed by more than one
  * pinned server. The client's (often undocumented) resolution order decides
- * which implementation the agent actually calls — that collision is the
+ * which implementation the agent actually calls - that collision is the
  * finding, we do not pick a winner.
  */
 export function detectShadows(pins) {
@@ -86,7 +86,7 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
     description: tool.description ?? '',
     annotations: tool.annotations ?? null,
     // Canonical inputSchema for human-readable diffs ("added required param mode"
-    // instead of just "schema changed") — from the DescriptorPin learning
+    // instead of just "schema changed") - from the DescriptorPin learning
     inputSchema: tool.inputSchema ?? null,
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
@@ -99,7 +99,7 @@ export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
  * Compare behavioral annotations through their SPEC DEFAULTS, not raw values
  * (official schema, modelcontextprotocol/schema 2025-06-18, ~lines 890-925):
  *   readOnlyHint    absent = false
- *   destructiveHint absent = TRUE  — tools are assumed destructive unless they
+ *   destructiveHint absent = TRUE  - tools are assumed destructive unless they
  *                     explicitly opt out with destructiveHint:false
  *   idempotentHint  absent = false
  *   openWorldHint   absent = true
@@ -151,7 +151,7 @@ const GUARD_PARAM_RE = new RegExp(`(?:${GUARD_PARAM_PATTERNS.map((p) => p.source
 /**
  * True when the schema REJECTS unknown keys (additionalProperties:false or
  * a value that evaluates to false). False when it accepts them (true or
- * absent — the JSON Schema default). Used to decide whether a removed
+ * absent - the JSON Schema default). Used to decide whether a removed
  * guard parameter creates a SILENT failure (warning needed) or a LOUD
  * one (the call errors out, no silent-ignore warning).
  */
@@ -162,8 +162,8 @@ function rejectsUnknownKeys(schema) {
 
 /**
  * Schema diff with direction tagging. Each change carries a direction:
- * 'tighten' (new/restrictive — more demanded from the agent or less accepted)
- * or 'loosen' (permissive — constraints removed, channels opened).
+ * 'tighten' (new/restrictive - more demanded from the agent or less accepted)
+ * or 'loosen' (permissive - constraints removed, channels opened).
  * Returns [{ text, direction }] for grading BREAKING vs LOOSENED.
  */
 export function schemaDiff(oldSchema, newSchema) {
@@ -174,7 +174,7 @@ export function schemaDiff(oldSchema, newSchema) {
   const oldReq = new Set(oldSchema.required ?? []);
   const newReq = new Set(newSchema.required ?? []);
 
-  // added params: new data channel — required = tighten, optional = expand
+  // added params: new data channel - required = tighten, optional = expand
   // (EXPANDED: backwards-compatible for callers but widens attack surface;
   // same exit 1, same severity slot as BREAKING, more honest label)
   for (const name of Object.keys(newProps)) {
@@ -184,16 +184,16 @@ export function schemaDiff(oldSchema, newSchema) {
         : { text: `added optional parameter '${name}' (${newProps[name].type ?? 'unknown'})`, direction: 'expand' });
     }
   }
-  // removed params: data channel closed — loosen (but guard-params get a warning)
+  // removed params: data channel closed - loosen (but guard-params get a warning)
   for (const name of Object.keys(oldProps)) {
     if (!newProps[name]) {
       const change = { text: `removed parameter '${name}'`, direction: 'loosen' };
       // P5+P6 (Jakub): removing a guard parameter is only a SILENT failure
       // if the new schema accepts unknown keys (additionalProperties:true or
       // absent = JSON Schema default). With additionalProperties:false the
-      // server loudly rejects the old call — no silent-ignore warning needed.
+      // server loudly rejects the old call - no silent-ignore warning needed.
       if (GUARD_PARAM_RE.test(name) && !rejectsUnknownKeys(newSchema)) {
-        change.guardWarning = `guard-style parameter removed — agents may still pass '${name}'; server will silently ignore it (unknown keys not rejected)`;
+        change.guardWarning = `guard-style parameter removed - agents may still pass '${name}'; server will silently ignore it (unknown keys not rejected)`;
       }
       changes.push(change);
     }
@@ -213,12 +213,12 @@ export function schemaDiff(oldSchema, newSchema) {
       const change = { text: `'${name}' became optional`, direction: 'loosen' };
       // P6: guard-param became optional = the guard is defanged
       if (GUARD_PARAM_RE.test(name)) {
-        change.guardWarning = `guard-style parameter defanged: '${name}' is no longer required — agent may omit the confirmation, action executes without it`;
+        change.guardWarning = `guard-style parameter defanged: '${name}' is no longer required - agent may omit the confirmation, action executes without it`;
       }
       changes.push(change);
     }
 
-    // P6: default value changes — tracked for ALL parameters (previously
+    // P6: default value changes - tracked for ALL parameters (previously
     // invisible: schemaHash changed but schemaDiff returned [], grade=NOTATION).
     // Guard params with weakening flip (true→false) get a guardWarning.
     if (o.default !== undefined && n.default !== undefined && o.default !== n.default) {
@@ -229,7 +229,7 @@ export function schemaDiff(oldSchema, newSchema) {
         direction: 'loosen',
       };
       if (weakened) {
-        change.guardWarning = `guard-style parameter defanged: '${name}' default changed ${JSON.stringify(o.default)} → ${JSON.stringify(n.default)} — agent relying on the old default will execute the real action`;
+        change.guardWarning = `guard-style parameter defanged: '${name}' default changed ${JSON.stringify(o.default)} → ${JSON.stringify(n.default)} - agent relying on the old default will execute the real action`;
       }
       changes.push(change);
     }
@@ -250,9 +250,9 @@ export function schemaDiff(oldSchema, newSchema) {
 
 /**
  * Notation-level schema differences: things that change the schema's bytes
- * (and its hash) but not what a caller can send — $schema dialect switches
+ * (and its hash) but not what a caller can send - $schema dialect switches
  * (draft-07 → 2020-12, the MCP SDK v2 migration wave). additionalProperties
- * changes are NOT here — they moved to LOOSENED (P4 gradation, second round
+ * changes are NOT here - they moved to LOOSENED (P4 gradation, second round
  * from Jakub Hecht: direction matters, not just presence).
  */
 export function schemaNotationDiff(oldSchema, newSchema) {
@@ -337,7 +337,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         newDescription: tool.description ?? '',
       });
     } else if (pin.annotations !== undefined && !annotationsEqual(pin.annotations, tool.annotations)) {
-      // Byte-identical text+schema, but the behavioral hints flipped —
+      // Byte-identical text+schema, but the behavioral hints flipped -
       // e.g. approved as readOnlyHint:true, now declares itself destructive.
       result.push({
         tool: tool.name,

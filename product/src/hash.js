@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-// Deterministic JSON: sorted keys, stable arrays — so the same logical
+// Deterministic JSON: sorted keys, stable arrays - so the same logical
 // tool definition always hashes identically across machines and runs.
 // Exported for callers that need a canonical form of arbitrary payloads
 // (e.g. the proxy's loop detector fingerprints call arguments).
@@ -36,7 +36,7 @@ export function toolHash(tool) {
  *
  * Split hash design from community feedback:
  * "a structural hash on name plus inputSchema is the one I'd actually enforce on.
- *  prose drift can stay alert-only forever." — u/QuanTradin
+ *  prose drift can stay alert-only forever." - u/QuanTradin
  */
 
 export function schemaHash(tool) {

@@ -39,7 +39,7 @@ export function eventsPath(cwd = process.cwd()) {
 
 /**
  * Explicit operator trim: keep the last N events, drop the rest.
- * Never automatic — the log is append-only by contract; trimming is a human
+ * Never automatic - the log is append-only by contract; trimming is a human
  * decision (receipts live in their own hash-chained file and stay intact).
  * Atomic via tmp+rename so a crash mid-trim can't corrupt the log.
  */
@@ -51,10 +51,10 @@ export function trimEvents({ keepLast, cwd = process.cwd() }) {
   try {
     lines = fs.readFileSync(file, 'utf8').split('\n').filter(Boolean);
   } catch {
-    return { kept: 0, dropped: 0 }; // no log yet — nothing to trim
+    return { kept: 0, dropped: 0 }; // no log yet - nothing to trim
   }
   if (lines.length <= n) return { kept: lines.length, dropped: 0 };
-  // slice(-0) === slice(0) === everything — keep-last 0 must actually clear
+  // slice(-0) === slice(0) === everything - keep-last 0 must actually clear
   const kept = n === 0 ? [] : lines.slice(-n);
   const tmp = file + '.trim';
   fs.writeFileSync(tmp, kept.join('\n') + '\n');

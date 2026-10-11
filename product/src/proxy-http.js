@@ -41,11 +41,11 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
   const callCounts = new Map();
   const budgetAlerted = new Set();
 
-  // Secret vault (v0.7): see src/vault.js — placeholders out, secrets scrubbed back
+  // Secret vault (v0.7): see src/vault.js - placeholders out, secrets scrubbed back
   const vault = loadVault(cwd);
 
   // Canary capture (opt-in): HTTP is one request per POST, so correlation is
-  // trivial — no pending-id map like the stdio proxy needs.
+  // trivial - no pending-id map like the stdio proxy needs.
   const canary = canaryEnabled(config);
 
   // Undeclared tool detection (same as stdio proxy): tools called but never
@@ -156,7 +156,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
    */
   const server = http.createServer((clientReq, clientRes) => {
     if (clientReq.method === 'GET') {
-      // Health check / SSE endpoint — just 200
+      // Health check / SSE endpoint - just 200
       clientRes.writeHead(200, { 'content-type': 'text/event-stream' });
       clientRes.write('data: {"jsonrpc":"2.0","method":"notifications/initialized"}\n\n');
       return;
@@ -168,7 +168,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
       try {
         const msg = JSON.parse(body);
 
-        // Call policies + loop detector — same enforcement as the stdio proxy.
+        // Call policies + loop detector - same enforcement as the stdio proxy.
         // A blocked call is answered directly to the client; the remote never sees it.
         if (msg.method === 'tools/call' && msg.params) {
           if (LOOP_THRESHOLD > 0) {
@@ -195,7 +195,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           const approvalNeeded = policyResult.requiresApproval.length > 0 && mode === 'enforce';
           if (!policyResult.allowed || approvalNeeded) {
             const reasons = [...policyResult.blocked, ...(approvalNeeded ? policyResult.requiresApproval : [])].map((b) => b.reason).join('; ');
-            process.stderr.write(`[rugsnare] POLICY BLOCK: ${name}/${msg.params.name} — ${reasons}\n`);
+            process.stderr.write(`[rugsnare] POLICY BLOCK: ${name}/${msg.params.name} - ${reasons}\n`);
             logEvent({ kind: 'policy-block', server: name, tool: msg.params.name, blocked: policyResult.blocked, approval: policyResult.requiresApproval }, cwd);
             clientRes.writeHead(200, { 'content-type': 'application/json' });
             clientRes.end(JSON.stringify({
@@ -210,7 +210,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
 
           // kill-switch: disabled tools never run, in ANY mode
           if (disabled.includes(msg.params.name)) {
-            process.stderr.write(`[rugsnare] KILL-SWITCH: ${name}/${msg.params.name} is disabled in policies.json — call blocked\n`);
+            process.stderr.write(`[rugsnare] KILL-SWITCH: ${name}/${msg.params.name} is disabled in policies.json - call blocked\n`);
             logEvent({ kind: 'kill-switch-block', server: name, tool: msg.params.name }, cwd);
             clientRes.writeHead(200, { 'content-type': 'application/json' });
             clientRes.end(JSON.stringify({
@@ -221,22 +221,22 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           }
 
           // Undeclared tool detection: the tool was never in tools/list but the
-          // agent is calling it — progressive-discovery surface. Runs AFTER
+          // agent is calling it - progressive-discovery surface. Runs AFTER
           // kill-switch and policies (those have more specific messages).
           if (hasSeenToolsList && !declaredTools.has(msg.params.name)) {
             if (mode === 'enforce') {
-              process.stderr.write(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} — never in tools/list; blocked (enforce)\n`);
+              process.stderr.write(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} - never in tools/list; blocked (enforce)\n`);
               logEvent({ kind: 'undeclared-tool-block', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
               clientRes.writeHead(200, { 'content-type': 'application/json' });
               clientRes.end(JSON.stringify({
                 jsonrpc: '2.0', id: msg.id,
-                error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it through progressive discovery — the user never approved this tool.` },
+                error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it through progressive discovery - the user never approved this tool.` },
               }));
               return;
             }
             if (!undeclaredAlerted.has(msg.params.name)) {
               undeclaredAlerted.add(msg.params.name);
-              process.stderr.write(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} — not in tools/list, progressive-discovery surface; forwarded\n`);
+              process.stderr.write(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} - not in tools/list, progressive-discovery surface; forwarded\n`);
               logEvent({ kind: 'undeclared-tool', server: name, tool: msg.params.name, note: 'progressive-discovery surface' }, cwd);
             }
           }
@@ -248,7 +248,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
             callCounts.set(msg.params.name, n);
             if (n > cap) {
               if (mode === 'enforce') {
-                process.stderr.write(`[rugsnare] BUDGET EXCEEDED: ${name}/${msg.params.name} — cap ${cap} call(s) per session, this is #${n}. Blocked.\n`);
+                process.stderr.write(`[rugsnare] BUDGET EXCEEDED: ${name}/${msg.params.name} - cap ${cap} call(s) per session, this is #${n}. Blocked.\n`);
                 logEvent({ kind: 'budget-block', server: name, tool: msg.params.name, cap, call: n }, cwd);
                 clientRes.writeHead(200, { 'content-type': 'application/json' });
                 clientRes.end(JSON.stringify({
@@ -259,7 +259,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
               }
               if (!budgetAlerted.has(msg.params.name)) {
                 budgetAlerted.add(msg.params.name);
-                process.stderr.write(`[rugsnare] BUDGET EXCEEDED (observe): ${name}/${msg.params.name} past cap ${cap} — call #${n} forwarded; switch to enforce to block\n`);
+                process.stderr.write(`[rugsnare] BUDGET EXCEEDED (observe): ${name}/${msg.params.name} past cap ${cap} - call #${n} forwarded; switch to enforce to block\n`);
                 logEvent({ kind: 'budget-exceeded', server: name, tool: msg.params.name, cap, call: n }, cwd);
               }
             }
@@ -267,7 +267,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         }
 
         // Canary snapshot of the PLACEHOLDER args (P0 fix, review 28): taken
-        // BEFORE vault substitution — the corpus must never hold real secrets.
+        // BEFORE vault substitution - the corpus must never hold real secrets.
         // The stdio proxy does the same by capturing at the top of the branch.
         const canaryArgs = canary && msg.method === 'tools/call' && msg.params
           ? structuredClone(msg.params.arguments ?? null)
@@ -286,7 +286,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         const t0 = canary && msg.method === 'tools/call' ? Date.now() : 0;
         const response = await forward(msg);
 
-        // Vault redaction BEFORE canary capture and result inspection — and
+        // Vault redaction BEFORE canary capture and result inspection - and
         // errors are scrubbed too: a server echoing the secret in an error
         // message must not leak it into the corpus or the model (review 28, P1)
         if (vault && msg.method === 'tools/call') {
@@ -315,7 +315,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
 
         // Canary capture (opt-in): server identity from the handshake, and
         // every tools/call id-correlated with ITS response (same POST).
-        // args come from the pre-substitution snapshot — placeholders only.
+        // args come from the pre-substitution snapshot - placeholders only.
         if (canary) {
           if (msg.method === 'initialize' && response?.result?.serverInfo) {
             appendTrace({ kind: 'server-info', server: name, serverInfo: response.result.serverInfo }, cwd);
@@ -396,7 +396,7 @@ export function startHttpProxy(opts) {
     const { server } = createHttpProxy(opts);
     const onError = (e) => reject(new Error(
       e.code === 'EADDRINUSE'
-        ? `port ${port} is already in use — another RugSnare proxy (or app) holds it. Re-run wrap to pick a fresh port.`
+        ? `port ${port} is already in use - another RugSnare proxy (or app) holds it. Re-run wrap to pick a fresh port.`
         : String(e?.message ?? e)
     ));
     server.once('error', onError);

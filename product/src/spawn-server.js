@@ -2,11 +2,11 @@ import { execFile } from 'node:child_process';
 
 /**
  * The ONLY place RugSnare starts a process.
- * execFile(command, args) never involves a shell — no string is
+ * execFile(command, args) never involves a shell - no string is
  * ever interpreted as a command line. Args are validated to be
  * plain strings; anything else is refused. Commands originate
  * exclusively from the user's own MCP client config or the local
- * pin store — never from network or proxied tool-call traffic.
+ * pin store - never from network or proxied tool-call traffic.
  */
 
 export function spawnServer({ command, args = [], env = {}, cwd, onStdout, onStderr, onExit }) {

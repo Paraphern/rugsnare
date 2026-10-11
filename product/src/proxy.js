@@ -11,7 +11,7 @@ import { loadVault, substituteArgs, redactResult } from './vault.js';
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
- * and one stdio server. Process spawning is deliberately NOT done here —
+ * and one stdio server. Process spawning is deliberately NOT done here -
  * the proxy receives already-created stdio streams ({ stdin, stdout,
  * stderr, onExit }) from the caller. See `rugsnare run` in cli.js.
  *
@@ -36,7 +36,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
 
   // Undeclared tool detection (v1.0.x): tools that appear in tools/call but
   // were NEVER listed in tools/list. Progressive-discovery servers (Bitget,
-  // etc.) hide most of their surface behind discover()/meta-tools — the agent
+  // etc.) hide most of their surface behind discover()/meta-tools - the agent
   // calls tools the user never saw or approved. This catches that gap.
   // Activated only AFTER the first tools/list response (before that we don't
   // know what's declared, so we can't judge).
@@ -52,14 +52,14 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const callCounts = new Map(); // tool -> calls this session
   const budgetAlerted = new Set();
 
-  // Loop/stuck detector (advisory only — never blocks): N identical calls
+  // Loop/stuck detector (advisory only - never blocks): N identical calls
   // (same tool + same args fingerprint) in a row with no other tool between.
   const LOOP_THRESHOLD = Number.isInteger(config?.loopThreshold) ? config.loopThreshold : 5;
   let loopRun = { fingerprint: null, count: 0, alerted: false };
 
   // Secret vault (v0.7): placeholders go out, secrets come back scrubbed.
   // The model writes {{VAULT:name}}; logging/canary/policies all operate on
-  // the PLACEHOLDER form — only the bytes on the wire to the server change.
+  // the PLACEHOLDER form - only the bytes on the wire to the server change.
   const vault = loadVault(cwd);
   let lineToSend = null; // set when vault substitution rewrote the message
 
@@ -80,7 +80,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     try {
       msg = JSON.parse(line);
     } catch {
-      // Non-JSON line from the client (protocol noise) — forward untouched, same as server->client.
+      // Non-JSON line from the client (protocol noise) - forward untouched, same as server->client.
       // Not a proxy failure: don't pollute the event log with proxy-fail-open entries.
       logEvent({ kind: 'client-nonjson', server: name, len: line.length }, cwd);
       try {
@@ -107,15 +107,15 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         if (hasSeenToolsList && !declaredTools.has(msg.params.name)) {
           if (mode === 'enforce') {
             shouldForward = false;
-            writeErr(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} — never appeared in tools/list; the agent discovered it outside your approval. Blocked (enforce).`);
+            writeErr(`[rugsnare] UNDECLARED TOOL: ${name}/${msg.params.name} - never appeared in tools/list; the agent discovered it outside your approval. Blocked (enforce).`);
             logEvent({ kind: 'undeclared-tool-block', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
             writeOut(JSON.stringify({
               jsonrpc: '2.0', id: msg.id,
-              error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it only through progressive discovery — the user never approved this tool. Switch to observe mode or add it to the declared surface.` },
+              error: { code: -32603, message: `[RUGSNARE] Tool "${msg.params.name}" was never listed in tools/list. The server exposes it only through progressive discovery - the user never approved this tool. Switch to observe mode or add it to the declared surface.` },
             }));
           } else if (!undeclaredAlerted.has(msg.params.name)) {
             undeclaredAlerted.add(msg.params.name);
-            writeErr(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} — not in tools/list, agent discovered it via progressive discovery; forwarded, but this is outside your approval`);
+            writeErr(`[rugsnare] UNDECLARED TOOL (observe): ${name}/${msg.params.name} - not in tools/list, agent discovered it via progressive discovery; forwarded, but this is outside your approval`);
             logEvent({ kind: 'undeclared-tool', server: name, tool: msg.params.name, note: 'tool not in tools/list; progressive-discovery surface' }, cwd);
           }
         }
@@ -155,7 +155,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         if (!policyResult.allowed) {
           shouldForward = false;
           const reasons = policyResult.blocked.map((b) => b.reason).join('; ');
-          writeErr(`[rugsnare] POLICY BLOCK: ${name}/${msg.params.name} — ${reasons}`);
+          writeErr(`[rugsnare] POLICY BLOCK: ${name}/${msg.params.name} - ${reasons}`);
           logEvent({ kind: 'policy-block', server: name, tool: msg.params.name, blocked: policyResult.blocked, pii: policyResult.pii?.hits ?? [] }, cwd);
 
           // Send a JSON-RPC error response back to the client (don't leave it hanging)
@@ -172,7 +172,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           // In enforce mode, require-approval rules also block (human must approve)
           shouldForward = false;
           const reasons = policyResult.requiresApproval.map((r) => r.reason).join('; ');
-          writeErr(`[rugsnare] POLICY APPROVAL REQUIRED: ${name}/${msg.params.name} — ${reasons}`);
+          writeErr(`[rugsnare] POLICY APPROVAL REQUIRED: ${name}/${msg.params.name} - ${reasons}`);
           logEvent({ kind: 'policy-approval-required', server: name, tool: msg.params.name, rules: policyResult.requiresApproval }, cwd);
           const errorResponse = {
             jsonrpc: '2.0',
@@ -184,14 +184,14 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           };
           writeOut(JSON.stringify(errorResponse));
         } else if (policyResult.pii) {
-          // PII detected but no deny rule matched — log it
+          // PII detected but no deny rule matched - log it
           logEvent({ kind: 'pii-detected', server: name, tool: msg.params.name, hits: policyResult.pii.hits }, cwd);
         }
 
         // kill-switch: a disabled tool never runs, in ANY mode
         if (shouldForward && disabled.includes(msg.params.name)) {
           shouldForward = false;
-          writeErr(`[rugsnare] KILL-SWITCH: ${name}/${msg.params.name} is disabled in policies.json — call blocked`);
+          writeErr(`[rugsnare] KILL-SWITCH: ${name}/${msg.params.name} is disabled in policies.json - call blocked`);
           logEvent({ kind: 'kill-switch-block', server: name, tool: msg.params.name }, cwd);
           writeOut(JSON.stringify({
             jsonrpc: '2.0', id: msg.id,
@@ -207,7 +207,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           if (n > cap) {
             if (mode === 'enforce') {
               shouldForward = false;
-              writeErr(`[rugsnare] BUDGET EXCEEDED: ${name}/${msg.params.name} — cap ${cap} call(s) per session, this is #${n}. Blocked.`);
+              writeErr(`[rugsnare] BUDGET EXCEEDED: ${name}/${msg.params.name} - cap ${cap} call(s) per session, this is #${n}. Blocked.`);
               logEvent({ kind: 'budget-block', server: name, tool: msg.params.name, cap, call: n }, cwd);
               writeOut(JSON.stringify({
                 jsonrpc: '2.0', id: msg.id,
@@ -215,7 +215,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
               }));
             } else if (!budgetAlerted.has(msg.params.name)) {
               budgetAlerted.add(msg.params.name);
-              writeErr(`[rugsnare] BUDGET EXCEEDED (observe): ${name}/${msg.params.name} past cap ${cap} — call #${n} forwarded; switch to enforce to block`);
+              writeErr(`[rugsnare] BUDGET EXCEEDED (observe): ${name}/${msg.params.name} past cap ${cap} - call #${n} forwarded; switch to enforce to block`);
               logEvent({ kind: 'budget-exceeded', server: name, tool: msg.params.name, cap, call: n }, cwd);
             }
           }
@@ -276,7 +276,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
 
     // Vault redaction runs BEFORE canary capture and result inspection: the
     // corpus and the signals must see the placeholder form, and a server
-    // echoing a secret back — in a result OR an error message — must never
+    // echoing a secret back - in a result OR an error message - must never
     // reach the model in cleartext (review 28, P1: errors were not scrubbed).
     if (vault && msg?.id !== undefined && (msg.result || msg.error)) {
       if (msg.result) {
@@ -343,7 +343,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         const hash = toolHash(tool);
         const pin = serverPin.tools[tool.name];
         // annotation flip with an identical hash: text+schema unchanged, but the
-        // behavioral hints changed (e.g. readOnlyHint:true -> destructive) — still drift
+        // behavioral hints changed (e.g. readOnlyHint:true -> destructive) - still drift
         const annFlip = Boolean(pin) && pin.hash === hash && pin.annotations !== undefined && !annotationsEqual(pin.annotations, tool.annotations);
         return { tool, hash, pin, annFlip, status: !pin ? 'NEW' : pin.hash !== hash ? 'DRIFT' : annFlip ? 'DRIFT' : 'UNCHANGED' };
       });
@@ -416,7 +416,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   const onExit = (code) => {
     if (pinsDirty) savePins(pins, cwd);
     if (canary) {
-      // Calls that never got a response before the server died — record as
+      // Calls that never got a response before the server died - record as
       // ok:false, error:'no-response' so the corpus stays honest.
       for (const { tool, args, t0 } of pendingCalls.values()) {
         appendTrace({ kind: 'call-trace', server: name, tool, args, ok: false, error: 'no-response', truncated: false, ms: Date.now() - t0 }, cwd);

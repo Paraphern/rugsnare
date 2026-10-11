@@ -9,7 +9,7 @@ import { compareVersions } from './version.js';
 import { extractTgz } from './tarball.js';
 
 /**
- * rugsnare history <package> — scan the WHOLE published history of an npm
+ * rugsnare history <package> - scan the WHOLE published history of an npm
  * MCP server for silent contract changes.
  *
  * For each version: download the tarball straight from the registry (npm is
@@ -18,7 +18,7 @@ import { extractTgz } from './tarball.js';
  * hash every contract. Consecutive versions are then diffed pair by pair
  * with the same split-hash logic as `rugsnare diff`.
  *
- * This RUNS third-party code locally — the same code you would run by
+ * This RUNS third-party code locally - the same code you would run by
  * installing the package. Nothing is sent anywhere; everything happens in a
  * throwaway temp directory.
  */
@@ -71,7 +71,7 @@ export async function fetchRegistryVersions(name, { timeoutMs = 10000 } = {}) {
 async function extractVersion(tarballUrl, dir, { timeoutMs = 30000 } = {}) {
   const res = await fetchValidated(tarballUrl, 'registry.npmjs.org', timeoutMs);
   const files = extractTgz(Buffer.from(await res.arrayBuffer()));
-  // npm tarball members already carry the "package/" prefix — extract into
+  // npm tarball members already carry the "package/" prefix - extract into
   // the temp dir itself, every member guarded to stay inside it
   const root = path.resolve(dir);
   let wrote = 0;
@@ -123,7 +123,7 @@ function serverEntry(pkgDir) {
 /**
  * Install production deps of the extracted package WITHOUT running any
  * lifecycle script (--ignore-scripts). --legacy-peer-deps: we are a scanner,
- * not a production install — peer-conflicting real-world packages (common
+ * not a production install - peer-conflicting real-world packages (common
  * among Claude Code companions) must still be scannable. Command and
  * arguments are fully static literals; the only dynamic input is cwd
  * (a temp dir we created).
@@ -133,7 +133,7 @@ const NPM_INSTALL_ARGS = ['install', '--omit=dev', '--ignore-scripts', '--legacy
 /**
  * Stub env var NAMES for credential-gated servers (P3 followup, proven in
  * the field by the Oct 2026 audit): many MCP servers validate only the
- * PRESENCE of an API key at boot — a dummy marker value lets tools/list
+ * PRESENCE of an API key at boot - a dummy marker value lets tools/list
  * enumerate without any real credential. Var names only; the value is a
  * fixed non-secret marker string, not a credential.
  */
@@ -166,15 +166,18 @@ function installDeps(pkgDir) {
 }
 
 /** List the tool contracts of one version by actually running it. */
-export async function contractOfVersion(name, version, tarballUrl, { timeoutMs = 15000, stubEnv = false } = {}) {
+export async function contractOfVersion(name, version, tarballUrl, { timeoutMs = 15000, stubEnv = false, serverArgs = [] } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `rugsnare-hist-${version}-`));
   try {
     const pkgDir = await extractVersion(tarballUrl, dir);
     await installDeps(pkgDir);
     const entry = serverEntry(pkgDir);
+    // serverArgs: per-package launch arguments (e.g. LaunchDarkly needs
+    // "start --transport stdio --api-key <key>"). Passed as a fixed array
+    // after the entry point - no shell, no interpolation.
     const { tools } = await fetchTools({
       command: process.execPath,
-      args: [entry],
+      args: [entry, ...serverArgs],
       env: { ...process.env, RUGSNARE_HISTORY: version, ...(stubEnv ? buildStubEnv() : {}) },
       cwd: pkgDir,
       timeoutMs,
@@ -258,7 +261,7 @@ export function diffVersionContracts(older, newer) {
  * Full history scan. last N published versions (default 10). Versions that
  * fail to start are reported honestly, not silently skipped.
  */
-export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000, stubEnv = false, onProgress = () => {} } = {}) {
+export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000, stubEnv = false, serverArgs = [], onProgress = () => {} } = {}) {
   const { versions, dist, latest, time } = await fetchRegistryVersions(name);
   // --from/--to: inclusive semver window (surveys quote exact ranges);
   // falls back to the last N when no window is given
@@ -272,7 +275,7 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
   for (const v of chosen) {
     onProgress(`running ${v} ...`);
     try {
-      const c = await contractOfVersion(name, v, dist[v], { timeoutMs, stubEnv });
+      const c = await contractOfVersion(name, v, dist[v], { timeoutMs, stubEnv, serverArgs });
       ran.push(c);
     } catch (e) {
       unreachable.push({ version: v, reason: e.message });
@@ -282,7 +285,7 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
   const pairs = [];
   for (let i = 1; i < ran.length; i++) {
     const findings = diffVersionContracts(ran[i - 1], ran[i]);
-    // publish date of the NEWER version — when the change became live
+    // publish date of the NEWER version - when the change became live
     pairs.push({ from: ran[i - 1].version, to: ran[i].version, toPublishedAt: time[ran[i].version] ?? null, findings });
   }
 
@@ -294,7 +297,7 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
     unreachable,
     pairs,
     silentChanges,
-    // a scan where NOTHING could be started must never read as clean —
+    // a scan where NOTHING could be started must never read as clean -
     // "no data" is not "no changes" (review 34)
     clean: ran.length > 0 && silentChanges === 0,
   };

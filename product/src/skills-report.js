@@ -105,14 +105,14 @@ function auditSectionHTML(currentAudit) {
 <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin:8px 0">
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><b style="font-size:13px">⚠️ ${esc(f.key)}</b><span style="color:#64748b;font-size:11px">score ${f.score}</span></div>
   <ul style="margin:6px 0 0 16px;padding:0;color:#475569;font-size:12px">
-    ${f.signals.map((id) => `<li><b>${esc(id)}</b> — ${esc(SIGNAL_PHRASES[id] ?? 'risk signal')}</li>`).join('')}
+    ${f.signals.map((id) => `<li><b>${esc(id)}</b> - ${esc(SIGNAL_PHRASES[id] ?? 'risk signal')}</li>`).join('')}
   </ul>
 </div>`);
   const more = currentAudit.length > 10 ? `<div style="color:#64748b;font-size:12px;margin-top:6px">... and ${currentAudit.length - 10} more</div>` : '';
   return `
 <h2 style="font-size:20px;color:#0f172a;margin:24px 0 8px;border-bottom:2px solid #e5e7eb;padding-bottom:8px">🔎 Already on your machine</h2>
 <div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:12px;padding:14px;margin:14px 0">
-<p style="margin:0 0 8px;color:#92400e;font-size:13px">These patterns were in your skill files <b>before</b> the baseline was created — they are not update drift. Review them once; pinning alone would have blessed them silently.</p>
+<p style="margin:0 0 8px;color:#92400e;font-size:13px">These patterns were in your skill files <b>before</b> the baseline was created - they are not update drift. Review them once; pinning alone would have blessed them silently.</p>
 ${cards.join('')}${more}
 </div>`;
 }

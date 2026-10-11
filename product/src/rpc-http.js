@@ -18,7 +18,7 @@ const DEFAULT_TIMEOUT = 15000;
 
 /**
  * Resolve ${VAR} placeholders in URLs using environment variables.
- * ZCode and other platforms use ${ZCODE_BASE_URL}/path — we substitute from
+ * ZCode and other platforms use ${ZCODE_BASE_URL}/path - we substitute from
  * process.env, and from the config's own env block if provided.
  */
 function resolveUrl(url, extraEnv = {}) {
@@ -55,7 +55,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
       const sid = res.headers['mcp-session-id'];
 
       if (res.statusCode === 202) {
-        // Accepted (notification) — no body expected
+        // Accepted (notification) - no body expected
         res.resume();
         resolve({ accepted: true, sessionId: sid });
         return;
@@ -81,7 +81,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
               reject(new Error(`HTTP ${res.statusCode}: ${parsed.error.message}`));
               return;
             }
-          } catch { /* not JSON — fall through */ }
+          } catch { /* not JSON - fall through */ }
           reject(new Error(`HTTP ${res.statusCode}: ${err.slice(0, 200)}`));
         });
         res.on('close', () => {
@@ -124,7 +124,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
                   settle(resolve, { ...parsed, sessionId: sid });
                   return;
                 }
-              } catch { /* not JSON — skip line */ }
+              } catch { /* not JSON - skip line */ }
             }
             settle(reject, new Error('SSE response contained no matching data lines'));
           } else {
@@ -191,7 +191,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
     cursor = typeof r.nextCursor === 'string' && r.nextCursor ? r.nextCursor : undefined;
   } while (cursor !== undefined && ++pages < 100);
 
-  // 4. prompts/list (optional — not all servers support it)
+  // 4. prompts/list (optional - not all servers support it)
   let prompts = [];
   try {
     const pr = await httpRpc({
@@ -199,7 +199,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
       message: { jsonrpc: '2.0', id: 100, method: 'prompts/list', params: {} },
     });
     if (pr?.result?.prompts) prompts = pr.result.prompts;
-  } catch { /* not supported — fine */ }
+  } catch { /* not supported - fine */ }
 
   // 5. resources/list (optional)
   let resources = [];
@@ -209,7 +209,7 @@ export async function fetchToolsHttp({ url, headers = {}, timeoutMs = DEFAULT_TI
       message: { jsonrpc: '2.0', id: 101, method: 'resources/list', params: {} },
     });
     if (rr?.result?.resources) resources = rr.result.resources;
-  } catch { /* not supported — fine */ }
+  } catch { /* not supported - fine */ }
 
   return { tools, prompts, resources };
 }

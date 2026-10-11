@@ -1,7 +1,7 @@
 import zlib from 'node:zlib';
 
 /**
- * Minimal tar.gz (ustar + pax/GNU long-name) extractor — pure Node, zero
+ * Minimal tar.gz (ustar + pax/GNU long-name) extractor - pure Node, zero
  * dependencies (zlib is built in). Needed because system tar is not
  * portable: GNU tar on Windows interprets "C:\..." as a remote host.
  *
@@ -12,7 +12,7 @@ import zlib from 'node:zlib';
  */
 
 // members must NEVER be truncated here: the CLI extracts to disk and RUNS
-// the code — a cut-off bundle breaks the server (found on chrome-devtools-mcp,
+// the code - a cut-off bundle breaks the server (found on chrome-devtools-mcp,
 // whose third_party bundle exceeds the old 512KB cap). Only the TOTAL cap
 // guards against bombs.
 const MAX_MEMBER = 48 * 1024 * 1024;

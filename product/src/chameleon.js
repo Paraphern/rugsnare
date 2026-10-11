@@ -3,12 +3,12 @@ import { toolHash } from './hash.js';
 /**
  * Chameleon detection: some rogue MCP servers serve a CLEAN contract to
  * inspection tools and a POISONED one to real clients (or differ between
- * clients) — the per-client bait-and-switch popularized by MCP-Shield's
+ * clients) - the per-client bait-and-switch popularized by MCP-Shield's
  * --identify-as. `rugsnare scan --chameleon` re-lists tools identifying as
  * several real client names and compares every tool hash against the
  * baseline listing: any difference is a finding.
  *
- * Deterministic hash comparison, same discipline as pins — no heuristics.
+ * Deterministic hash comparison, same discipline as pins - no heuristics.
  */
 
 // Client names a rogue server might special-case. Same set of clients we

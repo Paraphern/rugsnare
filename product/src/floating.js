@@ -1,14 +1,14 @@
 /**
  * Floating-version advisory: warns when an MCP config references a package
- * without a version pin (or with @latest) — the #1 vector for silent rug
+ * without a version pin (or with @latest) - the #1 vector for silent rug
  * pulls, because `npx -y package` re-rolls the dice on every launch.
  *
- * Checked during `rugsnare scan` — the config is the contract's origin.
+ * Checked during `rugsnare scan` - the config is the contract's origin.
  */
 
 const FLOATING_PATTERNS = [
-  { test: /@latest\b/i, desc: 'explicitly pinned to @latest — re-rolls on every launch' },
-  { test: /@next\b/i, desc: 'pinned to @next (pre-release channel) — unstable by definition' },
+  { test: /@latest\b/i, desc: 'explicitly pinned to @latest - re-rolls on every launch' },
+  { test: /@next\b/i, desc: 'pinned to @next (pre-release channel) - unstable by definition' },
 ];
 
 /**
@@ -26,10 +26,10 @@ export function checkFloatingVersion({ command, args = [] }) {
       const hasLatest = args.some((a) => /@(latest|next)/i.test(a));
       if (hasLatest) {
         const pkg = args.find((a) => /@(latest|next)/i.test(a)) ?? '';
-        findings.push(`uses floating version: \`${pkg}\` — every launch downloads the newest code, the exact moment a rug pull strikes`);
+        findings.push(`uses floating version: \`${pkg}\` - every launch downloads the newest code, the exact moment a rug pull strikes`);
       } else {
         const pkg = args.find((a) => !a.startsWith('-')) ?? 'unknown';
-        findings.push(`no version pin on \`${pkg}\` — npx/uvx will silently use the latest version on every launch; pin it (\`pkg@1.2.3\`) or use rugsnare canary to test upgrades`);
+        findings.push(`no version pin on \`${pkg}\` - npx/uvx will silently use the latest version on every launch; pin it (\`pkg@1.2.3\`) or use rugsnare canary to test upgrades`);
       }
     }
   }
@@ -38,7 +38,7 @@ export function checkFloatingVersion({ command, args = [] }) {
   if (/\bdocker\b|\bpodman\b/.test(full)) {
     const hasTag = args.some((a) => /:\w/.test(a) && !a.startsWith('-'));
     if (!hasTag) {
-      findings.push('docker/podman without image tag — implicitly uses :latest, re-pulling on every run');
+      findings.push('docker/podman without image tag - implicitly uses :latest, re-pulling on every run');
     }
   }
 

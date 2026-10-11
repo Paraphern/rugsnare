@@ -51,6 +51,24 @@
       "pinned": "4.0.4",
       "entry": "node_modules/@upstash/context7-mcp/dist/index.js",
       "env": {}
+    },
+    {
+      "name": "sentry",
+      "package": "@sentry/mcp-server",
+      "pinned": "0.42.0",
+      "entry": "node_modules/@sentry/mcp-server/dist/index.js",
+      "args": ["--access-token=dummy_for_scan"],
+      "env": {},
+      "note": "repo moved to getsentry/toolkit; toolkit #1374 splits search_events into dataset-specific tools - when that ships to npm as 0.43+ every search_events caller breaks; watch for it"
+    },
+    {
+      "name": "launchdarkly",
+      "package": "@launchdarkly/mcp-server",
+      "pinned": "0.7.0",
+      "entry": "node_modules/@launchdarkly/mcp-server/bin/mcp-server.js",
+      "args": ["start", "--transport", "stdio", "--api-key", "dummy_for_scan"],
+      "env": {},
+      "note": "Speakeasy-generated from OpenAPI; release notes never enumerate tool changes (get-audit-log-entries appeared unannounced in 0.6.2, 2026-05-08)"
     }
   ]
 }

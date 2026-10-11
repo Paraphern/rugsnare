@@ -4,9 +4,9 @@ import crypto from 'node:crypto';
  * Pin prompts and resources in addition to tools.
  *
  * MCP servers expose three surfaces that carry agent-facing content:
- *  - tools/list       — instructions the agent obeys (already pinned in pins.js)
- *  - prompts/list     — prompt templates the agent injects into conversations
- *  - resources/list   — data/documents the agent reads
+ *  - tools/list       - instructions the agent obeys (already pinned in pins.js)
+ *  - prompts/list     - prompt templates the agent injects into conversations
+ *  - resources/list   - data/documents the agent reads
  *
  * A poisoned prompt template can steer the agent just as effectively as a
  * poisoned tool description. A poisoned resource can carry hidden instructions

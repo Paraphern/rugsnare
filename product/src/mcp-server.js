@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { loadPins, detectShadows } from './pins.js';
 import { readJsonFile } from './jsonfile.js';
 
-// version follows package.json — a stale hardcoded string here once lagged
+// version follows package.json - a stale hardcoded string here once lagged
 // three releases behind the published npm package
 const PKG_VERSION = (() => {
   try {
@@ -20,14 +20,14 @@ const PKG_VERSION = (() => {
  * RugSnare as an MCP server (marketplace distribution, stage 2). Read-only,
  * two tools, zero npm deps:
  *
- *   drift_feed_status — what the public RugSnare drift-feed currently sees:
+ *   drift_feed_status - what the public RugSnare drift-feed currently sees:
  *       versions and contract-change events of popular MCP servers. This is
  *       the ONLY outbound call this server ever makes, it fetches a fixed
  *       public URL (the rugsnare repo on GitHub raw), and it happens only
  *       when the agent explicitly calls the tool.
- *   pins_report — the local pin store of the project the agent is working in:
+ *   pins_report - the local pin store of the project the agent is working in:
  *       servers, approved/unapproved tools, cross-server shadow risks.
- *       Reads .rugsnare/pins.json — never writes, never sends anything.
+ *       Reads .rugsnare/pins.json - never writes, never sends anything.
  *
  * We are an anti-poisoning tool: our own tool descriptions stay factual,
  * short, and free of instructions to the agent. No spawning, no writes,
@@ -39,7 +39,7 @@ const DRIFT_FEED_URL = 'https://raw.githubusercontent.com/Paraphern/rugsnare/mai
 /**
  * Guard for the one outbound call this server makes: https only, and the host
  * must be public (never localhost/loopback/private/reserved). The URL is a
- * constant — the guard exists so that any future edit keeps the invariant.
+ * constant - the guard exists so that any future edit keeps the invariant.
  */
 function assertSafeUrl(url) {
   let u;
@@ -73,11 +73,11 @@ let driftCache = null; // fetched once per process, public data only
 function fetchDriftFeed(url = DRIFT_FEED_URL) {
   return new Promise((resolve) => {
     if (!assertSafeUrl(url)) return resolve(null);
-    // constant relative path — Node resolves it against process.cwd(); no dynamic segments
+    // constant relative path - Node resolves it against process.cwd(); no dynamic segments
     try {
       resolve(JSON.parse(fs.readFileSync('drift-feed/latest-snapshot.json', 'utf8')));
       return;
-    } catch { /* not run from the repo — fetch the public copy */ }
+    } catch { /* not run from the repo - fetch the public copy */ }
     if (driftCache) return resolve(driftCache);
     const req = https.get(url, { timeout: 10000 }, (res) => {
       if (res.statusCode !== 200) { res.resume(); return resolve(null); }
@@ -86,7 +86,7 @@ function fetchDriftFeed(url = DRIFT_FEED_URL) {
         body += c;
         if (body.length > 2 * 1024 * 1024) {
           req.destroy();
-          resolve(null); // destroy aborts 'end' — resolve HERE or the tool call hangs (obna 19, bug 5)
+          resolve(null); // destroy aborts 'end' - resolve HERE or the tool call hangs (obna 19, bug 5)
         }
       });
       res.on('end', () => {
@@ -132,7 +132,7 @@ export function runMcpServer({ stdin = process.stdin, stdout = process.stdout } 
   rl.on('line', (line) => {
     let msg;
     try { msg = JSON.parse(line); } catch { return; }
-    if (msg.id === undefined) return; // notification — nothing to answer
+    if (msg.id === undefined) return; // notification - nothing to answer
     const reply = (result) => stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, result }) + '\n');
     const replyErr = (message) => stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message } }) + '\n');
 

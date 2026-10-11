@@ -5,7 +5,7 @@ import net from 'node:net';
 import { readJsonFile } from './jsonfile.js';
 
 /**
- * `rugsnare wrap <server>` — insert the RugSnare proxy into a specific
+ * `rugsnare wrap <server>` - insert the RugSnare proxy into a specific
  * server's entry in the user's MCP config, so every tool call passes
  * through the integrity gate without manual editing. `unwrap` restores it.
  *
@@ -19,7 +19,7 @@ import { readJsonFile } from './jsonfile.js';
  * A free port is picked at wrap time and stored in the marker.
  *
  * The original entry is backed up on first wrap (`.bak`) and `unwrap`
- * restores it exactly. Only the specified server's entry changes —
+ * restores it exactly. Only the specified server's entry changes -
  * formatting and all other servers are preserved (JSON re-serialized,
  * key order preserved for the wrapped entry only).
  */
@@ -78,7 +78,7 @@ export async function wrapServer(serverName) {
 
   if (typeof entry.url === 'string') {
     // HTTP wrap: keep the entry HTTP, point it at the local proxy.
-    // The remote auth (headers/auth) moves into the marker — `run` reads it
+    // The remote auth (headers/auth) moves into the marker - `run` reads it
     // from there; sending it to localhost would be pointless (and noisy).
     const port = await findFreePort();
     const original = { url: entry.url };
@@ -87,13 +87,13 @@ export async function wrapServer(serverName) {
     entry[WRAP_MARKER] = original;
     delete entry.headers;
     delete entry.auth;
-    // entry.type stays: the entry is still an HTTP server — just a local one
+    // entry.type stays: the entry is still an HTTP server - just a local one
     entry.url = `http://127.0.0.1:${port}/mcp`;
     fs.writeFileSync(found.file, JSON.stringify(json, null, 2) + '\n');
     return {
       file: found.file, backup: bak, server: serverName, port,
       runCommand: `rugsnare run --name ${serverName} --url ${original.url} --port ${port}`,
-      note: 'Keep that command running — the config now points at the local proxy it starts.',
+      note: 'Keep that command running - the config now points at the local proxy it starts.',
     };
   }
 

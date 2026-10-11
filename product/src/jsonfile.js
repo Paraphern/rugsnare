@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 /**
- * Read and parse a JSON file, tolerating a UTF-8 BOM — common when configs
+ * Read and parse a JSON file, tolerating a UTF-8 BOM - common when configs
  * are saved by Windows editors (Notepad). JSON.parse chokes on \uFEFF.
  */
 export function readJsonFile(file) {

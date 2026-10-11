@@ -3,11 +3,11 @@ import { compareTools } from './pins.js';
 import { toolHash } from './hash.js';
 
 /**
- * Canary replay engine (Phase A, PR-2 — see extensions-verdict.md).
+ * Canary replay engine (Phase A, PR-2 - see extensions-verdict.md).
  *
  * Replays a corpus of recorded tool calls (`.rugsnare/canary/calls.jsonl`,
- * written by the proxy with `canaryRecord: true`) against a server command —
- * typically a NEWER version of the same server — and classifies every
+ * written by the proxy with `canaryRecord: true`) against a server command -
+ * typically a NEWER version of the same server - and classifies every
  * difference deterministically. No LLM, no network beyond the server process
  * itself, no heuristics that could cry wolf: a finding is either a structural
  * fact (schema changed, response shape changed, ok became error) or it is
@@ -39,7 +39,7 @@ export function shapesEqual(a, b) {
 //
 // Replaying a recorded corpus EXECUTES real tool calls against the target
 // server. Unconditional replay would re-run every write the agent ever made
-// (update_*, send_*, delete_*) on a possibly-live backend — unacceptable as
+// (update_*, send_*, delete_*) on a possibly-live backend - unacceptable as
 // a default. Policy (found by the niche analysis, 2026-10-01, and it was right):
 //   - read-like tool names replay freely (they did no harm the first time)
 //   - destructive names NEVER replay (unless named in --include explicitly)
@@ -74,7 +74,7 @@ export function classifyCallForReplay(toolName, { include = [], allCalls = false
  * Spawn the server (stdio) or open a Streamable HTTP session (url), run the
  * MCP handshake, then replay every corpus call.
  * Process spawning lives in spawn-server.js (the only place it is allowed).
- * Returns { serverInfo, tools, calls } — never throws on tool errors; a call
+ * Returns { serverInfo, tools, calls } - never throws on tool errors; a call
  * that errors or times out is DATA for the classifier, not a failure.
  */
 export function replayCorpus({ command, args = [], env = {}, cwd, url, corpus, timeoutMs = 15000, include = [], allCalls = false }) {
@@ -84,7 +84,7 @@ export function replayCorpus({ command, args = [], env = {}, cwd, url, corpus, t
     } else {
       import('./spawn-server.js')
         .then((m) => startWithStdio(m.spawnServer))
-        .catch(() => resolve({ error: 'spawn-server.js missing — see README "What\'s inside"' }));
+        .catch(() => resolve({ error: 'spawn-server.js missing - see README "What\'s inside"' }));
     }
 
     // ---- transport 1: stdio child process ----
@@ -187,7 +187,7 @@ export function replayCorpus({ command, args = [], env = {}, cwd, url, corpus, t
         for (const entry of corpus) {
           const verdict = classifyCallForReplay(entry.tool, { include, allCalls });
           if (verdict !== 'replay') {
-            // never sent to the server — recorded as skipped, reported loudly
+            // never sent to the server - recorded as skipped, reported loudly
             calls.push({ entry, live: null, skipped: verdict });
             continue;
           }
@@ -209,7 +209,7 @@ export function replayCorpus({ command, args = [], env = {}, cwd, url, corpus, t
 
 /**
  * Deterministic verdicts. BREAKING fails CI (exit 1); COSMETIC/NEW/FIXED are
- * reported but never fail — cosmetic text changes and new tools are not a
+ * reported but never fail - cosmetic text changes and new tools are not a
  * reason to block an upgrade.
  */
 export function classifyReplay({ serverPin, liveTools, replayCalls, maxMs = 0 }) {
@@ -237,7 +237,7 @@ export function classifyReplay({ serverPin, liveTools, replayCalls, maxMs = 0 })
       findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'write-class call not replayed (read-only default; pass --include <tool> or --all-calls against a sandbox)' });
       continue;
     }
-    if (entry.truncated) { findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'recorded entry was truncated — cannot compare' }); continue; }
+    if (entry.truncated) { findings.push({ severity: 'SKIPPED', where: 'call', tool: entry.tool, reason: 'recorded entry was truncated - cannot compare' }); continue; }
     if (!live) { findings.push({ severity: 'BREAKING', where: 'call', tool: entry.tool, reason: `no response: ${note ?? 'connection lost'}` }); continue; }
 
     // optional performance gate (a tool that got 10x slower broke the workflow too)
@@ -252,7 +252,7 @@ export function classifyReplay({ serverPin, liveTools, replayCalls, maxMs = 0 })
     else if (wasOk && isOk) {
       if (shapesEqual(entry.result, live.result)) ok += 1;
       else findings.push({ severity: 'BREAKING', where: 'call', tool: entry.tool, reason: 'response shape changed' });
-    } else ok += 1; // error before and after — no regression
+    } else ok += 1; // error before and after - no regression
   }
 
   const breaking = findings.filter((f) => f.severity === 'BREAKING').length;

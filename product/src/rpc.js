@@ -18,7 +18,7 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
     let buffer = '';
     let settled = false;
     const pending = new Map(); // id -> {resolve}
-    const timers = new Set(); // per-request timeout handles — all cleared at finish
+    const timers = new Set(); // per-request timeout handles - all cleared at finish
 
     const finish = (fn, value) => {
       if (settled) return;
@@ -49,7 +49,7 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
         try {
           msg = JSON.parse(line);
         } catch {
-          continue; // server noise on stdout — forward nothing, stay strict
+          continue; // server noise on stdout - forward nothing, stay strict
         }
         if (msg.id !== undefined && pending.has(msg.id)) {
           const { resolve: ok, timer: t } = pending.get(msg.id);
@@ -86,7 +86,7 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
       const init = await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: clientName, version: '1' } });
       if (init.error) throw new Error(`initialize failed: ${JSON.stringify(init.error)}`);
       send({ jsonrpc: '2.0', method: 'notifications/initialized' });
-      // tools/list may be paginated (nextCursor per the MCP spec) — a missing
+      // tools/list may be paginated (nextCursor per the MCP spec) - a missing
       // page would silently produce an incomplete baseline, so we follow the
       // cursor to the end (with a hard cap against malicious loops).
       const tools = [];
@@ -106,11 +106,11 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
       try {
         const pr = await request('prompts/list', {});
         if (pr?.result?.prompts) prompts = pr.result.prompts;
-      } catch { /* server doesn't support prompts — fine */ }
+      } catch { /* server doesn't support prompts - fine */ }
       try {
         const rr = await request('resources/list', {});
         if (rr?.result?.resources) resources = rr.result.resources;
-      } catch { /* server doesn't support resources — fine */ }
+      } catch { /* server doesn't support resources - fine */ }
 
       finish(resolve, { tools, prompts, resources });
     })().catch((err) => finish(reject, err));

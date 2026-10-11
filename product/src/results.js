@@ -2,14 +2,14 @@ import { scanToolDescription } from './advisory.js';
 
 /**
  * Result inspection: scan MCP tool RESPONSES for injection indicators.
- * The agent reads tool results just like tool descriptions — a poisoned
+ * The agent reads tool results just like tool descriptions - a poisoned
  * response can inject instructions that the model obeys (GhostSplice class:
  * split the payload across a description and a result so no single message
  * looks malicious).
  *
  * This runs inside the live proxy on every server->client response.
  * Advisory-only: we LOG and ALERT, we don't block (the result already
- * arrived — blocking would hide legitimate data).
+ * arrived - blocking would hide legitimate data).
  */
 
 const RESULT_SIGNALS = [

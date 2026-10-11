@@ -82,7 +82,7 @@ export function keccak256(input) {
   return out.toString('hex');
 }
 
-/** First 4 bytes of keccak256 of a signature, as 0x-prefixed hex — the Solidity function selector. */
+/** First 4 bytes of keccak256 of a signature, as 0x-prefixed hex - the Solidity function selector. */
 export function selector(signature) {
   return '0x' + keccak256(signature).slice(0, 8);
 }

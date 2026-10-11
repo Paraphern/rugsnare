@@ -92,14 +92,26 @@ function findingConsequence(f) {
   var DANGER = { bg: '#fef2f2', fg: '#b91c1c', icon: '⚠' };
   var WARN = { bg: '#fffbeb', fg: '#b45309', icon: 'ⓘ' };
   var INFO = { bg: '#f1f5f9', fg: '#64748b', icon: 'ⓘ' };
+  var BLUE = { bg: '#eff6ff', fg: '#2563eb', icon: 'ⓘ' };
   var was = String(f.oldDescription ?? '');
   var now = String(f.newDescription ?? '');
   var gone = function (re) { return re.test(was) && !re.test(now); };
   var came = function (re) { return re.test(now) && !re.test(was); };
 
-  if (f.status === 'NEW') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'A tool your agent can now call that did not exist in the previous version — nobody has reviewed or approved it yet.' };
-  if (f.status === 'REMOVED') return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'This tool disappeared. Workflows that rely on it will break — and a vanishing tool can also be cleanup after something grabbed its access.' };
-  if (f.driftType === 'BREAKING') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'The parameters changed (schema drift): calls that worked before may now fail — or silently behave differently.' };
+  if (f.status === 'NEW') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'A tool your agent can now call that did not exist in the previous version - nobody has reviewed or approved it yet.' };
+  if (f.status === 'REMOVED') return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'This tool disappeared. Workflows that rely on it will break - and a vanishing tool can also be cleanup after something grabbed its access.' };
+
+  // P4-P6 direction-aware grades
+  if (f.driftType === 'BREAKING') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'The parameters changed (schema drift): calls that worked before may now fail - or silently behave differently.' };
+  if (f.driftType === 'LOOSENED') return { bg: BLUE.bg, fg: BLUE.fg, icon: BLUE.icon, text: 'Validation loosened: constraints were dropped or removed. Still drift (exit 1), but a different failure mode - the server accepts things it used to reject.' };
+  if (f.driftType === 'EXPANDED') return { bg: BLUE.bg, fg: BLUE.fg, icon: BLUE.icon, text: 'Attack surface widened: a new optional parameter appeared. Backwards-compatible for callers, but a new data channel (e.g. "context") is a classic exfiltration vector.' };
+  if (f.driftType === 'ANNOTATION') return { bg: WARN.bg, fg: WARN.fg, icon: WARN.icon, text: 'Behavioral hints flipped: the tool now describes itself differently to the agent (e.g. it used to say readOnly, now it does not).' };
+
+  // guard-warning from schemaChanges
+  if (f.schemaChanges && f.schemaChanges.some) {
+    var guard = f.schemaChanges.find(function (c) { return c.guardWarning; });
+    if (guard) return { bg: DANGER.bg, fg: DANGER.fg, icon: DANGER.icon, text: guard.guardWarning };
+  }
 
   var lines = [];
   if (gone(/requires? confirmation|needs? (your )?approval|approval (is )?required|unless whitelisted|requires? review/i)) {

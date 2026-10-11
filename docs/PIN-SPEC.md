@@ -1,4 +1,4 @@
-# RugSnare Pin Format — Specification (DRAFT, v1)
+# RugSnare Pin Format - Specification (DRAFT, v1)
 
 > **Status: internal draft.** Do not link or announce externally until the
 > publication trigger fires (a client RFC or maintainer question about
@@ -65,7 +65,7 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 
 | Hash | Canonical input | Changes classified as |
 |---|---|---|
-| `hash` | `{ name, description, inputSchema }` — the full contract | any drift (the gate) |
+| `hash` | `{ name, description, inputSchema }` - the full contract | any drift (the gate) |
 | `schemaHash` | `inputSchema` only | BREAKING or NOTATION |
 | `proseHash` | `description` only | COSMETIC |
 
@@ -80,7 +80,7 @@ implementations):
    (`"` → `\"`, `\` → `\\`, control chars → `\uXXXX`).
 5. `undefined`/missing fields are **not** the same as `null`: `{ a: null }`
    hashes differently from `{ }`.
-6. `$schema` is preserved **as-is** (a dialect switch is a real change —
+6. `$schema` is preserved **as-is** (a dialect switch is a real change -
    graded NOTATION, not invisible).
 
 ## 4. Drift classification

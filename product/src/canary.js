@@ -3,14 +3,14 @@ import path from 'node:path';
 import { rugsnareDir } from './pins.js';
 
 /**
- * Canary trace capture (v0.4, PR-1 of the canary ladder — see extensions-verdict.md).
+ * Canary trace capture (v0.4, PR-1 of the canary ladder - see extensions-verdict.md).
  *
  * Records id-correlated tool calls that pass through the live proxy:
  *   { kind: 'call-trace', server, tool, args, ok, result?, error?, ms, ts }
  * plus the server identity sniffed from the initialize handshake:
  *   { kind: 'server-info', server, serverInfo, ts }
  *
- * Written to `.rugsnare/canary/calls.jsonl` — local file, append-only, never
+ * Written to `.rugsnare/canary/calls.jsonl` - local file, append-only, never
  * committed, never sent anywhere. Default OFF (`canaryRecord: true` to enable):
  * args and responses may contain user data, so recording them is an explicit
  * opt-in, same policy as `logCallArgs`.
