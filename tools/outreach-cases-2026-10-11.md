@@ -121,6 +121,9 @@ npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
 npm i @netlify/mcp@1.15.1
 npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
 #   8 [DRIFT] findings (all 8 router tools), exit 1
+#   (rugsnare 1.2.0 graded these NOTATION with empty decomposition; the recursive
+#    decomposer that landed after 1.2.0 grades all 8 LOOSENED with per-operation
+#    paths: 'selectSchema[get-deploy].params became optional')
 npm i @netlify/mcp@1.16.0
 npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
 #   9 [DRIFT] findings, all LOOSENED, exit 1, e.g.:
@@ -169,8 +172,9 @@ npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
 #       added maximum=1024 to 'limit' [tighten]
 #   [DRIFT] aggregate-db (BREAKING) d557c1e5 -> 749a99af
 #       added minItems=1 to 'pipeline' [tighten]
-#   [DRIFT] aggregate (NOTATION) ... (the $vectorSearch narrowing above lives 5 levels
-#   deep inside pipeline.items.anyOf - hash-caught, leaf shown by canonicalized diff)
+#   [DRIFT] aggregate (BREAKING) ... (verified with the recursive decomposer that
+#   landed after 1.2.0: 'pipeline[][0].$vectorSearch[0].numCandidates' number ->
+#   integer + max + exclusiveMinimum; on 1.2.0 the leaf shows via canonicalized diff)
 ```
 
 Suggestion: a changelog line separating the two classes ("schemas regenerated for dialect; input tightenings: integer typing + bounds on X, minItems on pipeline") would close this for everyone who pins. Happy to share the full decomposition of all 20 diffs.

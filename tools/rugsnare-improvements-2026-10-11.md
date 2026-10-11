@@ -127,6 +127,15 @@ Hosted-сервер и npm-пакет версионируются раздел�
 ## Новые рекомендации (по прогонам 1.2.0)
 
 - R21 (ГЛАВНАЯ): рекурсивная декомпозиция схем. Декомпозер классифицирует только constraint-ключи верхнего уровня (properties.X). Доказательства: (а) Netlify 1.15.1: properties.selectSchema.required потерял "params" (depth 2) - грейд NOTATION вместо LOOSENED, schemaChanges пустой при schemaChanged:true; (б) MongoDB 3.0.0: properties.pipeline.items.anyOf[0].properties.$vectorSearch.anyOf[*].properties.{numCandidates,limit} получили number -> integer + max (depth 5) - грейд NOTATION вместо BREAKING. Фикс: рекурсивный обход properties/items/anyOf/oneOf/allOf на любую глубину, сообщения с полным путём ("pipeline.$vectorSearch.numCandidates: number -> integer [tighten]"). Единственная находка, меняющая грейд реальных кейсов.
+  -> ЗАКРЫТО продукт-чатом (батч в дереве, 323/323, в CHANGELOG). ВЕРИФИЦИРОВАНО независимо 2026-10-12 из дерева:
+  Netlify 1.15.0->1.15.1 = 8 LOOSENED c путями ('selectSchema.params became optional', даже
+  'selectSchema[get-deploy].params' - с именем операции); MongoDB 2.1.2->3.0.0 = aggregate теперь BREAKING
+  с листом 'pipeline[][0].$vectorSearch[0].numCandidates number->integer + max + exclusiveMin';
+  итог Mongo 5 BREAKING + 15 NOTATION (было 4+16). Превзошло запрос: пути с именами операций.
+- R25: skills scan не видел канонический skills/ в корне репо (раскладка superpowers 297k звёзд).
+  -> ЗАКРЫТО (одна строка в SKILL_LOCATIONS, 323/323, в CHANGELOG). ВЕРИФИЦИРОВАНО 2026-10-12 на живом
+  superpowers v6.4.2->v7.0.0 БЕЗ обходного копирования: scan пинит прямо из skills/ (skills-dir/project/*),
+  diff = 6 находок (1 dangerous) одной командой, включая opencode/INSTALL.md бонусом.
 - R22: Windows-spawn конфигов. "command":"npx" -> spawn ENOENT; "command":"npx.cmd" -> spawn EINVAL (Node >= 18.20 требует shell для .cmd-файлов). Клиенты (Claude Desktop, Cursor) на Windows спавнят с shell - rugsnare нет. Фикс: на win32 spawn с shell:true или резолв npx через node + путь к npm cli. До фикса: llms-install.md должен советовать юзерам Windows писать command: node + прямой путь к cli.
 - R23: строгий парсинг флагов. (а) неизвестный флаг молча игнорируется (diff --pins <path> не ошибка, а "No pinned servers"); (б) scan --help НЕ печатает помощь, а запускает скан; (в) scan без --config молча свипает ВСЕ найденные конфиги машины (18 серверов, включая требующие auth). Фикс: unknown flag = ошибка; help = всегда печать; авто-discovery только по явному флагу.
 - R24: таймаут по умолчанию. 15с мало для холодного старта (Netlify dist не успел). --timeout 45000 решил. Предложение: дефолт 30-45с на scan.
