@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.paraphern/rugsnare",
+  "name": "io.github.Paraphern/rugsnare",
   "title": "RugSnare",
   "description": "Pin MCP tool contracts by sha-256; catch silent drift, rug pulls and bait-and-switch in CI.",
   "repository": {
