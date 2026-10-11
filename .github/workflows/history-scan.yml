@@ -106,7 +106,11 @@ jobs:
           '
           git add history
           SUMMARY=$(node -e 'const s=JSON.parse(require("node:fs").readFileSync("/tmp/scan.json","utf8"));if(s.error||(s.result&&s.result.error)){console.log("fail")}else{console.log(((s.result&&s.result.silentChanges)??(s.silentChanges??0))+"c/"+((s.result&&s.result.checked)??(s.checked??0))+"v")}' 2>/dev/null || echo "fail")
-          git commit -m "scan(history): ${PKG} [skip ci] — ${SUMMARY}" || echo "nothing to commit"
+          git commit -m "scan(history): ${PKG} [skip ci] - ${SUMMARY}" || echo "nothing to commit"
+          # re-fetch right before push: another scan may have committed to
+          # the scans branch between our initial fetch and now (race condition)
+          git fetch --depth=1 origin scans 2>/dev/null || true
+          git rebase FETCH_HEAD 2>/dev/null || true
           git push -u origin scans
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
