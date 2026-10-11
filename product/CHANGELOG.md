@@ -9,6 +9,15 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
 
 - **R21 Recursive schema traversal**: schemaDiff now recurses into
   `properties`, `items`, `anyOf`/`oneOf` at ANY depth, with the full path
+  in the message. Previously only top-level properties were compared -
+  changes at depth 2+ (Netlify `selectSchema.required`, MongoDB
+  `$vectorSearch` at depth 5) were invisible to direction grading.
+- **R25: canonical `skills/` directory**: `skills scan` now discovers
+  `skills/<name>/SKILL.md` at the repo root - the layout of the most
+  popular skills repos on GitHub (297k+ stars). Previously only
+  platform-specific directories (.claude/skills, .cursor/rules, etc.) were
+  scanned; repos using the canonical layout were invisible.
+  `properties`, `items`, `anyOf`/`oneOf` at ANY depth, with the full path
   in the message (e.g. `pipeline[][0].$vectorSearch.numCandidates`).
   Previously only top-level properties were compared - changes at depth 2+
   (Netlify `selectSchema.required`, MongoDB `$vectorSearch` at depth 5)

@@ -95,3 +95,14 @@ mcp-pin (Gautam) пока в своих каналах. Наш козырь в �
   (version не пинит контракт: per-UA поверхности со ссылкой на netlify PR #60 + серверный рантайм-гейтинг)
   + предложение фиксировать хэши контрактов при регистрации + rugsnare одним предложением.
   Ссылка на PR вендора как единственное доказательство; самоссылок-метрик нет.
+- 2026-10-12: teleport#61434 - ПРОВЕРЕНО И ОТВЕЧЕНО (issuecomment-6113969934). Проверка перед постом:
+  единственная TPA-issue, размечена (feature-request/identity-security/MCP), 0 комментов 11 мес,
+  дублей/реализаций нет, MCP-направление активно (десятки issue 2026), аудит уже пишет mcp.session.start/end,
+  контракты в аудит не попадают. Коммент: 90% дизайн (хэш контракта в tools/list -> 2 детекции бесплатно:
+  cross-session mutation + approval drift; cross-tool shadowing отдельным эвристическим слоем), rugsnare
+  одним предложением. Enterprise-тон, без метрик.
+- 2026-10-12: awesome-mcp-enterprise - САБМИТ ОТПРАВЛЕН (#159, форма Listing Proposal): Emerging,
+  Security & Governance, honest no-Main-claims, 8 evidence-ссылок (releases v0.4.0-v1.2.0, CI 320 тестов,
+  Apache-2.0, npm, docs/servers, MCP Registry, Marketplace). Дифференциатор: integrity-слой между
+  инспекцией конфигов и рантайм-песочницей. Ждём метку approved-for-pr -> потом PR (формат их CONTRIBUTING).
+  Конкурент mcp-drift-check в #151 ещё не размечен.

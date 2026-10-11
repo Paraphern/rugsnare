@@ -40,6 +40,9 @@ export const SKILL_LOCATIONS = [
   { app: 'claude-code', scope: 'user', pattern: '.claude/commands' },
   { app: 'claude-code', scope: 'project', pattern: '.claude/skills' },
   { app: 'claude-code', scope: 'project', pattern: '.claude/commands' },
+  // R25: canonical skills/ at repo root - the layout of the most popular
+  // skills repos on GitHub (anthropics/skills, 297k+ stars): skills/<name>/SKILL.md
+  { app: 'skills-dir', scope: 'project', pattern: 'skills' },
   // Cursor
   { app: 'cursor', scope: 'project', pattern: '.cursor/rules' },
   { app: 'cursor', scope: 'user', pattern: '.cursor/rules' },
