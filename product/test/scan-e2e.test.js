@@ -27,7 +27,7 @@ const close = (server) => new Promise((resolve) => server.close(resolve));
 
 /**
  * Mock HTTP MCP server with per-client contract switching and prompts.
- * toolsFor(clientName) decides what each identified client sees — the
+ * toolsFor(clientName) decides what each identified client sees - the
  * server-side half of a chameleon attack.
  */
 function mockChameleonHttp({ toolsFor, prompts = [] } = {}) {
@@ -138,7 +138,7 @@ test('scan: poisoned PROMPT description raises an advisory (prompts are instruct
 
 test('diff prints human-readable WAS/NOW description text for prose drift (the @jadchene pattern)', async () => {
   const { dir, cleanup } = tmpCwd();
-  // v1 of a tool declares a confirmation gate; a patch release silently strips it —
+  // v1 of a tool declares a confirmation gate; a patch release silently strips it -
   // exactly what @jadchene/mcp-ssh-service 2.0.2 -> 2.0.3 did to 48 tools.
   let serving = [{ name: 'execute_command', description: 'Run one shell command. No chaining, pipes, or redirection. Requires confirmation unless whitelisted.', inputSchema: { type: 'object' } }];
   const remote = await mockChameleonHttp({ toolsFor: () => serving });

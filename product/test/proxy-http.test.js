@@ -7,7 +7,7 @@ import path from 'node:path';
 import { createHttpProxy, startHttpProxy } from '../src/proxy-http.js';
 import { pinsPath } from '../src/pins.js';
 
-// Pins are persistent now — every test gets its own throwaway cwd so tests
+// Pins are persistent now - every test gets its own throwaway cwd so tests
 // never see each other's pins (and logEvent never touches the real project dir).
 const tmpDirs = [];
 function freshCwd() {
@@ -147,7 +147,7 @@ test('http proxy enforce: NEW unapproved tool quarantined on first sight', async
   }
 });
 
-test('http proxy: pins survive restart — UNCHANGED+approved passes enforce', async () => {
+test('http proxy: pins survive restart - UNCHANGED+approved passes enforce', async () => {
   const cwd = freshCwd();
   const remote = await mockRemoteServer();
   remote.state.tools = [TOOL_V1];
@@ -162,7 +162,7 @@ test('http proxy: pins survive restart — UNCHANGED+approved passes enforce', a
   onDisk.servers.t.tools.search.approved = true; // what `rugsnare approve t` does
   fs.writeFileSync(pinsPath(cwd), JSON.stringify(onDisk, null, 2) + '\n');
 
-  // Session 2: fresh proxy process, same cwd, ENFORCE — must honor the approval
+  // Session 2: fresh proxy process, same cwd, ENFORCE - must honor the approval
   const p2 = createHttpProxy({ name: 't', targetUrl: `http://127.0.0.1:${remote.port}`, mode: 'enforce', cwd });
   const port2 = await listen(p2);
   try {
@@ -278,7 +278,7 @@ test('startHttpProxy: pinned port already in use -> actionable error, not a cras
 
 // ---------------------------------------------------------------------------
 // Parity with the stdio proxy: call policies and the loop detector apply to
-// HTTP traffic too. A blocked call is answered locally — the remote NEVER
+// HTTP traffic too. A blocked call is answered locally - the remote NEVER
 // sees it (asserted via the mock's call log).
 // ---------------------------------------------------------------------------
 

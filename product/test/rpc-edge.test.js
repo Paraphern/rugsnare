@@ -45,7 +45,7 @@ test('edge: paginated tools/list (nextCursor) is followed to the last page', asy
   assert.deepEqual(
     tools.map((t) => t.name),
     ['page_one_a', 'page_one_b', 'page_two_a', 'page_two_b'],
-    'both pages must be collected — a missing page would silently weaken the baseline'
+    'both pages must be collected - a missing page would silently weaken the baseline'
   );
 });
 
@@ -64,7 +64,7 @@ test('edge: UTF-8 BOM in config files (Windows Notepad) does not break parsing',
     });
     assert.match(out, /pinned paged: 4 tool/, 'BOM-prefixed config must scan fine and see all paginated tools');
   } finally {
-    // Windows: freshly-killed children can hold dir handles — never fail the
+    // Windows: freshly-killed children can hold dir handles - never fail the
     // test on cleanup (the test verifies BOM parsing, not temp dir hygiene)
     try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 }); } catch { /* best-effort */ }
   }

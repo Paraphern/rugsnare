@@ -1,4 +1,4 @@
-// Edge-case fixture: a server that paginates tools/list via nextCursor —
+// Edge-case fixture: a server that paginates tools/list via nextCursor -
 // two pages of tools. fetchTools must follow the cursor and return all 4.
 import readline from 'node:readline';
 

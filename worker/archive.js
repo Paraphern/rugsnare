@@ -1,10 +1,10 @@
-// Public archive of runtime scans — the dedicated /scans page reads this.
+// Public archive of runtime scans - the dedicated /scans page reads this.
 //
 // Runtime scans commit their results to the public `scans` branch by
 // design, with the summary in the commit message ("359c/10v"). The archive
 // is therefore just that branch's commit log, paginated; expanding a row
 // lazily fetches the full result JSON. Static (instant) checks never
-// existed as records — runtime only, by design.
+// existed as records - runtime only, by design.
 
 import { parseScanCommit } from './history-core.js';
 import { guardFetch } from './outbound.js';

@@ -88,7 +88,7 @@ test('kill-switch (stdio): disabled tool blocked in BOTH modes and hidden in enf
   try {
     writePolicies(dir, { disabled: ['deploy'] });
     approveTool(dir);
-    // observe: call blocked even in observe — an operator kill-switch is not advisory
+    // observe: call blocked even in observe - an operator kill-switch is not advisory
     const obs = stdioHarness({ cwd: dir, mode: 'observe' });
     obs.call(1);
     assert.equal(obs.forwarded(), 0, 'kill-switch blocks in observe too');

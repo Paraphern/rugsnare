@@ -11,7 +11,7 @@ import { BIP39_COUNT } from '../src/bip39-words.js';
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
 
 // Fake credentials assembled by concatenation so no secret-shaped LITERAL sits
-// in this source file — secret scanners (GitHub push protection found the mongo
+// in this source file - secret scanners (GitHub push protection found the mongo
 // URI as a literal on 2026-10-04; CI, Mimosa, our own audit) must not trip on
 // the test fixtures themselves. Every value below is a documentation example,
 // not a real credential.
@@ -79,7 +79,7 @@ test('AUD04: 12-word BIP-39 seed phrase detected; ordinary prose is not', () => 
   const seed = 'abandon ability able about above absent absorb abstract absurd abuse access accident';
   const hits = of(scanText(`my backup: ${seed} keep safe`), 'AUD04');
   assert.equal(hits.length, 1);
-  // "keep safe" are BIP-39 words too — the run legitimately extends past 12
+  // "keep safe" are BIP-39 words too - the run legitimately extends past 12
   const wordCount = Number(hits[0].preview.match(/(\d+) consecutive/)[1]);
   assert.ok(wordCount >= 12, `run must be at least 12 words, got ${wordCount}`);
   // everyday English contains many BIP-39 words but not 12 IN A ROW
@@ -94,7 +94,7 @@ test('AUD04: 12-word BIP-39 seed phrase detected; ordinary prose is not', () => 
 
 test('AUD04: label words followed by a colon do NOT merge into the run (count and first word stay exact)', () => {
   const seed = 'abandon ability able about above absent absorb abstract absurd abuse access accident';
-  // "seed" and "card" are themselves BIP-39 words — as LABELS they must break,
+  // "seed" and "card" are themselves BIP-39 words - as LABELS they must break,
   // not inflate, the run (was: "14 words, starting card")
   const text = `notes:\nseed: ${seed}\ncard: 4111 1111 1111 1111`;
   const hits = of(scanText(text), 'AUD04');
@@ -103,7 +103,7 @@ test('AUD04: label words followed by a colon do NOT merge into the run (count an
   assert.equal(hits[0].location, 'line 2', 'attributed to the seed line, not the label line');
 });
 
-test('AUD05/AUD07: no double flag — email/phone inside a credential URL is not a separate finding', () => {
+test('AUD05/AUD07: no double flag - email/phone inside a credential URL is not a separate finding', () => {
   const findings = scanText(`connect: ${DB.pg}`);
   assert.equal(of(findings, 'AUD05').length, 1, 'the URL itself is one finding');
   assert.equal(of(findings, 'AUD07').length, 0, 'pass@db.internal inside the URL must not double as an email');
@@ -161,7 +161,7 @@ test('auditPath: directory walk, binary skip, counts', () => {
     const r = auditPath(dir);
     assert.equal(r.filesScanned, 4, '.bin counted but skipped');
     // AUD01 x2: the OpenAI key in chat.json AND the sk_live value inside the
-    // .env line (both ARE api keys — the env-line additionally fires AUD08)
+    // .env line (both ARE api keys - the env-line additionally fires AUD08)
     assert.equal(r.counts.AUD01, 2);
     assert.equal(r.counts.AUD03, 1);
     assert.equal(r.counts.AUD08, 1);

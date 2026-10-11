@@ -6,7 +6,7 @@
  * packages that expose MCP servers, records their tool/prompt/resource
  * contracts, and logs any changes since the previous snapshot to a public
  * JSONL feed. This creates a unique, verifiable record of how the MCP
- * ecosystem's contracts evolve — or quietly mutate.
+ * ecosystem's contracts evolve - or quietly mutate.
  *
  * Usage: node driftfeed.mjs [--servers servers.json] [--output feed-dir]
  */
@@ -126,7 +126,7 @@ async function main() {
       process.stderr.write(` done (${data.tools.length} tools, ${comparison.changes.length} changes)\n`);
     } catch (err) {
       process.stderr.write(` FAILED: ${err.message}\n`);
-      // A monitored package vanishing from npm is not a generic error — it is
+      // A monitored package vanishing from npm is not a generic error - it is
       // the postmark-mcp incident class (package unpublished / renamed). Feed
       // consumers must be able to alert on it specifically.
       const gone = /E404|not found|404/i.test(String(err.message));

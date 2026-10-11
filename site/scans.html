@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Runtime scan archive — RugSnare</title>
+<title>Runtime scan archive - RugSnare</title>
 <meta name="description" content="Every runtime MCP history scan ever run through RugSnare: each result actually started every published version in an ephemeral sandbox and links to its public run log.">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -26,7 +26,7 @@
   <div class="shell">
     <div class="sec-head">
       <h2>Runtime scan archive</h2>
-      <p>Every runtime scan ever run through this site, newest first. Each one downloaded every published version, actually started it in an ephemeral GitHub Actions sandbox, took its real tools/list, and diffed the contracts pair by pair. Every row links to the public run log — the evidence cannot be forged after the fact.</p>
+      <p>Every runtime scan ever run through this site, newest first. Each one downloaded every published version, actually started it in an ephemeral GitHub Actions sandbox, took its real tools/list, and diffed the contracts pair by pair. Every row links to the public run log - the evidence cannot be forged after the fact.</p>
     </div>
     <div id="scanArchive" style="max-width:860px">
       <div style="color:#64748b;font-size:13px">loading the archive...</div>
@@ -34,7 +34,7 @@
     <div style="margin:20px 0">
       <button id="archMore" class="btn btn-sm" type="button" onclick="loadArchivePage()" style="display:none">Load more</button>
     </div>
-    <p style="font-size:12px;color:#94a3b8;max-width:860px">Public by design: every scan is a commit in the open <a href="https://github.com/Paraphern/rugsnare/tree/scans" target="_blank" rel="noopener" style="color:#64748b">scans</a> branch of the repository. Nothing here is recorded about visitors — only the scans themselves exist. Run your own from the <a href="/#history" style="color:#64748b">home page</a>.</p>
+    <p style="font-size:12px;color:#94a3b8;max-width:860px">Public by design: every scan is a commit in the open <a href="https://github.com/Paraphern/rugsnare/tree/scans" target="_blank" rel="noopener" style="color:#64748b">scans</a> branch of the repository. Nothing here is recorded about visitors - only the scans themselves exist. Run your own from the <a href="/#history" style="color:#64748b">home page</a>.</p>
   </div>
 </section>
 
@@ -56,7 +56,7 @@ function loadArchivePage() {
       var host = document.getElementById('scanArchive');
       if (archPage === 1) host.innerHTML = '';
       if (!a.entries.length && archPage === 1) {
-        host.innerHTML = card('#eff6ff,#3b82f6', 'No runtime scans yet — <a href="/#history">run the first one</a>.');
+        host.innerHTML = card('#eff6ff,#3b82f6', 'No runtime scans yet - <a href="/#history">run the first one</a>.');
         return;
       }
       a.entries.forEach(function (e) {
@@ -64,9 +64,9 @@ function loadArchivePage() {
         var rowId = 'arch-' + (++archSeq);
         var verdict = '';
         if (e.failed) {
-          verdict = '<span style="color:#b45309;font-size:12px">⚠ scan failed — see the log</span>';
+          verdict = '<span style="color:#b45309;font-size:12px">⚠ scan failed - see the log</span>';
         } else if (e.silentChanges !== undefined && e.checked === 0) {
-          verdict = '<span style="color:#64748b;font-size:12px">⊘ no data — 0 of 0 versions could start</span>';
+          verdict = '<span style="color:#64748b;font-size:12px">⊘ no data - 0 of 0 versions could start</span>';
         } else if (e.silentChanges !== undefined) {
           verdict = (e.silentChanges === 0)
             ? '<span style="color:#059669;font-size:12px">✅ ' + e.silentChanges + ' changes / ' + e.checked + ' versions</span>'

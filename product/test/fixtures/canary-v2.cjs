@@ -1,4 +1,4 @@
-// Canary test fixture — VERSION 2 (the "rug upgrade").
+// Canary test fixture - VERSION 2 (the "rug upgrade").
 // Same server identity, but: search_events gains a required param (BREAKING
 // schema change), get_event description is reworded (COSMETIC) and its call
 // flips from ok to error (BREAKING behavior change). This is exactly what

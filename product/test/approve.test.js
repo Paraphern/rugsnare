@@ -12,7 +12,7 @@ const EDGE_PAGED = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixt
 
 // cmdApprove regression suite. Before the fix:
 // - HTTP-pinned servers could NOT be approved at all (stdio-only fetch),
-// - prompts/resources were never re-pinned — a drifted prompt hash could
+// - prompts/resources were never re-pinned - a drifted prompt hash could
 //   never be approved away, and prompts the server dropped ghosted as
 //   REMOVED on every future diff.
 
@@ -131,7 +131,7 @@ test('stdio approve still works (regression)', async () => {
 test('unpin: removes a departed server from the pin store; unknown name is exit 2', async () => {
   const { dir, cleanup } = tmpCwd();
   try {
-    // pin two servers, then one leaves the config — its pins must be removable
+    // pin two servers, then one leaves the config - its pins must be removable
     fs.writeFileSync(path.join(dir, 'mcp.json'), JSON.stringify({
       mcpServers: { paged: { command: 'node', args: [EDGE_PAGED] } },
     }, null, 2));

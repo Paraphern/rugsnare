@@ -144,7 +144,7 @@ test('malformed --header is a usage error, not a silent miss (exit 2)', async ()
 // ---------------------------------------------------------------------------
 // End-to-end of the HTTP wrap story: a config entry exactly as `rugsnare wrap`
 // produces it (localhost url + original remote/auth inside the marker), then
-// the REAL `rugsnare run --url --port` process serving the client — auth must
+// the REAL `rugsnare run --url --port` process serving the client - auth must
 // flow from the marker to the remote, tools must flow back through the gate.
 // ---------------------------------------------------------------------------
 

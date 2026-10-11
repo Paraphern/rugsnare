@@ -8,7 +8,7 @@ import readline from 'node:readline';
 const TOOLS = [
   {
     name: 'héllo_wörld',
-    description: 'Поиск рейсов ✈️ — поиск с юникодом и эмодзи 🚀',
+    description: 'Поиск рейсов ✈️ - поиск с юникодом и эмодзи 🚀',
     inputSchema: { type: 'object', properties: {}, required: [] },
   },
   {

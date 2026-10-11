@@ -50,7 +50,7 @@ test('parseTar: reads ustar members with sizes and names', () => {
 });
 
 test('extractTgz: big bundled members are NOT truncated (chrome-devtools-mcp regression)', async () => {
-  // 700KB member — above the old 512KB cap that silently corrupted bundles
+  // 700KB member - above the old 512KB cap that silently corrupted bundles
   const big = 'x'.repeat(700 * 1024);
   const entries = [
     { path: 'package/package.json', data: '{"name":"x"}' },
@@ -143,11 +143,11 @@ test('parseScanCommit: feed entries from scans-branch commits', () => {
   assert.equal(parseScanCommit({ commit: { message: 'scan(history): <img src=x onerror=1> [skip ci]' } }), null);
   assert.equal(parseScanCommit({ commit: { message: 'scan(history): ../etc/passwd [skip ci]' } }), null);
   // review 35: failed scans carry "fail" instead of a misleading 0c/0v
-  const failed = parseScanCommit({ commit: { message: 'scan(history): token-goat [skip ci] — fail', committer: { date: '2026-10-07T10:00:00Z' } } });
+  const failed = parseScanCommit({ commit: { message: 'scan(history): token-goat [skip ci] - fail', committer: { date: '2026-10-07T10:00:00Z' } } });
   assert.equal(failed.failed, true);
   assert.equal(failed.silentChanges, undefined);
   // and 0c/0v still parses with numbers
-  const nodata = parseScanCommit({ commit: { message: 'scan(history): some-pkg [skip ci] — 0c/10v' } });
+  const nodata = parseScanCommit({ commit: { message: 'scan(history): some-pkg [skip ci] - 0c/10v' } });
   assert.equal(nodata.silentChanges, 0);
   assert.equal(nodata.checked, 10);
 });
@@ -158,7 +158,7 @@ test('normalizePackageInput: strips npx-style runners and flags', () => {
   assert.equal(normalizePackageInput('uvx some-python-tool'), 'some-python-tool');
   assert.equal(normalizePackageInput('plain-name'), 'plain-name');
   assert.equal(normalizePackageInput('@scope/pkg'), '@scope/pkg');
-  // nothing usable left after flags — falls back to the original string
+  // nothing usable left after flags - falls back to the original string
   assert.equal(normalizePackageInput('npx -y'), 'npx -y');
 });
 

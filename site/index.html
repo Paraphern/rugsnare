@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RugSnare: runtime integrity for AI agents — pin MCP tool contracts, catch rug-pulls, audit your chats</title>
+<title>RugSnare: runtime integrity for AI agents - pin MCP tool contracts, catch rug-pulls, audit your chats</title>
 <meta name="description" content="RugSnare pins MCP tool contracts at approval, detects silent drift, quarantines mid-session swaps, audits AI chat exports for leaked secrets, and verifies releases on-chain. Zero npm dependencies, runs locally.">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -110,9 +110,9 @@
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
 <span class="l f">rugsnare diff: clean</span>
-<span class="l f cmt"># exit 0 — but if anything changed after approval:</span>
+<span class="l f cmt"># exit 0 - but if anything changed after approval:</span>
 <span class="l f cmt"># [DRIFT] search_code (BREAKING) → exit 1, build fails</span></pre>
-          <p>One line in CI. Any tool contract that changed since your last review fails the build. BREAKING vs COSMETIC split, SARIF output for code scanning. Pin the version — rugsnare's own floating-version check flags unpinned <code>npx</code> launches, so CI examples pin it too; <code>rugsnare doctor --check-update</code> tells you when a newer release exists.</p>
+          <p>One line in CI. Any tool contract that changed since your last review fails the build. BREAKING vs COSMETIC split, SARIF output for code scanning. Pin the version - rugsnare's own floating-version check flags unpinned <code>npx</code> launches, so CI examples pin it too; <code>rugsnare doctor --check-update</code> tells you when a newer release exists.</p>
         </div>
       </div>
       <div class="flow-row">
@@ -122,10 +122,10 @@
           <h3>Audit your AI chat exports</h3>
           <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> rugsnare audit --input ~/downloads/chat-export.json</span>
 <span class="l f">  chat-export.json:</span>
-<span class="l f">    [HIGH] AUD01 API key — Anthropic  @ $.m[3].c[0].t — sk-a…(33)</span>
-<span class="l f">    [HIGH] AUD04 crypto seed phrase   @ $.m[7].c[0].t — 12 words</span>
-<span class="l f">findings: AUD01:1  AUD04:1 — 2 HIGH</span>
-<span class="l f">audit: SECRETS PRESENT — rotate them before sharing this export</span></pre>
+<span class="l f">    [HIGH] AUD01 API key - Anthropic  @ $.m[3].c[0].t - sk-a…(33)</span>
+<span class="l f">    [HIGH] AUD04 crypto seed phrase   @ $.m[7].c[0].t - 12 words</span>
+<span class="l f">findings: AUD01:1  AUD04:1 - 2 HIGH</span>
+<span class="l f">audit: SECRETS PRESENT - rotate them before sharing this export</span></pre>
           <p>Scan chat exports, notes, and .env files for leaked secrets: API keys, private keys, Luhn-valid cards, BIP-39 seed phrases. Redacted output (first 4 chars), <code>--airgap</code> leaves no trace. Exit 1 = HIGH findings.</p>
         </div>
       </div>
@@ -172,7 +172,7 @@
   <div class="shell">
     <div class="sec-head">
       <h2>Has this MCP server ever rug-pulled? Run its whole history.</h2>
-      <p>Paste an npm package name (an npx line works too). We download every published version, actually start each one in an ephemeral sandbox, and diff the tool contracts your agent reads — descriptions, schemas, annotations. Every result links to its public run log as evidence. Takes 2-3 minutes.</p>
+      <p>Paste an npm package name (an npx line works too). We download every published version, actually start each one in an ephemeral sandbox, and diff the tool contracts your agent reads - descriptions, schemas, annotations. Every result links to its public run log as evidence. Takes 2-3 minutes.</p>
     </div>
     <div class="callout">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -249,8 +249,8 @@
       <div class="pledge"><b>Open source, Apache-2.0</b><p>Read it, audit it, fork it. The license assumes you might.</p></div>
       <div class="pledge"><b>Zero npm dependencies</b><p>Nothing to trust transitively. The supply chain under the supply-chain tool is empty by design.</p></div>
       <div class="pledge"><b>No telemetry</b><p>Runs locally. Nothing about your setup leaves your machine unless you export it yourself.</p></div>
-      <div class="pledge"><b>Independently verified</b><p>Four rounds of independent verification (2026-10-04): release artifacts, on-chain pins, Docker images, and test batteries — all byte-identical. Findings closed, reports published.</p></div>
-      <div class="pledge"><b>Stability contract</b><p>Exit codes, pins.json schema, signal IDs, and the vault placeholder syntax are frozen from 1.0.0 — see the <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener">changelog</a> for the full contract.</p></div>
+      <div class="pledge"><b>Independently verified</b><p>Four rounds of independent verification (2026-10-04): release artifacts, on-chain pins, Docker images, and test batteries - all byte-identical. Findings closed, reports published.</p></div>
+      <div class="pledge"><b>Stability contract</b><p>Exit codes, pins.json schema, signal IDs, and the vault placeholder syntax are frozen from 1.0.0 - see the <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener">changelog</a> for the full contract.</p></div>
     </div>
   </div>
 </section>
@@ -326,7 +326,7 @@ function runHistory() {
       var tries = 0;
       (function poll() {
         tries++;
-        if (tries > 60) { btn.disabled = false; status.textContent = ''; out.innerHTML = card('#fff7ed,#ea580c', 'Timed out waiting for the sandbox run — it may still finish; check the <a href="https://github.com/Paraphern/rugsnare/actions" target="_blank" rel="noopener">Actions log</a>.'); return; }
+        if (tries > 60) { btn.disabled = false; status.textContent = ''; out.innerHTML = card('#fff7ed,#ea580c', 'Timed out waiting for the sandbox run - it may still finish; check the <a href="https://github.com/Paraphern/rugsnare/actions" target="_blank" rel="noopener">Actions log</a>.'); return; }
         fetch('/api/history-result?package=' + encodeURIComponent(pkg), { cache: 'no-store' })
           .then(function (r) { return r.json(); })
           .then(function (res) {

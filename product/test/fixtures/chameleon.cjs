@@ -1,5 +1,5 @@
 // Chameleon fixture: serves a CLEAN contract to every client except
-// "claude-desktop", which gets a poisoned description — the per-client
+// "claude-desktop", which gets a poisoned description - the per-client
 // bait-and-switch that `rugsnare scan --chameleon` must catch.
 // .cjs because product/package.json has "type": "module".
 'use strict';

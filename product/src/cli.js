@@ -35,7 +35,7 @@ const HELP = `rugsnare - runtime integrity for MCP tool descriptions
 Usage:
   rugsnare init
   rugsnare scan [--config <mcp.json>] [--server <name>] [--chameleon] [--json]
-                                                         --chameleon: re-list tools as claude-desktop/cursor;
+                                                         --chameleon: re-list tools as claude-desktop/cursor/openai-mcp;
                                                          different contract per client = CHAMELEON, exit 1
                                                          --json: machine-readable baseline inventory
   rugsnare scan --server <name> --url <https://remote/mcp> [--header "Name: Value"]...
@@ -585,6 +585,22 @@ async function cmdDiff(flags) {
   }
   const verdict = driftCount === 0 && assertionFails === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s)${assertionFails > 0 ? `, ${assertionFails} assertion failure(s)` : ''})`;
   console.error(`rugsnare diff: ${verdict}${infraErrorCount > 0 ? ` (+${infraErrorCount} infra error(s))` : ''}`);
+  // version stamp: when someone pastes output into an issue, we know exactly
+  // which rugsnare produced it (prevents "stale binary" debugging sessions)
+  const { getVersion } = await import('./version.js');
+  console.error(`rugsnare ${getVersion()}`);
+  // R1/R9: pins-version mismatch warning - if the pins record a different
+  // package version than what's currently installed, the operator likely
+  // updated the package but forgot to re-scan
+  const { resolvePackageVersion } = await import('./pins.js');
+  for (const [name, sp] of Object.entries(loadPins().servers ?? {})) {
+    if (!sp.scannedAgainst || !sp.cmd?.args) continue;
+    const current = resolvePackageVersion(sp.cmd.args);
+    if (current && current !== sp.scannedAgainst) {
+      console.error(`[rugsnare] WARNING: pins were taken against ${sp.scannedAgainst}, current install is ${current}`);
+      console.error(`  If you just upgraded: re-scan first (rugsnare scan), then diff the NEXT upgrade.`);
+    }
+  }
   // Exit codes: 0=clean, 1=drift, 2=config error, 3=infrastructure error only (no drift detected)
   if (driftCount > 0 || assertionFails > 0) process.exit(1);
   if (infraErrorCount > 0) process.exit(3);
@@ -1062,6 +1078,9 @@ async function cmdHistory(flags) {
       ? '- NO DATA (nothing could be scanned)'
       : result.clean ? '- CLEAN' : '- SILENT CHANGES FOUND';
     console.log(`\nhistory: ${result.checked} version(s) checked, ${result.silentChanges} silent change(s) ${verdict}`);
+    // version stamp: see diff comment above
+    const { getVersion } = await import('./version.js');
+    console.log(`rugsnare ${getVersion()}`);
   }
   if (result.checked === 0) {
     console.error(`history: no version of ${result.package} could be scanned - "no data" is not "no changes" (exit 2)`);

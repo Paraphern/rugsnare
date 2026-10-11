@@ -36,7 +36,7 @@ test('shapesEqual: same shape different values passes; changed shape fails', () 
 
 function classify({ toolsFindings = [], replayCalls = [] }) {
   // wraps classifyReplay by stubbing compareTools via a real serverPin + liveTools is overkill here;
-  // call classifyReplay directly with pins mapping to toolsFindings is not possible — so we
+  // call classifyReplay directly with pins mapping to toolsFindings is not possible - so we
   // exercise the call-side rules with an empty pin set and hand-built replayCalls.
   const serverPin = { tools: {} };
   return classifyReplay({ serverPin, liveTools: [], replayCalls });

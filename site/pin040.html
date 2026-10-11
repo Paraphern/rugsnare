@@ -26,11 +26,11 @@ async function pin() {
   const btn = $('pin');
   try {
     btn.disabled = true;
-    if (!window.ethereum) throw new Error('MetaMask not found — open this page in the browser where MetaMask is installed');
+    if (!window.ethereum) throw new Error('MetaMask not found - open this page in the browser where MetaMask is installed');
     $('status').textContent = 'Requesting accounts…';
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     const from = accounts[0];
-    $('status').textContent = 'Account: ' + from + ' — switching to Base Sepolia…';
+    $('status').textContent = 'Account: ' + from + ' - switching to Base Sepolia…';
     try {
       await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_ID }] });
     } catch (e) {
@@ -42,7 +42,7 @@ async function pin() {
         }]});
       } else throw e;
     }
-    $('status').textContent = 'Sending transaction — confirm in MetaMask…';
+    $('status').textContent = 'Sending transaction - confirm in MetaMask…';
     const tx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: CONTRACT, value: '0x0', data: DATA }] });
     $('status').innerHTML = '<span class="ok">Pinned! Tx: <a href="https://sepolia.basescan.org/tx/' + tx + '" target="_blank" rel="noopener">' + tx.slice(0, 18) + '…</a></span><br>Tell the agent "запиннено".';
     btn.textContent = 'DONE ✔';

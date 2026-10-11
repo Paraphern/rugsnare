@@ -32,7 +32,7 @@ export async function handleHistoryRun(request, env) {
 
   let body = {};
   try { body = JSON.parse(await request.text()); } catch { body = {}; }
-  // users paste what their MCP config says ("npx -y server-name") — normalize first
+  // users paste what their MCP config says ("npx -y server-name") - normalize first
   const pkg = cleanPackageName(normalizePackageInput(body.package));
   if (!pkg) return jsonResponse({ error: 'pass a valid npm package name' }, 400);
 

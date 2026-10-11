@@ -21,39 +21,47 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
   attack surface widened (a new `context` param is a classic exfil vector).
   Same exit 1, same severity slot as BREAKING; the label just stops
   semver-literate reviewers from reading "breaking" on a non-breaking change.
-- **Guard-parameter removal warning** (P5): when a schema removes a guard
-  parameter (dry_run, confirm, force, safe_mode, preview, verify,
-  require_approval...), the diff adds a warning - agents trained on the old
-  contract still pass the parameter; servers that don't reject unknown keys
-  silently ignore it; the call executes for real when the agent asked for a
-  dry-run. Pattern list is extensible.
-- **Guard-warning refinements** (P6):
-  - guard-warning on parameter removal is now **conditional on
-    additionalProperties**: only shown when the new schema accepts unknown
-    keys (AP:true or absent). With AP:false the server loudly rejects the
-    old call - no silent-ignore warning needed.
-  - **default-flip detection**: schemaDiff now tracks default value changes
-    for ALL parameters (previously invisible - schemaHash changed but
-    schemaDiff returned [], grade=NOTATION). A guard parameter whose default
-    weakened (e.g. dry_run true-false) gets a guardWarning.
-  - **guard-param became optional**: when a guard parameter (confirm,
-    dry_run...) transitions from required to optional, a guardWarning
-    explains the agent may omit the confirmation.
+- **Guard-parameter warnings** (P5+P6): when a schema removes, defangs, or
+  flips the default of a guard parameter (dry_run, confirm, force,
+  safe_mode...), the diff adds a context-specific warning. Conditional on
+  additionalProperties (AP:false = loud failure, no silent-ignore warning).
+- **Constraint keys** (R3, from MongoDB field scans): schemaDiff now detects
+  minItems, maxItems, minimum, maximum, minLength, maxLength, pattern,
+  multipleOf, uniqueItems, exclusiveMinimum/Maximum, and number-integer
+  transitions. Previously invisible (NOTATION on real constraint changes).
+- **Default value tracking** (P6): schemaDiff compares default values for
+  all parameters (previously invisible - schemaHash changed but schemaDiff
+  returned [], grade=NOTATION).
 
 ### Scanner robustness
 
+- **Publish-time version ordering** (R10, playwright bug): history now
+  sorts versions by npm publish timestamp, not semver. Packages with two
+  versioning epochs (1.52.0-alpha from 2025 semver-older than 0.0.x from
+  2026) no longer produce phantom cross-epoch pairs.
+- **Rename inference** (R11, azure-devops flagship): GONE+NEW tool pairs
+  with identical schema+prose hashes collapse into `RENAMED a -> b` -
+  the azure case goes from 104 scattered lines to readable
+  "renamed: N, really-gone: M, new: K".
+- **Kill-switch classification** (R12, bybit case): unreachable versions
+  now carry a cause (KILLSWITCH / GATED / GIT_DEPS / CRASH / TIMEOUT)
+  based on stderr pattern matching - a remote kill-switch is visible as
+  a systematic finding, not a generic "exited early".
 - **`--server-args` flag for `rugsnare history`**: per-package launch
   arguments (e.g. LaunchDarkly needs `start --transport stdio`). Passed
   as a fixed array after the entry point - no shell, no interpolation.
 - **`--stub-env` flag for `rugsnare history`**: injects presence-only dummy
-  values for common credential env vars (CURRENTS_API_KEY, HOSTINGER_API_KEY,
-  AZURE_DEVOPS_EXT_PAT, PRIVATE_APP_ACCESS_TOKEN, CURRENTS_PROJECT_ID) -
-  servers that only check key presence at boot now enumerate their
-  tools/list. Proven in the field by the October 2026 top-npm audit:
-  @currents/mcp (previously unreachable) scans clean with the flag.
-- **Default value tracking**: schemaDiff now compares default values for all
-  parameters, closing a gap where default changes were invisible (schemaHash
-  changed, schemaDiff returned [], grade=NOTATION).
+  values for common credential env vars - servers that only check key
+  presence at boot now enumerate their tools/list.
+- **Version stamp in output**: `rugsnare diff` and `rugsnare history` print
+  the running rugsnare version in the footer (prevents stale-binary
+  debugging sessions when comparing outputs).
+- **Pins-version mismatch warning** (R1/R9): `rugsnare scan` records the
+  package version it scanned against; `rugsnare diff` warns when the pins
+  were taken against a different version than what's currently installed
+  ("if you just upgraded: re-scan first").
+- **openai-mcp added to --chameleon rotation** (R6): Netlify officially
+  serves 21 granular tools to openai-mcp vs 9 routers to other clients.
 
 ### Corpus and docs
 
@@ -64,7 +72,7 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
 - Open **Pin Format specification** drafted at `docs/PIN-SPEC.md` (internal;
   publication gated on ecosystem timing).
 - Em-dash cleanup: all long dashes replaced with short hyphens across
-  source files and documentation (GitHub outreach convention).
+  source files and documentation (575 replacements).
 
 ## [1.1.0] - 2026-10-07
 

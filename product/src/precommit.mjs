@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * RugSnare pre-commit hook — blocks commits when MCP tool contracts have drifted.
+ * RugSnare pre-commit hook - blocks commits when MCP tool contracts have drifted.
  * Installed by: rugsnare hook install
  */
 import { execFile } from 'node:child_process';
@@ -36,11 +36,11 @@ function findConfig() {
 
 async function main() {
   const pinsFile = path.join(CWD, '.rugsnare', 'pins.json');
-  if (!fs.existsSync(pinsFile)) process.exit(0); // no pins yet — nothing to check
+  if (!fs.existsSync(pinsFile)) process.exit(0); // no pins yet - nothing to check
 
   const config = findConfig();
   if (!config) {
-    console.error('[rugsnare] no MCP config found — set RUGSNARE_CONFIG or create .mcp.json. Skipping check.');
+    console.error('[rugsnare] no MCP config found - set RUGSNARE_CONFIG or create .mcp.json. Skipping check.');
     process.exit(0); // warn but don't block
   }
 
@@ -52,7 +52,7 @@ async function main() {
     if (output.includes('DRIFT DETECTED')) {
       console.error('');
       console.error('╔═══════════════════════════════════════════════════╗');
-      console.error('║  🪤 RugSnare: COMMIT BLOCKED — tool contract drift ║');
+      console.error('║  🪤 RugSnare: COMMIT BLOCKED - tool contract drift ║');
       console.error('╚═══════════════════════════════════════════════════╝');
       console.error('');
       for (const line of output.split('\n')) {
@@ -66,7 +66,7 @@ async function main() {
       console.error('');
       process.exit(1);
     }
-    console.error(`[rugsnare] warning: diff check failed (${err.message?.slice(0, 100)}) — not blocking`);
+    console.error(`[rugsnare] warning: diff check failed (${err.message?.slice(0, 100)}) - not blocking`);
     process.exit(0);
   }
 }

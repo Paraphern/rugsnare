@@ -1,4 +1,4 @@
-// Pure functions for the static history scan — no Node APIs, runs in a
+// Pure functions for the static history scan - no Node APIs, runs in a
 // Cloudflare Worker. Shared logic mirrors product/src/{tarball,history}.js
 // but stays dependency-free and Workers-compatible (DecompressionStream for
 // gzip lives in index.js; this file only sees raw tar bytes).
@@ -46,9 +46,9 @@ export function parseTar(u8) {
 /**
  * Statically extract { toolName -> description } pairs from dist sources.
  * Catches the dominant pattern (name: 'x', ... description: 'y' literals in
- * server bundles — built JS or TypeScript sources alike). This is
+ * server bundles - built JS or TypeScript sources alike). This is
  * deliberately labeled static: tools assembled at runtime are invisible to
- * it — the CLI (`rugsnare history`) covers those by actually running every
+ * it - the CLI (`rugsnare history`) covers those by actually running every
  * version.
  */
 export function extractContracts(files) {
@@ -164,7 +164,7 @@ export function validPackageName(s) {
 /**
  * People paste what their MCP config says: "npx -y kubectl-mcp-server".
  * Strip the runner command (npx/uvx/bunx/...) and its leading flags, and
- * hand back the first non-flag token — a bare (or scoped) package name.
+ * hand back the first non-flag token - a bare (or scoped) package name.
  */
 export function normalizePackageInput(input) {
   const runners = new Set(['npx', 'npm', 'pnpm', 'yarn', 'bunx', 'bun', 'deno', 'uvx', 'pipx', 'dlx']);
@@ -188,14 +188,14 @@ export function packageSlug(pkg) {
 
 /**
  * Parse one commit from the `scans` branch into an archive entry.
- * Messages: "scan(history): <pkg> [skip ci] — 359c/10v" (summary),
- * "scan(history): <pkg> [skip ci] — fail" (scan could not run), or the old
+ * Messages: "scan(history): <pkg> [skip ci] - 359c/10v" (summary),
+ * "scan(history): <pkg> [skip ci] - fail" (scan could not run), or the old
  * suffix-less form. Returns null when the "package" is not whitelist-shaped
- * — the value renders on the page.
+ * - the value renders on the page.
  */
 export function parseScanCommit(commit) {
   const message = commit?.commit?.message ?? '';
-  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+—\s+(?:(\d+)c\/(\d+)v|(fail)))?/);
+  const m = message.match(/^scan\(history\): (\S+) \[skip ci\](?:\s+-\s+(?:(\d+)c\/(\d+)v|(fail)))?/);
   if (!m || !validPackageName(m[1])) return null;
   return {
     package: m[1],

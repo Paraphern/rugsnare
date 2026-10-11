@@ -1,5 +1,5 @@
 // Edge-case fixture: a server that answers initialize but never answers
-// tools/list — RugSnare's RPC timeout must reject cleanly.
+// tools/list - RugSnare's RPC timeout must reject cleanly.
 'use strict';
 import readline from 'node:readline';
 const rl = readline.createInterface({ input: process.stdin });

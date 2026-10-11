@@ -1,4 +1,4 @@
-// Canary test fixture — VERSION 1 (benign baseline).
+// Canary test fixture - VERSION 1 (benign baseline).
 // A minimal stdio MCP server: initialize, tools/list, tools/call.
 // .cjs because product/package.json has "type": "module".
 'use strict';
@@ -30,7 +30,7 @@ rl.on('line', (line) => {
     if (result) process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, result }) + '\n');
     else process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32602, message: `unknown tool: ${msg.params.name}` } }) + '\n');
   } else {
-    // prompts/list, resources/list, anything else: answer, never stay silent —
+    // prompts/list, resources/list, anything else: answer, never stay silent -
     // a silent server reads as a hang to any client including rpc.js
     process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32601, message: `method not found: ${msg.method}` } }) + '\n');
   }

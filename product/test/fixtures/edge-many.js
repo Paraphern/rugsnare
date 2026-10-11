@@ -1,4 +1,4 @@
-// Edge-case fixture: a server exposing 120 generated tools — scale sanity
+// Edge-case fixture: a server exposing 120 generated tools - scale sanity
 // for hashing, pinning, and diffing.
 'use strict';
 import readline from 'node:readline';

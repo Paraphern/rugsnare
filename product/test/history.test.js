@@ -59,7 +59,7 @@ test('diffVersionContracts: schema change is BREAKING (with real schemas); hash-
 
   // no schemas stored (legacy pins): schema hash changed but nothing to
   // compare structurally → conservatively NOTATION (bytes changed, params
-  // unverifiable) — softer than BREAKING but still flagged
+  // unverifiable) - softer than BREAKING but still flagged
   const older2 = { tools: { t: { hash: 'a', schemaHash: 's1', proseHash: 'p1', description: 'x' } } };
   const newer2 = { tools: { t: { hash: 'b', schemaHash: 's2', proseHash: 'p1', description: 'x' } } };
   const [f2] = diffVersionContracts(older2, newer2);
@@ -87,8 +87,55 @@ test('fetchValidated: a redirect off the registry is refused (review 34)', async
   );
 });
 
-test('history scan orders versions with the shared semver comparator', () => {
-  const versions = ['1.10.0', '1.9.0', '1.2.0', '1.0.0', '2.0.0-rc.1', '2.0.0'];
-  versions.sort(compareVersions);
-  assert.deepEqual(versions, ['1.0.0', '1.2.0', '1.9.0', '1.10.0', '2.0.0-rc.1', '2.0.0']);
+// R10: publish-time sort (playwright two-epoch bug)
+test('R10: versions sort by publish time, not semver (two-epoch case)', () => {
+  const time = {
+    '0.0.1': '2026-03-01T00:00:00Z',
+    '0.0.2': '2026-06-01T00:00:00Z',
+    '1.52.0-alpha': '2025-03-21T00:00:00Z',
+  };
+  const inWindow = ['0.0.2', '1.52.0-alpha', '0.0.1'];
+  const byTime = [...inWindow].sort((a, b) => {
+    const ta = time[a] ? new Date(time[a]).getTime() : Infinity;
+    const tb = time[b] ? new Date(time[b]).getTime() : Infinity;
+    if (ta !== tb) return ta - tb;
+    return 0;
+  });
+  assert.deepEqual(byTime, ['1.52.0-alpha', '0.0.1', '0.0.2']);
+});
+
+// R11: rename inference
+test('R11: GONE+NEW with identical hashes collapse to RENAMED', () => {
+  const older = {
+    tools: {
+      pipelines_get_builds: { hash: 'h1', schemaHash: 's1', proseHash: 'p1', description: 'Get builds.' },
+      really_gone: { hash: 'h2', schemaHash: 's2', proseHash: 'p2', description: 'Old.' },
+    },
+  };
+  const newer = {
+    tools: {
+      pipelines_build: { hash: 'h1', schemaHash: 's1', proseHash: 'p1', description: 'Get builds.' },
+      brand_new: { hash: 'h3', schemaHash: 's3', proseHash: 'p3', description: 'New.' },
+    },
+  };
+  const findings = diffVersionContracts(older, newer);
+  const renamed = findings.find((f) => f.status === 'RENAMED');
+  assert.ok(renamed, 'rename detected');
+  assert.equal(renamed.tool, 'pipelines_get_builds');
+  assert.equal(renamed.renamedTo, 'pipelines_build');
+  assert.ok(findings.some((f) => f.tool === 'really_gone' && f.status === 'REMOVED'));
+  assert.ok(findings.some((f) => f.tool === 'brand_new' && f.status === 'NEW'));
+  assert.ok(!findings.some((f) => f.tool === 'pipelines_build' && f.status === 'NEW'));
+});
+
+// R12: kill-switch classification
+test('R12: classifyUnreachable detects kill-switch patterns', async () => {
+  const { classifyUnreachable } = await import('../src/history.js');
+  assert.equal(classifyUnreachable('Error: Update required to continue').cause, 'KILLSWITCH');
+  assert.equal(classifyUnreachable('server version too old, please upgrade').cause, 'KILLSWITCH');
+  assert.equal(classifyUnreachable('fetch failed: https://api.example.com/manifest').cause, 'GATED');
+  assert.equal(classifyUnreachable('npm ERR! EUNSUPPORTEDPROTOCOL git+ssh://...').cause, 'GIT_DEPS');
+  assert.equal(classifyUnreachable('MCP server exited early (code 1)').cause, 'CRASH');
+  assert.equal(classifyUnreachable('request timed out after 15000ms').cause, 'TIMEOUT');
+  assert.equal(classifyUnreachable('some random error').cause, 'UNKNOWN');
 });

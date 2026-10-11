@@ -11,7 +11,7 @@ import { readEvents } from '../src/events.js';
 
 // Undeclared tool detection (v1.0.x): tools that appear in tools/call but were
 // NEVER listed in tools/list. Progressive-discovery servers hide their real
-// surface behind discover()/meta-tools — the agent calls tools the user never
+// surface behind discover()/meta-tools - the agent calls tools the user never
 // saw or approved. The proxy catches this gap.
 
 function tmpCwd() {
@@ -48,8 +48,8 @@ test('stdio observe: undeclared tool alerts once, declared tool is silent', () =
 
     // Agent calls a tool that was never in tools/list
     h.call(1, 'withdraw');
-    h.call(2, 'withdraw'); // second call — should NOT re-alert
-    h.call(3, 'transfer_funds'); // different undeclared tool — SHOULD alert
+    h.call(2, 'withdraw'); // second call - should NOT re-alert
+    h.call(3, 'transfer_funds'); // different undeclared tool - SHOULD alert
 
     const errors = h.err.join('\n');
     const undeclaredCount = (errors.match(/UNDECLARED TOOL/g) ?? []).length;
@@ -58,7 +58,7 @@ test('stdio observe: undeclared tool alerts once, declared tool is silent', () =
     assert.ok(errors.includes('transfer_funds'), 'transfer_funds flagged');
     assert.ok(errors.includes('progressive'), 'message explains progressive discovery');
 
-    // Agent calls a DECLARED tool — no alert
+    // Agent calls a DECLARED tool - no alert
     h.call(4, 'discover');
     assert.equal((h.err.join('\n').match(/UNDECLARED/g) ?? []).length, 2, 'declared tool does not trigger');
     assert.ok(h.serverSide.join('').includes('discover'), 'declared tool forwarded');

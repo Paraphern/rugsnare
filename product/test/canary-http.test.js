@@ -11,7 +11,7 @@ import { replayCorpus } from '../src/canary-replay.js';
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
 
 // Canary over HTTP: record through the HTTP reverse proxy, replay against a
-// remote endpoint. Same corpus format as stdio — the replay engine's transport
+// remote endpoint. Same corpus format as stdio - the replay engine's transport
 // is the only thing that changed.
 
 function tmpCwd() {
@@ -88,7 +88,7 @@ test('canary record over HTTP: client calls land in calls.jsonl with results', a
     assert.equal(call.result.content[0].text, '3 rows');
 
     const tracesFile = path.join(dir, '.rugsnare', 'canary', 'calls.jsonl');
-    // appendTrace writes synchronously — after the response reached the
+    // appendTrace writes synchronously - after the response reached the
     // client, the trace must already be on disk
     const traces = fs.readFileSync(tracesFile, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
     const info = traces.find((t) => t.kind === 'server-info');

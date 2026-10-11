@@ -39,7 +39,7 @@ function mockRemoteEcho() {
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(JSON.stringify({ jsonrpc: '2.0', id: msg.id, result: { protocolVersion: '2025-06-18', capabilities: {}, serverInfo: { name: 'm', version: '1' } } }));
       } else if (msg.method === 'tools/call') {
-        // echo the AUTH TOKEN BACK in an ERROR message — covers P1-1 too
+        // echo the AUTH TOKEN BACK in an ERROR message - covers P1-1 too
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: `auth failed for token ${msg.params.arguments.token}` } }));
       } else {

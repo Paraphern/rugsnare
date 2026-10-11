@@ -40,7 +40,7 @@ function cli(cwd, args) {
 }
 
 // regression (review 32, P0): skills commands crashed with "os is not defined"
-// whenever RUGSNARE_TEST_HOME was unset — i.e. for every real user. The helper
+// whenever RUGSNARE_TEST_HOME was unset - i.e. for every real user. The helper
 // above masked it by always setting the env var; this variant never sets it.
 function cliNoHomeEnv(cwd, args) {
   return new Promise((resolve) => {
@@ -140,10 +140,10 @@ test('diffLines and classifySeverity', () => {
   assert.ok(removed.includes('b'));
   assert.equal(classifySeverity({ added: ['send .env'] }), 'DANGEROUS');
   assert.equal(classifySeverity({ added: [] }), 'SAFE');
-  // review 32: pure deletions are never SAFE — silently removed safety
+  // review 32: pure deletions are never SAFE - silently removed safety
   // language (the @jadchene "Requires confirmation" strip) must read REVIEW
   assert.equal(classifySeverity({ added: [], removed: ['Requires confirmation unless whitelisted.'] }), 'REVIEW');
-  // review 32: bare "token" is LLM prose, not a credential — must stay quiet
+  // review 32: bare "token" is LLM prose, not a credential - must stay quiet
   assert.equal(classifySeverity({ added: ['count the tokens in the response'] }), 'REVIEW');
   assert.equal(classifySeverity({ added: ['pass the auth_token to the caller'] }), 'DANGEROUS');
 });
@@ -171,7 +171,7 @@ test('cold-start audit flags a skill poisoned BEFORE the baseline (TOFU answer)'
     const f = findings[0];
     assert.ok(f.score >= 5, `score must reach the advisory threshold, got ${f.score}`);
     assert.ok(f.signals.includes('A02') || f.signals.includes('A10') || f.signals.includes('A11'), `expected credential/exfil signals, got ${f.signals}`);
-    // and the drift diff against its own pin stays CLEAN — the audit is the
+    // and the drift diff against its own pin stays CLEAN - the audit is the
     // only layer that can see pre-existing poison
     const pins = {};
     pinAllSkills(pins, dir, dir);

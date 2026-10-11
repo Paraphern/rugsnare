@@ -11,6 +11,60 @@ not lost. (Public on purpose - this is a roadmap, not a secret.)
   step that refuses `go build` when `git status` is dirty, or always build
   from the tag checkout.
 
+## Router-union diff (R2, R5, R4 - from field scans, 2026-10-11)
+
+These three are related: they all concern const-discriminated unions
+(anyOf/oneOf with `operation.const` discriminators), which Netlify,
+LaunchDarkly, and others use as their primary schema pattern.
+
+- **R2 OPERATIONS-CHANGED**: detect const-discriminated unions in
+  inputSchema and report "branch added: get-team-env-vars" / "branch moved:
+  initialize-database (updater -> reader)" instead of raw BREAKING. This
+  is the vendor's language and makes the flagship case one line of output.
+- **R5 nested required**: schemaDiff currently only checks top-level
+  `required`. When required changes INSIDE a union branch (e.g.
+  `required:["operation","params"]` -> `required:["operation"]`), the
+  semantics ("params became optional" = LOOSENED) are invisible.
+- **R4 anyOf <-> oneOr with same branches**: MongoDB changed items.anyOf
+  to items.oneOf with identical branches. Detect the key swap, compare
+  branch content, and grade as NOTATION if branches are identical.
+  Fixture: corpus/06 (planned).
+
+## Resource/prompt content pinning (R13, from hostinger field scans)
+
+- Currently `resources/read` and `prompts/get` CONTENT is not pinned (only
+  the envelope from list calls). A vendor can silently change the TEXT of
+  a SKILL.md resource while keeping the same URI - the pin doesn't move.
+  Fix: sha-256 the content of text/* resources (with a size cap) and prompt
+  templates, optionally opt-in. This is exactly our threat model.
+
+## outputSchema pinning (R14, from github-mcp-server field scans)
+
+- GitHub's 123/131 tool changes were ALL outputSchema additions (Go SDK
+  artifact). We don't pin outputSchema at all - this is the static half of
+  response-shape. Fix: pin outputSchema with a separate hash, grade
+  additions as NOTATION (SDK waves) vs real output narrowings.
+
+## History UX (R15, R16, R17 - lower priority)
+
+- **R15 error taxonomy**: expo showed 9/10 unreachable for 3 different
+  reasons (git-deps, crash, timeout). R12's classifyUnreachable partially
+  addresses this; extend to the UI/report layer.
+- **R16 SDK artifact pattern library**: codify bounds ±2^53-1, anyOf↔oneOf,
+  key order as auto-NOTATION rules with corpus fixtures. Partly covered by
+  P3-P6 gradation; bounds specifically need a rule.
+- **R17 conditional tool advertising**: Azure documents showing azqr tool
+  only when azqr CLI >= 3.0 is installed. Together with per-UA surfaces
+  (Netlify), this is the second documented way to serve different contracts.
+  Add an advisory signal for "only available if/when installed" in tool
+  descriptions.
+
+## Weekly for remote endpoints (R18)
+
+- Azure's hosted server gets updates BEFORE npm. `scan --url` already pins
+  remote endpoints ad-hoc; the weekly tracker only monitors npm channels.
+  Add a "remote" type to watch-list (url + headers from secrets).
+
 ## Ideas taken from KyttoMCP review (07.10, config-manager neighbor)
 
 - **`rugsnare pin-config`**: rewrite unpinned npx/uvx/@latest entries in MCP

@@ -157,7 +157,7 @@ test('httpRpc: SSE where the matching id appears BEFORE an unrelated response (r
 });
 
 test('httpRpc: body over 5MB rejects with settle-guard, never hangs (regression)', async () => {
-  // Before the fix, req.destroy() left the promise pending forever — a silent
+  // Before the fix, req.destroy() left the promise pending forever - a silent
   // false-negative in `rugsnare diff` (timeout would eventually eat it).
   const { server, port } = await startMock((_msg, res) => {
     res.writeHead(200, { 'content-type': 'application/json' });

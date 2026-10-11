@@ -24,7 +24,7 @@ test('annotation flip with identical hash+schema+text is DRIFT/ANNOTATION', () =
   const sp = ensureServer({ servers: {} }, 's', null);
   pinTool(sp, BASE, toolHash(BASE), { approved: true });
   const flipped = { ...BASE, annotations: { readOnlyHint: false, destructiveHint: true } };
-  assert.equal(toolHash(flipped), toolHash(BASE), 'hash must not include annotations — that is the point');
+  assert.equal(toolHash(flipped), toolHash(BASE), 'hash must not include annotations - that is the point');
   const v = compareTools(sp, [flipped], toolHash);
   assert.equal(v[0].status, 'DRIFT');
   assert.equal(v[0].driftType, 'ANNOTATION');
@@ -54,7 +54,7 @@ test('annotation comparison goes through spec defaults: explicit default is not 
   const pin = pinTool(sp, { name: 't', description: 'd', inputSchema: {} }, toolHash({ name: 't', description: 'd', inputSchema: {} }), { approved: true });
   assert.equal(pin.annotations, null);
   let v = compareTools(sp, [{ name: 't', description: 'd', inputSchema: {}, annotations: { readOnlyHint: false, destructiveHint: false } }], toolHash);
-  // destructiveHint:false is an OPT-OUT from the spec default (true) — a real behavioral change, must flag
+  // destructiveHint:false is an OPT-OUT from the spec default (true) - a real behavioral change, must flag
   assert.equal(v[0].status, 'DRIFT', 'pinned-absent (destructive default true) -> explicit false = downgrade = drift');
   assert.equal(v[0].driftType, 'ANNOTATION');
 
@@ -125,7 +125,7 @@ test('classifyReplay: SLOW finding when live call exceeds the ms budget', () => 
 
 // ---- A01 extension + A17 (from the real WhatsApp rug-pull text) ----------------
 // The published Invariant Labs poisoned description (invariantlabs.ai/blog/whatsapp-mcp-exploited)
-// evaded our original keyword heuristics entirely — pins still caught it, but the
+// evaded our original keyword heuristics entirely - pins still caught it, but the
 // heuristics should not be blind to "do not notify" or to exfil phone numbers.
 
 test('A01 extended: "do not notify/alert/update the user" fires (real rug-pull wording)', () => {

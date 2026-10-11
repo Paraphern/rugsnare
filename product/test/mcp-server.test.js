@@ -15,7 +15,7 @@ import { spawn } from 'node:child_process';
 
 function tmpCwd() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-mcp-'));
-  // Windows: a just-killed child may hold the dir for a moment — retry, never fail the test on cleanup
+  // Windows: a just-killed child may hold the dir for a moment - retry, never fail the test on cleanup
   const cleanup = () => {
     for (let i = 0; i < 5; i++) {
       try { fs.rmSync(dir, { recursive: true, force: true }); return; } catch { /* locked */ }

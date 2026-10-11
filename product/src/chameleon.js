@@ -14,8 +14,9 @@ import { toolHash } from './hash.js';
 // Client names a rogue server might special-case. Same set of clients we
 // DISCOVER configs for (discovery.js): a remote server distinguishing
 // "inspection tool" from "real client" is the attack; more vantage names =
-// more coverage per scan.
-export const CHAMELEON_CLIENTS = ['claude-desktop', 'cursor', 'windsurf', 'zed', 'continue'];
+// more coverage per scan. R6: openai-mcp added after Netlify PR #60
+// documented serving 21 granular tools to openai-mcp vs 9 routers to others.
+export const CHAMELEON_CLIENTS = ['claude-desktop', 'cursor', 'windsurf', 'zed', 'continue', 'openai-mcp'];
 
 /**
  * @param {Array} baselineTools tools listed under the default client

@@ -86,7 +86,7 @@ test('wrap: HTTP server rewrites url to local proxy, auth moves into the marker'
       // live entry: localhost proxy, no auth sent to localhost
       assert.match(entry.url, /^http:\/\/127\.0\.0\.1:\d+\/mcp$/);
       assert.equal(entry.headers, undefined);
-      assert.equal(entry.type, 'http', 'still an HTTP-server entry — just a local one');
+      assert.equal(entry.type, 'http', 'still an HTTP-server entry - just a local one');
       // marker keeps the original url + auth for `run` to use
       assert.equal(entry.__rugsnare_original_command.url, 'https://api.example.com/mcp');
       assert.deepEqual(entry.__rugsnare_original_command.headers, { Authorization: 'Bearer sekrit' });

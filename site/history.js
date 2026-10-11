@@ -1,4 +1,4 @@
-/* RugSnare runtime-history UI — shared by the home page form and the /scans archive */
+/* RugSnare runtime-history UI - shared by the home page form and the /scans archive */
 function card(cs, text) {
   var p = cs.split(',');
   return '<div style="background:' + p[0] + ';border:1px solid ' + p[1] + ';border-radius:10px;padding:12px;margin:8px 0;color:#374151;font-size:13px">' + text + '</div>';
@@ -49,7 +49,7 @@ function findingRow(f) {
   return html + '</div>';
 }
 /* word-level diff: common backbone (LCS) stays plain, everything else is
-   bold and slightly larger — in BOTH the old and the new line */
+   bold and slightly larger - in BOTH the old and the new line */
 function wordDiff(aStr, bStr) {
   var A = String(aStr).match(/\S+\s*/g) || [];
   var B = String(bStr).match(/\S+\s*/g) || [];
@@ -115,10 +115,10 @@ function findingConsequence(f) {
 
   var lines = [];
   if (gone(/requires? confirmation|needs? (your )?approval|approval (is )?required|unless whitelisted|requires? review/i)) {
-    lines.push('the agent is no longer told to ask you before this runs — it can execute straight away');
+    lines.push('the agent is no longer told to ask you before this runs - it can execute straight away');
   }
   if (gone(/allowed\s*roots|allowedRemoteRoots|allowed director|path (is )?restricted|sandbox/i)) {
-    lines.push('the stated path boundary vanished — the agent no longer knows this was supposed to stay limited');
+    lines.push('the stated path boundary vanished - the agent no longer knows this was supposed to stay limited');
   }
   if (gone(/no chaining|no pipes|no redirection|single command|one command per|no multiline/i)) {
     lines.push('the stated command limits (no chaining / pipes / redirection) were dropped from the text');
@@ -139,17 +139,17 @@ function findingConsequence(f) {
   if (lines.length > 0) {
     return { bg: DANGER.bg, fg: DANGER.fg, icon: DANGER.icon, text: 'Consequence: ' + lines.join('; ') + '.' };
   }
-  return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'Only the wording changed (schema intact) — but descriptions are the instructions your agent follows, so the edit still matters.' };
+  return { bg: INFO.bg, fg: INFO.fg, icon: INFO.icon, text: 'Only the wording changed (schema intact) - but descriptions are the instructions your agent follows, so the edit still matters.' };
 }
 /* shared renderer: verdict + findings cards + evidence links (feed rows reuse it) */
 function runtimeResultHtml(res) {
   var r = res.result || {};
-  if (r.error) return card('#fef2f2,#dc2626', 'Scan failed: ' + esc(r.error) + ' — details in the <a href="' + esc(res.runUrl || '#') + '" target="_blank" rel="noopener">run log</a>.');
+  if (r.error) return card('#fef2f2,#dc2626', 'Scan failed: ' + esc(r.error) + ' - details in the <a href="' + esc(res.runUrl || '#') + '" target="_blank" rel="noopener">run log</a>.');
   if (!r.checked) {
-    return card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(res.package) + ': 0 of ' + esc(r.planned || '?') + ' version(s) could be started — this server needs specific environment (credentials, config files) to boot, so runtime contracts are unavailable. "No data" is not "no changes".');
+    return card('#eff6ff,#3b82f6', 'ℹ️ ' + esc(res.package) + ': 0 of ' + esc(r.planned || '?') + ' version(s) could be started - this server needs specific environment (credentials, config files) to boot, so runtime contracts are unavailable. "No data" is not "no changes".');
   }
   var head = (r.silentChanges === 0)
-    ? card('#f0fdf4,#10b981', '✅ ' + esc(res.package) + ': ' + r.checked + ' version(s) actually started and listed their tools — no silent contract changes.')
+    ? card('#f0fdf4,#10b981', '✅ ' + esc(res.package) + ': ' + r.checked + ' version(s) actually started and listed their tools - no silent contract changes.')
     : card('#fff7ed,#ea580c', '⚠️ ' + esc(res.package) + ': ' + r.silentChanges + ' silent change(s) found across ' + r.checked + ' runtime-checked version(s)');
   var body = '';
   (r.pairs || []).forEach(function (p, pi) {
@@ -160,10 +160,10 @@ function runtimeResultHtml(res) {
     body += '</div>';
   });
   if (r.unreachable && r.unreachable.length) {
-    body += '<div style="color:#64748b;font-size:12px;margin-top:6px">' + r.unreachable.length + ' version(s) could not be started (no bin, missing env, crash) — excluded from the diff; see the log.</div>';
+    body += '<div style="color:#64748b;font-size:12px;margin-top:6px">' + r.unreachable.length + ' version(s) could not be started (no bin, missing env, crash) - excluded from the diff; see the log.</div>';
   }
   var slug = String(res.package || '').toLowerCase().replace(/^@/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact — every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/scans/history/' + esc(slug) + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
+  var evidence = '<div style="margin-top:10px;font-size:12px;color:#94a3b8">Runtime-exact - every version was actually started in an ephemeral sandbox. Public evidence: <a href="' + esc(res.runUrl || 'https://github.com/Paraphern/rugsnare/actions') + '" target="_blank" rel="noopener" style="color:#64748b">GitHub Actions run log</a> · <a href="https://github.com/Paraphern/rugsnare/blob/scans/history/' + esc(slug) + '.json" target="_blank" rel="noopener" style="color:#64748b">result JSON</a></div>';
   return head + body + evidence;
 }
 /* archive row expansion: lazily fetch the result once, then toggle */
@@ -182,13 +182,13 @@ function toggleArchiveRow(rowId, pkg) {
     .then(function (r) { return r.json(); })
     .then(function (res) {
       var html;
-      if (res.status === 'pending') html = card('#eff6ff,#3b82f6', 'This scan has not landed yet — check again in a moment.');
+      if (res.status === 'pending') html = card('#eff6ff,#3b82f6', 'This scan has not landed yet - check again in a moment.');
       else html = runtimeResultHtml(res);
       archiveLoaded[rowId] = html;
       box.innerHTML = html;
     })
     .catch(function () {
       archiveLoaded[rowId] = undefined;
-      box.innerHTML = card('#fef2f2,#dc2626', 'Could not load the result — try again.');
+      box.innerHTML = card('#fef2f2,#dc2626', 'Could not load the result - try again.');
     });
 }

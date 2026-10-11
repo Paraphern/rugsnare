@@ -254,7 +254,83 @@ export function diffVersionContracts(older, newer) {
   for (const name of Object.keys(a)) {
     if (!b[name]) findings.push({ tool: name, status: 'REMOVED' });
   }
+
+  // R11: rename inference - collapse GONE+NEW pairs with identical contracts
+  // into "REnamed a -> b". The azure-devops flagship case (75 GONE + 29 NEW)
+  // is mostly renames; this turns 104 lines into ~10 "renamed", ~5 "gone",
+  // ~29 "new" - the first thing a maintainer would ask about.
+  inferRenames(findings, a, b);
+
   return findings;
+}
+
+/**
+ * R11: find GONE tools whose (schemaHash, proseHash) matches a NEW tool -
+ * identical contract under a different name = likely rename. Collapse the
+ * pair into a single RENAMED finding. Also catch near-matches by name
+ * pattern (common prefix/suffix swap) when hashes match.
+ */
+function inferRenames(findings, olderTools, newerTools) {
+  const gone = findings.filter((f) => f.status === 'REMOVED');
+  const news = findings.filter((f) => f.status === 'NEW');
+  if (gone.length === 0 || news.length === 0) return;
+
+  const usedNew = new Set();
+  for (const g of gone) {
+    const oldPin = olderTools[g.tool];
+    if (!oldPin) continue;
+    for (const n of news) {
+      if (usedNew.has(n.tool)) continue;
+      const newPin = newerTools[n.tool];
+      if (!newPin) continue;
+      // exact hash match = same contract, different name
+      if (oldPin.schemaHash === newPin.schemaHash && oldPin.proseHash === newPin.proseHash) {
+        g.status = 'RENAMED';
+        g.renamedTo = n.tool;
+        n.status = 'RENAMED';
+        n.renamedFrom = g.tool;
+        usedNew.add(n.tool);
+        break;
+      }
+    }
+  }
+  // remove NEW entries that were consumed by renames
+  for (let i = findings.length - 1; i >= 0; i--) {
+    if (findings[i].status === 'RENAMED' && findings[i].renamedFrom) {
+      // this was a NEW that got consumed; remove the NEW-side entry
+      // (the RENAMED info is on the GONE-side entry)
+      findings.splice(i, 1);
+    }
+  }
+}
+
+/**
+ * R12: classify WHY a version is unreachable - a remote kill-switch
+ * (server fetches a manifest and refuses to start on "outdated" versions)
+ * is a different finding than a crash or a git-deps install failure.
+ * Live example: bybit-mcp pulls api.bybit.com and exits on older versions.
+ */
+export function classifyUnreachable(errorMessage) {
+  const msg = String(errorMessage ?? '');
+  // kill-switch / forced-update patterns
+  if (/update (is )?required|version (check|too old|outdated)|must (be|upgrade to).*latest|forced update/i.test(msg)) {
+    return { cause: 'KILLSWITCH', detail: 'server requires an update - remote kill-switch or forced-upgrade gate' };
+  }
+  if (/fetch.*(manifest|version|config).*(url|endpoint|api\.)|https?:\/\/api\.[^/]+\//i.test(msg)) {
+    return { cause: 'GATED', detail: 'server fetches a remote manifest/config before starting - possible kill-switch' };
+  }
+  // install failures
+  if (/EUNSUPPORTEDPROTOCOL|git dependency|git\+/i.test(msg)) {
+    return { cause: 'GIT_DEPS', detail: 'package has git dependencies that npm cannot resolve' };
+  }
+  // startup failures
+  if (/exited early|crashed|signal/i.test(msg)) {
+    return { cause: 'CRASH', detail: 'server process exited during startup' };
+  }
+  if (/timeout|timed out/i.test(msg)) {
+    return { cause: 'TIMEOUT', detail: 'server did not respond within the timeout window' };
+  }
+  return { cause: 'UNKNOWN', detail: null };
 }
 
 /**
@@ -267,7 +343,20 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
   // falls back to the last N when no window is given
   const inWindow = versions.filter((v) =>
     (!from || compareVersions(v, from) >= 0) && (!to || compareVersions(v, to) <= 0));
-  const chosen = inWindow.slice(-last);
+
+  // R10: sort by PUBLISH TIME, not semver. Packages with two versioning
+  // epochs (e.g. @playwright/mcp: 1.52.0-alpha from March 2025 is
+  // semver-OLDER than 0.0.x from 2026) get their histories glued
+  // incorrectly by semver sort - a phantom pair appears across epochs.
+  // The `time` map is already loaded from the registry; fall back to
+  // semver order when a version has no timestamp.
+  const byTime = [...inWindow].sort((a, b) => {
+    const ta = time[a] ? new Date(time[a]).getTime() : Infinity;
+    const tb = time[b] ? new Date(time[b]).getTime() : Infinity;
+    if (ta !== tb) return ta - tb;
+    return compareVersions(a, b); // same/missing timestamp: semver as tiebreak
+  });
+  const chosen = byTime.slice(-last);
   onProgress(`${chosen.length} version(s) to check: ${chosen[0]} .. ${chosen.at(-1)} (latest: ${latest})${stubEnv ? ' [stub-env]' : ''}`);
 
   const ran = [];
@@ -278,7 +367,7 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
       const c = await contractOfVersion(name, v, dist[v], { timeoutMs, stubEnv, serverArgs });
       ran.push(c);
     } catch (e) {
-      unreachable.push({ version: v, reason: e.message });
+      unreachable.push({ version: v, reason: e.message, ...classifyUnreachable(e.message) });
     }
   }
 

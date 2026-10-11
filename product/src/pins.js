@@ -43,11 +43,36 @@ export function ensureServer(pins, name, cmd) {
     // Structured command only - never a joined shell string. Execution
     // always goes through spawn(command, args, { shell: false }).
     pins.servers[name].cmd = { command: cmd.command, args: cmd.args };
+    // R1: record the package version at scan time (for diff-time mismatch
+    // detection). Resolved from the first node_modules/ reference in args.
+    const pkgVersion = resolvePackageVersion(cmd.args);
+    if (pkgVersion) {
+      pins.servers[name].scannedAgainst = pkgVersion;
+    }
   } else if (cmd && typeof cmd.url === 'string') {
     // HTTP transport: store the URL (never executed as a command)
     pins.servers[name].cmd = { url: cmd.url };
   }
   return pins.servers[name];
+}
+
+/**
+ * R1: when args reference node_modules/<pkg>/..., try to read that package's
+ * package.json for its version. Returns "name@version" or null.
+ */
+export function resolvePackageVersion(args) {
+  if (!Array.isArray(args)) return null;
+  for (const arg of args) {
+    const m = String(arg).match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/);
+    if (m) {
+      try {
+        const pp = path.join(process.cwd(), 'node_modules', m[1], 'package.json');
+        const pkg = JSON.parse(fs.readFileSync(pp, 'utf8'));
+        return `${m[1]}@${pkg.version}`;
+      } catch { /* not installed or unreadable */ }
+    }
+  }
+  return null;
 }
 
 export function commandDisplay(server) {
@@ -244,9 +269,40 @@ export function schemaDiff(oldSchema, newSchema) {
     }
     if (oEnum && !nEnum) changes.push({ text: `removed enum constraint from '${name}'`, direction: 'loosen' });
     if (!oEnum && nEnum) changes.push({ text: `added enum constraint to '${name}'`, direction: 'tighten' });
+
+    // R3: constraint keys (minItems, minimum, maximum, minLength, maxLength,
+    // pattern) - previously invisible (schemaHash changed, schemaDiff returned
+    // [], grade=NOTATION). Real MongoDB 3.0.0 case: minItems:1 on pipeline,
+    // number->integer + minimum/maximum on limit, pattern on deploymentName.
+    for (const ck of CONSTRAINT_KEYS) {
+      const ov = o[ck];
+      const nv = n[ck];
+      if (ov === nv) continue;
+      if (ov === undefined && nv !== undefined) {
+        changes.push({ text: `added ${ck}=${JSON.stringify(nv)} to '${name}'`, direction: 'tighten' });
+      } else if (ov !== undefined && nv === undefined) {
+        changes.push({ text: `removed ${ck}=${JSON.stringify(ov)} from '${name}'`, direction: 'loosen' });
+      } else {
+        changes.push({ text: `${ck} of '${name}' changed from ${JSON.stringify(ov)} to ${JSON.stringify(nv)}`, direction: 'tighten' });
+      }
+    }
+
+    // R3: number → integer is a tighten (integer is a subtype of number)
+    if (o.type === 'number' && n.type === 'integer') {
+      changes.push({ text: `'${name}' narrowed from number to integer`, direction: 'tighten' });
+    }
+    if (o.type === 'integer' && n.type === 'number') {
+      changes.push({ text: `'${name}' widened from integer to number`, direction: 'loosen' });
+    }
   }
   return changes;
 }
+
+/**
+ * JSON Schema constraint keys that restrict what values are accepted.
+ * Changes to these are structural (BREAKING/LOOSENED), not notational.
+ */
+const CONSTRAINT_KEYS = ['minItems', 'maxItems', 'minimum', 'maximum', 'minLength', 'maxLength', 'pattern', 'multipleOf', 'uniqueItems', 'exclusiveMinimum', 'exclusiveMaximum'];
 
 /**
  * Notation-level schema differences: things that change the schema's bytes

@@ -124,7 +124,7 @@ test('tools/call from client is logged', () => {
   }
 });
 
-// Config whose `logCallArgs` read throws — deterministic injection of a proxy
+// Config whose `logCallArgs` read throws - deterministic injection of a proxy
 // internal error inside the client->server try block (the proxy reads it there).
 function boomConfig(failMode) {
   return new Proxy({ failMode }, { get(t, key) { if (key === 'logCallArgs') throw new Error('cfg-boom'); return t[key]; } });
@@ -232,7 +232,7 @@ test('result inspection: invisible Unicode alone forces the advisory (R08)', () 
   const { dir, cleanup } = tmpCwd();
   try {
     const { streams, err } = harness({ mode: 'observe', cwd: dir });
-    // Weight-1 signal — below threshold 3, but R08 always forces
+    // Weight-1 signal - below threshold 3, but R08 always forces
     streams.server.stdout.write(callResultMsg(13, 'ok\u200Bdone') + '\n');
     assert.ok(err.join('\n').includes('RESULT-INJECTION-SUSPECTED'), 'invisible Unicode must force advisory');
     const advisory = readEvents(dir).find((e) => e.kind === 'result-advisory');
@@ -246,7 +246,7 @@ test('result inspection: tools/list results are not scanned as call results', ()
   const { dir, cleanup } = tmpCwd();
   try {
     const { streams, err } = harness({ mode: 'observe', cwd: dir });
-    // A tools/list response CONTAINS tool descriptions with imperative text —
+    // A tools/list response CONTAINS tool descriptions with imperative text -
     // scanning it here would double-alert (descriptions get their own A-signals in scan/diff)
     const withImperative = { ...TOOL_V1, description: 'You must now do the search.' };
     streams.server.stdout.write(toolsListMsg([withImperative]) + '\n');
@@ -257,7 +257,7 @@ test('result inspection: tools/list results are not scanned as call results', ()
 });
 
 // ---------------------------------------------------------------------------
-// Annotation flips (v0.6): identical hash, behavioral hints changed — DRIFT
+// Annotation flips (v0.6): identical hash, behavioral hints changed - DRIFT
 // (ANNOTATION). Compared through SPEC DEFAULTS: spelling out a hint the
 // default already implied is NOT a flip.
 // ---------------------------------------------------------------------------
@@ -295,7 +295,7 @@ test('annotation spec-defaults: spelling out an implied hint is NOT drift', () =
   try {
     // Pinned {readOnlyHint:true}: effective = {readOnly:true, destructive:TRUE(default),
     // idempotent:false(default), openWorld:true(default)}. The live tool spells out
-    // destructiveHint:true and openWorldHint:true explicitly — same effective values,
+    // destructiveHint:true and openWorldHint:true explicitly - same effective values,
     // must stay UNCHANGED (spec defaults, no false positives).
     const { streams, err } = harnessPinned(TOOL_RO, dir);
     const explicit = { ...TOOL_RO, annotations: { readOnlyHint: true, destructiveHint: true, openWorldHint: true } };

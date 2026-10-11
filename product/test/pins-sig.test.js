@@ -51,11 +51,11 @@ test('verifyPinsFile: ok -> tampered on edit -> unsigned on sig delete', () => {
     assert.equal(tampered.status, 'tampered');
     assert.match(tampered.reason, /modified after signing/);
 
-    // attacker deletes the sig instead — key exists, so unsigned is suspicious
+    // attacker deletes the sig instead - key exists, so unsigned is suspicious
     fs.unlinkSync(path.join(dir, '.rugsnare', 'pins.sig'));
     assert.equal(verifyPinsFile(dir).status, 'unsigned');
 
-    // no key at all (fresh machine, pre-0.9 repo) — not suspicious
+    // no key at all (fresh machine, pre-0.9 repo) - not suspicious
     const { dir: dir2, cleanup: cleanup2 } = tmpCwd();
     try {
       writePins(dir2);
@@ -80,7 +80,7 @@ test('CLI diff: tampered pins always exit 2 with the reason', async () => {
     const r = await runCli(dir, ['diff']);
     assert.equal(r.code, 2, 'tampered pins must fail as config/integrity error, not drift');
     assert.match(r.stderr, /TAMPERED/);
-    // not overridable — the override exists for UNSIGNED, not for tampering
+    // not overridable - the override exists for UNSIGNED, not for tampering
     const forced = await runCli(dir, ['diff', '--allow-unsigned-pins']);
     assert.equal(forced.code, 2);
   } finally {

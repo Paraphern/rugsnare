@@ -150,7 +150,7 @@ test('P4: dropped additionalProperties:false = LOOSENED (fill_form.elements case
     inputSchema: {
       type: 'object',
       properties: { elements: { type: 'array', items: { type: 'object', properties: { name: { type: 'string' }, value: { type: 'string' } } } } },
-      // additionalProperties: false dropped — validation loosened
+      // additionalProperties: false dropped - validation loosened
     },
   };
   const serverPin = { tools: { fill_form: pinOf(oldTool) } };
@@ -230,6 +230,44 @@ test('P3: real parameter change stays BREAKING', async () => {
   const serverPin = { tools: { search: pinOf(oldTool) } };
   const [v] = compareTools(serverPin, [newTool], toolHash);
   assert.equal(v.driftType, 'BREAKING');
+});
+
+// R3: constraint keys
+test('R3: added minItems = tighten (BREAKING)', () => {
+  const a = { type: 'object', properties: { pipeline: { type: 'array', items: {} } } };
+  const b = { type: 'object', properties: { pipeline: { type: 'array', items: {}, minItems: 1 } } };
+  const changes = schemaDiff(a, b);
+  const m = changes.find((c) => c.text.includes('minItems'));
+  assert.ok(m, 'minItems change detected');
+  assert.equal(m.direction, 'tighten');
+  assert.equal(gradeSchemaDrift(changes, []), 'BREAKING');
+});
+
+test('R3: removed minimum = loosen (LOOSENED)', () => {
+  const a = { type: 'object', properties: { limit: { type: 'number', minimum: 0, maximum: 100 } } };
+  const b = { type: 'object', properties: { limit: { type: 'number' } } };
+  const changes = schemaDiff(a, b);
+  assert.ok(changes.some((c) => c.text.includes('removed minimum') && c.direction === 'loosen'));
+  assert.ok(changes.some((c) => c.text.includes('removed maximum') && c.direction === 'loosen'));
+  assert.equal(gradeSchemaDrift(changes, []), 'LOOSENED');
+});
+
+test('R3: number to integer = tighten', () => {
+  const a = { type: 'object', properties: { count: { type: 'number' } } };
+  const b = { type: 'object', properties: { count: { type: 'integer' } } };
+  const changes = schemaDiff(a, b);
+  const narrowed = changes.find((c) => c.text.includes('narrowed from number to integer'));
+  assert.ok(narrowed);
+  assert.equal(narrowed.direction, 'tighten');
+});
+
+test('R3: added pattern = tighten', () => {
+  const a = { type: 'object', properties: { name: { type: 'string' } } };
+  const b = { type: 'object', properties: { name: { type: 'string', pattern: '^[a-z]+$' } } };
+  const changes = schemaDiff(a, b);
+  const pat = changes.find((c) => c.text.includes('pattern'));
+  assert.ok(pat, 'pattern change detected');
+  assert.equal(pat.direction, 'tighten');
 });
 
 test('schemaDiff: unchanged parameters produce no findings', () => {
