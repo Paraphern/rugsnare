@@ -18,9 +18,18 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | bybit trading-mcp | - | 2.1.20 -> 2.1.23 | 9 + remote kill-switch | [bybit.md](bybit.md) |
 | browserstack/mcp-server | - | v1.4.1 -> v2.2.1 | 22 | [browserstack.md](browserstack.md) |
 | apify-mcp-server | - | 0.16.0 -> 0.17.4 | 1 BREAKING | [apify.md](apify.md) |
+| @sap-ux/fiori-mcp-server (SAP) | 103k | 1.13.0 -> 1.15.9 | 4: 2 BREAKING (new required param) + 2 cosmetic | [sap-fiori.md](sap-fiori.md) |
+| @ui5/mcp-server (SAP) | 96k | 0.2.12 -> 0.3.2 | 0 (control) | [ui5.md](ui5.md) |
+| figma-developer-mcp | 91k | 0.7.0 -> 0.13.2 | 2 NOTATION | [figma.md](figma.md) |
+| @supabase/mcp-server-supabase | 67k | 0.8.3 -> 0.13.0 | 4 + GONE get_logs -> NEW query_logs + stdio entry moved | [supabase.md](supabase.md) |
+| @hubspot/mcp-server | 31k | 0.2.0 -> 0.4.0 | 6: GONE + 3 NEW + 1 drift + 1 cosmetic (npm alive, GitHub repo dead) | [hubspot.md](hubspot.md) |
+| @shopify/dev-mcp | 31k | 1.14.4 -> 1.16.0 | 6: 2 GONE -> NEW validate (consolidation) + LOOSENED | [shopify.md](shopify.md) |
+| @transcend-io/mcp-server-assessment | 11k | 2.1.2 -> 2.1.13 | 2 BREAKING (83 releases / 3 months) | [transcend.md](transcend.md) |
+| firebase-mcp (Google) | 74 | 0.2.0 -> 0.4.4 | 0 (control) | [firebase.md](firebase.md) |
 | @notionhq/notion-mcp-server (Notion) | 195k | 2.4.1 -> 2.5.2 | 0 (control) | [notion.md](notion.md) |
 | @heroku/mcp-server (Heroku/Salesforce) | 11k | 1.2.5 -> 1.2.11 | 0 (control) | [heroku.md](heroku.md) |
 | obra/superpowers (skills collection) | 298k★ | 6.4.2 -> 7.0.0 | 6 (1 DANGEROUS) | [superpowers.md](superpowers.md) |
+| vercel-labs/skills (skills collection) | - | baseline 13e4063 (2026-10-12) | 226 files pinned, watching | [vercel-skills.md](vercel-skills.md) |
 
-Last full verification: 2026-10-11; key pages re-graded with rugsnare 1.3.0 on 2026-10-12 (recursive traversal + additionalProperties equivalence). Install counts: npm registry, week ending the audit date.
-Superpowers row is a skills record (GitHub stars, not npm installs); verified 2026-10-12.
+Last full verification: 2026-10-11; key pages re-graded with rugsnare 1.3.0 on 2026-10-12 (recursive traversal + additionalProperties equivalence). Baselines for 9 corpus additions captured 2026-10-12: [drift-watch report](../../audits/drift-watch/2026-10-12.md). Install counts: npm registry, week ending the audit date.
+Superpowers and vercel-skills rows are skills records (GitHub, not npm installs); verified 2026-10-12.
