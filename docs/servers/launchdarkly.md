@@ -18,4 +18,4 @@ npm i @launchdarkly/mcp-server@0.6.2 && npx rugsnare diff --config mcp.json
 # [NEW ] get-audit-log-entries - DRIFT DETECTED (1 finding), exit 1
 ```
 
-Watched weekly (baseline 0.7.0). Last verified 2026-10-13 (0.6.1 -> 0.7.0 graded: exactly 1 NEW tool, 19/19 unchanged; 0.6.2 -> 0.7.0 zero drift).
+Watched weekly (baseline 0.7.0). Last verified 2026-10-12 (0.6.1 -> 0.7.0 graded: exactly 1 NEW tool, 19/19 unchanged; 0.6.2 -> 0.7.0 zero drift).

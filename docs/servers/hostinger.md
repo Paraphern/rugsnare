@@ -23,4 +23,4 @@ npm i hostinger-api-mcp@2.11.0 && npx rugsnare diff --config mcp.json   # 6 NEW 
 # config env: HOSTINGER_API_KEY=dummy
 ```
 
-Watched weekly (baseline 2.4.0). Last verified 2026-10-13 (2.4.0/2.11.0/2.13.0 rescanned: six SKILL.md confirmed in-window and persistent through 2.13.0; tools clean).
+Watched weekly (baseline 2.4.0). Last verified 2026-10-12 (2.4.0/2.11.0/2.13.0 rescanned: six SKILL.md confirmed in-window and persistent through 2.13.0; tools clean).
