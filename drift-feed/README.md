@@ -37,7 +37,6 @@ Each line in `changes.jsonl` is a JSON object:
 | `NEW_PROMPT` / `REMOVED_PROMPT` | Prompt template added/removed |
 | `ADVISORY_NEW` | A tool's description started triggering advisory signals |
 | `ADVISORY_CLEARED` | Advisory signals cleared |
-| `ERROR` | Server unreachable or scan failed |
 
 ## Add a server
 

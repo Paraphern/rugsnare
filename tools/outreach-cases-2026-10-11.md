@@ -303,3 +303,24 @@ rename is documented, the quiet tightenings are not". Body: начать с по
 - 2026-10-13: Netlify - ОТПРАВЛЕНО (netlify/netlify-mcp#75): верифицированный драфт дословно,
   три эпизода + per-client наблюдение + градуированный repro + suggestion. ПЕРВЫЙ из пяти.
   Следующие по плану: MongoDB (завтра), Currents, LD-коммент #67, Hostinger-коммент #67.
+
+## ЖУРНАЛ ПОСТИНГА ПЯТЁРКИ
+
+- 2026-10-13: Netlify - ОТПРАВЛЕНО (netlify/netlify-mcp#75)
+- 2026-10-14: MongoDB - ОТПРАВЛЕНО (mongodb-js/mongodb-mcp-server#1600): ИССЛЕДОВАТЕЛЬСКО-
+  ПОМОГАТЕЛЬНО-ДРУЖЕЛЮБНЫЙ ТОН («drift watch, field-testing, defensible decisions, готовый
+  текст changelog»). ВСЕ 22 тезиса верифицированы, включая explain/export (живой парсинг
+  схем подтвердил $vectorSearch integer+max+exclMin на глубине 9). Свежий прогон на 1.3.0:
+  5 BREAKING + 15 NOTATION. Следующие: Currents, LD-коммент, Hostinger-коммент.
+
+## ЖУРНАЛ ПОСТИНГА ПЯТЁРКИ (обновление)
+
+- 2026-10-13: Netlify - ОТПРАВЛЕНО (netlify/netlify-mcp#75)
+- 2026-10-14: MongoDB - ЗАКРЫТО not_planned (mongodb-js/mongodb-mcp-server#1600)
+  gagik закрыл через 87 минут без объяснения. JIRA MCP-670 создан ботом, тоже закрыт.
+  32 BREAKING + 4 на мажоре — не убедили. Урок: changelog-культура команды важнее данных.
+- 2026-10-14: Currents - ОТПРАВЛЕНО (currents-dev/currents-mcp#232): ИССЛЕДОВАТЕЛЬСКО-
+  ПОМОГАТЕЛЬНЫЙ ТОН. Ключевая правка перед постингом: НАЧИНАЕМ С ПОХВАЛЫ за rename-
+  документацию («exactly the right call»). Затем: «the gap is the 32 quiet tightenings».
+  Проверены ВСЕ 6 release notes (2.4.0-2.6.1): ноль упоминаний minLength/minimum.
+  Следующие: LD-коммент, Hostinger-коммент.

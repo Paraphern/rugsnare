@@ -183,7 +183,7 @@ Decoded input from the transaction:
 | Event check | topics[1]=versionKey `0x6a08c3e2...` ✓, data=artifactHash `0xaf5286af...` + "1.3.0" ✓ (лог Remix) |
 | artifact sha256 | `af5286af49be0612ace7cb4ba5de443f680560f4ef6411f5a3704a814bf82fe1` (гигиен-гейт: 42 файла, .mimosa исключён негацией в package.json files) |
 | versionKey | keccak256("1.3.0") = `0x6a08c3e203132c561752255a4d52ffae85bb9c5d33cb3291520dea1b84356389` |
-| npm | rugsnare@1.3.0 published 2026-10-12 12:26 UTC (PUT 202; dist.shasum `d5f4aee0f438de8d9da1795c7a1027d6041881fe`, integrity `sha512-0KXR2...TKlQ==` - оба совпали с прогнозом автоклава-62). gitHead не вшит: финальный pack сделан до релизного коммита; эквивалентность артефакта тегу `v1.3.0`=`1551e5b2` доказана byte-identical репродукцией автоклава-62 из помеченного дерева (sha256 `af5286af...`) - сильнее gitHead, который реестр не проверяет |
+| npm | rugsnare@1.3.0 published 2026-10-12 12:29 UTC (PUT принят 12:26, time["1.3.0"] в реестре 12:29:10Z; dist.shasum `d5f4aee0f438de8d9da1795c7a1027d6041881fe`, integrity `sha512-0KXR2...TKlQ==` - оба совпали с прогнозом автоклава-62). gitHead не вшит: финальный pack сделан до релизного коммита; эквивалентность артефакта тегу `v1.3.0`=`1551e5b2` доказана byte-identical репродукцией автоклава-62 из помеченного дерева (sha256 `af5286af...`) - сильнее gitHead, который реестр не проверяет |
 | Проверка | `npx rugsnare verify rugsnare-1.3.0.tgz --version 1.3.0 --chain base` -> **VERIFIED** (12:39:23 UTC; тарболл скачан с CDN реестра, sha256 = пину) |
 
 История sha: `5331c37e...` (первый pack, 43 файла - внутри оказался src/.mimosa/hook-status

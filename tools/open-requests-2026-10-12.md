@@ -637,3 +637,60 @@ Kiro#11726/gemini#25693 (зеркальный паттерн) + Atlassian forge-
       наша добавка, не отложенный пункт
 - СВЯЗКА: autogen#7353 (composition thesis) → OWASP (grading taxonomy) = стандарт
   сверху вниз: от фреймворка к security- guidelines.
+
+## OWASP MCP Top 10 #44 (VAL): вход с composition-тезисом (2026-10-14, день)
+
+- БРИФ: OWASP MCP Top 10 (114★) = THE security-таксономия для MCP. #44 = VAL
+  (Verifiable Authorization Lineage) bba-git, 23 коммента. Участники: bba-git (VAL),
+  Silentpartnercoding (predicate-correctness benchmark), Santoshkumarpuppala (enforcement shapes).
+  ПОЛНЫЙ Д2-АУДИТ: 0 упоминаний tool schema/inputSchema/tools-list/readOnlyHint в 23 комментах.
+  18 «surface/pin» - ВСЕ про audit surface и policy scope, НЕ про tool surface.
+- МЫ ВОШЛИ (issuecomment-6126400319): триада governance (surface pin + policy correctness +
+  action receipt). VAL = receipt, Silentpartnercoding = policy, МЫ = surface. Три слоя,
+  все нужны, без первого остальные на песке. Конкретный кейс: Netlify env-vars (scope-respect
+  green против поверхности, которую человек не одобрял).
+- ПРАВКИ при перепроверке: (а) «What defines the scope IS the tool surface» → «typically
+  references» (наша интерпретация, не определение VAL); (б) «VAL's check PASSES» → «would
+  pass IF scope defined by tool identity» (inference о реализации, квалифицирован).
+- МЫ ТЕПЕРЬ В ДВУХ OWASP-ПРОЕКТАХ: Cheat Sheet (PR#2764 - grading) + Top 10 (#44 - surface pin
+  как третий слой governance). Оба читают security-инженеры во всём мире.
+
+## СВОДКА 14 ОКТЯБРЯ (день 2)
+
+- MongoDB vendor-case #1600 (исследовательско-помогательный тон, ОБЯЗАТЕЛЬНОЕ правило)
+- OWASP Top 10 #44 (composition-тезис, 4-й spec/security-уровень)
+- Правило тона закодировано в методологию (№0 по силе после «не постить в закрытое»)
+- Инцидент Write-вместо-Edit восстановлен из git за секунду
+- KENNIEIVES: полная карта конкурента (37 issue/PR, AgentAvow, 13,671 серверов)
+- Итог за 2 дня: 23+ поста, 4 спеки/standards, 61k★ autogen, ~45 ожидающих реакций
+
+## Snyk agent-scan #482: вход с tool-contract слоем (2026-10-14)
+
+- БРИФ: snyk/agent-scan = 3,132★, ОФИЦИАЛЬНЫЙ MCP-сканер Snyk. #482 (stillmarcus24):
+  Snyk пинит ТОЛЬКО md5(description). 7,949 серверов / 59,821 переходов: 74.6% имеют
+  version change при identical description. Base-rate math: 7.46% attack rate для 10% precision.
+  Его решение: capability-expansion триггер (new host/secret/exec). Precision: 13.0% corrected.
+  1 коммент (self-follow-up, contingency tables). НИКТО другой не участвовал.
+- НАША НИША (Д2 чисто): stillmarcus24 измеряет PACKAGE-RESOLUTION слой (что npx резолвит).
+  Мы добавляем TOOL-CONTRACT слой (что tools/list отдаёт): тот же version может отдавать
+  разные инструменты (per-client divergence), разные versions могут отдавать идентичные
+  (notation-only). Direction grading поглощает version-churn FP.
+- МЫ ВОШЛИ (issuecomment-6128897938): tool-contract layer как независимый сигнал над
+  package-resolution; grading taxonomy (escalate/tighten/loosen/notation); ответ на ЕГО md5
+  вопрос (полный contract pin vs single-field hash); MongoDB 20/16/5 как evidence;
+  rugsnare как reference implementation.
+- ПРАВКА при перепроверке: "4 real findings" → "5 real findings" (на 1.3.0 = 5 BREAKING).
+- ПРОГОН: НЕ применён (правило Г: существующие MongoDB+Netlify данные уже evidential,
+  новый прогон был бы декорацией).
+- ТЕПЕРЬ МЫ В ТРЁХ SECURITY-СТАНДАРТАХ: OWASP CS (grading) + OWASP Top 10 (surface pin) +
+  Snyk (tool-contract layer). Плюс autogen (composition thesis). Четыре уровня governance.
+
+## Первое признание от CONTRIBUTOR (2026-10-14)
+
+- Tencent/BrowserSkill#388: NianJiuZst (CONTRIBUTOR, автор RFC) процитировал НАШ полный
+  комментарий и поблагодарил. Это первый случай когда CONTRIBUTORS (не NONE) публично
+  признали наш вклад на протокольном треде. Full-quote = «пусть будет видно в треде».
+- Мы ответили кратко (issuecomment-6128932161): «Glad it's useful» + ссылка на docs/servers
+  как reference для digest format и grading rules. Не навязываемся, оставляем дверь открытой.
+- ЗНАЧЕНИЕ: наш подход (surface pin + grading taxonomy) признан полезным человеком,
+  который РЕАЛЬНО строит протокол. Это Social proof для всех остальных тредов.

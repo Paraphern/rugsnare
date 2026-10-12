@@ -491,11 +491,15 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
     // where they differ - part of the pair's diff may be dep drift, not
     // server code (mongodb 2.1.2 + floating zod taught us this live)
     const depsChanged = depChangesBetween(ran[i - 1].deps ?? {}, ran[i].deps ?? {});
+    // strict vs legacy resolution is provenance too: a legacy-resolved tree
+    // may differ from a plain user install, and consumers deserve the marker
+    const fromRes = ran[i - 1].depResolution ?? 'strict';
+    const toRes = ran[i].depResolution ?? 'strict';
     pairs.push({
       from: ran[i - 1].version,
       to: ran[i].version,
       toPublishedAt: time[ran[i].version] ?? null,
-      deps: { from: ran[i - 1].deps ?? {}, to: ran[i].deps ?? {} },
+      deps: { from: ran[i - 1].deps ?? {}, to: ran[i].deps ?? {}, fromResolution: fromRes, toResolution: toRes },
       ...(depsChanged.length ? { depsChanged } : {}),
       findings,
     });

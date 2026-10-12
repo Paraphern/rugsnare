@@ -1081,6 +1081,12 @@ async function cmdHistory(flags) {
         const drift = depsChanged.map((d) => `${d.dep} ${d.from ?? 'absent'} -> ${d.to ?? 'absent'}`).join(', ');
         console.log(`      ~ schema deps resolved differently: ${drift} (some findings may be dep drift, not server code)`);
       }
+      // R32 provenance: a side captured via the --legacy-peer-deps fallback
+      // may have resolved a different dependency tree than a plain install
+      const res = p.deps ?? {};
+      if (res.fromResolution === 'legacy' || res.toResolution === 'legacy') {
+        console.log(`      ~ captured via legacy peer resolution (${from}: ${res.fromResolution ?? 'strict'}, ${to}: ${res.toResolution ?? 'strict'}) - the tree may differ from a plain install`);
+      }
       if (findings.length === 0) continue;
       for (const f of findings) {
         const driftLabel = f.driftType ? ` (${f.driftType})` : '';

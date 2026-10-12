@@ -48,7 +48,7 @@ async function getLatestVersion(pkg) {
  * excluded by design, not by oversight.
  *
  * One polite request per endpoint per day; failures are logged events
- * (HOSTED_ERROR / HOSTED_GONE), never fatal - hosted flakiness is not drift.
+ * (HOSTED_ERROR / HOSTED_GATED), never fatal - hosted flakiness is not drift.
  */
 async function scanHosted(server) {
   const { fetchToolsHttp } = await import('./rpc-http.js');
