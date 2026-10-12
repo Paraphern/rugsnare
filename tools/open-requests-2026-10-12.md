@@ -694,3 +694,13 @@ Kiro#11726/gemini#25693 (зеркальный паттерн) + Atlassian forge-
   как reference для digest format и grading rules. Не навязываемся, оставляем дверь открытой.
 - ЗНАЧЕНИЕ: наш подход (surface pin + grading taxonomy) признан полезным человеком,
   который РЕАЛЬНО строит протокол. Это Social proof для всех остальных тредов.
+
+## agentskills #255 (.well-known спека): вход с grading thesis (2026-10-14)
+
+- Д2-ВЕРИФИКАЦИЯ: 0 упоминаний grading/direction/NOTATION/serialization/canonicalization
+  во всех 20 комментах. 8 человек сказали pin/digest/hash — никто не обсудил градацию.
+- МЫ ВОШЛИ (issuecomment-6129754070): jonathanhefner's suggestion валидирован + NOTATION-поглощение
+  (15/20 serialization churn) + два решения (canonicalization ИЛИ schema/prose split)
+  + обо сохраняют "single verification model" preference. MongoDB 15/5 как evidence.
+- ПЕРЕПРОВЕРКА поймала: "16+5=21" → проверено живым прогоном → "15+5=20" (точные 1.3.0 числа).
+- ТЕПЕРЬ МЫ В ОБОИХ ТРЕДАХ agentskills: #46 (versioning/locking) + #255 (.well-known distribution).
