@@ -1,4 +1,4 @@
-# RugSnare MCP server — image for the Docker MCP Catalog.
+# RugSnare MCP server - image for the Docker MCP Catalog.
 # Read-only agent tool: public drift-feed status + local pin store report.
 # Zero npm dependencies; runs on plain Node.
 FROM node:22-alpine

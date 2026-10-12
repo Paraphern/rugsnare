@@ -481,3 +481,111 @@ Kiro#11726/gemini#25693 (зеркальный паттерн) + Atlassian forge-
   ДВЕ кликабельные (repo + docs/servers), обе curl-200 по правилу №8.
 - Постедено (issuecomment). block/goose (55,190★) - разведан: #12724 грузит SEP-2640-скиллы из MCP
   (связка со спекой), #12696 bare load_skill - фронт на потом.
+
+## Третий spec-уровень: Agent-Card/ai-catalog (2026-10-13, ночь-2)
+
+- Репо: 232★, "Working repository for common AI Card standard" - реестровый стандарт, на который
+  указал jonathanhefner в agentskills#46. #69 (liady/CONTRIBUTOR): спека СМЕШИВАЕТ sourceDigest
+  (провенанс источника) с дайджестом артефакта - конформантный верификатор отвергает ВСЁ.
+  ejoaquin предложил contentIntegrity-объект, olijboyd (тот же, что в #46) - внутрь подписанного
+  payload (иначе посредник подменит).
+- МЫ ВОШЛИ (issuecomment-6123358519): третий spec-уровень за день (SEP-2640, agentskills, ai-catalog).
+  Вклад: недостающая consumer-нога - publisher-side дайджесты (включая Trust Manifest, проверен
+  по спеке = attestation-сторона) не отвечают "это всё ещё то, что я утвердил"; superpowers-кейс
+  ("in one release" - версию исправил при сверке); graded-diff предложение к ADR-0009; обе ссылки
+  curl-200 по п.8-9.
+- УРОК ВЕРИФИКАЦИИ (записать в методологию при случае): в процессе сверки Я ВЫДУМАЛ "тройное
+  размножение ошибки" - реконструкция по памяти создала несуществующий кризис (sed-no-op это
+  вскрыл). Правило: проверка идёт по ФАЙЛАМ/постам (grep по реальным телам), не по памяти о них.
+- goose (55,190★) разведан: #12724 реализует digest-проверку скиллов из MCP (связка со спекой) -
+  фронт на потом. agentskills #255 (.well-known, jonathanhefner, 20c) - завтра (лимит репо/день).
+
+## goose (Block): вход в первого клиента SEP-2640 (2026-10-13, обед)
+
+- БРИФ (по новому правилу): block/goose, 55,190★, агент Block Inc (Square/Cash App, Дорси,
+  финтех = integrity-критичный домен); vincenzopalazzo (CONTRIBUTOR, скилл-направление) реализует
+  SEP-2640-загрузку скиллов (PR#12724, 6 окт, 0 комментов; родитель #12068 - 11 комментов).
+- МЫ ВОШЛИ (issuecomment): таймлайн-дыра их digest-чека (сервер легитимно меняет тело+дайджест
+  между сессиями - все проверки зелёные, инструкции другие); сослались на ext-skills#142 с
+  ЧЕСТНОЙ атрибуцией ("where we suggested the companion line" - Д2-урок: не приписывать свою
+  реплику авторству PR); consumer-pin c градацией как bar-setter для всех будущих SEP-клиентов;
+  host::name "addresses" (не "solves"). Ссылки: ext-skills PR (curl-200) + rugsnare (curl-200).
+- Триада замкнута: СПЕКА (ext-skills#142) -> ПЕРВЫЙ КЛИЕНТ (goose#12724) -> наш consumer-слой.
+- ПРАВИЛО БРИФА закодировано в методологию (Выход промта): никакой драфт без "кто/дыра/что даёт/
+  риски" - урок goose, где я подал находку+драфт без брифа и юзер вытащил контекст вопросом.
+
+## dsh#8909: ответ argszero и наша третья нога (2026-10-13, обед-2)
+
+- argszero (автор @argszero/dsh-skill-residency, npm MIT) ответил через 30 мин: принял наш
+  integrity-тезис и РАЗВИЛ в "двухпиновую" модель (нативный каталог - апстриму; инъекции плагина -
+  пинятся версией плагина, "второй поверхностью деплоймент пинится уже сегодня"); его плагин уже
+  закрывает боль (a) через agent/pre-step (240-char bound, republication при смене плана/компакции,
+  mode: report - лог плана без отправки) + резидентные скиллы (resident: true -> инъекция каждый
+  ход через skill_content-конверт). Корень проблемы отдельно задокументирован в #9375 (raphael-y7,
+  китайский: резидентные скиллы никогда не грузятся + whenToUse модели невидим).
+- МЫ ОТВЕТИЛИ тред-реплаем (discussioncomment-18879876): третья нога - план считается на лету
+  (каталог x компакция) -> две сессии одной версии плагина шлют разное; mode: report = наблюдение;
+  недостаёт RECEIPT инъекции (дайджест фактически отправленного skill_content в журнал сессии) -
+  "какие инструкции вошли в контекст" решаем после факта; у нас паттерн работает для MCP-вызовов
+  (receipts-цепочка). Второй пин из "предполагаемого" становится "доказуемым".
+- ПРОВЕРКА: первый драфт без единой правки - все тезисы из его дословных терминов + наши
+  проверенные фичи (receipts в CHANGELOG v0.4.0). Расшифровка для юзера дана до поста (правило
+  расшифровки - выполняется).
+
+## Stripe agent-toolkit: вход в payments-MCP (2026-10-13, обед-3)
+
+- БРИФ: stripe/agent-toolkit (он же stripe/ai) = официальный MCP Stripe для агентов, 1904★, 99 issue,
+  активный. #508 (AUTHENSOR, 2c): v0.6→v0.7 молча удалил actions-allowlist; least-privilege конфиг
+  -> ВСЕ 10 инструментов вкл. create_refund unlimited; PoC детерминированный offline.
+  Фикс в процессе (DeprecationWarning) - но warning не останавливает платёж.
+- МЫ ВОШЛИ (issuecomment-6123726631): DeprecationWarning лечит симптом; болезнь = нет записи
+  одобренной поверхности для сравнения. Пин контракта (sha-256 на инструмент) зафиксировал бы
+  экспансию при апгрейде. Ссылки curl-200. Ровно одна правка при сверке: убрал конкретное число
+  "3 tools" (из PoC следует ~1, не 3 - моя инференция была неточной).
+- ПАРАЛЛЕЛЬНО: #356 governance layer (66c!) уже глубоко обсуждает pin/hash - giskard09, aeoess,
+  jagmarques - НЕ входили (занято зрелой дискуссией, наша добавка менее очевидна чем в #508).
+
+## OpenAI openai-agents-python: вход в annotations-тред (2026-10-13, обед-3)
+
+- БРИФ: openai/openai-agents-python = официальный мульти-агентный фреймворк OpenAI, 29,984★.
+  #5315 (Aasif-Simpplr/Simplo, 6c, jbeckwith-oai/COLLABORATOR вовлечён): MCP annotations
+  (readOnlyHint, destructiveHint) теряются при конвертации; харнессы не могут отличать read-only
+  от destructive; обходной путь гниёт.
+- МЫ ВОШЛИ: третья нога к двум уже прозвучавшим ("expose annotations" + "don't turn into outcome
+  claim") = TIMELINE ANCHOR: annotations контролируются сервером и могут дрейфить (readOnlyHint
+  true->false между сессиями); пин при апруве + дифф на re-list; flip = тот же re-approval что и
+  новый инструмент; решает проблему устаревания обходного пути. Ссылка rugsnare curl-200.
+
+## Continue.dev: вход в governance-тред поверх конкурентов (2026-10-13, день)
+
+- БРИФ: continuedev/continue = open-source агент (36,193★). #12492 - тред где ТРИ governance-прокси
+  вендора питчатся (Vaara 15★, etch.systems/world-model-mcp 24★, MartinLoop 410★). Все трое -
+  runtime-прокси (перехват вызовов, политика, аудит). Никто не пинит поверхность инструментов.
+- НАШ ВХОД (issuecomment-6124413696): «surface integrity = пред-слой для всех трёх». readOnlyHint
+  флип невидим прокси без пина; allowlist по именам гниёт при новом параметре; примеры из наших
+  полевых данных (Netlify env-vars в minor с notes про OAuth, Currents 32 BREAKING в минорах).
+  «Sits below the governance proxies, composes rather than competes». Ответ на вопрос Ram9199
+  про инциденты из поля.
+- ПЕРЕПРОВЕРКА: поймана и исправлена ОШИБКА «in a patch release» (Netlify 1.16.0 = minor, не
+  patch - тот же класс semver-ошибки что superpowers «two minor versions»); смягчён «sha-256 over
+  name+description+inputSchema+annotations» на «hash each tool's» (наш toolHash не включает
+  annotations в единый дайджест - они сравниваются отдельно через annotationsEqual).
+- КОНКУРЕНТНАЯ КАРТА: Vaara (15★, AGPL, evidence-gating), etch.systems (24★, append-only audit),
+  MartinLoop (410★, budget+guardrails+verification). Все - runtime, мы - pre-runtime.
+
+## goose #12068 (parent design thread): вход (2026-10-13, день)
+
+- БРИФ: родительский дизайн-тред для PR #12724 (куда мы уже вошли). alexhancock (COLLABORATOR)
+  опубликовал 6-пунктовый план реализации; vincenzopalazzo - автор запроса; olaservo - прототип.
+  План уже содержит: digest-check при чтении, re-approval on digest change (Phase 2),
+  provenance-маркировку, namespace <ext>::<skill>.
+- МЫ ВОШЛИ (issuecomment-6124493789) с тремя добавками поверх плана:
+  (1) SURFACE-DIFF: skills/list дифф против одобренного снапшота - ловит добавления/удаления,
+      которые per-skill дайджест не видит (новый скилл = нет базового дайджеста);
+  (2) ГРАДАЦИЯ при re-approval: instruction rewrite = escalate, supporting file = review,
+      allowed-tools expanded = escalate, metadata churn = not a finding;
+  (3) ПОЛЕВОЙ ПРИМЕР: superpowers (297k★) - полная перезапись инструкций, same name/directory.
+- ПЕРЕПРОВЕРКА поймала: «same supporting files» был ЛОЖЬЮ (supporting files ИЗМЕНИЛИСЬ: один
+  удалён, один добавлен) → исправлено на «same skill name and directory» - тот же класс ошибки
+  что superpowers «two minor versions» и Netlify «patch release».
+- ТЕПЕРЬ МЫ В ОБОИХ ТРЕДАХ goose: родительский дизайн (#12068) + реализация (PR #12724).

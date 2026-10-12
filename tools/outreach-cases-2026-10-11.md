@@ -126,15 +126,15 @@ Repro (graded output from rugsnare 1.2.0):
 mkdir nm && cd nm && npm init -y
 # mcp.json: {"mcpServers":{"netlify":{"command":"node","args":["node_modules/@netlify/mcp/dist/netlify-mcp.js"]}}}
 npm i @netlify/mcp@1.15.0
-npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 scan --config mcp.json --timeout 45000
 npm i @netlify/mcp@1.15.1
-npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 diff --config mcp.json --timeout 45000
 #   8 [DRIFT] findings (all 8 router tools), exit 1
 #   (rugsnare 1.2.0 graded these NOTATION with empty decomposition; the recursive
 #    decomposer that landed after 1.2.0 grades all 8 LOOSENED with per-operation
 #    paths: 'selectSchema[get-deploy].params became optional')
 npm i @netlify/mcp@1.16.0
-npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 diff --config mcp.json --timeout 45000
 #   9 [DRIFT] findings, all LOOSENED, exit 1, e.g.:
 #   [DRIFT] netlify-coding-rules (LOOSENED) 4e82cb8d -> 132cc820
 #       additionalProperties false -> undeclared [loosen]
@@ -171,9 +171,9 @@ Repro (graded output from rugsnare 1.2.0):
 mkdir mm && cd mm && npm init -y
 # mcp.json: {"mcpServers":{"mongodb":{"command":"node","args":["node_modules/mongodb-mcp-server/dist/esm/index.js","--readOnly"],"env":{"MDB_MCP_CONNECTION_STRING":"mongodb://x:27017"}}}}
 npm i mongodb-mcp-server@2.1.2
-npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 scan --config mcp.json --timeout 45000
 npm i mongodb-mcp-server@3.0.0
-npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 diff --config mcp.json --timeout 45000
 #   20 [DRIFT] findings: 4 BREAKING + 16 NOTATION, exit 1, e.g.:
 #   [DRIFT] mongodb-logs (BREAKING) d441d608 -> 2d21a549
 #       changed type of 'limit' from number to integer [tighten]
@@ -253,9 +253,9 @@ Repro (graded output from rugsnare 1.2.0):
 mkdir cm && cd cm && npm init -y
 # mcp.json: {"mcpServers":{"currents":{"command":"node","args":["node_modules/@currents/mcp/dist/index.mjs"],"env":{"CURRENTS_API_KEY":"x","CURRENTS_RECORD_KEY":"x","CURRENTS_PROJECT_ID":"x"}}}}
 npm i @currents/mcp@2.3.3
-npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 scan --config mcp.json --timeout 45000
 npm i @currents/mcp@2.6.1
-npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+npx rugsnare@1.3.0 diff --config mcp.json --timeout 45000
 #   45 findings: 32 BREAKING + 1 NOTATION + 4 other, 7 NEW, 1 GONE, exit 1, e.g.:
 #   [DRIFT] currents-delete-action (BREAKING) faa2d544 -> 01a92be7
 #       added minLength=1 to 'actionId' [tighten]
