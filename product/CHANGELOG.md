@@ -1,5 +1,49 @@
 # Changelog
 
+## [1.4.0] - unreleased
+
+### Fixes
+
+- **`verify` now really defaults to Base Mainnet** (as promised in 1.0.1): the
+  default chain was accidentally left on Sepolia, so a bare
+  `rugsnare verify <file> --version <v>` queried the TEST chain and every
+  real release answered "not pinned" - a false negative in exactly the trust
+  check the command exists for. Found verifying 1.3.0 itself. Regression test
+  discriminates via 0.5.1 (pinned only on Sepolia): mainnet must answer
+  "not pinned". `--chain base-sepolia` still reaches the history chain.
+
+### Paywall-introduction detection (R31)
+
+heldfast's field data: 58 of their 66 review-events are paywall introductions;
+we had no signal for it at all. A "now requires a paid plan" rewrite is
+schema-silent - it graded COSMETIC ("description edit") while operationally
+breaking every caller. Now:
+
+- Anchored monetization phrases ("requires a paid plan", "free tier removed",
+  "purchase credits", "pay per call", 402, trial ended, ...) fire on
+  INTRODUCTION only (phrase present in the new prose, absent in the old).
+- Bare price words never trigger: finance tools describe prices as their
+  SUBJECT ("flight prices").
+- Additive `[PAYWALL]` flag + `paywallWarning` in JSON on any drift; the
+  schema-direction grade is untouched. Same behavior in `rugsnare history`.
+- Not an ATR rule (economics, not attack) - PIN-SPEC territory.
+
+### Hosted endpoints in the public drift-feed (R30)
+
+The feed watched 4 stdio npm packages while ~67% of the registry is hosted -
+and hosted servers change contracts WITHOUT any release (server-side deploy;
+Microsoft confirmed their azure-devops remote updates ahead of npm). Now:
+
+- `servers.json` accepts `{ name, url, headers? }` entries scanned via
+  Streamable HTTP/SSE alongside the npm entries; feed events carry
+  `transport: "http"`.
+- Starter endpoints (tools/list verified open): context7, deepwiki.
+- Public-feed honesty rule, stated in the feed README: no auth tokens can
+  ride a public Actions feed, so only endpoints whose `tools/list` answers
+  without authentication are monitored. Absence from the feed is not
+  cleanliness. Endpoints that close get `HOSTED_GATED` events; dark
+  endpoints get `HOSTED_ERROR`.
+
 ## [1.3.0] - 2026-10-12
 
 Deep schema analysis: recursive traversal, router-union intelligence,

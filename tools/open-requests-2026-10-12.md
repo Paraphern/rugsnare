@@ -589,3 +589,51 @@ Kiro#11726/gemini#25693 (зеркальный паттерн) + Atlassian forge-
   удалён, один добавлен) → исправлено на «same skill name and directory» - тот же класс ошибки
   что superpowers «two minor versions» и Netlify «patch release».
 - ТЕПЕРЬ МЫ В ОБОИХ ТРЕДАХ goose: родительский дизайн (#12068) + реализация (PR #12724).
+
+## Microsoft autogen #7353: КРУПНЕЙШИЙ ВХОД ЗА ПРОЕКТ (2026-10-13, вечер)
+
+- РЕПО: microsoft/autogen = 61,375★ (мультиагентный фреймворк, САМЫЙ БОЛЬШОЙ наш адресат).
+  #7353 = "Cryptographic action receipts for enterprise agent governance (AAR)", 402 коммента,
+  открыт 6 марта, все участники NONE (коммьюнити-дискуссия, ни одного мейнтейнера MS).
+- КЛЮЧЕВЫЕ УЧАСТНИКИ: Cyberweasel777 (AAR/Ed25519), razashariff (MCPS/IETF-draft/OWASP),
+  giskard09+Liuyanfeng1234 (JCS canonicalization RFC 8785), arian-gogani (pre-execution signatures),
+  lawcontinue ("decision vs execution provenance").
+- Д2-ВЕРИФИКАЦИЯ (grep по всем 402 комментам, 5 страниц):
+  - "tool definition pinning": 1 упоминание (razashariff -> OWASP, мимоходом, никто не подхватил)
+  - surface pin / schema pin: 0
+  - graded diff / direction grading: 0
+  - surface-level (vs per-tool) diff: 0
+  - surface pin + action receipt composition: 0
+  ВХОД ПОЛНОСТЬЮ ЧИСТ.
+- МЫ ВОШЛИ (issuecomment-6125226685): "AAR proves what happened. Surface pin proves it was
+  authorized. Neither alone is sufficient." Три вклада: (1) whole-surface pin (не per-tool),
+  (2) graded diff (не binary re-review), (3) composition thesis. OWASP Section 2 - "closest
+  touchpoint" с кредитом razashariff. Полевые данные: MongoDB 20/13+3/4.
+- ПЕРЕПРОВЕРКА поймала 2 правки ДО поста:
+  (а) "absent across all 402 comments" -> "I have not found in this thread" (убран абсолют)
+  (б) "no hash method" -> "no specified algorithm" (OWASP говорит "cryptographic hashes" -
+      метод ЕСТЬ, просто без указания алгоритма; "no hash method" опровержимо)
+- ЭТО НАШ САМЫЙ ВАЖНЫЙ ПОСТ: крупнейшая аудитория (61k★) + самый глубокий тред (402c) +
+  чистейшая ниша (0 разработок surface-pinning) + самый сильный тезис (composition: receipt+pin).
+
+## OWASP MCP Security Cheat Sheet: вход через PR #2764 (2026-10-13, вечер)
+
+- БРИФ: OWASP/CheatSheetSeries = 33,652★, THE стандарт де-факто для security. MCP Security
+  Cheat Sheet обновлён 4 октября (активный). Мейнтейнер mackowski (COLLABORATOR).
+  Issue #2756 (kenneives - тот же что LiteLLM#44093): «не сказано ЧТО хэшить и КАК
+  канонизировать». PR #2764: одно предложение «hash the complete tool definition».
+  Мейнтейнер попросил краткости - 3 из 4 пунктов kenneives отложены (canonicalization,
+  surface-digest, re-approval). Градация НЕ была предложена никем (наша новация).
+- МЫ ВОШЛИ (issuecomment-6125534006): «grade the changes, not just gate them» жирным
+  + конкретный кейс (MongoDB 20/16/4) + 4-строчная таксономия + оффер draft follow-up
+  «Pinning Details» секции. Ссылка docs/servers curl-200. Компактно (100 слов) -
+  уважение к культуре проекта (мейнтейнер ценит краткость).
+- ПЕРЕПРОВЕРКА поймала 3 правки ДО поста:
+  (а) «deferred from #2756» → grading НЕ был отложен (его там НЕ БЫЛО) - отделён как
+      «neither #2756 nor this PR addresses»
+  (б) «routinely 80/20» → универсальная пропорция, которой нет (Netlify 0%, Currents 2%) -
+      заменена конкретным кейсом MongoDB
+  (в) «three deferred items» включал «change classification» ошибочно - градация
+      наша добавка, не отложенный пункт
+- СВЯЗКА: autogen#7353 (composition thesis) → OWASP (grading taxonomy) = стандарт
+  сверху вниз: от фреймворка к security- guidelines.

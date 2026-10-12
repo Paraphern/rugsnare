@@ -523,6 +523,42 @@ export function detectAdditionalPropertiesDirection(oldSchema, newSchema) {
   };
 }
 
+/**
+ * R31: monetization-introduction detection. A "now requires a paid plan"
+ * rewrite is schema-silent - it lands in COSMETIC/NOTATION today - but it is
+ * operationally a break: the tool the user approved is no longer the tool
+ * they get. Fires only on INTRODUCTION: a phrase present in the new
+ * description and absent in the old one. Patterns are anchored phrases,
+ * never bare price words - finance tools describe prices as their SUBJECT
+ * ("flight prices"), so `price`/`pricing` alone must never trigger.
+ * Sibling of guard-parameter warnings: additive flag, does not change the
+ * schema-direction grade. Not an ATR rule (economics, not attack) -
+ * PIN-SPEC territory.
+ */
+const MONETIZATION_PATTERNS = [
+  [/\brequires? (?:a )?(paid|premium|pro) (?:plan|tier|subscription|account)\b/i, 'requires a paid plan'],
+  [/\b(?:paid|premium|pro) (?:plan|tier|subscription) (?:required|needed)\b/i, 'paid plan required'],
+  [/\bsubscription (?:required|needed|active)\b/i, 'subscription required'],
+  [/\bfree tier (?:has been |is )?(?:removed|discontinued|no longer|ended)\b/i, 'free tier removed'],
+  [/\b(?:upgrade|subscribe) to (?:our )?(?:a )?(paid|pro|premium)\b/i, 'upgrade to paid'],
+  [/\b(?:purchase|buy) credits\b/i, 'purchase credits'],
+  [/\bpay (?:per|for each) (?:call|request|invocation|token|scan|search)\b/i, 'pay per call'],
+  [/\b(?:pricing|fees?) (?:now )?appl(?:y|ies)\b/i, 'pricing applies'],
+  [/\btrial (?:period|access) (?:has )?(?:ended|expired|no longer available)\b/i, 'trial ended'],
+  [/\bHTTP 402\b|\b402 payment required\b/i, '402 payment required'],
+];
+
+export function detectPaywallIntroduction(oldDescription, newDescription) {
+  if (!newDescription) return null;
+  const old = oldDescription ?? '';
+  for (const [re, label] of MONETIZATION_PATTERNS) {
+    if (re.test(newDescription) && !re.test(old)) {
+      return { paywall: true, text: `pricing language introduced ("${label}") - the tool you approved may now demand payment` };
+    }
+  }
+  return null;
+}
+
 export function compareTools(serverPin, liveTools, toolHashFn) {
   const result = [];
   for (const tool of liveTools) {
@@ -545,6 +581,10 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
       const driftType = schemaChanged
         ? gradeSchemaDrift(paramChanges, notationChanges)
         : 'COSMETIC';
+      // R31: prose-level paywall introduction rides on ANY drift - a pure
+      // prose rewrite grades COSMETIC, and "now requires a paid plan" must
+      // never read as a cosmetic edit. Additive flag, grade untouched.
+      const paywall = detectPaywallIntroduction(pin.description, tool.description);
       result.push({
         tool: tool.name,
         status: 'DRIFT',
@@ -555,6 +595,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         proseChanged,
         schemaChanges: paramChanges,
         ...(notationChanges.length ? { notationChanges } : {}),
+        ...(paywall ? { paywallWarning: paywall.text } : {}),
         oldDescription: pin.description ?? '',
         newDescription: tool.description ?? '',
       });

@@ -50,3 +50,33 @@ test('sha256File hashes file content correctly (vs independent crypto)', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// 1.0.1 promised "verify defaults to Base Mainnet"; the default was left on
+// sepolia, so a bare `verify` queried the TEST chain and every real release
+// answered "not pinned" (found verifying 1.3.0 itself). Discriminator: 0.5.1
+// is pinned ONLY on sepolia - on mainnet the answer must be "not pinned",
+// while a sepolia default would return VERIFIED or a hash MISMATCH.
+test('bare verify defaults to Base Mainnet, not sepolia (1.0.1 contract)', async () => {
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const run = promisify(execFile);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-vd-'));
+  try {
+    const file = path.join(dir, 'rugsnare-0.5.1.tgz');
+    fs.writeFileSync(file, 'not the real artifact - message is what matters');
+    const { fileURLToPath } = await import('node:url');
+    const cli = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
+    let out = '';
+    try {
+      const r = await run(process.execPath, [cli, 'verify', file, '--version', '0.5.1'], { timeout: 30000 });
+      out = r.stdout + r.stderr;
+    } catch (e) {
+      // exit 2 = "not pinned" is a legitimate CLI outcome; capture its output
+      out = (e.stdout ?? '') + (e.stderr ?? '') + (e.message ?? '');
+    }
+    assert.match(out, /not pinned/i, 'mainnet has no 0.5.1 pin');
+    assert.doesNotMatch(out, /VERIFIED|MISMATCH/i, 'sepolia would have answered about the pin');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -4,7 +4,7 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose - this is a roadmap, not a secret.)
 
-## Hosted endpoints in the public drift-feed (R30, from the heldfast wave, 2026-10-12)
+## Hosted endpoints in the public drift-feed (R30 - SHIPPED in 1.4.0 draft, 2026-10-12)
 
 Verified gap: `driftfeed.mjs` scans a curated list of 4-6 stdio npm packages
 only (`DEFAULT_SERVERS` + `drift-feed/servers.json`); zero hosted HTTP
@@ -49,7 +49,7 @@ while a like-for-like install shows real BREAKINGs).
   ERESOLVE, and mark the contract as legacy-resolved.
 - Diff pages should state dep provenance - "captured against zod X.Y.Z".
 
-## Paywall-introduction grade (R31, from the heldfast wave, 2026-10-12)
+## Paywall-introduction grade (R31 - SHIPPED in 1.4.0 draft, 2026-10-12)
 
 Verified gap: zero monetization vocabulary anywhere in `pins.js`/`advisory.js`
 (paid/pricing/paywall/subscription/billing/credits - no hits). A

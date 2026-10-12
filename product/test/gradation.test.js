@@ -452,3 +452,55 @@ test('R4 keyword swap with identical branches grades NOTATION, not LOOSENED', as
   assert.equal(swap.notationOnly, true, 'swap is notationOnly');
   assert.equal(gradeSchemaDrift(changes, []), 'NOTATION', 'identical-branch keyword swap must grade NOTATION');
 });
+
+// R31: paywall introduction (58 of heldfast's 66 review events are exactly
+// this class). Schema-silent prose rewrite - must flag without touching the
+// grade; anchored phrases only, finance tools describe prices as their
+// SUBJECT and must stay silent.
+test('R31: paywall introduction detected on prose-only rewrite', async () => {
+  const { compareTools } = await import('../src/pins.js');
+  const { schemaHash, proseHash } = await import('../src/hash.js');
+  const schema = { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] };
+  const oldTool = { name: 'search', description: 'Search flights by origin and destination.', inputSchema: schema };
+  const newTool = { name: 'search', description: 'Search flights by origin and destination. Requires a paid plan (Pro) for more than 10 searches per day.', inputSchema: schema };
+  const pin = { tools: { search: { hash: 'h1', schemaHash: schemaHash(oldTool), proseHash: proseHash(oldTool), description: oldTool.description, inputSchema: schema, firstSeen: 't', approved: true } } };
+  const out = compareTools(pin, [newTool], () => 'h2');
+  assert.equal(out[0].status, 'DRIFT');
+  assert.equal(out[0].driftType, 'COSMETIC', 'schema untouched - grade stays COSMETIC');
+  assert.ok(out[0].paywallWarning, 'paywall flag must ride the drift');
+  assert.match(out[0].paywallWarning, /paid plan/i);
+});
+
+test('R31: finance tools describing prices never fire (subject, not monetization)', async () => {
+  const { detectPaywallIntroduction } = await import('../src/pins.js');
+  assert.equal(detectPaywallIntroduction(
+    'Search flights.',
+    'Search flights and compare prices, hotel prices and car rental prices. Returns the cheapest price.',
+  ), null, 'price words are the tool SUBJECT');
+  assert.equal(detectPaywallIntroduction(
+    'Airline pricing data API.',
+    'Airline pricing data API with per-route pricing history and competitor pricing.',
+  ), null, 'bare pricing vocabulary is not monetization of the tool');
+});
+
+test('R31: already-paid wording is not an introduction', async () => {
+  const { detectPaywallIntroduction } = await import('../src/pins.js');
+  assert.equal(detectPaywallIntroduction(
+    'Search (subscription required, 10k calls/month).',
+    'Search (subscription required, 50k calls/month).',
+  ), null, 'phrase present in both - not an introduction');
+});
+
+test('R31: more introduction phrasings and history parity', async () => {
+  const { detectPaywallIntroduction, compareTools } = await import('../src/pins.js');
+  assert.ok(detectPaywallIntroduction('Deploy sites.', 'Deploy sites. Free tier removed; purchase credits to continue.'), 'free tier removed');
+  assert.ok(detectPaywallIntroduction('Translate text.', 'Translate text. HTTP 402 responses after the quota.'), '402');
+  assert.equal(detectPaywallIntroduction('A', 'B'), null, 'no monetization text');
+  // history-mode parity: diffVersionContracts must carry the same flag
+  const { diffVersionContracts } = await import('../src/history.js');
+  const older = { tools: { t: { hash: 'h1', schemaHash: 's1', proseHash: 'p1', description: 'Search the web.', inputSchema: { type: 'object' } } } };
+  const newer = { tools: { t: { hash: 'h2', schemaHash: 's1', proseHash: 'p2', description: 'Search the web. Requires a paid plan.', inputSchema: { type: 'object' } } } };
+  const findings = diffVersionContracts(older, newer);
+  assert.equal(findings[0].status, 'DRIFT');
+  assert.ok(findings[0].paywallWarning, 'history mode carries the flag too');
+});

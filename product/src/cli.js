@@ -236,6 +236,10 @@ function printVerdict(server, verdicts, json) {
     if (v.driftType === 'NOTATION' && v.notationChanges) {
       for (const nc of v.notationChanges) console.log(`      ~ ${nc} (parameters unchanged)`);
     }
+    // R31: paywall introduction - schema-silent, operationally a break
+    if (v.paywallWarning) {
+      console.log(`      [PAYWALL] ${v.paywallWarning}`);
+    }
     // LOOSENED: constraints dropped - still drift, different failure mode
     if (v.driftType === 'LOOSENED') {
       console.log(`      ↳ validation loosened (constraints removed, exit 1)`);
@@ -708,11 +712,16 @@ function cmdInit() {
 
 async function cmdVerify(flags) {
   const file = flags._[0];
-  const { version, chain = 'base-sepolia', rpc } = flags;
+  // Base Mainnet is the default since 1.0.1 (the operational pin chain,
+  // 1.0.0+); Sepolia stays reachable via --chain base-sepolia. The default
+  // was accidentally left on sepolia and a bare `verify` queried the test
+  // chain - a false "not pinned" for every real release (found verifying
+  // 1.3.0 itself).
+  const { version, chain = 'base', rpc } = flags;
   const rpcUrl = rpc ?? DEFAULT_RPCS[chain];
   const contract = flags.contract ?? DEFAULT_CONTRACTS[chain];
   if (!file || !version) {
-    console.error('Usage: rugsnare verify <file> --version <v> [--chain base-sepolia] [--contract <0x...>] [--rpc <url>]');
+    console.error('Usage: rugsnare verify <file> --version <v> [--chain base|base-sepolia] [--contract <0x...>] [--rpc <url>]');
     process.exit(2);
   }
   if (!rpcUrl) { console.error(`Unknown chain "${chain}". Pass --rpc <https url> or use base|base-sepolia.`); process.exit(2); }
@@ -1067,7 +1076,8 @@ async function cmdHistory(flags) {
       console.log(`\n${from} -> ${to}${pubDate}: ${findings.length} finding(s)`);
       for (const f of findings) {
         const driftLabel = f.driftType ? ` (${f.driftType})` : '';
-        console.log(`  [${f.status}] ${f.tool}${driftLabel}`);
+        const paywallLabel = f.paywallWarning ? ' [PAYWALL]' : '';
+        console.log(`  [${f.status}] ${f.tool}${driftLabel}${paywallLabel}`);
         if (f.oldDescription !== undefined && f.oldDescription !== f.newDescription) {
           console.log(`      WAS: ${String(f.oldDescription).replace(/\s+/g, ' ').slice(0, 200)}`);
           console.log(`      NOW: ${String(f.newDescription ?? '').replace(/\s+/g, ' ').slice(0, 200)}`);

@@ -35,6 +35,41 @@ async function getLatestVersion(pkg) {
   return stdout.trim();
 }
 
+/**
+ * R30: hosted (remote HTTP) endpoints in the public feed. stdio npm packages
+ * cover a third of the registry; the majority is hosted, and hosted servers
+ * change contracts WITHOUT any release (server-side deploy) - the only
+ * protection is continuous monitoring with a public log.
+ *
+ * Coverage rule (stated in the feed README so silence is never read as
+ * cleanliness): a PUBLIC Actions feed cannot carry auth tokens, so only
+ * endpoints whose tools/list answers WITHOUT authentication are monitored -
+ * a common MCP pattern (list open, call gated). Auth-gated endpoints are
+ * excluded by design, not by oversight.
+ *
+ * One polite request per endpoint per day; failures are logged events
+ * (HOSTED_ERROR / HOSTED_GONE), never fatal - hosted flakiness is not drift.
+ */
+async function scanHosted(server) {
+  const { fetchToolsHttp } = await import('./rpc-http.js');
+  const { tools = [], prompts = [], resources = [] } = await fetchToolsHttp({
+    url: server.url,
+    headers: server.headers ?? {},
+    timeoutMs: 30000,
+  });
+  return {
+    server: server.name,
+    url: server.url,
+    transport: 'http',
+    // no "version" concept: hosted contracts change without releases, which
+    // is exactly why they need watching - the snapshot hash IS the version
+    version: 'hosted',
+    tools: tools.map((t) => ({ name: t.name, hash: toolHash(t), description: t.description ?? '', advisory: scanToolDescription(t.description ?? '').advisory })),
+    prompts: prompts.map((p) => ({ name: p.name, hash: promptHash(p) })),
+    resources: resources.map((r) => ({ name: r.name ?? r.uri, hash: resourceHash(r) })),
+  };
+}
+
 async function installAndScan(server, dir) {
   const pkgDir = path.join(dir, server.name);
   fs.mkdirSync(pkgDir, { recursive: true });
@@ -112,20 +147,37 @@ async function main() {
   const allChanges = [];
 
   for (const server of servers) {
+    // R30: two entry shapes share one loop - { name, pkg } (stdio npm) and
+    // { name, url, headers? } (hosted HTTP). Errors are feed events either way.
+    const hosted = Boolean(server.url);
     try {
-      process.stderr.write(`scanning ${server.pkg}...`);
-      const data = await installAndScan(server, tmpDir);
+      process.stderr.write(`scanning ${hosted ? server.url : server.pkg}...`);
+      const data = hosted ? await scanHosted(server) : await installAndScan(server, tmpDir);
       currentSnapshot[server.name] = data;
       const comparison = compareSnapshots(prevSnapshot?.[server.name], data);
       for (const change of comparison.changes) {
-        allChanges.push({ ts: new Date().toISOString(), server: server.name, ...change });
+        allChanges.push({ ts: new Date().toISOString(), server: server.name, ...(hosted ? { transport: 'http' } : {}), ...change });
       }
       if (comparison.new_server) {
-        allChanges.push({ ts: new Date().toISOString(), server: server.name, type: 'FIRST_SCAN', detail: `v${data.version}, ${data.tools.length} tools` });
+        allChanges.push({ ts: new Date().toISOString(), server: server.name, ...(hosted ? { transport: 'http' } : {}), type: 'FIRST_SCAN', detail: `${hosted ? 'hosted, ' : `v${data.version}, `}${data.tools.length} tools` });
       }
       process.stderr.write(` done (${data.tools.length} tools, ${comparison.changes.length} changes)\n`);
     } catch (err) {
       process.stderr.write(` FAILED: ${err.message}\n`);
+      if (hosted) {
+        // A hosted endpoint dying or starting to demand auth is itself a
+        // finding, not noise: "endpoint went dark" and "list now gated" are
+        // both contract-relevant events for consumers.
+        const gated = /401|403|unauthorized/i.test(String(err.message));
+        allChanges.push({
+          ts: new Date().toISOString(),
+          server: server.name,
+          transport: 'http',
+          type: gated ? 'HOSTED_GATED' : 'HOSTED_ERROR',
+          detail: err.message.slice(0, 200),
+        });
+        continue;
+      }
       // A monitored package vanishing from npm is not a generic error - it is
       // the postmark-mcp incident class (package unpublished / renamed). Feed
       // consumers must be able to alert on it specifically.

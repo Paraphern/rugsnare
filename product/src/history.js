@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fetchTools } from './rpc.js';
 import { toolHash, schemaHash, proseHash } from './hash.js';
-import { annotationsEqual, schemaDiff, schemaNotationDiff, gradeSchemaDrift, detectAdditionalPropertiesDirection } from './pins.js';
+import { annotationsEqual, schemaDiff, schemaNotationDiff, gradeSchemaDrift, detectAdditionalPropertiesDirection, detectPaywallIntroduction } from './pins.js';
 import { compareVersions } from './version.js';
 import { extractTgz } from './tarball.js';
 
@@ -241,12 +241,16 @@ export function diffVersionContracts(older, newer) {
     const driftType = schemaChanged
       ? gradeSchemaDrift(paramChanges, notationChanges)
       : 'COSMETIC';
+    // R31 parity with `rugsnare diff`: paywall introduction is a prose-level
+    // flag on any drift (schema-silent rewrites grade COSMETIC otherwise)
+    const paywall = detectPaywallIntroduction(prev.description, pin.description);
     findings.push({
       tool: name,
       status: 'DRIFT',
       driftType,
       schemaChanges: paramChanges,
       ...(notationChanges.length ? { notationChanges } : {}),
+      ...(paywall ? { paywallWarning: paywall.text } : {}),
       oldDescription: prev.description,
       newDescription: pin.description,
     });

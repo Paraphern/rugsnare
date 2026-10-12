@@ -2,5 +2,7 @@
   { "name": "server-filesystem", "pkg": "@modelcontextprotocol/server-filesystem", "args": ["/tmp"] },
   { "name": "server-memory", "pkg": "@modelcontextprotocol/server-memory", "args": [] },
   { "name": "server-everything", "pkg": "@modelcontextprotocol/server-everything", "args": [] },
-  { "name": "server-sequential-thinking", "pkg": "@modelcontextprotocol/server-sequential-thinking", "args": [] }
+  { "name": "server-sequential-thinking", "pkg": "@modelcontextprotocol/server-sequential-thinking", "args": [] },
+  { "name": "context7-hosted", "url": "https://mcp.context7.com/mcp" },
+  { "name": "deepwiki-hosted", "url": "https://mcp.deepwiki.com/mcp" }
 ]
