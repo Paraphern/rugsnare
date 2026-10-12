@@ -1070,10 +1070,18 @@ async function cmdHistory(flags) {
 
   if (flags.json) { console.log(JSON.stringify(result, null, 2)); }
   else {
-    for (const { from, to, toPublishedAt, findings } of result.pairs) {
-      if (findings.length === 0) continue;
+    for (const p of result.pairs) {
+      const { from, to, toPublishedAt, findings, depsChanged } = p;
+      if (findings.length === 0 && !depsChanged) continue;
       const pubDate = toPublishedAt ? ` (published ${String(toPublishedAt).slice(0, 10)})` : '';
       console.log(`\n${from} -> ${to}${pubDate}: ${findings.length} finding(s)`);
+      // R32 provenance: schema deps resolved differently between the two
+      // captures - part of this diff may be dependency drift, not server code
+      if (depsChanged?.length) {
+        const drift = depsChanged.map((d) => `${d.dep} ${d.from ?? 'absent'} -> ${d.to ?? 'absent'}`).join(', ');
+        console.log(`      ~ schema deps resolved differently: ${drift} (some findings may be dep drift, not server code)`);
+      }
+      if (findings.length === 0) continue;
       for (const f of findings) {
         const driftLabel = f.driftType ? ` (${f.driftType})` : '';
         const paywallLabel = f.paywallWarning ? ' [PAYWALL]' : '';

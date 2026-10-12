@@ -29,7 +29,7 @@ watch-list with secrets - a public Actions feed cannot carry tokens).
 - Site: `scans.html`/feed rendering gains a transport badge; no schema change
   to `changes.jsonl` beyond the transport field.
 
-## History-mode contract provenance (R32, from the 1.3.0 release re-run, 2026-10-12)
+## History-mode contract provenance (R32 - SHIPPED in 1.4.0 draft, 2026-10-12)
 
 Verified live on mongodb-mcp-server: 2.1.2 declares `zod: ^4.4.3` (floating).
 The same 2.1.2 tarball, installed and run on different days, served materially

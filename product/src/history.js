@@ -122,13 +122,57 @@ function serverEntry(pkgDir) {
 
 /**
  * Install production deps of the extracted package WITHOUT running any
- * lifecycle script (--ignore-scripts). --legacy-peer-deps: we are a scanner,
- * not a production install - peer-conflicting real-world packages (common
- * among Claude Code companions) must still be scannable. Command and
- * arguments are fully static literals; the only dynamic input is cwd
- * (a temp dir we created).
+ * lifecycle script (--ignore-scripts).
+ *
+ * R32: STRICT resolution first, --legacy-peer-deps as a FALLBACK (not the
+ * default). Reason: the contract a server serves can depend on which
+ * in-range dependency minor npm resolves - mongodb-mcp-server 2.1.2 declares
+ * zod ^4.4.3 and served materially different inputSchema depending on the
+ * resolved zod (found live by the 1.3.0 release re-run). A strict install
+ * matches what a plain user install resolves; the legacy fallback stays for
+ * peer-conflicting packages (common among Claude Code companions), and the
+ * captured contract is marked legacy-resolved so consumers know the tree
+ * may differ. Command and arguments are fully static literals; the only
+ * dynamic input is cwd (a temp dir we created).
  */
-const NPM_INSTALL_ARGS = ['install', '--omit=dev', '--ignore-scripts', '--legacy-peer-deps', '--no-audit', '--no-fund', '--loglevel=error'];
+const NPM_INSTALL_BASE = ['install', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--loglevel=error'];
+
+/**
+ * R32: schema-affecting dependencies whose RESOLVED version at install time
+ * can change the captured contract. Recorded next to every captured version
+ * ("captured against zod X.Y.Z") so pair diffs can attribute schema changes
+ * to dependency drift instead of server code.
+ */
+export const SCHEMA_DEPS = [
+  'zod',
+  'ajv',
+  '@sinclair/typebox',
+  '@modelcontextprotocol/sdk',
+  '@modelcontextprotocol/node',
+];
+
+/** Read the resolved versions of SCHEMA_DEPS from an installed tree. */
+export function resolvedSchemaDeps(pkgDir) {
+  const out = {};
+  for (const dep of SCHEMA_DEPS) {
+    try {
+      const pj = JSON.parse(fs.readFileSync(path.join(pkgDir, 'node_modules', dep, 'package.json'), 'utf8'));
+      if (pj.version) out[dep] = pj.version;
+    } catch { /* not installed - not every server uses every schema lib */ }
+  }
+  return out;
+}
+
+/** Pure diff of two resolved-dep maps: [{dep, from, to}] where they differ. */
+export function depChangesBetween(oldDeps = {}, newDeps = {}) {
+  const changed = [];
+  for (const dep of [...new Set([...Object.keys(oldDeps), ...Object.keys(newDeps)])]) {
+    if (oldDeps[dep] !== newDeps[dep]) {
+      changed.push({ dep, from: oldDeps[dep] ?? null, to: newDeps[dep] ?? null });
+    }
+  }
+  return changed;
+}
 
 /**
  * Stub env var NAMES for credential-gated servers (P3 followup, proven in
@@ -152,17 +196,29 @@ function buildStubEnv() {
   return env;
 }
 
-function installDeps(pkgDir) {
+function runNpmInstall(pkgDir, extraArgs) {
   const npmCli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const useCli = fs.existsSync(npmCli);
+  const base = useCli ? [npmCli, ...NPM_INSTALL_BASE, ...extraArgs] : [...NPM_INSTALL_BASE, ...extraArgs];
   const cmd = useCli ? process.execPath : 'npm';
-  const args = useCli ? [npmCli, ...NPM_INSTALL_ARGS] : NPM_INSTALL_ARGS;
   return new Promise((resolve, reject) => {
-    execFile(cmd, args, { cwd: pkgDir, timeout: 120000, windowsHide: true }, (err, _so, se) => {
+    execFile(cmd, base, { cwd: pkgDir, timeout: 120000, windowsHide: true }, (err, _so, se) => {
       if (err) reject(new Error(`npm install: ${(se || err.message).split('\n')[0]}`));
       else resolve();
     });
   });
+}
+
+/** Strict install first; --legacy-peer-deps only on ERESOLVE. Returns the mode. */
+async function installDeps(pkgDir) {
+  try {
+    await runNpmInstall(pkgDir, []);
+    return 'strict';
+  } catch (e) {
+    if (!/ERESOLVE|peer dep/i.test(String(e.message))) throw e;
+    await runNpmInstall(pkgDir, ['--legacy-peer-deps']);
+    return 'legacy';
+  }
 }
 
 /** List the tool contracts of one version by actually running it. */
@@ -170,7 +226,12 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `rugsnare-hist-${version}-`));
   try {
     const pkgDir = await extractVersion(tarballUrl, dir);
-    await installDeps(pkgDir);
+    // R32: capture the resolved schema-dep versions NEXT TO the contract -
+    // a floating zod range can rewrite a server's contract with no server
+    // release, and pair diffs must be able to attribute changes to dep
+    // drift rather than server code.
+    const depResolution = await installDeps(pkgDir);
+    const deps = resolvedSchemaDeps(pkgDir);
     const entry = serverEntry(pkgDir);
     // serverArgs: per-package launch arguments (e.g. LaunchDarkly needs
     // "start --transport stdio --api-key <key>"). Passed as a fixed array
@@ -193,7 +254,7 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
         annotations: t.annotations,
       };
     }
-    return { version, tools: pins, toolCount: (tools || []).length };
+    return { version, tools: pins, toolCount: (tools || []).length, deps, depResolution };
   } finally {
     try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 }); } catch { /* Windows */ }
   }
@@ -426,8 +487,18 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
   const pairs = [];
   for (let i = 1; i < ran.length; i++) {
     const findings = diffVersionContracts(ran[i - 1], ran[i]);
-    // publish date of the NEWER version - when the change became live
-    pairs.push({ from: ran[i - 1].version, to: ran[i].version, toPublishedAt: time[ran[i].version] ?? null, findings });
+    // R32 provenance: which schema deps each side was captured against, and
+    // where they differ - part of the pair's diff may be dep drift, not
+    // server code (mongodb 2.1.2 + floating zod taught us this live)
+    const depsChanged = depChangesBetween(ran[i - 1].deps ?? {}, ran[i].deps ?? {});
+    pairs.push({
+      from: ran[i - 1].version,
+      to: ran[i].version,
+      toPublishedAt: time[ran[i].version] ?? null,
+      deps: { from: ran[i - 1].deps ?? {}, to: ran[i].deps ?? {} },
+      ...(depsChanged.length ? { depsChanged } : {}),
+      findings,
+    });
   }
 
   const silentChanges = pairs.reduce((n, p) => n + p.findings.length, 0);

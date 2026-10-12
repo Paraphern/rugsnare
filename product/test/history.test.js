@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parsePackageName, diffVersionContracts } from '../src/history.js';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { parsePackageName, diffVersionContracts, resolvedSchemaDeps, depChangesBetween } from '../src/history.js';
 import { compareVersions } from '../src/version.js';
 
 test('parsePackageName: bare, scoped, and URL forms', () => {
@@ -138,4 +141,30 @@ test('R12: classifyUnreachable detects kill-switch patterns', async () => {
   assert.equal(classifyUnreachable('MCP server exited early (code 1)').cause, 'CRASH');
   assert.equal(classifyUnreachable('request timed out after 15000ms').cause, 'TIMEOUT');
   assert.equal(classifyUnreachable('some random error').cause, 'UNKNOWN');
+});
+
+// R32: contract provenance. A floating schema dep (mongodb 2.1.2, zod ^4.4.3)
+// rewrites a server's contract with no server release; captures must record
+// resolved dep versions and pair diffs must flag where they differed.
+test('R32: resolvedSchemaDeps reads installed versions of watched schema deps', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rs-r32-'));
+  try {
+    fs.mkdirSync(path.join(dir, 'node_modules', 'zod'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'node_modules', 'zod', 'package.json'), JSON.stringify({ name: 'zod', version: '4.4.3' }));
+    fs.mkdirSync(path.join(dir, 'node_modules', '@modelcontextprotocol', 'sdk'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'node_modules', '@modelcontextprotocol', 'sdk', 'package.json'), JSON.stringify({ name: '@modelcontextprotocol/sdk', version: '1.29.0' }));
+    const deps = resolvedSchemaDeps(dir);
+    assert.equal(deps.zod, '4.4.3');
+    assert.equal(deps['@modelcontextprotocol/sdk'], '1.29.0');
+    assert.equal(deps.ajv, undefined, 'unwatched/absent deps are simply absent');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('R32: depChangesBetween flags drift, appearance and disappearance', () => {
+  assert.deepEqual(depChangesBetween({ zod: '4.4.3' }, { zod: '4.4.3' }), [], 'same resolution is no drift');
+  assert.deepEqual(depChangesBetween({ zod: '4.4.3' }, { zod: '4.5.0' }), [{ dep: 'zod', from: '4.4.3', to: '4.5.0' }]);
+  assert.deepEqual(depChangesBetween({}, { zod: '4.5.0' }), [{ dep: 'zod', from: null, to: '4.5.0' }], 'dep appeared');
+  assert.deepEqual(depChangesBetween({ ajv: '8.0.0' }, {}), [{ dep: 'ajv', from: '8.0.0', to: null }], 'dep disappeared');
 });

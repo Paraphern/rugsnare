@@ -28,6 +28,25 @@ breaking every caller. Now:
   schema-direction grade is untouched. Same behavior in `rugsnare history`.
 - Not an ATR rule (economics, not attack) - PIN-SPEC territory.
 
+### Contract provenance: schema-dep versions next to every capture (R32)
+
+Found live by the 1.3.0 release re-run: mongodb-mcp-server 2.1.2 declares
+`zod: ^4.4.3` and the SAME tarball served materially different inputSchema
+depending on which in-range zod minor resolved at install time - a floating
+schema dependency rewrites a server's tool contract with no server release.
+Now:
+
+- Every captured version records the resolved versions of schema-affecting
+  deps (zod, ajv, @sinclair/typebox, @modelcontextprotocol/sdk, /node) and
+  whether the install resolved strictly or via the --legacy-peer-deps
+  fallback.
+- Pair diffs carry `deps.from` / `deps.to` and flag `depsChanged` - when the
+  two sides were captured against different dependency resolutions, the
+  human output says so: "some findings may be dep drift, not server code".
+- Dependency installs are now STRICT-FIRST (matching what a plain user
+  install resolves); --legacy-peer-deps remains as a marked fallback for
+  peer-conflicting packages instead of being the silent default.
+
 ### Hosted endpoints in the public drift-feed (R30)
 
 The feed watched 4 stdio npm packages while ~67% of the registry is hosted -
