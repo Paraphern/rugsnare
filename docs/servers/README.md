@@ -7,7 +7,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | server | installs/week | window | findings | page |
 |---|---|---|---|---|
 | @azure-devops/mcp (Microsoft) | 120k | 2.5.0 -> 2.10.0 | 110 | [azure-devops.md](azure-devops.md) |
-| chrome-devtools-mcp (Chrome team) | 1.73M | 1.8.0 -> 1.10.1 | 30 (all notation after re-grade) | [chrome-devtools.md](chrome-devtools.md) |
+| chrome-devtools-mcp (Chrome team) | 1.73M | 1.8.0 -> 1.10.1 | 30: 27 notation + 1 formal tightening (wait_for) + 1 NEW + 1 cosmetic | [chrome-devtools.md](chrome-devtools.md) |
 | @netlify/mcp (Netlify) | 43k | 1.14.0 -> 1.18.0 | 58 (24 versions) | [netlify.md](netlify.md) |
 | mongodb-mcp-server (MongoDB) | 98k | 2.1.2 -> 3.0.5 | 20 in 3.0.0 (13 notation + 7 real tightenings) | [mongodb.md](mongodb.md) |
 | @sentry/mcp-server (Sentry) | 100k | 0.38.0 -> 0.42.0 | 3 | [sentry.md](sentry.md) |
@@ -20,5 +20,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | apify-mcp-server | - | 0.16.0 -> 0.17.4 | 1 BREAKING | [apify.md](apify.md) |
 | @notionhq/notion-mcp-server (Notion) | 195k | 2.4.1 -> 2.5.2 | 0 (control) | [notion.md](notion.md) |
 | @heroku/mcp-server (Heroku/Salesforce) | 11k | 1.2.5 -> 1.2.11 | 0 (control) | [heroku.md](heroku.md) |
+| obra/superpowers (skills collection) | 298k★ | 6.4.2 -> 7.0.0 | 6 (1 DANGEROUS) | [superpowers.md](superpowers.md) |
 
-Last full verification: 2026-10-11. Install counts: npm registry, week ending the audit date.
+Last full verification: 2026-10-11; key pages re-graded with rugsnare 1.3.0 on 2026-10-12 (recursive traversal + additionalProperties equivalence). Install counts: npm registry, week ending the audit date.
+Superpowers row is a skills record (GitHub stars, not npm installs); verified 2026-10-12.
