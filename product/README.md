@@ -58,6 +58,8 @@ Docker: `geraldmuddlethwack/rugsnare-mcp` (auto-built from tags).
 
 Each pin also stores a **split hash**: `schemaHash` (classified BREAKING on change) and `proseHash` (COSMETIC), plus the canonical `inputSchema` so drift reports read *"added required parameter 'mode'"* instead of just *"hash changed"*.
 
+Drift that is schema-silent but operationally a break also gets flagged: a description rewriting into *"requires a paid plan"*, *"free tier removed"*, *"purchase credits"* (and similar anchored monetization phrases - introduced, not merely present) carries a `[PAYWALL]` warning next to the grade; the grade itself is untouched. Finance tools describing prices as their subject never trigger.
+
 Behavioral annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) are compared through their **spec defaults** - a server spelling out a hint it was already relying on is not flagged; silently dropping an explicit `destructiveHint: false` after approval is ANNOTATION drift.
 
 ## Scan a package's whole history
@@ -68,7 +70,9 @@ Before you adopt an MCP server, check whether it has EVER quietly changed its co
 npx rugsnare history @somebody/mcp-server --last 10
 ```
 
-Downloads every published version straight from the registry (no lifecycle scripts run), installs production deps with `--ignore-scripts`, actually starts each version like an MCP client would, takes `tools/list`, and diffs consecutive versions with the same split-hash logic as `diff`. The output prints the was/became text for every drifted tool. Exit 1 = silent changes found.
+Downloads every published version straight from the registry (no lifecycle scripts run), installs production deps with `--ignore-scripts` (strict resolution first; `--legacy-peer-deps` only as a marked fallback), actually starts each version like an MCP client would, takes `tools/list`, and diffs consecutive versions with the same split-hash logic as `diff`. The output prints the was/became text for every drifted tool. Exit 1 = silent changes found.
+
+Every capture also records which schema-affecting dependency versions it was taken against (`zod`, `ajv`, the MCP SDKs) - a floating `zod: ^4.x` range can rewrite a server's tool contract with **no server release at all** (proven live on mongodb-mcp-server 2.1.2), and when two versions of a pair resolved different dependency minors, the output says so instead of letting dependency drift masquerade as server drift.
 
 There is also a free web version (static, no code execution) at [rugsnare.com/#history](https://rugsnare.com/#history) - paste a package name, see its drift history. Static means it reads the published files without running them; tools assembled at runtime are invisible to it, so the CLI is the source of truth.
 

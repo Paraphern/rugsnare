@@ -43,7 +43,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.3.0): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION), live proxies (stdio + HTTP), whole-history scanning, CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.3.0): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -201,7 +201,9 @@ If an attacker changes the code but not the contract, no description hash can se
 
 **140 findings. Not one was announced in a changelog.** The most dramatic single step: filesystem `2025.8.21 → 2025.11.25` changed all 14 tool contracts simultaneously - 14 BREAKING schema changes in one silent release; everything's history is a churn machine: 31 items appeared (19 tools, 5 prompts, 7 resources) and 24 disappeared across its 27 releases. Reproduce on your machine: one command, ~30 minutes, deterministic - see the report footer.
 
-Since v1.1.0 the same check exists for **any npm package** - `rugsnare history <pkg>` (or the [Runtime scan](https://rugsnare.com/#history) in the browser) - and the results are public: e.g. `@jadchene/mcp-ssh-service` shows 359 silent changes across its 10 published versions, including a patch release that deleted "Requires confirmation" from 48 destructive tools (evidence: the [runtime archive](https://rugsnare.com/scans)).
+Since v1.1.0 the same check exists for **any npm package** - `rugsnare history <pkg>` (or the [Runtime scan](https://rugsnare.com/#history) in the browser) - and the results are public: e.g. `@jadchene/mcp-ssh-service` shows 359 silent changes across its 10 published versions, including a patch release that deleted "Requires confirmation" from 48 destructive tools (evidence: the [runtime archive](https://rugsnare.com/scans)). Every capture records which schema-dep versions (zod, ajv, MCP SDKs) it was taken against - a floating `zod: ^4.x` range can rewrite a server's tool contract with no server release at all, and the scanner says so instead of letting dependency drift masquerade as server drift.
+
+The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpoints alongside npm packages - hosted servers change contracts with **no release** (the operator deploys server-side), which no npm pin can ever cover. Its coverage rule is stated honestly: a public feed cannot carry auth tokens, so only endpoints whose `tools/list` answers without authentication are monitored.
 
 ## Status & roadmap
 
