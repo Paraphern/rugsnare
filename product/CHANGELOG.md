@@ -31,6 +31,11 @@ and scanner hardening from field scans of 10+ npm MCP servers.
 
 ### Skills coverage and integrations
 
+- **R25: canonical `skills/` directory** - `skills scan` now discovers
+  `skills/<name>/SKILL.md` at the repo root, the layout of the most
+  popular skills repos on GitHub (297k+ stars). Previously only
+  platform-specific directories (.claude/skills, .cursor/rules, etc.) were
+  scanned; repos using the canonical layout were invisible.
 - **R26: advisory-layer parity** - `rugsnare scan`'s skill advisory scan
   now uses the SAME location table as the pin layer (`SKILL_LOCATIONS`),
   covering all 16 platforms in project and user scope. Before R26 the
@@ -48,7 +53,7 @@ and scanner hardening from field scans of 10+ npm MCP servers.
   contract drift -> `ATR-2026-00581`, ...). Shown inline in CLI output, as an
   `atr` array in `--json`, and in `properties.atrRuleIds` in SARIF, so
   pre-invocation and runtime findings correlate in one pipeline. Full table:
-  `docs/ATR-MAPPING.md` (includes two mapped gaps proposed as new ATR rules).
+  `docs/ATR-MAPPING.md` (three gap-proposals filed upstream for review).
 
 ## [1.2.0] - 2026-10-11
 
@@ -57,23 +62,6 @@ Four rounds of drift-gradation improvements from the KyttoMCP dialogue
 
 ### Drift gradation (P3-P6: BREAKING / LOOSENED / EXPANDED / NOTATION)
 
-- **R21 Recursive schema traversal**: schemaDiff now recurses into
-  `properties`, `items`, `anyOf`/`oneOf` at ANY depth, with the full path
-  in the message. Previously only top-level properties were compared -
-  changes at depth 2+ (Netlify `selectSchema.required`, MongoDB
-  `$vectorSearch` at depth 5) were invisible to direction grading.
-- **R25: canonical `skills/` directory**: `skills scan` now discovers
-  `skills/<name>/SKILL.md` at the repo root - the layout of the most
-  popular skills repos on GitHub (297k+ stars). Previously only
-  platform-specific directories (.claude/skills, .cursor/rules, etc.) were
-  scanned; repos using the canonical layout were invisible.
-  `properties`, `items`, `anyOf`/`oneOf` at ANY depth, with the full path
-  in the message (e.g. `pipeline[][0].$vectorSearch.numCandidates`).
-  Previously only top-level properties were compared - changes at depth 2+
-  (Netlify `selectSchema.required`, MongoDB `$vectorSearch` at depth 5)
-  were invisible to direction grading (schemaHash caught them but
-  classified as NOTATION). Union branches matched by const discriminator
-  (operation name) with index-based fallback for non-discriminated unions.
 - **Direction-aware grading** (P3+P4): schema drift now grades by direction.
   BREAKING = tighten (new required params, narrowed types, added constraints -
   agent must send more, new data channels are exfil-risk). LOOSENED = loosen

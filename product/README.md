@@ -26,7 +26,7 @@ Our backtest over 66 consecutive version pairs of official `modelcontextprotocol
 
 Zero dependencies. Node >= 18. Nothing leaves your machine.
 
-> **This README documents `main`.** The latest npm release is **1.1.0** (Skills Security, whole-history scanning, native launcher, drift gradation). For the release changelog see [CHANGELOG.md](CHANGELOG.md).
+> **This README documents `main`.** The latest npm release is **1.3.0** (deep schema analysis, router-union intelligence, skills advisory parity, ATR cross-references). For the release changelog see [CHANGELOG.md](CHANGELOG.md).
 
 ```bash
 npx rugsnare init                    # scaffold .rugsnare/, show discovered MCP configs
@@ -41,7 +41,7 @@ Auto-discovers configs for Claude Code (`~/.claude.json`, `.mcp.json`), Cursor, 
 **CI (the point):** commit `.rugsnare/pins.json` to the repo, then:
 
 ```yaml
-- run: npx --yes rugsnare@1.1.0 diff --config .mcp.json
+- run: npx --yes rugsnare@1.3.0 diff --config .mcp.json
 ```
 
 Pin the version in CI. An unpinned `npx rugsnare` floats to the latest release on every launch - the exact rug-pull vector rugsnare's own floating-version check flags in your MCP configs. `rugsnare version` prints what you run; `rugsnare doctor --check-update` compares it against npm and links the changelog (one GET, only when you ask).
@@ -180,7 +180,7 @@ Tool **and prompt** descriptions are scored against 18 signals (A01–A18): inst
 - **Zero npm dependencies** - a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, gitignored by default (or commit `pins.json` deliberately).
 - Apache-2.0. Fork it if we go rogue - that's the license working as intended.
-- 320 tests, `node --test` only.
+- 334 tests, `node --test` only.
 
 ## Exit codes
 

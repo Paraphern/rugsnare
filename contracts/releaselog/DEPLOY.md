@@ -174,11 +174,15 @@ Decoded input from the transaction:
 | Parameter | Value |
 |---|---|
 | Pin tx | _заполнить после Remix_ |
-| artifact sha256 | `5331c37e5c01bf942474d05e65717033cc41dda2bb8bd6a7a6c644efa8df0761` (тарболл собран локально, публикуется этот же файл) |
+| artifact sha256 | `a11a27c5970818aac8c8b67e7c1d5146b3ddaa5a8a2db4d6f617f6c7d60c0f2d` (гигиен-гейт: 42 файла, .mimosa исключён негацией в package.json files; три сборки байт-в-байт) |
 | versionKey | keccak256("1.3.0") = `0x6a08c3e203132c561752255a4d52ffae85bb9c5d33cb3291520dea1b84356389` |
 | npm | rugsnare@1.3.0, gitHead _заполнить после publish_ |
 | Проверка | `npx rugsnare verify rugsnare-1.3.0.tgz --version 1.3.0 --chain base` -> _ожидает_ |
 
-Состав релиза: R21 (рекурсивный schemaDiff), R2/R4/R5 (router-union), R26 (advisory parity),
-R27 (.agents/skills), ATR cross-references. JS 334/334, Go ok. Native: 1.3.0-native.1
-(R25+R27 в таблице локаций).
+История sha: `5331c37e...` (первый pack, 43 файла - внутри оказался src/.mimosa/hook-status
+от Mimosa-хука; поймано автоклавом-60) и `1637023f...`/`eee7cf74...` - промежуточные
+состояния дерева до правок по чек-листу. Финал: `a11a27c5...`.
+
+Состав релиза: R21 (рекурсивный schemaDiff), R2/R4/R5 (router-union), R25 (корневая skills/),
+R26 (advisory parity), R27 (.agents/skills), ATR cross-references. JS 334/334, Go ok.
+Native: 1.3.0-native.1 (R25+R27 в таблице локаций).

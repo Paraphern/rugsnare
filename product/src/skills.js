@@ -14,7 +14,7 @@ import { discoverSkills as discoverSkillFiles } from './skills-pin.js';
  * same A-series advisory signals over their content.
  *
  * R26: discovery is the SAME table the pin layer uses (SKILL_LOCATIONS in
- * skills-pin.js, 15 platforms, project + user scope). Before R26 the
+ * skills-pin.js, 16 platforms, project + user scope). Before R26 the
  * advisory layer had its own hand-copied list covering only 3 platforms,
  * so R25's canonical skills/ dir was pinned but never advisory-scanned -
  * two lists always drift; one list cannot.

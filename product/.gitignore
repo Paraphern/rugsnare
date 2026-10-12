@@ -1,0 +1,8 @@
+# npm pack resolves ignore rules HERE (package root), not the repo root,
+# so the .mimosa/ entry must exist in this file too. Runtime hazard: the
+# Mimosa security hook writes session status into the working directory;
+# one such file inside src/ silently became the 43rd tarball member and
+# broke release sha parity (autoclav review 60). *.tgz matches the root
+# convention and keeps packed artifacts out of git as well.
+.mimosa/
+*.tgz

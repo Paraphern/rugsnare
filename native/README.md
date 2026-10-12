@@ -5,9 +5,9 @@ live in a terminal: no Node.js, no npm, no installation. Download, double-click,
 get a report in your browser.
 
 ```
-7.3 MB  windows-amd64 .exe
+7.4 MB  windows-amd64 .exe
 6.7 MB  macos-arm64
-7.2 MB  macos-amd64
+7.3 MB  macos-amd64
 7.1 MB  linux-amd64
 ```
 
@@ -29,12 +29,13 @@ The same three things as `rugsnare skills` in the npm CLI, plus one:
 
 The first run (and every report) also runs a **cold-start audit**: each
 skill's content is scanned by the advisory engine, and pre-existing risk
-patterns show in an "Already on your machine" section — because pinning
+patterns show in an "Already on your machine" section - because pinning
 alone would silently bless a skill that was poisoned before this tool
 existed. Scheduled checks run `-quiet`: no output and no browser when
 everything matches, the report opens only when something changed.
 
-Covers the same 14 platforms as the npm CLI: Claude Code, Cursor, Windsurf,
+Covers the same 16 platforms as the npm CLI: Claude Code, the canonical
+root `skills/` dir, the `.agents/skills` standard, Cursor, Windsurf,
 Continue, Cline, ZCode, Copilot, Codex, Amp, Kiro, OpenCode, Antigravity,
 Aider, Devin. Same discovery rules (text files, <=1MB, depth 4, noise dirs
 skipped), same severity classification (DANGEROUS / REVIEW / SAFE), same
@@ -54,7 +55,7 @@ exactly like the npm CLI - do not "normalize" them, the keys must match.
 
 ## Update check (no telemetry, both directions)
 
-A downloaded binary never changes on disk — but it also never learns anything,
+A downloaded binary never changes on disk - but it also never learns anything,
 so before writing a report it fetches one static text file:
 
 ```
@@ -91,7 +92,7 @@ GOOS=linux   GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o bin/rugsnare-sk
 ## Windows icon
 
 `rsrc_windows_amd64.syso` (committed) embeds the RugSnare icon into the
-Windows exe — Go links any `*_windows_amd64.syso` automatically, no flags
+Windows exe - Go links any `*_windows_amd64.syso` automatically, no flags
 needed. The binary itself stays stdlib-only; the tool below is build-time
 only.
 
@@ -107,7 +108,7 @@ rsrc -arch amd64 -ico app.ico -o rsrc_windows_amd64.syso
 
 No VERSIONINFO resource: goversioninfo's output is rejected by the Go 1.27
 linker ("unknown relocation type 7"); the running version is printed by
-`rugsnare-skills version` instead. macOS/Linux binaries carry no icon —
+`rugsnare-skills version` instead. macOS/Linux binaries carry no icon -
 only .app bundles / .desktop files do, and we ship bare binaries.
 
 ## Layout
