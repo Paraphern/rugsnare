@@ -465,28 +465,61 @@ export function schemaNotationDiff(oldSchema, newSchema) {
  * - notation-only (dialect switch) → NOTATION
  */
 export function gradeSchemaDrift(paramChanges, notationChanges) {
-  const hasTighten = paramChanges.some((c) => c.direction === 'tighten');
-  const hasExpand = paramChanges.some((c) => c.direction === 'expand');
-  const hasLoosen = paramChanges.some((c) => c.direction === 'loosen');
+  // notationOnly changes (R4 union keyword swaps with identical branches)
+  // must not grade: anyOf-to-oneOf with the same const discriminators is a
+  // representation switch, not a constraint change - found live on mongodb
+  // 3.0.0 (explain/export graded LOOSENED "constraints removed" on a pure
+  // keyword swap) by the 1.3.0 release re-run.
+  const real = paramChanges.filter((c) => !c.notationOnly);
+  const hasTighten = real.some((c) => c.direction === 'tighten');
+  const hasExpand = real.some((c) => c.direction === 'expand');
+  const hasLoosen = real.some((c) => c.direction === 'loosen');
   if (hasTighten || hasExpand) return 'BREAKING';
   if (hasLoosen) return 'LOOSENED';
   return 'NOTATION';
 }
 
 /**
+ * additionalProperties value classes for direction grading:
+ *   'any'    - true, {}, or ABSENT (JSON Schema default: allowed). All three
+ *              mean "anything goes" and are treated as IDENTICAL; a switch
+ *              between them is notation, not a tighten (the chrome-devtools
+ *              MCP SDK v2 wave: true -> {} on every tool, first caught by
+ *              the 1.3.0 release re-run).
+ *   'none'   - false: unknown keys rejected.
+ *   'schema' - non-empty object: unknown keys constrained by a subschema.
+ */
+function apClass(v) {
+  if (v === undefined || v === true) return 'any';
+  if (v === false) return 'none';
+  if (v && typeof v === 'object' && !Array.isArray(v)) return Object.keys(v).length === 0 ? 'any' : 'schema';
+  return 'other';
+}
+
+/**
  * Detect additionalProperties direction change and return it as a graded
  * paramChange (moved from notation in P4): dropping additionalProperties:false
  * = loosen (validation weakened, LOOSENED class); adding it = tighten
- * (BREAKING class).
+ * (BREAKING class). Representation switches between equivalent 'any' forms
+ * (true <-> {}) return null - they change bytes, not behavior.
  */
 export function detectAdditionalPropertiesDirection(oldSchema, newSchema) {
   if (!oldSchema || !newSchema) return null;
   const fmt = (v) => (v === undefined ? 'undeclared' : JSON.stringify(v));
-  if (fmt(oldSchema.additionalProperties) === fmt(newSchema.additionalProperties)) return null;
-  const dropped = oldSchema.additionalProperties !== undefined && newSchema.additionalProperties === undefined;
+  const oldCls = apClass(oldSchema.additionalProperties);
+  const newCls = apClass(newSchema.additionalProperties);
+  if (oldCls === newCls && oldCls !== 'schema') return null;
+  if (oldCls === 'schema' && newCls === 'schema'
+    && fmt(oldSchema.additionalProperties) === fmt(newSchema.additionalProperties)) return null;
+  // tighten: moving INTO rejection or into a constraining subschema
+  const tighten = newCls === 'none' || (newCls === 'schema' && oldCls !== 'schema');
+  // loosen: dropping rejection or replacing a constraining subschema with allow-any
+  const loosen = oldCls === 'none' || (oldCls === 'schema' && newCls !== 'schema');
+  // schema -> schema with different content: conservative tighten
+  const direction = tighten ? 'tighten' : loosen ? 'loosen' : 'tighten';
   return {
     text: `additionalProperties ${fmt(oldSchema.additionalProperties)} → ${fmt(newSchema.additionalProperties)}`,
-    direction: dropped ? 'loosen' : 'tighten',
+    direction,
   };
 }
 

@@ -11,6 +11,10 @@ get a report in your browser.
 7.1 MB  linux-amd64
 ```
 
+Sizes are the RELEASE binaries in `bin/` (stripped, `-ldflags "-s -w"`, the
+GitHub Release assets). The committed `native.exe` at this directory's root
+is the unstripped dev build (~10.7 MB, same version string) - not what ships.
+
 (Size is stdlib-only; the bulk is `net/http` + `crypto/tls` used for one
 thing: the self-update check below.)
 

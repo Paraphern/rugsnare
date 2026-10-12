@@ -29,6 +29,26 @@ watch-list with secrets - a public Actions feed cannot carry tokens).
 - Site: `scans.html`/feed rendering gains a transport badge; no schema change
   to `changes.jsonl` beyond the transport field.
 
+## History-mode contract provenance (R32, from the 1.3.0 release re-run, 2026-10-12)
+
+Verified live on mongodb-mcp-server: 2.1.2 declares `zod: ^4.4.3` (floating).
+The same 2.1.2 tarball, installed and run on different days, served materially
+different inputSchema (`numCandidates` plain `number` vs `integer` +
+`maximum: 9007199254740991`) because newer in-range zod minors serialize
+`.int()` with bounds. Consequences: (a) a server's tool contract is a function
+of (server version, resolved schema-dep versions), not server version alone -
+an in-range zod minor can rewrite contracts with NO server release; (b) the
+whole-history scanner re-resolves floating deps per version, so pair diffs can
+under-report (2.1.2-with-today's-zod vs 3.0.5 nearly coincide -> all-notation,
+while a like-for-like install shows real BREAKINGs).
+
+- Record, per captured version in `contractOfVersion`, the resolved versions
+  of schema-affecting deps (`zod`, `@modelcontextprotocol/*`) next to the
+  contract; surface "deps resolved differently" on pairs where they changed.
+- Try a strict dep install first; fall back to `--legacy-peer-deps` only on
+  ERESOLVE, and mark the contract as legacy-resolved.
+- Diff pages should state dep provenance - "captured against zod X.Y.Z".
+
 ## Paywall-introduction grade (R31, from the heldfast wave, 2026-10-12)
 
 Verified gap: zero monetization vocabulary anywhere in `pins.js`/`advisory.js`

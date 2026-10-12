@@ -3,7 +3,31 @@
 ## [1.3.0] - 2026-10-12
 
 Deep schema analysis: recursive traversal, router-union intelligence,
-and scanner hardening from field scans of 10+ npm MCP servers.
+and scanner hardening from field scans of 10+ npm MCP servers. Two further
+fixes came from the release-day re-run of the docs/servers pages:
+
+### Release re-run fixes (2026-10-12)
+
+- **additionalProperties `true` / `{}` / absent equivalence** - all three mean
+  "anything allowed" in JSON Schema; a representation switch between them is
+  notation, not a tighten. Found live: the chrome-devtools MCP SDK v2 wave
+  flips every tool's root `additionalProperties` from `true` to `{}`, which
+  graded 27 false BREAKINGs until the re-run caught it. Real transitions keep
+  their directions (added/dropped `false`, constraining subschema in/out).
+- **`history --timeout` was ignored** - the flag parsed but never reached
+  `scanHistory`, which always ran the 15s default; slow-starting servers
+  (mongodb, azure-devops) timed out wholesale. Now plumbed through.
+- **R4 keyword swaps no longer grade LOOSENED** - an anyOf-to-oneOf swap with
+  identical const branches is a representation switch, but the `notationOnly`
+  flag was set and never read, so `gradeSchemaDrift` counted it as a real
+  loosen (mongodb 3.0.0 `explain`/`export` showed "validation loosened,
+  constraints removed" on a pure keyword swap). Now graded NOTATION.
+- **Contract provenance caveat documented (R32)** - the re-run proved that a
+  floating schema dependency (`zod: ^4.4.3` in mongodb-mcp-server 2.1.2) can
+  rewrite a server's tool contract with no server release: the same tarball
+  serves different inputSchema depending on which in-range zod minor resolved
+  at install time. Whole-history scans re-resolve deps per version and can
+  under-report such pairs; like-for-like `scan`/`diff` installs do not.
 
 ### Recursive schema analysis (R21, the headline feature)
 

@@ -174,15 +174,19 @@ Decoded input from the transaction:
 | Parameter | Value |
 |---|---|
 | Pin tx | _заполнить после Remix_ |
-| artifact sha256 | `a11a27c5970818aac8c8b67e7c1d5146b3ddaa5a8a2db4d6f617f6c7d60c0f2d` (гигиен-гейт: 42 файла, .mimosa исключён негацией в package.json files; три сборки байт-в-байт) |
+| artifact sha256 | `af5286af49be0612ace7cb4ba5de443f680560f4ef6411f5a3704a814bf82fe1` (гигиен-гейт: 42 файла, .mimosa исключён негацией в package.json files) |
 | versionKey | keccak256("1.3.0") = `0x6a08c3e203132c561752255a4d52ffae85bb9c5d33cb3291520dea1b84356389` |
 | npm | rugsnare@1.3.0, gitHead _заполнить после publish_ |
 | Проверка | `npx rugsnare verify rugsnare-1.3.0.tgz --version 1.3.0 --chain base` -> _ожидает_ |
 
 История sha: `5331c37e...` (первый pack, 43 файла - внутри оказался src/.mimosa/hook-status
-от Mimosa-хука; поймано автоклавом-60) и `1637023f...`/`eee7cf74...` - промежуточные
-состояния дерева до правок по чек-листу. Финал: `a11a27c5...`.
+от Mimosa-хука; поймано автоклавом-60), `a11a27c5...` (правки чек-листа-60),
+`1fd9668a...` (фиксы перепрогона), финал `af5286af...` (счётчик тестов 336 в README пакета).
+Фиксы перепрогона: эквивалентность additionalProperties true/{}/absent (27 ложных
+BREAKING на chrome-devtools), прокидка history --timeout, грейд R4-свапов как NOTATION.
 
 Состав релиза: R21 (рекурсивный schemaDiff), R2/R4/R5 (router-union), R25 (корневая skills/),
-R26 (advisory parity), R27 (.agents/skills), ATR cross-references. JS 334/334, Go ok.
-Native: 1.3.0-native.1 (R25+R27 в таблице локаций).
+R26 (advisory parity), R27 (.agents/skills), ATR cross-references, фиксы перепрогона.
+JS 336/336, Go ok. Native: 1.3.0-native.1 (R25+R27 в таблице локаций).
+Открытая находка перепрогона: плавающая zod-зависимость переписывает контракт сервера
+без релиза сервера (mongodb 2.1.2) - R32 в docs/future.md.

@@ -409,3 +409,46 @@ test('R4: anyOf to oneOf with DIFFERENT branches = real add/remove, not notation
   assert.ok(changes.some((c) => c.text.includes('removed') && c.text.includes('delete')), 'delete branch removed');
   assert.ok(changes.some((c) => c.text.includes('added') && c.text.includes('create')), 'create branch added');
 });
+
+// additionalProperties true <-> {} equivalence (found by the 1.3.0 release
+// re-run on chrome-devtools-mcp 1.9.0 -> 1.10.1: the MCP SDK v2 wave switches
+// every tool's root additionalProperties from true to the empty schema, which
+// JSON Schema treats as IDENTICAL - 27 false BREAKINGs until this fix)
+test('AP true -> {} is notation, not tighten (chrome-devtools SDK v2 wave)', async () => {
+  const { detectAdditionalPropertiesDirection } = await import('../src/pins.js');
+  const mk = (ap) => ({ type: 'object', properties: { q: { type: 'string' } }, ...(ap !== undefined ? { additionalProperties: ap } : {}) });
+  // representation switch between equivalent allow-any forms: null
+  assert.equal(detectAdditionalPropertiesDirection(mk(true), mk({})), null, 'true -> {} must not grade');
+  assert.equal(detectAdditionalPropertiesDirection(mk({}), mk(true)), null, '{} -> true must not grade');
+  assert.equal(detectAdditionalPropertiesDirection(mk(true), mk(true)), null, 'identical values: null');
+  assert.equal(detectAdditionalPropertiesDirection(mk(true), mk(undefined)), null, 'true -> absent must not grade (absent = allowed by default)');
+  assert.equal(detectAdditionalPropertiesDirection(mk(undefined), mk({})), null, 'absent -> {} must not grade');
+  // real transitions keep their directions
+  const dropped = detectAdditionalPropertiesDirection(mk(false), mk(undefined));
+  assert.equal(dropped.direction, 'loosen', 'dropped false = loosen');
+  const added = detectAdditionalPropertiesDirection(mk(undefined), mk(false));
+  assert.equal(added.direction, 'tighten', 'added false = tighten');
+  const toSubschema = detectAdditionalPropertiesDirection(mk(true), mk({ type: 'string' }));
+  assert.equal(toSubschema.direction, 'tighten', 'any -> constraining subschema = tighten');
+  const fromSubschema = detectAdditionalPropertiesDirection(mk({ type: 'string' }), mk(true));
+  assert.equal(fromSubschema.direction, 'loosen', 'constraining subschema -> any = loosen');
+});
+
+// R4 grading bug (found by the 1.3.0 release re-run on mongodb 3.0.0):
+// an anyOf->oneOf keyword swap with identical const branches carried
+// direction:'loosen' + notationOnly:true, but nothing read notationOnly -
+// gradeSchemaDrift counted it as a real loosen and explain/export graded
+// LOOSENED ("constraints removed") on a pure representation switch.
+test('R4 keyword swap with identical branches grades NOTATION, not LOOSENED', async () => {
+  const { gradeSchemaDrift } = await import('../src/pins.js');
+  const a = { type: 'object', properties: { method: { anyOf: [
+    { type: 'object', properties: { op: { type: 'string', const: 'count' } }, required: ['op'] },
+    { type: 'object', properties: { op: { type: 'string', const: 'explain' } }, required: ['op'] },
+  ] } } };
+  const b = { type: 'object', properties: { method: { oneOf: a.properties.method.anyOf } } };
+  const changes = schemaDiff(a, b);
+  const swap = changes.find((c) => c.text.includes('union keyword'));
+  assert.ok(swap, 'swap detected');
+  assert.equal(swap.notationOnly, true, 'swap is notationOnly');
+  assert.equal(gradeSchemaDrift(changes, []), 'NOTATION', 'identical-branch keyword swap must grade NOTATION');
+});

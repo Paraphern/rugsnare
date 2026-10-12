@@ -222,7 +222,8 @@ function printVerdict(server, verdicts, json) {
     if (v.schemaChanges && v.schemaChanges.length > 0) {
       for (const sc of v.schemaChanges) {
         const text = typeof sc === 'string' ? sc : sc.text;
-        const dir = typeof sc === 'string' ? '' : ` [${sc.direction}]`;
+        // notationOnly changes (R4 union keyword swaps) carry no real direction
+        const dir = typeof sc === 'string' || sc.notationOnly ? '' : ` [${sc.direction}]`;
         console.log(`      ${text}${dir}`);
         // P5: removed guard parameter - agent passes dry_run, server ignores it
         if (typeof sc === 'object' && sc.guardWarning) {
@@ -1052,6 +1053,7 @@ async function cmdHistory(flags) {
     last,
     from,
     to,
+    timeoutMs: flags.timeout ?? 15000,
     stubEnv: Boolean(flags.stubEnv),
     serverArgs: flags.serverArgs ? flags.serverArgs.split(' ') : [],
     onProgress: (m) => { if (!flags.json) console.error(`  ${m}`); },

@@ -66,15 +66,24 @@
 - Бомба вперёд: toolkit #1374 режет search_events на датасет-специфичные инструменты - когда доедет до npm, все вызовы search_events сломаются. Предложить задокументировать ЗАРАНЕЕ (мы в weekly-вахте поймаем).
 - Рамка: вопрос "где?" + подарок-предупреждение про search_events. Без обвинений.
 
-## Кейс 4: LaunchDarkly - драфт готов (из прошлой сессии)
+## Кейс 4: LaunchDarkly - драфт готов, АКТУАЛИЗИРОВАН градуированным прогоном 2026-10-13
 
 - Коммент в ЧУЖОЙ открытый issue #67 "expand the mcp with an audit-log tool" (OdysseasMas-lw, 8 апр): фича въехала в 0.6.2 (8 мая) молча, Speakeasy-notes ни слова, issue открыт 5 месяцев, автор не узнал. Ирония: инструмент аудита без аудита. Пакет для federal/EU.
-- Драфт полностью готов (см. журнал/прошлую сессию), репро прогнано в clean-room.
+- СВЕЖИЙ ГРАДИРОВАННЫЙ ПРОГОН (2026-10-13, rugsnare 1.2.0, чистые установки):
+  0.6.1 -> 0.7.0 кумулятивно = ровно 1 находка: [NEW] get-audit-log-entries; все 19 исходных
+  контрактов байт-в-байт стабильны. Граница 0.6.2 -> 0.7.0 = ноль изменений (полный минор без
+  единого дрейфа). РАМКА УСИЛЕНА: два релиза подряд - хирургические; просимый инструмент
+  приехал и до сих пор не упомянут - issue открыт, автор не уведомлён.
+- Вставить в драфт repro-вывод: "# 45? нет: # 1 finding: [NEW] get-audit-log-entries, 19/19 ok, exit 1".
 
-## Кейс 5: Hostinger - добавляемся в занятый #67 со своими чеками
+## Кейс 5: Hostinger - добавляемся в занятый #67 со своими чеками, ПЕРЕВЕРЕНО 2026-10-13
 
 - Кто: Hostinger, hostinger-api-mcp, 264,539 устан/нед.
 - issue #67 "A public record of api-mcp-server's tool definitions over time" (GautamTalksDev, 2 сент, 3 коммента - прочитать перед постом!) - ЗАНЯТ конкурентом, но наша добавка уникальна: между 2.4.0 и 2.11.0 молча въехали ШЕСТЬ agent-skill ресурсов (audit-hosting/SKILL.md, connect-domain, deploy-to-hosting, maintain-wordpress, migrate-to-hosting, troubleshoot-website) - model-facing инструкции, доставляемые как ресурсы, не упомянуты в docs/changelog. Плюс контекст #71 (396 инструментов по умолчанию).
+- ВЕРИФИКАЦИЯ 2026-10-13 (чистые прогоны трёх версий): 2.4.0 = ровно 6 ресурсов (всё -
+  hostinger-headless дерево); 2.11.0 = 12 (шесть новых SKILL.md + headless); 2.13.0 (latest) =
+  те же 12, инструменты 2.11->2.13 clean. Т.е. шесть инъекций появились ровно в окне и пережили
+  ещё два минорных релиза - формулировка драфта подтверждена дословно.
 - Рамка: ответ в #67 - "мы ведём такую же запись + вот конкретная находка, которой нет в fingerprints-формате" + предложение сверить форматы (у нас PIN-SPEC). Не дублировать Гаутама, а усилить.
 
 ## Отброшенные (честность важнее объёма)
@@ -222,3 +231,75 @@ npx rugsnare@latest diff --config mcp.json --server hostinger   # 6 NEW resource
 ```
 
 Happy to compare notes with your fingerprint format - we publish the pin format we use (sha-256 over name + description + inputSchema, canonicalized) and would benefit from interoperability here.
+
+### Драфт 5: Currents (новый issue в currents-dev/currents-mcp) - градуированная редакция 2026-10-13
+
+**Title:** 32 of 38 tool schemas tightened across minor releases (2.3.3 -> 2.6.1), changelog never says breaking
+
+**Body:**
+
+We pin MCP tool contracts (sha-256 over name + description + inputSchema) and diff them across releases. Between @currents/mcp 2.3.3 and 2.6.1 - all minor releases - the graded result is:
+
+- **32 BREAKING**: a single wave - `minLength=1` added to `projectId`, `actionId` and `signature` across the currents-*-action family, plus an `expiresAfter` type tightening and description rewrites. Practical effect: an empty-string argument that was schema-valid in 2.3.3 is invalid in 2.6.1.
+- 7 NEW tools (including `currents-get-action-executions`), 1 gone, 4 description-only, 1 notation.
+
+So callers that validated yesterday fail today on inputs the changelog presented as routine minor updates - the changelog for this window never uses the word "breaking".
+
+Suggestion: when an input schema tightens (new minLength/maximum/type narrowing), a one-line "breaking-ish" note in the changelog entry would let pinned users re-approve deliberately. We detect these with rugsnare (open source, Apache-2.0); the graded diff follows.
+
+Repro (graded output from rugsnare 1.2.0):
+
+```bash
+mkdir cm && cd cm && npm init -y
+# mcp.json: {"mcpServers":{"currents":{"command":"node","args":["node_modules/@currents/mcp/dist/index.mjs"],"env":{"CURRENTS_API_KEY":"x","CURRENTS_RECORD_KEY":"x","CURRENTS_PROJECT_ID":"x"}}}}
+npm i @currents/mcp@2.3.3
+npx rugsnare@1.2.0 scan --config mcp.json --timeout 45000
+npm i @currents/mcp@2.6.1
+npx rugsnare@1.2.0 diff --config mcp.json --timeout 45000
+#   45 findings: 32 BREAKING + 1 NOTATION + 4 other, 7 NEW, 1 GONE, exit 1, e.g.:
+#   [DRIFT] currents-delete-action (BREAKING) faa2d544 -> 01a92be7
+#       added minLength=1 to 'actionId' [tighten]
+#   [DRIFT] currents-get-affected-test-executions (BREAKING) 99e6f674 -> 1de5b02d
+#       added minLength=1 to 'projectId' [tighten]
+#       added minLength=1 to 'signature' [tighten]
+```
+
+Happy to share the full per-tool table (all 45 findings with leaves).
+
+ПРОВЕРКА ПЕРЕД ПОСТОМ (2026-10-13): свежий прогон 1.2.0 на чистых установках обеих версий;
+38 инструментов в 2.3.3; счёт 45 подтверждён; 32 BREAKING подтверждены листами; репо-адресат
+currents-dev/currents-mcp (из npm repository.url); для поста - проверить их ченджлог 2.4-2.6
+самостоятельно (мы утверждаем "never uses the word breaking" - сверить перед публикацией!).
+
+### Драфт 5 (ФИНАЛЬНАЯ правка после сверки ченджлога 2026-10-13):
+
+ИСХОДНЫЙ ТЕЗИС "changelog never says breaking" ОПРОВЕРГНУТ сверкой: v2.6.0 маркирует Breaking
+переименование currents-get-affected-executions -> currents-get-action-executions (корректно).
+НОВАЯ РАМКА (сильнее): громкое ломающее задокументировано, 32 тихих tightenings - нет. Заменить в
+Title/Body выше: Title "32 input schemas tightened across 2.3.3 -> 2.6.1; the breaking-marked
+rename is documented, the quiet tightenings are not". Body: начать с похвалы за rename-маркировку
+("v2.6.0 correctly marks the rename as Breaking"), затем контраст: тот же минорный window несёт
+32 ужесточения входов (minLength=1 на projectId/actionId/signature + expiresAfter) без упоминания
+- валидный вчера пустой аргумент невалиден сегодня, и это невидимо в changelog. Suggestion:
+"breaking-иш" пометка для tightenings, не только rename.
+
+### АКТУАЛИЗАЦИЯ ВСЕЙ ПЯТЁРКИ (2026-10-13, свежие прогоны npm-latest)
+
+- @netlify/mcp 1.18.0 = latest, окно драфта актуально без правок.
+- mongodb-mcp-server: latest 3.0.5; ЧИСТАЯ граница 3.0.0 -> 3.0.5 = ноль изменений контрактов
+  (перепинено начисто, первый дифф был кумулятивом - исправлено). В драфт добавить честную строку:
+  "the 3.0.x patch line has been contract-stable through 3.0.5".
+- @launchdarkly/mcp-server: latest 0.7.0; 0.6.1 -> 0.7.0 = ровно 1 NEW (get-audit-log-entries),
+  граница 0.6.2 -> 0.7.0 = ноль дрейфа. Рамка усечена до "surgical vendor".
+- hostinger-api-mcp: latest 2.13.0; 2.4.0 = 6 ресурсов (только headless), 2.11.0 = 12 (+6 SKILL.md),
+  2.13.0 = те же 12, инструменты clean - шесть инъекций подтверждены и персистентны.
+- @currents/mcp 2.6.1 = latest, градуированный прогон 13.10 свежий.
+- СТРУКТУРА ПЯТЁРКИ (уточнена): НОВЫЕ issue - Netlify, MongoDB, Currents; КОММЕНТЫ в чужие
+  открытые - LaunchDarkly (#67 OdysseasMas-lw, проситель не уведомлён) и Hostinger (#67 Gautam).
+- ПЕРЕД КАЖДЫМ ПОСТОМ: чек occupancy целевого репо (не занял ли кто тему за эти дни).
+
+## ЖУРНАЛ ПОСТИНГА ПЯТЁРКИ
+
+- 2026-10-13: Netlify - ОТПРАВЛЕНО (netlify/netlify-mcp#75): верифицированный драфт дословно,
+  три эпизода + per-client наблюдение + градуированный repro + suggestion. ПЕРВЫЙ из пяти.
+  Следующие по плану: MongoDB (завтра), Currents, LD-коммент #67, Hostinger-коммент #67.
