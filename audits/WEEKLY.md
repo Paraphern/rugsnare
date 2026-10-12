@@ -1,6 +1,6 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-10-09 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-10-12 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
 **Total findings since baselines: 192**
 
@@ -9,28 +9,30 @@
 | chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.10.1 | 30 | ok |
 | azure-devops | @azure-devops/mcp | 2.5.0 -> 2.10.0 | 110 | ok |
 | currents | @currents/mcp | 2.3.3 -> 2.6.1 | 45 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 2.11.0 | 6 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 2.13.0 | 6 | ok |
 | notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.5.2 | 0 | clean |
-| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.11 | 0 | clean |
+| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.12 | 0 | clean |
 | context7 | @upstash/context7-mcp | 4.0.4 -> 4.3.0 | 1 | ok |
+| sentry | @sentry/mcp-server | 0.42.0 -> 0.42.0 | 0 | clean |
+| launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.0 | 0 | clean |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
 
 ## chrome-devtools - drift excerpt
 
 ```
-  [DRIFT] click (BREAKING) 607cfba5721feff9 -> 58e274c38fa0c9b6
-  [DRIFT] close_page (BREAKING) 57aa6d235ddb7d0f -> 9856ee221b854002
-  [DRIFT] drag (BREAKING) 57f6b8e417ab6b22 -> 212a0ef996d87101
-  [DRIFT] emulate (BREAKING) c8781dc5cc1d30ce -> cac1c310fee80b90
-  [DRIFT] evaluate_script (BREAKING) 3161aa4dde4934da -> 9051517720295dc2
-  [DRIFT] fill (BREAKING) 9f344e641c1c8ca5 -> 57a3096ddf68a8e3
-  [DRIFT] fill_form (BREAKING) f2ddb65b122a79e3 -> efe1c29f4dc38f19
-  [DRIFT] get_console_message (BREAKING) 85317c236f7ef618 -> d15fbfc7ea24473f
+  [DRIFT] click (NOTATION) 607cfba5721feff9 -> 58e274c38fa0c9b6
+  [DRIFT] close_page (NOTATION) 57aa6d235ddb7d0f -> 9856ee221b854002
+  [DRIFT] drag (NOTATION) 57f6b8e417ab6b22 -> 212a0ef996d87101
+  [DRIFT] emulate (NOTATION) c8781dc5cc1d30ce -> cac1c310fee80b90
+  [DRIFT] evaluate_script (NOTATION) 3161aa4dde4934da -> 9051517720295dc2
+  [DRIFT] fill (NOTATION) 9f344e641c1c8ca5 -> 57a3096ddf68a8e3
+  [DRIFT] fill_form (NOTATION) f2ddb65b122a79e3 -> efe1c29f4dc38f19
+  [DRIFT] get_console_message (NOTATION) 85317c236f7ef618 -> d15fbfc7ea24473f
   [NEW ] get_css_styles 85d7b470afb117ed
-  [DRIFT] get_network_request (BREAKING) 4a237243f2f8b76f -> a103d494849731c6
-  [DRIFT] handle_dialog (BREAKING) 92edbd8908d2af0f -> c6b7420b18d81c22
-  [DRIFT] hover (BREAKING) 83c4498a63264c64 -> bf1420a3cf73769a
+  [DRIFT] get_network_request (NOTATION) 4a237243f2f8b76f -> a103d494849731c6
+  [DRIFT] handle_dialog (NOTATION) 92edbd8908d2af0f -> c6b7420b18d81c22
+  [DRIFT] hover (NOTATION) 83c4498a63264c64 -> bf1420a3cf73769a
 ```
 
 ## azure-devops - drift excerpt
@@ -63,7 +65,7 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
   [DRIFT] currents-list-affected-tests (BREAKING) 3ce992e42e88c0bc -> dd4b2821d7d4bddd
   [DRIFT] currents-get-affected-test-executions (BREAKING) 99e6f67443ac1d35 -> 1de5b02d99ac7f36
   [NEW ] currents-get-action-executions a0d28f21842d7f8f
-  [DRIFT] currents-get-projects (BREAKING) c56389c92a016e27 -> f5edb7f5288dd7f4
+  [DRIFT] currents-get-projects (NOTATION) c56389c92a016e27 -> f5edb7f5288dd7f4
   [DRIFT] currents-get-project (BREAKING) bbc93238007ef845 -> 954a71e01198e90b
 ```
 
