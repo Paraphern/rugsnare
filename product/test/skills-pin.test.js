@@ -87,6 +87,51 @@ test('pin creates hash entries with content', () => {
   } finally { cleanup(); }
 });
 
+// PIN-SPEC §2 (v1.1): `path` MUST be relative. The 1.3.0/1.4.0 writer
+// emitted machine-absolute paths - breaking §7 byte-stability across
+// machines (same skill tree, two checkout dirs = different bytes) and
+// leaking local layout. Caught in the published catalog snapshots.
+test('skills pin path is relative, not machine-absolute (PIN-SPEC §2)', () => {
+  const { dir, cleanup } = tmp();
+  try {
+    mkdeploy(dir, CLEAN);
+    const pins = {};
+    pinAllSkills(pins, dir, dir);
+    for (const [key, pin] of Object.entries(pins.skills)) {
+      assert.ok(!path.isAbsolute(pin.path), `${key}: path must be relative, got "${pin.path}"`);
+      assert.ok(!/^[A-Z]:\\\\/.test(pin.path), `${key}: no drive letter`);
+      assert.ok(!pin.path.startsWith('/'), `${key}: no leading slash`);
+      assert.equal(pin.path, pin.relative, `${key}: path mirrors relative`);
+    }
+  } finally { cleanup(); }
+});
+
+// §7 byte-stability for skills: the SAME skill tree scanned from two
+// different directories must produce identical pins (modulo timestamps,
+// which are per-scan by design). This is the test that catches absolute
+// path leakage: with machine-absolute paths, dirA and dirB differ.
+test('skills pin: same tree from two directories = identical pins (modulo timestamps)', () => {
+  const { dir: dirA, cleanup: cleanA } = tmp();
+  const { dir: dirB, cleanup: cleanB } = tmp();
+  try {
+    // identical skill trees in two different tmp dirs
+    for (const d of [dirA, dirB]) mkdeploy(d, CLEAN);
+    const pinsA = {};
+    pinAllSkills(pinsA, dirA, dirA);
+    const pinsB = {};
+    pinAllSkills(pinsB, dirB, dirB);
+    const strip = (pins) => {
+      const out = {};
+      for (const [key, p] of Object.entries(pins.skills)) {
+        const { firstSeen, pinnedAt, ...rest } = p;
+        out[key] = rest;
+      }
+      return out;
+    };
+    assert.deepEqual(strip(pinsA), strip(pinsB), 'same tree from two dirs: pins identical (timestamps stripped)');
+  } finally { cleanA(); cleanB(); }
+});
+
 test('DANGEROUS drift on poisoned skill', () => {
   const { dir, cleanup } = tmp();
   try {

@@ -228,6 +228,8 @@ func isoNow() string {
 }
 
 // PinSkill builds a pin entry from a discovered skill file.
+// PIN-SPEC §2 (v1.1): Path is stored RELATIVE (the 1.4.0 writer emitted
+// machine-absolute paths, breaking byte-stability across machines).
 func PinSkill(skill Skill) (*SkillPin, error) {
 	data, err := os.ReadFile(skill.Path)
 	if err != nil {
@@ -241,13 +243,13 @@ func PinSkill(skill Skill) (*SkillPin, error) {
 		App:       skill.App,
 		Scope:     skill.Scope,
 		Relative:  skill.Relative,
-		Path:      skill.Path,
+		Path:      skill.Relative,
 		Size:      len(data),
 		Content:   content,
 		FirstSeen: isoNow(),
 		PinnedAt:  isoNow(),
 		Approved:  false,
-		Advisory:  adv,
+		Advisory:   adv,
 	}, nil
 }
 

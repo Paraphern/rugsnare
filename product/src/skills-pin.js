@@ -161,6 +161,12 @@ export function hashSkillFile(filePath) {
 
 /**
  * Build a pin entry for a skill file (stored in pins.json under `skills`).
+ *
+ * PIN-SPEC §2 (v1.1): `path` MUST be stored RELATIVE to the skill root -
+ * the 1.3.0/1.4.0 writer emitted machine-absolute paths, which breaks §7
+ * byte-stability across machines and leaks local layout (caught in the
+ * published catalog snapshots). The `relative` field already carries the
+ * same value as "the stable key component", so path mirrors it.
  */
 export function pinSkillFile(skill, cwd = process.cwd()) {
   const hash = hashSkillFile(skill.path);
@@ -171,7 +177,7 @@ export function pinSkillFile(skill, cwd = process.cwd()) {
     app: skill.app,
     scope: skill.scope,
     relative: skill.relative,
-    path: skill.path,
+    path: skill.relative,
     size: content.length,
     // store content so diff can show was/became (skills are small: <=1MB)
     content,
@@ -275,7 +281,20 @@ export function diffSkills(pins, cwd = process.cwd(), home = os.homedir()) {
 }
 
 function readOldContent(pin) {
-  try { return fs.readFileSync(pin.path, 'utf8'); } catch { return null; }
+  // v1.4.1+: `path` is relative (PIN-SPEC §2). Pre-v1.4.1 pins may carry a
+  // machine-absolute path - try it as-is (legacy fallback), then resolve
+  // the relative form against likely roots. Returns null if the file is
+  // gone (moved/removed) - diff then falls back to empty content.
+  const candidates = [];
+  if (path.isAbsolute(pin.path ?? '')) candidates.push(pin.path);
+  if (pin.relative) {
+    candidates.push(path.resolve(process.cwd(), pin.relative));
+    candidates.push(path.resolve(process.env.RUGSNARE_TEST_HOME ?? os.homedir?.() ?? '', pin.relative));
+  }
+  for (const p of candidates) {
+    try { return fs.readFileSync(p, 'utf8'); } catch { /* try next */ }
+  }
+  return null;
 }
 
 /**

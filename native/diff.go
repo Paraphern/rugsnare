@@ -1,10 +1,11 @@
-// Drift detection and severity classification — port of the diff half of
+// Drift detection and severity classification - port of the diff half of
 // product/src/skills-pin.js (diffSkills, diffLines, classifySeverity).
 
 package main
 
 import (
 	"os"
+	"path/filepath"
 	"regexp"
 )
 
@@ -93,7 +94,7 @@ func DiffLines(oldText, newText string) Changes {
 // ClassifySeverity classifies by what was ADDED (not the whole file).
 // Mirrors classifySeverity in skills-pin.js.
 // ClassifySeverity classifies by what changed. Added lines drive the
-// DANGEROUS checks; pure deletions are REVIEW at minimum — silently REMOVED
+// DANGEROUS checks; pure deletions are REVIEW at minimum - silently REMOVED
 // safety language (the "Requires confirmation" strip) must never read as SAFE.
 func ClassifySeverity(ch Changes) string {
 	added := ch.Added
@@ -188,8 +189,21 @@ func DiffSkills(pins SkillPinMap, cwd, home string) []DiffResult {
 			}
 			oldContent := pin.Content
 			if oldContent == "" {
-				if b, err := os.ReadFile(pin.Path); err == nil {
-					oldContent = string(b)
+				// v1.4.1+: Path is relative (PIN-SPEC §2). Pre-v1.4.1 pins
+				// may carry absolute paths - try as-is, then resolve relative.
+				if filepath.IsAbs(pin.Path) {
+					if b, err := os.ReadFile(pin.Path); err == nil {
+						oldContent = string(b)
+					}
+				}
+				if oldContent == "" && pin.Relative != "" {
+					for _, root := range []string{cwd, home} {
+						p := filepath.Join(root, pin.Relative)
+						if b, err := os.ReadFile(p); err == nil {
+							oldContent = string(b)
+							break
+						}
+					}
 				}
 			}
 			ch := DiffLines(oldContent, newContent)

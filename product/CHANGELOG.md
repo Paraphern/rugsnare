@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1] - unreleased
+
+- **Skills pin `path` is now relative** (PIN-SPEC §2): the 1.3.0/1.4.0
+  writer emitted machine-absolute paths, breaking §7 byte-stability across
+  machines (the same skill tree scanned from two different directories
+  produced different bytes) and leaking local layout in published catalog
+  snapshots. `path` now mirrors `relative`; pre-v1.4.1 pins with absolute
+  paths are read via a legacy fallback in diff. The Go native launcher's
+  writer is fixed in the same pass.
+
 ## [1.4.0] - 2026-10-13
 
 ### PIN-SPEC v1.1: identity, policy stamp, byte-stable pins (publicly promised 2026-10-13)

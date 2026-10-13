@@ -64,7 +64,7 @@
 - GitHub Marketplace: ОПУБЛИКОВАНО - github.com/marketplace/actions/rugsnare-pr-diff, категория Security, экшен в отдельном репо Paraphern/rugsnare-pr-diff (action.yml в корне - требование маркетплейса), теги v1.0.0+v1 на коммите 13ccb8f, дефолт rugsnare-ref запинен на v1.1.0. Лимит описания < 125 символов.
 - awesome-copilot: В РЕВЬЮ - github/awesome-copilot#4882 (SHA 82650f08).
 - mcpservers.org: ЖИВОЙ листинг (сабмит юзера), автопул README с HEAD.
-- punkpeye awesome-mcp-servers: в списке (PR смержён ранее), ждём Glama-скан.
+- punkpeye awesome-mcp-servers: КОРРЕКТИРОВКА 13.10 (поймал пользователь): НЕ СМЕРЖЕН, НАС НЕТ В СПИСКЕ (0 совпадений в README). PR #15692 открыт с 09.10, наш коммент без ответа. Блокер: glama-check требует скор; Glama теперь жива: листинг Responsive, скор не вычислен ("cannot be deployed" - мы local-only CLI). Ход: разблок-коммент.
 - Docker-хаб и Smithery (каналы Gautam): НЕ ЗАКРЫТЫ, взяли паузу.
 
 Итог блица: четыре параллельных канала вместо одного - сделано за один день.
