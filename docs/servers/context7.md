@@ -1,6 +1,6 @@
 # @upstash/context7-mcp (Upstash)
 
-npm 485,755 installs/week - window 4.0.4 -> 4.3.0.
+npm 485,755 installs/week - window 4.0.4 -> 4.4.1 (same single finding across the whole window; 4.4.0 and 4.4.1 are contract-identical).
 
 **Finding: 1, EXPANDED.** Caught by the weekly drift watch on 2026-10-09 and verified per-version:
 
@@ -8,7 +8,7 @@ npm 485,755 installs/week - window 4.0.4 -> 4.3.0.
 
 A benign, backward-compatible change - new optional input channel plus a new agent instruction - and exactly the class a pinned CI gate surfaces for re-approval instead of absorbing silently.
 
-**2026-10-13: first LIVE hosted drift caught by the public feed (R30's first blood).** context7 joined the drift-feed's hosted monitoring on 2026-10-12; npm 4.4.0 was released 2026-10-13 13:38Z - and by the independent re-scan the same day, the hosted endpoint's `query-docs` hash had already moved (`fc3018...` on 4.3.0 -> `b812de...` live). The entire diff is prose: the version EXAMPLE inside the `libraryId` description (".../v14.3.0-canary.87" -> ".../v16.2.9"). Cosmetically harmless - but it proves the mechanism: a hosted server's contract changed server-side within ~40 minutes of a release, with no npm install, no client action, and nothing a package pin could ever cover. 4.4.1 (14:10Z) is contract-identical to 4.4.0. The feed's next run records the change with a public timestamp.
+**2026-10-13: first LIVE hosted drift caught by the public feed (R30's first blood).** context7 joined the drift-feed's hosted monitoring on 2026-10-12; npm 4.4.0 was released 2026-10-13 13:38Z - and by the independent re-scan the same day, the hosted endpoint's `query-docs` hash had already moved (`fc3018...` on 4.3.0 -> `b812de...` live). The entire diff is a parameter-description text edit inside `inputSchema` - the version EXAMPLE in `libraryId`'s description (".../v14.3.0-canary.87" -> ".../v16.2.9") - graded NOTATION (schema bytes changed, no parameter structure did; only the default diff reports it - `--schema-only` and `--prose-only` both filter it out). Cosmetically harmless - but it proves the mechanism: a hosted server's contract changed server-side within ~40 minutes of a release, with no npm install, no client action, and nothing a package pin could ever cover. 4.4.1 (14:10Z) is contract-identical to 4.4.0. The feed's next run records the change with a public timestamp.
 
 **Repro**
 
