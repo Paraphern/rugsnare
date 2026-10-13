@@ -216,13 +216,21 @@ export function detectShadows(pins) {
 export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan' } = {}) {
   const now = new Date().toISOString();
   const existing = serverPin.tools[tool.name];
-  // PIN-SPEC v1.1 byte-stability: a scan that sees the SAME contract must
-  // not touch the entry - pinnedAt churn would change pins.json bytes on
-  // every re-scan and break third-party JCS-hash watchers. `approve` is the
-  // deliberate act that refreshes pinnedAt/approved after review.
-  if (reason === 'scan' && existing && existing.hash === hash
+  // PIN-SPEC v1.1 byte-stability: a scan that sees the SAME contract of an
+  // ALREADY-APPROVED tool must not touch the entry - pinnedAt churn would
+  // change pins.json bytes on every re-scan and break third-party JCS-hash
+  // watchers. The approved guard is the point (autoclav-67): a first-sight
+  // proxy entry (approved:false) MUST flip on the next scan/approve with the
+  // same contract - "run scan" and "run approve" are deliberate approval
+  // acts, and without the guard a tool once marked unapproved could never
+  // become approved until its contract changed ("NEVER APPROVED" in doctor,
+  // forever). Annotations join the guard because they are pinned but not
+  // part of toolHash - a hint change with an identical hash must refresh.
+  if (existing && existing.hash === hash
     && existing.schemaHash === computeSchemaHash(tool)
-    && existing.proseHash === computeProseHash(tool)) {
+    && existing.proseHash === computeProseHash(tool)
+    && existing.approved === true
+    && JSON.stringify(existing.annotations ?? null) === JSON.stringify(tool.annotations ?? null)) {
     return existing;
   }
   serverPin.tools[tool.name] = {

@@ -27,7 +27,12 @@ Promised in microsoft/autogen#7353 and snyk/agent-scan#482; format text in
   (pinnedAt stays; `approve` remains the deliberate re-pin), and `savePins`
   skips the write entirely when bytes are identical. Third parties can
   JCS-hash pins.json as an opaque record and a re-scan of the same version
-  does not change a byte (the snyk #482 ask).
+  does not change a byte (the snyk #482 ask). Skip guard corrected after
+  the autoclav-67 cross-check: it covers only ALREADY-APPROVED entries, so
+  a first-sight proxy entry (approved:false) still flips to approved on the
+  next scan/approve with an unchanged contract (was: "NEVER APPROVED"
+  forever); annotation changes with an identical toolHash also refresh
+  (hints are pinned but not hashed).
 - Format `"version"` stays `1`: identity and policyVersion are additive, and
   PIN-SPEC consumers already MUST ignore unknown keys.
 

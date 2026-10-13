@@ -28,6 +28,10 @@ function tmp() {
 }
 
 const RM = { recursive: true, force: true, maxRetries: 5, retryDelay: 150 };
+// best-effort cleanup: on Windows the just-exited CLI child can hold the
+// dir handle a beat longer than any retry budget - a leftover tmp dir is
+// harmless, a failed TEST because of cleanup is not
+const cleanup = (dir) => { try { fs.rmSync(dir, RM); } catch { /* handle race */ } };
 
 // ---- stableStringify ---------------------------------------------------------
 
@@ -117,7 +121,7 @@ test('v1.1: re-scan of the same version writes byte-identical pins.json', async 
       assert.notEqual(p4.pinnedAt, at, 'changed contract refreshes');
     }
   } finally {
-    fs.rmSync(dir, RM);
+    cleanup(dir);
   }
 });
 
@@ -142,8 +146,34 @@ test('v1.1 acceptance: entry move with intact tool hashes -> IDENTITY, exit 1', 
     assert.match(out, /different build\/path/);
     assert.equal(r.code ?? r.exitCode, 1, 'IDENTITY is drift: exit 1');
   } finally {
-    fs.rmSync(dir, RM);
+    cleanup(dir);
   }
+});
+
+// autoclav-67 defect: the byte-stability skip swallowed the approval flip -
+// a first-sight proxy entry (approved:false) could never become approved
+// through scan/approve until its contract changed ("NEVER APPROVED" in
+// doctor, forever). The skip now only guards ALREADY-APPROVED entries.
+test('v1.1: unchanged contract still flips approved:false -> true (autoclav-67)', async () => {
+  const tool = { name: 't', description: 'd', inputSchema: { type: 'object' } };
+  const sp = { tools: {} };
+  // first sight through the proxy: unapproved
+  const p1 = pinTool(sp, tool, 'h1', { approved: false });
+  assert.equal(p1.approved, false);
+  const unapprovedAt = p1.pinnedAt;
+  await new Promise((r) => setTimeout(r, 5));
+  // human approves; contract UNCHANGED - the flip must land
+  const p2 = pinTool(sp, tool, 'h1', { approved: true, reason: 'approve' });
+  assert.equal(p2.approved, true, 'approve flips the first-sight entry');
+  assert.notEqual(p2.pinnedAt, unapprovedAt, 'the deliberate act refreshes pinnedAt');
+  // steady state: approved + unchanged -> byte-stable skip (no churn)
+  const p3 = pinTool(sp, tool, 'h1', { approved: true, reason: 'scan' });
+  assert.equal(p3, p2, 'approved unchanged entry is returned as-is');
+  // annotation change with identical hash must still refresh (hints are
+  // pinned but not part of toolHash)
+  const hinted = { ...tool, annotations: { readOnlyHint: true } };
+  const p4 = pinTool(sp, hinted, 'h1', { approved: true, reason: 'scan' });
+  assert.deepEqual(p4.annotations, { readOnlyHint: true });
 });
 
 test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grade', async () => {
@@ -163,6 +193,6 @@ test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grad
     assert.match(out, /re-graded under a newer verifier policy/);
     assert.equal(r.code ?? r.exitCode, 1, 'POLICY is a finding: exit 1');
   } finally {
-    fs.rmSync(dir, RM);
+    cleanup(dir);
   }
 });

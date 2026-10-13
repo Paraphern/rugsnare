@@ -686,7 +686,9 @@ async function cmdApprove(flags, serverName) {
 
   const { tools, prompts = [], resources = [] } = await connect();
   const serverPin = ensureServer(pins, serverName, pinCmd);
-  for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
+  // approve is the deliberate approval act (autoclav-67): first-sight proxy
+  // entries with an unchanged contract must flip approved:false -> true here
+  for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true, reason: 'approve' });
 
   // Approve re-baselines prompts and resources wholesale: the human reviewed
   // the NEW state, so entries the server dropped must not ghost as REMOVED on
