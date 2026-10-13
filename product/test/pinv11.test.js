@@ -166,9 +166,15 @@ test('v1.1: unchanged contract still flips approved:false -> true (autoclav-67)'
   const p2 = pinTool(sp, tool, 'h1', { approved: true, reason: 'approve' });
   assert.equal(p2.approved, true, 'approve flips the first-sight entry');
   assert.notEqual(p2.pinnedAt, unapprovedAt, 'the deliberate act refreshes pinnedAt');
-  // steady state: approved + unchanged -> byte-stable skip (no churn)
+  // steady state: approved + unchanged ROUTINE SCAN -> byte-stable skip (no churn)
   const p3 = pinTool(sp, tool, 'h1', { approved: true, reason: 'scan' });
   assert.equal(p3, p2, 'approved unchanged entry is returned as-is');
+  // but an explicit approve of an unchanged approved entry is a deliberate
+  // re-approval act and refreshes its timestamp (autoclav-68 nuance)
+  await new Promise((r) => setTimeout(r, 5));
+  const p2b = pinTool(sp, tool, 'h1', { approved: true, reason: 'approve' });
+  assert.notEqual(p2b.pinnedAt, p2.pinnedAt, 'approve refreshes even when nothing changed');
+  assert.equal(p2b.firstSeen, p1.firstSeen, 'firstSeen never changes');
   // annotation change with identical hash must still refresh (hints are
   // pinned but not part of toolHash)
   const hinted = { ...tool, annotations: { readOnlyHint: true } };
