@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parsePackageName, diffVersionContracts, resolvedSchemaDeps, depChangesBetween } from '../src/history.js';
+import { parsePackageName, diffVersionContracts, resolvedSchemaDeps, depChangesBetween, binPathOf } from '../src/history.js';
 import { compareVersions } from '../src/version.js';
 
 test('parsePackageName: bare, scoped, and URL forms', () => {
@@ -167,4 +167,27 @@ test('R32: depChangesBetween flags drift, appearance and disappearance', () => {
   assert.deepEqual(depChangesBetween({ zod: '4.4.3' }, { zod: '4.5.0' }), [{ dep: 'zod', from: '4.4.3', to: '4.5.0' }]);
   assert.deepEqual(depChangesBetween({}, { zod: '4.5.0' }), [{ dep: 'zod', from: null, to: '4.5.0' }], 'dep appeared');
   assert.deepEqual(depChangesBetween({ ajv: '8.0.0' }, {}), [{ dep: 'ajv', from: '8.0.0', to: null }], 'dep disappeared');
+});
+
+// R34: packaging drift. supabase moved its stdio entry
+// (dist/transports/stdio.js -> dist/cli.js in 0.9+) with tool contracts
+// untouched - the declared bin must travel with every capture so a move
+// between adjacent versions can surface as entryChanged.
+test('R34: binPathOf reads the declared launch path in all bin shapes', () => {
+  const mk = (bin) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rs-r34-'));
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'x', ...(bin !== undefined ? { bin } : {}) }));
+    return dir;
+  };
+  try {
+    let d = mk('dist/cli.js');
+    assert.equal(binPathOf(d), 'dist/cli.js', 'string bin');
+    fs.rmSync(d, { recursive: true, force: true });
+    d = mk({ 'mcp-server': 'dist/transports/stdio.js', other: 'x.js' });
+    assert.equal(binPathOf(d), 'dist/transports/stdio.js', 'object bin: first value');
+    fs.rmSync(d, { recursive: true, force: true });
+    d = mk(undefined);
+    assert.equal(binPathOf(d), null, 'no bin declared');
+    fs.rmSync(d, { recursive: true, force: true });
+  } catch (e) { throw e; }
 });

@@ -17,7 +17,7 @@
 
 Notes:
 - `hubspot-create-association` was **removed** and a batch variant (`hubspot-batch-create-associations`) appeared - callers invoking the old tool name now get a protocol error. Nowhere to read about it: the repo is inactive.
-- Grading flag (under review): rugsnare 1.3.0 graded `hubspot-search-objects` BREAKING, but both operations are optional-parameter additions (`[expand]`), which by our rubric is EXPANDED; one param (`highValue`) ships without a `type` keyword, which may be what tripped the classifier. Logged as a candidate grader bug (R33) - semantically this is a widening.
+- Grading flag (RESOLVED, R33): rugsnare 1.3.0 graded `hubspot-search-objects` BREAKING, but both operations are optional-parameter additions (`[expand]`) - by our rubric EXPANDED. Root cause was not the typeless param (`highValue` without `type`): the tool-level grader lumped pure-expand into BREAKING, making the documented EXPANDED label unreachable (P5 shipped the label but not the path to it). Fixed in the 1.4.0 draft: pure expand grades EXPANDED, mixes with tighten/loosen stay BREAKING, and `--schema-only` now blocks on EXPANDED too. Reproduced and verified on this exact pair - the tool now grades `(EXPANDED)`.
 
 **Repro** (boot requires `PRIVATE_APP_ACCESS_TOKEN`; dummy value is enough):
 

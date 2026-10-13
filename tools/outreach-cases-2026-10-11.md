@@ -324,3 +324,27 @@ rename is documented, the quiet tightenings are not". Body: начать с по
   документацию («exactly the right call»). Затем: «the gap is the 32 quiet tightenings».
   Проверены ВСЕ 6 release notes (2.4.0-2.6.1): ноль упоминаний minLength/minimum.
   Следующие: LD-коммент, Hostinger-коммент.
+
+## ЖУРНАЛ ПОСТИНГА ПЯТЁРКИ (обновление 14 окт, вечер)
+
+- 2026-10-13: Netlify #75 - ОТПРАВЛЕН (открыт)
+- 2026-10-14: MongoDB #1600 - ЗАКРЫТ not_planned (87 мин)
+- 2026-10-14: Currents #232 - ОТПРАВЛЕН (открыт)
+- 2026-10-14: **LaunchDarkly #67 - ОТПРАВЛЕН (issuecomment-6130216118)**
+  Самый чисто-полезный комментарий: «ваш инструмент существует с мая, вот пруф». 6 месяцев
+  тишины на issue, 0 комментов, requester не знал что фича въехала. Мы закрыли loop.
+  «This vendor is surgical» — похвала + «audit tool arrived without audit trail» — ирония.
+- Остался: Hostinger #67 (день 5)
+
+## ЖУРНАЛ ПОСТИНГА ПЯТЁРКИ — ФИНАЛ
+
+- 2026-10-13: Netlify #75 - ОТПРАВЛЕН (открыт)
+- 2026-10-14: MongoDB #1600 - ЗАКРЫТ not_planned (87 мин, без объяснения)
+- 2026-10-14: Currents #232 - ОТПРАВЛЕН (открыт)
+- 2026-10-14: LaunchDarkly #67 - ОТПРАВЛЕН (issuecomment-6130216118): «ваш инструмент
+  существует с мая» + 1 NEW / 19/19 stable + «vendor is surgical» + ирония audit-without-audit
+- 2026-10-14: **Hostinger #67 - ОТПРАВЛЕН (issuecomment-6130324020)**: 6 SKILL.md как
+  resources (Gautam's blind spot), 2.4.0→2.11.0→2.13.0 верифицировано, offer PIN-SPEC сверку.
+  Ссылка на rugsnare добавлена (правило №9 соблюлено после перепроверки).
+
+**ПЯТЁРКА ЗАВЕРШЕНА.** 5/5 постед. 1 закрыт (MongoDB), 4 ожидают реакции.

@@ -156,3 +156,14 @@ Hosted-сервер и npm-пакет версионируются раздел�
   скиллы? (аналог --chameleon для MCP-поверхностей). Проверить на skills.r2/Git-backed, когда взлетит.
 - Тренд-вывод: скиллы повторяют траекторию MCP (локально -> реестры -> удалённо -> per-client), все
   гиганты строят распределение (MSFT sync, Vercel registry, CF R2), integrity-слой не строит никто.
+
+- R33 (2026-10-12, drift-watch baseline): классификатор 1.3.0 выдал BREAKING для
+  hubspot-search-objects, где обе операции - optional-добавления [expand] (filterGroups[].
+  filters[].values array; filterGroups[].filters[].highValue БЕЗ type). Семантически EXPANDED.
+  Гипотезы: (а) параметр без type трактуется как constraint-аномалия; (б) nested array-item
+  addition misgraded. Воспроизводимо: @hubspot/mcp-server 0.2.0 -> 0.4.0, rugsnare 1.3.0 diff.
+  Страница docs/servers/hubspot.md опубликована с честной пометкой "under review".
+- R34 (2026-10-12, supabase): packaging-дрейф - stdio-entry переехал (dist/transports/stdio.js
+  -> dist/cli.js в 0.9+), тул-контракт при этом цел. Класс вне schemaHash: предлагается
+  фиксировать и пиновать bin-path в манифесте скана, ворнинг при смене entry между версиями.
+  Drift-watch уже записывает entry per-версию эмпирически.

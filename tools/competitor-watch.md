@@ -83,6 +83,20 @@
 - 2026-10-12: peer-коммент на PR #498 (issuecomment-6114568265): два выстраданных урока
   (канонизация хэша; рекурсивная градация по направлению) + оффер фикстур (benign corpus,
   docs/servers). Помощь контрибьютору, не оппозиция. Ждать реакции rng1995/KodeCharya.
+- 2026-10-13: ЧЕТВЁРТОЕ ревью rng1995 (pullrequestreview-5500927300). Сдвиги: (а) security-блокеры
+  СНЯТЫ - runtime-exec удалён, git-on-content -> difflib, XSS закрыт с регресс-тестами, зависимости
+  в optional extra; (б) НОВЫЙ блокер: runtime-scan CLI жив, но тихо ничего не делает - печатает
+  "Runtime events: 0" и exit 0 для кода, который не исполнялся (false-clean у security-тул);
+  (в) структурное без изменений: 102 файла/+10.3k, скратчи, 2.5MB дамп, конфликты, DCO, #803
+  дублирует 84 файла байт-в-байт; (г) ГЛАВНОЕ: потребовано PIC-решение ДО продолжения работ -
+  три опции: (a) отдельный пакет, (b) skillspector[security] extra (всё ещё второй сканер: своя
+  дискавери, 0-100 score, A-F grade, SQLite, 5 команд), (c) влить capabilities (permission drift,
+  CycloneDX, policy gating) в существующий анализатор. "Open an issue for this decision before
+  doing more work here."
+  СТРАТЕГИЯ: PIC-issue = наша точка входа с полевыми данными (24-серверный корпус, notation
+  waves, packaging drift, POLICY-класс) - если откроется, входим с drift-watch receipts, не с
+  мнением. До открытия issue - НЕ комментить (тред contributor<->reviewer, наш коммент от 11-го
+  без реакции, повтор = шум). Реакции на наш коммент по-прежнему нет.
 
 ## Тренд недели (2026-10-12): скиллы уходят в remote, integrity не забирает никто
 

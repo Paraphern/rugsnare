@@ -1,0 +1,168 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
+import {
+  stableStringify, buildIdentity, compareIdentity, policyVersionFor,
+  savePins, loadPins, pinTool, ensureServer,
+} from '../src/pins.js';
+
+/**
+ * PIN-SPEC v1.1 acceptance (publicly promised 2026-10-13 in autogen#7353
+ * and snyk#482): identity block + identityHash, policyVersion stamp,
+ * IDENTITY/POLICY drift classes, byte-stable pins.json serialization.
+ */
+
+const run = promisify(execFile);
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const CLI = path.join(HERE, '..', 'src', 'cli.js');
+const FIX_A = path.join(HERE, 'fixtures', 'identity-a.mjs');
+const FIX_B = path.join(HERE, 'fixtures', 'identity-b.mjs');
+
+function tmp() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'rs-v11-'));
+}
+
+const RM = { recursive: true, force: true, maxRetries: 5, retryDelay: 150 };
+
+// ---- stableStringify ---------------------------------------------------------
+
+test('v1.1: stableStringify is key-order independent (JCS-hashable)', () => {
+  const a = { version: 1, servers: { x: { url: 'u', tools: {} } }, skills: {} };
+  const b = { skills: {}, servers: { x: { tools: {}, url: 'u' } }, version: 1 };
+  assert.equal(stableStringify(a, 2), stableStringify(b, 2), 'same data, different insertion order -> same bytes');
+  assert.equal(stableStringify(a, 0), stableStringify(b, 0), 'compact form also stable');
+  // arrays keep order (sequences, not maps)
+  assert.notEqual(stableStringify({ list: [1, 2] }, 0), stableStringify({ list: [2, 1] }, 0));
+  // compact form really is compact
+  assert.ok(!stableStringify(a, 0).includes('\n'));
+  assert.ok(!stableStringify(a, 0).includes(' '));
+});
+
+// ---- identity block ----------------------------------------------------------
+
+test('v1.1: buildIdentity reads package/version/entry/url from all cmd shapes', () => {
+  const npx = buildIdentity({ command: 'npx', args: ['-y', 'some-package@1.2.3'] });
+  assert.equal(npx.package, 'some-package');
+  assert.equal(npx.resolvedVersion, '1.2.3');
+  assert.equal(npx.entryPath, null);
+  assert.equal(npx.url, null);
+  assert.match(npx.identityHash, /^sha256:[0-9a-f]{64}$/);
+
+  const local = buildIdentity({ command: 'node', args: ['node_modules/@scope/pkg/dist/transports/stdio.js'] });
+  assert.equal(local.package, '@scope/pkg');
+  assert.equal(local.entryPath, 'dist/transports/stdio.js', 'entry normalized relative to the package root');
+
+  const remote = buildIdentity({ url: 'https://example.com/mcp' });
+  assert.equal(remote.url, 'https://example.com/mcp');
+  assert.equal(remote.package, null);
+
+  // deterministic: identical input -> identical hash; entry move -> new hash
+  const npx2 = buildIdentity({ command: 'npx', args: ['-y', 'some-package@1.2.3'] });
+  assert.equal(npx.identityHash, npx2.identityHash);
+  const moved = buildIdentity({ command: 'node', args: ['node_modules/@scope/pkg/dist/cli.js'] });
+  assert.notEqual(local.identityHash, moved.identityHash, 'supabase-style entry move changes the identityHash');
+});
+
+test('v1.1: compareIdentity reports the moved fields, null when unchanged', () => {
+  const a = buildIdentity({ command: 'node', args: ['node_modules/@scope/pkg/dist/transports/stdio.js'] });
+  const b = buildIdentity({ command: 'node', args: ['node_modules/@scope/pkg/dist/cli.js'] });
+  const same = buildIdentity({ command: 'node', args: ['node_modules/@scope/pkg/dist/transports/stdio.js'] });
+  assert.equal(compareIdentity(a, same), null);
+  const diff = compareIdentity(a, b);
+  assert.ok(diff, 'entry move is a diff');
+  assert.deepEqual(diff.entryPath, { from: 'dist/transports/stdio.js', to: 'dist/cli.js' });
+});
+
+// ---- policy stamp ------------------------------------------------------------
+
+test('v1.1: policyVersionFor is derived from the running binary', () => {
+  assert.match(policyVersionFor(), /^rugsnare-\d+\.\d+\.\d+/);
+});
+
+// ---- byte-stable pins.json ---------------------------------------------------
+
+test('v1.1: re-scan of the same version writes byte-identical pins.json', async () => {
+  const dir = tmp();
+  try {
+    const tool = { name: 't', description: 'd', inputSchema: { type: 'object' } };
+    const cmd = { command: 'node', args: ['node_modules/svc/dist/index.js'] };
+    // first scan: fresh store
+    const pins = { version: 1, servers: {} };
+    pinTool(ensureServer(pins, 'svc', cmd), tool, 'h1', { reason: 'scan' });
+    savePins(pins, dir);
+    const first = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    assert.ok(first.includes('"policyVersion"'), 'policy stamp present');
+    // second scan: the REAL path - load the existing store, re-ensure, re-pin
+    const reloaded = loadPins(dir);
+    pinTool(ensureServer(reloaded, 'svc', cmd), tool, 'h1', { reason: 'scan' });
+    savePins(reloaded, dir);
+    const second = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    assert.equal(first, second, 'identical re-scan -> identical bytes');
+    // pinTool must not churn pinnedAt when the contract is unchanged
+    const sp = { tools: {} };
+    const p1 = pinTool(sp, tool, 'h1', { reason: 'scan' });
+    const at = p1.pinnedAt;
+    const p2 = pinTool(sp, tool, 'h1', { reason: 'scan' });
+    assert.equal(p2.pinnedAt, at, 'unchanged contract keeps its pinnedAt');
+    const p3 = pinTool(sp, { ...tool, description: 'changed' }, 'h2', { reason: 'scan' });
+    // same-ms runs are legitimate; give the clock a beat before asserting
+    if (p3.pinnedAt === at) {
+      await new Promise((r) => setTimeout(r, 5));
+      const p4 = pinTool(sp, { ...tool, description: 'changed again' }, 'h3', { reason: 'scan' });
+      assert.notEqual(p4.pinnedAt, at, 'changed contract refreshes');
+    }
+  } finally {
+    fs.rmSync(dir, RM);
+  }
+});
+
+// ---- acceptance e2e: IDENTITY and POLICY through the real CLI ----------------
+
+test('v1.1 acceptance: entry move with intact tool hashes -> IDENTITY, exit 1', async () => {
+  const dir = tmp();
+  try {
+    const cfg = path.join(dir, 'mcp.json');
+    fs.writeFileSync(cfg, JSON.stringify({ mcpServers: { svc: { command: 'node', args: [FIX_A] } } }));
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    // re-scan of the SAME state must be byte-identical through the real CLI
+    const before = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    const after = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    assert.equal(before, after, 're-scan of the same version: byte-identical');
+    // same contracts, different launch path (the supabase shape)
+    fs.writeFileSync(cfg, JSON.stringify({ mcpServers: { svc: { command: 'node', args: [FIX_B] } } }));
+    const r = await run(process.execPath, [CLI, 'diff', '--config', cfg], { cwd: dir, timeout: 60000 }).catch((e) => e);
+    const out = String((r.stdout ?? '') + (r.stderr ?? '') + (r.message ?? ''));
+    assert.match(out, /IDENTITY/);
+    assert.match(out, /different build\/path/);
+    assert.equal(r.code ?? r.exitCode, 1, 'IDENTITY is drift: exit 1');
+  } finally {
+    fs.rmSync(dir, RM);
+  }
+});
+
+test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grade', async () => {
+  const dir = tmp();
+  try {
+    const cfg = path.join(dir, 'mcp.json');
+    fs.writeFileSync(cfg, JSON.stringify({ mcpServers: { svc: { command: 'node', args: [FIX_A] } } }));
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    // forge an older policy stamp (no signing key in the isolated HOME)
+    const pinsFile = path.join(dir, '.rugsnare', 'pins.json');
+    const pins = JSON.parse(fs.readFileSync(pinsFile, 'utf8'));
+    pins.policyVersion = 'rugsnare-1.2.0';
+    fs.writeFileSync(pinsFile, JSON.stringify(pins, null, 2) + '\n');
+    const r = await run(process.execPath, [CLI, 'diff', '--config', cfg], { cwd: dir, timeout: 60000 }).catch((e) => e);
+    const out = String((r.stdout ?? '') + (r.stderr ?? '') + (r.message ?? ''));
+    assert.match(out, /POLICY/);
+    assert.match(out, /re-graded under a newer verifier policy/);
+    assert.equal(r.code ?? r.exitCode, 1, 'POLICY is a finding: exit 1');
+  } finally {
+    fs.rmSync(dir, RM);
+  }
+});

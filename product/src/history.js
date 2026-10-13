@@ -109,13 +109,25 @@ export async function fetchValidated(url, allowedHost, timeoutMs) {
   throw new Error('too many redirects');
 }
 
-/** Resolve the server entry from the extracted package.json bin field. */
-function serverEntry(pkgDir) {
+/**
+ * The declared launch path (package.json "bin") - R34. Supabase moved its
+ * stdio entry (dist/transports/stdio.js -> dist/cli.js in 0.9+) with the
+ * tool contract untouched: packaging drift that no schemaHash can see, but
+ * every wrapper config, debugger attach and wrapper script keyed on the old
+ * path breaks all the same. Captured per version; a move between adjacent
+ * versions surfaces as entryChanged on the pair.
+ */
+export function binPathOf(pkgDir) {
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
   const bin = pkg.bin;
-  let rel;
-  if (typeof bin === 'string') rel = bin;
-  else if (bin && typeof bin === 'object') rel = Object.values(bin)[0];
+  if (typeof bin === 'string') return bin;
+  if (bin && typeof bin === 'object') return Object.values(bin)[0];
+  return null;
+}
+
+/** Resolve the server entry from the extracted package.json bin field. */
+function serverEntry(pkgDir) {
+  const rel = binPathOf(pkgDir);
   if (!rel) throw new Error('no bin in package.json (not a runnable MCP server?)');
   return path.join(pkgDir, rel);
 }
@@ -232,6 +244,10 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
     // drift rather than server code.
     const depResolution = await installDeps(pkgDir);
     const deps = resolvedSchemaDeps(pkgDir);
+    // R34: the declared launch path travels with the contract - packaging
+    // drift (a moved bin) is invisible to schemaHash but breaks everything
+    // keyed on the old path
+    const binPath = binPathOf(pkgDir);
     const entry = serverEntry(pkgDir);
     // serverArgs: per-package launch arguments (e.g. LaunchDarkly needs
     // "start --transport stdio --api-key <key>"). Passed as a fixed array
@@ -254,7 +270,7 @@ export async function contractOfVersion(name, version, tarballUrl, { timeoutMs =
         annotations: t.annotations,
       };
     }
-    return { version, tools: pins, toolCount: (tools || []).length, deps, depResolution };
+    return { version, tools: pins, toolCount: (tools || []).length, deps, depResolution, binPath };
   } finally {
     try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 }); } catch { /* Windows */ }
   }
@@ -495,12 +511,17 @@ export async function scanHistory(name, { last = 10, from, to, timeoutMs = 15000
     // may differ from a plain user install, and consumers deserve the marker
     const fromRes = ran[i - 1].depResolution ?? 'strict';
     const toRes = ran[i].depResolution ?? 'strict';
+    // R34: launch entry moved between adjacent versions (supabase:
+    // dist/transports/stdio.js -> dist/cli.js, contracts identical)
+    const entryChanged = ran[i - 1].binPath && ran[i].binPath && ran[i - 1].binPath !== ran[i].binPath
+      ? { from: ran[i - 1].binPath, to: ran[i].binPath } : null;
     pairs.push({
       from: ran[i - 1].version,
       to: ran[i].version,
       toPublishedAt: time[ran[i].version] ?? null,
       deps: { from: ran[i - 1].deps ?? {}, to: ran[i].deps ?? {}, fromResolution: fromRes, toResolution: toRes },
       ...(depsChanged.length ? { depsChanged } : {}),
+      ...(entryChanged ? { entryChanged } : {}),
       findings,
     });
   }

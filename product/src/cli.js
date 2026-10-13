@@ -97,7 +97,7 @@ Files (all local, gitignore .rugsnare/ or commit pins.json deliberately):
   .rugsnare/events.jsonl  append-only event log
 
 Exit codes: 0 = clean, 1 = drift detected, 2 = config error, 3 = infrastructure error (no drift, but couldn't reach a server).
-Modes: --schema-only = only BREAKING drift (schema changes) fails the build; --prose-only = only COSMETIC drift (description changes) fails. Default: both.`;
+Modes: --schema-only = only BREAKING/EXPANDED drift (schema changes) fails the build; --prose-only = only COSMETIC drift (description changes) fails. Default: both.`;
 
 function parseArgs(argv) {
   const flags = { _: [] };
@@ -218,6 +218,14 @@ function printVerdict(server, verdicts, json) {
     // prompt/resource verdicts carry {item, kind}; tools carry {tool}
     const target = v.tool ?? `${v.item}${v.kind ? ` (${v.kind})` : ''}`;
     console.log(`  [${STATUS_ICON[v.status] ?? v.status}] ${target}${driftLabel}${hashes}`);
+    // PIN-SPEC v1.1 classes: identity/policy drift is not a tool finding
+    if (v.driftType === 'IDENTITY' && v.identityChanged) {
+      const moved = Object.entries(v.identityChanged).map(([k, { from, to }]) => `${k}: ${from ?? 'absent'} -> ${to ?? 'absent'}`).join(', ');
+      console.log(`      the surface is served by a different build/path than approved (${moved})`);
+    }
+    if (v.driftType === 'POLICY') {
+      console.log(`      re-graded under a newer verifier policy; re-pin to accept (pins from ${v.pinnedUnder ?? 'pre-1.4'}, this binary ${v.currentPolicy}) - not server drift`);
+    }
     // human-readable schema changes ("added required parameter 'mode'" not just "schema changed")
     if (v.schemaChanges && v.schemaChanges.length > 0) {
       for (const sc of v.schemaChanges) {
@@ -272,8 +280,11 @@ function oneLine(s) {
 
 function badVerdicts(verdicts, flags) {
   let bad = verdicts.filter((v) => v.status !== 'UNCHANGED');
-  // Schema-only: only BREAKING drift (schema changes) blocks the build
-  if (flags?.schemaOnly) bad = bad.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING');
+  // Schema-only: BREAKING and EXPANDED drift (schema changes, incl. new
+  // optional params = new data channels) block the build. R33: EXPANDED
+  // became reachable, so it must be listed explicitly - a pure-expand tool
+  // stopped being BREAKING and must not slip past --schema-only either.
+  if (flags?.schemaOnly) bad = bad.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING' || v.driftType === 'EXPANDED');
   // Prose-only: only COSMETIC drift (description changes) blocks
   if (flags?.proseOnly) bad = bad.filter((v) => v.status !== 'DRIFT' || v.driftType === 'COSMETIC');
   return bad;
@@ -513,6 +524,23 @@ async function cmdDiff(flags) {
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
   const report = [];
+  // PIN-SPEC v1.1: pins graded under a different verifier policy must NOT be
+  // silently re-graded - the ruler changed, the vendor did nothing wrong
+  // (acceptance: a 1.2.x-era pin store diffed by a v1.1 binary says POLICY)
+  const { policyVersionFor } = await import('./pins.js');
+  const currentPolicy = policyVersionFor();
+  if ((pins.policyVersion ?? null) !== currentPolicy) {
+    driftCount++;
+    logEvent({ kind: 'policy', pinnedUnder: pins.policyVersion ?? null, currentPolicy });
+    report.push({
+      server: '(policy)',
+      verdicts: [{ tool: '(policy)', status: 'DRIFT', driftType: 'POLICY', pinnedUnder: pins.policyVersion ?? null, currentPolicy }],
+    });
+    if (!flags.json && !flags.sarif) {
+      console.log(`(policy)`);
+      printVerdict('(policy)', [{ tool: '(policy)', status: 'DRIFT', driftType: 'POLICY', pinnedUnder: pins.policyVersion ?? null, currentPolicy }], false);
+    }
+  }
   for (const name of names) {
     const sp = pins.servers[name];
     const configEntry = configServers?.[name];
@@ -542,9 +570,23 @@ async function cmdDiff(flags) {
       // (and for HTTP, a second full handshake)
       const { tools, prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
+      // PIN-SPEC v1.1: identity drift - every tool hash intact but the
+      // surface is served by a different build/path than approved (supabase
+      // moved its stdio entry with contracts unchanged). Only when tools are
+      // clean: if contracts drifted too, those findings say more.
+      const { buildIdentity, compareIdentity } = await import('./pins.js');
+      const liveIdentity = buildIdentity(isHttp ? { url: httpUrl } : { command: stdioCmd.command, args: stdioCmd.args });
+      const identityChanged = allVerdicts.every((v) => v.status === 'UNCHANGED')
+        ? compareIdentity(sp.identity, liveIdentity) : null;
+      if (identityChanged) {
+        allVerdicts.push({ tool: '(identity)', status: 'DRIFT', driftType: 'IDENTITY', identityChanged });
+        logEvent({ kind: 'identity', server: name, changed: identityChanged });
+      }
       // Filter display based on --schema-only / --prose-only
+      // (BREAKING and EXPANDED are both schema drift - R33 made pure-expand
+      // reachable as EXPANDED, so it must be listed here too)
       const verdicts = flags.schemaOnly
-        ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING')
+        ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'BREAKING' || v.driftType === 'EXPANDED')
         : flags.proseOnly
           ? allVerdicts.filter((v) => v.status !== 'DRIFT' || v.driftType === 'COSMETIC')
           : allVerdicts;
@@ -1072,7 +1114,9 @@ async function cmdHistory(flags) {
   else {
     for (const p of result.pairs) {
       const { from, to, toPublishedAt, findings, depsChanged } = p;
-      if (findings.length === 0 && !depsChanged) continue;
+      // entryChanged-only pairs (supabase: contracts identical, launch entry
+      // moved) must still print - packaging drift IS the finding
+      if (findings.length === 0 && !depsChanged && !p.entryChanged) continue;
       const pubDate = toPublishedAt ? ` (published ${String(toPublishedAt).slice(0, 10)})` : '';
       console.log(`\n${from} -> ${to}${pubDate}: ${findings.length} finding(s)`);
       // R32 provenance: schema deps resolved differently between the two
@@ -1086,6 +1130,10 @@ async function cmdHistory(flags) {
       const res = p.deps ?? {};
       if (res.fromResolution === 'legacy' || res.toResolution === 'legacy') {
         console.log(`      ~ captured via legacy peer resolution (${from}: ${res.fromResolution ?? 'strict'}, ${to}: ${res.toResolution ?? 'strict'}) - the tree may differ from a plain install`);
+      }
+      // R34: launch entry moved - packaging drift, invisible to schema hashes
+      if (p.entryChanged) {
+        console.log(`      ~ launch entry moved: ${p.entryChanged.from} -> ${p.entryChanged.to} (packaging drift: tool contracts may be identical, but what starts is not the same program)`);
       }
       if (findings.length === 0) continue;
       for (const f of findings) {

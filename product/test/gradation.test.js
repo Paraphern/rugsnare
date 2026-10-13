@@ -20,10 +20,10 @@ test('schemaDiff returns direction-tagged changes', () => {
   assert.equal(added.direction, 'tighten');
 });
 
-test('gradeSchemaDrift: pure tighten = BREAKING, pure loosen = LOOSENED, mixed = BREAKING', () => {
+test('gradeSchemaDrift: pure tighten = BREAKING, pure loosen = LOOSENED, pure expand = EXPANDED, mixed = BREAKING', () => {
   assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'tighten' }], []), 'BREAKING');
   assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'loosen' }], []), 'LOOSENED');
-  assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'expand' }], []), 'BREAKING'); // expand rides at BREAKING severity
+  assert.equal(gradeSchemaDrift([{ text: 'x', direction: 'expand' }], []), 'EXPANDED'); // R33: pure expand gets its P5 label
   assert.equal(gradeSchemaDrift([{ text: 'a', direction: 'loosen' }, { text: 'b', direction: 'tighten' }], []), 'BREAKING');
   assert.equal(gradeSchemaDrift([{ text: 'a', direction: 'loosen' }, { text: 'b', direction: 'expand' }], []), 'BREAKING');
   assert.equal(gradeSchemaDrift([], ['dialect note']), 'NOTATION');
@@ -36,8 +36,45 @@ test('P5: added optional parameter = EXPANDED direction (not tighten)', () => {
   const changes = schemaDiff(a, b);
   const added = changes.find((c) => c.text.includes("added optional parameter 'context'"));
   assert.equal(added.direction, 'expand', 'optional param gets expand direction');
-  // but the overall grade is still BREAKING (expand = same severity slot)
-  assert.equal(gradeSchemaDrift(changes, []), 'BREAKING');
+  // pure-expand grades EXPANDED - the P5 changelog's own words: "the label
+  // just stops semver-literate reviewers from reading 'breaking' on a
+  // non-breaking change". (The pre-R33 implementation lumped pure-expand
+  // into BREAKING, making the documented label unreachable.)
+  assert.equal(gradeSchemaDrift(changes, []), 'EXPANDED');
+});
+
+// R33 (drift-watch baseline, @hubspot/mcp-server 0.2.0 -> 0.4.0): two
+// optional additions - one nested in array items, one TYPELESS - graded
+// BREAKING at tool level while both changes carried [expand]. Pure expand
+// must grade EXPANDED; mixes with tighten or loosen stay BREAKING.
+test('R33: pure-expand tool grades EXPANDED (hubspot filterGroups case)', () => {
+  const branch = (extra) => ({
+    type: 'object',
+    properties: {
+      propertyName: { type: 'string' },
+      operator: { type: 'string' },
+      value: { type: 'string' },
+      ...(extra ? { values: { type: 'array', items: { type: 'string' } }, highValue: {} } : {}),
+    },
+    required: ['propertyName', 'operator', 'value'],
+  });
+  const a = { type: 'object', properties: { filterGroups: { type: 'array', items: { type: 'object', properties: { filters: { type: 'array', items: branch(false) } } } } } };
+  const b = { type: 'object', properties: { filterGroups: { type: 'array', items: { type: 'object', properties: { filters: { type: 'array', items: branch(true) } } } } } };
+  const changes = schemaDiff(a, b);
+  assert.ok(changes.length >= 2, `expected the two optional additions, got ${JSON.stringify(changes)}`);
+  assert.ok(changes.every((c) => c.direction === 'expand'), 'both additions are expand');
+  assert.equal(gradeSchemaDrift(changes, []), 'EXPANDED', 'tool-level grade must be EXPANDED');
+});
+
+test('R33: expand mixed with tighten or loosen stays BREAKING (conservative)', () => {
+  // tighten + expand
+  let a = { type: 'object', properties: { q: { type: 'number' } }, required: [] };
+  let b = { type: 'object', properties: { q: { type: 'integer' }, ctx: { type: 'string' } }, required: [] };
+  assert.equal(gradeSchemaDrift(schemaDiff(a, b), []), 'BREAKING', 'tighten dominates');
+  // expand + loosen (no tighten)
+  a = { type: 'object', properties: { q: { type: 'string', enum: ['a', 'b'] } }, required: [] };
+  b = { type: 'object', properties: { q: { type: 'string' }, ctx: { type: 'string' } }, required: [] };
+  assert.equal(gradeSchemaDrift(schemaDiff(a, b), []), 'BREAKING', 'mixed expand+loosen rides at BREAKING');
 });
 
 test('P5: removed guard parameter (dry_run) triggers guardWarning', () => {

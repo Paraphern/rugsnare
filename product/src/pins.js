@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { readJsonFile } from './jsonfile.js';
 import { schemaHash as computeSchemaHash, proseHash as computeProseHash } from './hash.js';
+import { getVersion } from './version.js';
 
 /**
  * Pin store: `.rugsnare/pins.json`
@@ -30,9 +32,115 @@ export function loadPins(cwd = process.cwd()) {
   }
 }
 
+/**
+ * PIN-SPEC v1.1: byte-stable serialization. Object keys are sorted
+ * recursively (arrays keep order - they are sequences), so the same data
+ * always produces the same bytes regardless of construction order. This is
+ * what lets a third-party verifier JCS-hash pins.json as an opaque record
+ * (the snyk #482 ask): re-scanning the same version must not change a byte.
+ * Pretty-printed with 2-space indent - pins.json is committed to repos and
+ * read by humans; pass indent 0 for the compact form used in identityHash.
+ */
+export function stableStringify(value, indent = 2) {
+  const walk = (v, depth) => {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v);
+    if (Array.isArray(v)) return `[${v.map((x) => walk(x, depth + 1)).join(',')}]`;
+    const keys = Object.keys(v).sort();
+    const pad = ' '.repeat(indent * (depth + 1));
+    const closePad = ' '.repeat(indent * depth);
+    if (indent === 0) return `{${keys.map((k) => `${JSON.stringify(k)}:${walk(v[k], depth + 1)}`).join(',')}}`;
+    const body = keys.map((k) => `${pad}${JSON.stringify(k)}: ${walk(v[k], depth + 1)}`).join(',\n');
+    return `{\n${body}\n${closePad}}`;
+  };
+  return walk(value, 0);
+}
+
+/**
+ * PIN-SPEC v1.1: the verifier policy that graded these pins (canonicalization
+ * + classifier behavior). Diffing pins taken under a different policy must
+ * surface a POLICY finding, never a silent re-grade: the vendor did nothing
+ * wrong, the ruler changed (chrome-devtools 1.8->1.10.1 taught us this - 27
+ * "BREAKINGs" that were an equivalence bug in our own grader).
+ */
+export function policyVersionFor() {
+  return `rugsnare-${getVersion()}`;
+}
+
 export function savePins(pins, cwd = process.cwd()) {
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
-  fs.writeFileSync(pinsPath(cwd), JSON.stringify(pins, null, 2) + '\n');
+  pins.policyVersion = policyVersionFor();
+  const serialized = stableStringify(pins, 2) + '\n';
+  const file = pinsPath(cwd);
+  // byte-stability: a re-scan that changed nothing must not even touch the
+  // file (mtime churn would break third-party JCS-hash watchers too)
+  try {
+    if (fs.readFileSync(file, 'utf8') === serialized) return;
+  } catch { /* first write */ }
+  fs.writeFileSync(file, serialized);
+}
+
+/**
+ * PIN-SPEC v1.1: the identity block - WHAT serves the surface, beyond the
+ * tool contracts. A server can keep every tool hash intact while becoming a
+ * different program: the entry script moves (supabase: dist/transports/
+ * stdio.js -> dist/cli.js with contracts unchanged - R34), the resolved
+ * package version floats (npx @latest), or the endpoint URL changes.
+ * identityHash binds the block into the envelope; a change with intact tool
+ * hashes is the IDENTITY drift class, not silence.
+ */
+export function buildIdentity(cmd) {
+  if (!cmd) return null;
+  const identity = { package: null, resolvedVersion: null, entryPath: null, url: null };
+  if (typeof cmd.url === 'string') {
+    identity.url = cmd.url;
+  } else if (typeof cmd.command === 'string' && Array.isArray(cmd.args)) {
+    for (const arg of cmd.args.map(String)) {
+      // entryPath: the first script-looking argument; normalized relative to
+      // the package root so "node_modules/x/dist/a.js" and "dist/a.js" agree
+      if (!identity.entryPath && /\.(c|m)?js$/i.test(arg) && !arg.startsWith('-')) {
+        const m = arg.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)\/(.+)$/);
+        identity.entryPath = m ? m[2] : arg;
+      }
+      // package + pinned version: npx/uvx-style token "pkg@1.2.3"
+      const pm = arg.match(/^(@[^/@\s]+\/[^/@\s]+|[^/@\s][^@\s]*)@(\d[^@\s]*)$/);
+      if (!identity.package && pm) {
+        identity.package = pm[1];
+        identity.resolvedVersion = pm[2];
+      }
+      // package from a node_modules path (version resolved from disk below)
+      const nm = arg.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/);
+      if (!identity.package && nm) identity.package = nm[1];
+    }
+    // resolvedVersion from the installed tree when the path says node_modules
+    if (!identity.resolvedVersion) {
+      const pkgVersion = resolvePackageVersion(cmd.args);
+      if (pkgVersion && pkgVersion.includes('@')) identity.resolvedVersion = pkgVersion.split('@').pop();
+    }
+  } else {
+    return null;
+  }
+  const core = stableStringify({
+    package: identity.package,
+    resolvedVersion: identity.resolvedVersion,
+    entryPath: identity.entryPath,
+    url: identity.url,
+  }, 0);
+  identity.identityHash = `sha256:${crypto.createHash('sha256').update(core).digest('hex')}`;
+  return identity;
+}
+
+/**
+ * PIN-SPEC v1.1 diff arm: null when the identity is unchanged, otherwise
+ * the fields that moved (for the IDENTITY finding text).
+ */
+export function compareIdentity(pinned, live) {
+  if (!pinned || !live || !pinned.identityHash || !live.identityHash) return null;
+  if (pinned.identityHash === live.identityHash) return null;
+  const changed = {};
+  for (const key of ['package', 'resolvedVersion', 'entryPath', 'url']) {
+    if ((pinned[key] ?? null) !== (live[key] ?? null)) changed[key] = { from: pinned[key] ?? null, to: live[key] ?? null };
+  }
+  return Object.keys(changed).length ? changed : { identityHash: { from: pinned.identityHash, to: live.identityHash } };
 }
 
 export function ensureServer(pins, name, cmd) {
@@ -53,6 +161,10 @@ export function ensureServer(pins, name, cmd) {
     // HTTP transport: store the URL (never executed as a command)
     pins.servers[name].cmd = { url: cmd.url };
   }
+  // PIN-SPEC v1.1: identity travels with every scan (deterministic - a
+  // re-scan of the same config produces the identical block and hash)
+  const identity = buildIdentity(cmd);
+  if (identity) pins.servers[name].identity = identity;
   return pins.servers[name];
 }
 
@@ -101,9 +213,18 @@ export function detectShadows(pins) {
     .map(([tool, servers]) => ({ tool, servers }));
 }
 
-export function pinTool(serverPin, tool, hash, { approved = true } = {}) {
+export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan' } = {}) {
   const now = new Date().toISOString();
   const existing = serverPin.tools[tool.name];
+  // PIN-SPEC v1.1 byte-stability: a scan that sees the SAME contract must
+  // not touch the entry - pinnedAt churn would change pins.json bytes on
+  // every re-scan and break third-party JCS-hash watchers. `approve` is the
+  // deliberate act that refreshes pinnedAt/approved after review.
+  if (reason === 'scan' && existing && existing.hash === hash
+    && existing.schemaHash === computeSchemaHash(tool)
+    && existing.proseHash === computeProseHash(tool)) {
+    return existing;
+  }
   serverPin.tools[tool.name] = {
     hash,
     schemaHash: computeSchemaHash(tool),
@@ -456,13 +577,19 @@ export function schemaNotationDiff(oldSchema, newSchema) {
 /**
  * Direction-aware schema grading (P4+P5, from the KyttoMCP dialogue):
  * - tighten (required/restrictive) → BREAKING (agent must send more)
- * - expand (added optional param) → EXPANDED (new data channel = exfil
- *   risk; backwards-compatible for callers but attack surface widened;
- *   same exit 1, same severity slot as BREAKING, more honest label)
+ * - expand ONLY (added optional params, nothing else) → EXPANDED (new data
+ *   channel = exfil risk; backwards-compatible for callers but attack
+ *   surface widened; same exit 1 as BREAKING, more honest label)
  * - loosen (permissive) → LOOSENED (constraints dropped, still exit 1)
- * - mixed (any tighten or expand) → BREAKING (conservative: expand rides
- *   at BREAKING severity when mixed with other changes)
+ * - mixed (tighten with anything, or expand mixed with loosen) → BREAKING
+ *   (conservative: expand rides at BREAKING severity when mixed)
  * - notation-only (dialect switch) → NOTATION
+ *
+ * R33 (found by the drift-watch baseline, reproduced on
+ * @hubspot/mcp-server 0.2.0 -> 0.4.0): pure-expand changes were lumped into
+ * BREAKING because `hasTighten || hasExpand` returned BREAKING for both -
+ * the EXPANDED label was documented since P5 but unreachable. Two optional
+ * additions (one typeless) must grade EXPANDED, not BREAKING.
  */
 export function gradeSchemaDrift(paramChanges, notationChanges) {
   // notationOnly changes (R4 union keyword swaps with identical branches)
@@ -474,7 +601,8 @@ export function gradeSchemaDrift(paramChanges, notationChanges) {
   const hasTighten = real.some((c) => c.direction === 'tighten');
   const hasExpand = real.some((c) => c.direction === 'expand');
   const hasLoosen = real.some((c) => c.direction === 'loosen');
-  if (hasTighten || hasExpand) return 'BREAKING';
+  if (hasTighten) return 'BREAKING';
+  if (hasExpand) return hasLoosen ? 'BREAKING' : 'EXPANDED';
   if (hasLoosen) return 'LOOSENED';
   return 'NOTATION';
 }

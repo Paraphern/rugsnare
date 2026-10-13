@@ -2,7 +2,46 @@
 
 ## [1.4.0] - unreleased
 
+### PIN-SPEC v1.1: identity, policy stamp, byte-stable pins (publicly promised 2026-10-13)
+
+Promised in microsoft/autogen#7353 and snyk/agent-scan#482; format text in
+`docs/PIN-SPEC.md` (research chat), implementation here:
+
+- **Identity block + identityHash** on every pinned server: `{ package,
+  resolvedVersion, entryPath, url, identityHash }`. A server can keep every
+  tool hash intact while becoming a different program - the entry script
+  moved (supabase: `dist/transports/stdio.js` -> `dist/cli.js`, R34), the
+  package floats (`npx pkg@latest`), the endpoint URL changed. The block is
+  deterministic per config, so re-scans reproduce it byte-for-byte.
+- **IDENTITY drift class**: when every tool hash is unchanged but the
+  identity moved, diff reports `IDENTITY - the surface is served by a
+  different build/path than approved` with the moved fields. Exit 1.
+- **policyVersion stamp** (top-level, `rugsnare-<version>`): pins record the
+  verifier policy that graded them. Diffing a store graded under a different
+  policy reports `POLICY - re-graded under a newer verifier policy; re-pin
+  to accept` instead of silently re-grading - the ruler changed, the vendor
+  did nothing wrong (the chrome-devtools 1.8->1.10.1 lesson: 27 "BREAKINGs"
+  that were our own grader bug). Exit 1.
+- **Byte-stable pins.json**: keys sorted recursively (stableStringify),
+  `pinTool` no longer rewrites entries whose contract is unchanged
+  (pinnedAt stays; `approve` remains the deliberate re-pin), and `savePins`
+  skips the write entirely when bytes are identical. Third parties can
+  JCS-hash pins.json as an opaque record and a re-scan of the same version
+  does not change a byte (the snyk #482 ask).
+- Format `"version"` stays `1`: identity and policyVersion are additive, and
+  PIN-SPEC consumers already MUST ignore unknown keys.
+
 ### Fixes
+
+- **R33: pure-expand drift now grades EXPANDED** (found by the drift-watch
+  baseline, reproduced on @hubspot/mcp-server 0.2.0 -> 0.4.0): two optional
+  parameter additions graded BREAKING at tool level because the grader lumped
+  `hasExpand` into BREAKING unconditionally - the EXPANDED label documented
+  since P5 was unreachable in practice. Now: pure expand -> EXPANDED, expand
+  mixed with tighten or loosen -> BREAKING (conservative, unchanged),
+  `--schema-only` blocks on BREAKING and EXPANDED. The typeless-param
+  hypothesis was checked and cleared: `{}`-typed params label as
+  "(unknown)" but grade correctly.
 
 - **`verify` now really defaults to Base Mainnet** (as promised in 1.0.1): the
   default chain was accidentally left on Sepolia, so a bare
@@ -27,6 +66,17 @@ breaking every caller. Now:
 - Additive `[PAYWALL]` flag + `paywallWarning` in JSON on any drift; the
   schema-direction grade is untouched. Same behavior in `rugsnare history`.
 - Not an ATR rule (economics, not attack) - PIN-SPEC territory.
+
+### Launch-entry pinning in history scans (R34)
+
+supabase moved its stdio entry (`dist/transports/stdio.js` -> `dist/cli.js`
+in 0.9+) with the tool contract untouched: packaging drift that no schema
+hash can see, but every wrapper config and script keyed on the old path
+breaks all the same. Every captured version now records its declared launch
+path (package.json `bin`), and when adjacent versions moved it, the pair
+prints "launch entry moved: ... -> ... (packaging drift: tool contracts may
+be identical, but what starts is not the same program)" - even when the
+pair has zero contract findings.
 
 ### Contract provenance: schema-dep versions next to every capture (R32)
 
