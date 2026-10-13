@@ -75,11 +75,11 @@ v1.1 binds identity into the envelope:
 
 ```json
 "identity": {
+  "entryPath": "dist/index.js",
+  "identityHash": "<sha256-hex of the §3 canonical form of { entryPath, package, resolvedVersion, url }>",
   "package": "@scope/server",
   "resolvedVersion": "1.2.3",
-  "entryPath": "dist/index.js",
-  "url": null,
-  "identityHash": "<sha256-hex of { package, resolvedVersion, entryPath, url }>"
+  "url": null
 }
 ```
 
@@ -90,7 +90,11 @@ v1.1 binds identity into the envelope:
 - `url` is set for remote (streamable HTTP) servers, `null` for stdio.
 - `identityHash` is computed over the four identity fields **with
   `identityHash` itself absent** — a digest is never a member of the object
-  it hashes; it is stored beside them. It participates in comparison; a
+  it hashes; it is stored beside them. **The hash input is the §3 canonical
+  (sorted-key) form — `entryPath, package, resolvedVersion, url` — regardless
+  of field display order in the file.** A digest of any other order will not
+  match. `url: null` (stdio) is part of the input: per §3 rule 5, `null` is
+  not the same as an absent field. It participates in comparison; a
   mismatch emits `IDENTITY` (§4.1), not `BREAKING` — the vendor did not
   change the contract, the deployment did.
 - v1 consumers MUST ignore the block (§5); adding it does not bump `version`.
@@ -101,7 +105,7 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 
 | Hash | Canonical input | Changes classified as |
 |---|---|---|
-| `hash` | `{ name, description, inputSchema }` - the full contract | any drift (the gate) |
+| `hash` | `{ description, inputSchema, name }` - the full contract | any drift (the gate) |
 | `schemaHash` | `inputSchema` only | BREAKING or NOTATION |
 | `proseHash` | `description` only | COSMETIC |
 
@@ -118,6 +122,10 @@ implementations):
    hashes differently from `{ }`.
 6. `$schema` is preserved **as-is** (a dialect switch is a real change -
    graded NOTATION, not invisible).
+
+These rules govern **hash inputs** (the canonical form that gets digested),
+not the display order of fields in the pin file. Wherever this spec names
+the fields of a hash input, they are listed in this sorted order.
 
 ### 3.1 Canonicalization policy version (v1.1, direction accepted 2026-10-13)
 
@@ -263,3 +271,8 @@ Requirements for the composition to be sound:
   canonicalized; the canonicalization-profile bullet reframed to
   structured-field digests; §2.1 fixed a self-reference bug —
   `identityHash` hashes the four identity fields with the member absent.
+- v1.1 same-day revision 2 (autogen#7353 follow-up): hash-input field lists
+  normalized to §3 sorted-key order everywhere (§2.1 example and annotation,
+  §3 table row for `hash`); §2.1 now states explicitly that the input is the
+  §3 canonical form regardless of file display order, `url: null` included
+  per rule 5; §3 closes with the hash-input vs file-display distinction.
