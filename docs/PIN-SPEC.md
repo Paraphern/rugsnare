@@ -219,8 +219,9 @@ As implemented by the preaction-governance receipts in autogen#7353
   a canonicalizer change is visible independently, the same principle this
   spec enforces with `POLICY` (§3.1, §4.1).
 - The binding commits to the bytes the caller supplied. It does **not**
-  authenticate the pin and does **not** compare the snapshot to a later
-  `tools/list` — check 2 is the pin layer's job, forever.
+  check `record_sha256`, does **not** authenticate the pin, and does **not**
+  compare the snapshot to a later `tools/list` — check 2 is the pin layer's
+  job, forever.
 
 Requirements for the composition to be sound:
 
