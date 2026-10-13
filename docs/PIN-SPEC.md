@@ -366,6 +366,16 @@ Requirements for the composition to be sound:
   `pinnedAt` volatility rule, LF/no-BOM/trailing newline); §3.1 defines
   POLICY as stop-for-that-pin; §4.1 IDENTITY covers `url` changes and may
   co-occur with tool drift.
+- v1.1 same-day revision 4 (second self-pass over revision 3): rule 7
+  corrected — it claimed "`-0` preserved as `-0`" while citing RFC 8785,
+  whose ES6 semantics serialize `-0` as `0` (verified against
+  JSON.stringify); rule 4 gains the no-Unicode-normalization clause
+  (NFC/NFD are distinct content); §2.1 adds the npx honesty rule — an
+  unresolvable selector records `null`, never a fabricated version
+  (the §2 layout example is itself an npx launch). Skills raw-octet hashing
+  verified against implementation (sha256 of file bytes, sha256sum-
+  compatible).
+
 - v1.1 same-day revision 5 (third self-pass, fresh lenses): §5 ignore-unknown
   rule extended to **server-level** fields — the v1.1 `identity` block lives
   exactly there, and the "version stays 1" decision rests on that rule
@@ -378,12 +388,3 @@ Requirements for the composition to be sound:
   receipt-side — re-pin first); §3 rules 7-8 marked *(v1.1)*; §4.1 IDENTITY
   row reworded (identity change per se, co-occurrence explicit). Catalog
   validated: 45/45 parse, all legacy (no policyVersion, no identity).
-- v1.1 same-day revision 4 (second self-pass over revision 3): rule 7
-  corrected — it claimed "`-0` preserved as `-0`" while citing RFC 8785,
-  whose ES6 semantics serialize `-0` as `0` (verified against
-  JSON.stringify); rule 4 gains the no-Unicode-normalization clause
-  (NFC/NFD are distinct content); §2.1 adds the npx honesty rule — an
-  unresolvable selector records `null`, never a fabricated version
-  (the §2 layout example is itself an npx launch). Skills raw-octet hashing
-  verified against implementation (sha256 of file bytes, sha256sum-
-  compatible).
