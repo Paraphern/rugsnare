@@ -22,7 +22,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | @ui5/mcp-server (SAP) | 96k | 0.2.12 -> 0.3.2 | 0 (control) | 2026-10-12 | 1.3.0 | [ui5.md](ui5.md) |
 | figma-developer-mcp | 91k | 0.7.0 -> 0.13.2 | 2 NOTATION | 2026-10-12 | 1.3.0 | [figma.md](figma.md) |
 | @supabase/mcp-server-supabase | 67k | 0.8.3 -> 0.13.0 | 4 + GONE get_logs -> NEW query_logs + stdio entry moved | 2026-10-12 | 1.3.0 | [supabase.md](supabase.md) |
-| @hubspot/mcp-server | 31k | 0.2.0 -> 0.4.0 | 6: GONE + 3 NEW + 1 drift + 1 cosmetic (npm alive, GitHub repo dead) | 2026-10-12 | 1.3.0 | [hubspot.md](hubspot.md) |
+| @hubspot/mcp-server | 31k | 0.2.0 -> 0.4.0 | 6: GONE + 3 NEW + 1 EXPANDED + 1 cosmetic (npm alive, GitHub repo dead) | 2026-10-13 | 1.4.0 | [hubspot.md](hubspot.md) |
 | @shopify/dev-mcp | 31k | 1.14.4 -> 1.16.0 | 6: 2 GONE -> NEW validate (consolidation) + LOOSENED | 2026-10-12 | 1.3.0 | [shopify.md](shopify.md) |
 | @transcend-io/mcp-server-assessment | 11k | 2.1.2 -> 2.1.13 | 2 BREAKING (83 releases / 3 months) | 2026-10-12 | 1.3.0 | [transcend.md](transcend.md) |
 | firebase-mcp (Google) | 74 | 0.2.0 -> 0.4.4 | 0 (control) | 2026-10-12 | 1.3.0 | [firebase.md](firebase.md) |
