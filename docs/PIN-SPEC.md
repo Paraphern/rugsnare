@@ -22,7 +22,7 @@ Path: `.rugsnare/pins.json` (JSON, UTF-8, LF, no BOM; readers accept CRLF).
 The layout below is illustrative; the v1.1 writer emits the §3 canonical
 form on disk (see byte-stability, §7).
 
-Two non-obvious storage rules:
+Storage rules, verified against the writer implementation:
 
 - `annotations` are stored but **never hashed** — they are compared through
   effective-value equality (§4), because spec defaults make raw-value
@@ -30,6 +30,18 @@ Two non-obvious storage rules:
 - Skills entries hash over **raw octets** (sha256sum-compatible bytes of the
   file, exactly as `sha256sum` computes them) — no canonicalization applies.
   §3 governs tool contracts (JSON) only.
+- `prompts` / `resources` entries are `{ hash, description, firstSeen }`
+  (description may be empty); they participate in drift detection with the
+  same NEW / REMOVED / hash-change semantics as tools.
+- `approved` has two write-paths: `rugsnare scan` writes `true` (pinning is
+  the act of approval); the proxy pinning on first sight writes `false`, and
+  such entries require an explicit approval before they count as a baseline.
+- Skills entries are `{ hash, app, scope, relative, path, size, content,
+  firstSeen, pinnedAt, approved, advisory }`; `relative` is the stable key
+  component. ***(v1.1)*** `path` MUST be stored **relative to the skill
+  root** — the 1.3.0 writer emits machine-absolute paths, which breaks §7
+  byte-stability across machines and leaks local layout; fixed in the v1.1
+  writer.
 
 ```json
 {
@@ -209,7 +221,7 @@ the public drift records that use them.
 **Spec-default rule for annotations** (MCP 2025-06-18): an absent hint equals
 its spec default (`destructiveHint` defaults `true`, `readOnlyHint` `false`).
 A server that *spells out* a default it was already relying on is NOT drift;
-silently *dropping* an explicit non-default value IS drift.
+silently *dropping or flipping* an explicit non-default value IS drift.
 
 ### 4.1 v1.1 classes (direction accepted 2026-10-13)
 
@@ -247,8 +259,8 @@ against a **live** `tools/list` (not a second pin file):
 pin    = load("pins.json@approval")
 live   = tools/list from the running server
 if pin.policyVersion != verifier.policy → POLICY (stop for this pin, §3.1)
-if identityHash(pin.identity minus the member) != same over live info
-                                         → IDENTITY (§2.1)
+if identityHash(pin.identity minus the member) != same over identity
+       reconstructed from the launch config / install (§2.1) → IDENTITY
 for tool in pin.tools:
   if tool not in live            → REMOVED
   elif sha256(canonical(live[tool])) != pin.tools[tool].hash:
@@ -387,4 +399,14 @@ Requirements for the composition to be sound:
   identity inside `external_evidence_hash`; a v1 record cannot be repaired
   receipt-side — re-pin first); §3 rules 7-8 marked *(v1.1)*; §4.1 IDENTITY
   row reworded (identity change per se, co-occurrence explicit). Catalog
-  validated: 45/45 parse, all legacy (no policyVersion, no identity).
+  validated: 45/45 parse, all legacy (no policyVersion, no identity).- v1.1 same-day revision 6 (fourth self-pass, implementer lens + code
+  cross-check): storage rules verified against the writer — `prompts`/
+  `resources` entry shape documented (`{ hash, description, firstSeen }`);
+  `approved` two-write-path semantics documented (scan = true, proxy
+  first-sight = false pending explicit approval); skills entry shape
+  completed (`relative`, `path`, `size` were missing from the layout) and a
+  real interop bug found in the 1.3.0 writer — **skills `path` is
+  machine-absolute**, breaking §7 byte-stability across machines and leaking
+  local layout (the published catalog's skills snapshots carry it); v1.1
+  mandates relative paths. §4 annotation prose tightened (dropping *or
+  flipping*); §6 sketch identity line now references §2.1 reconstruction.
