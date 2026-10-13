@@ -175,6 +175,24 @@ Decoded input from the transaction:
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
 
+## Пин 1.4.0 (2026-10-13) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0xd8fa42c1754168d34ab8be072b2bb38fa6ab1d32cda2127dd22528c8ce970d8d` (block 52565309) |
+| Event check | topics[1]=versionKey `0x649061b8...` ✓, data=artifactHash `0xc78018cc...` + "1.4.0" ✓ (через Basescan Write Contract - контракт верифицирован на Base этим же вечером: solc 0.8.24, evmversion=paris, без оптимизатора; Remix лежал) |
+| artifact sha256 | `c78018cc4084f1e5bc3b654fb2c17fb86c35b74170f13737f58fb32d7d7f4ed2` (пак ИЗ тегового worktree v1.4.0=0da0b928, чистое дерево - урок 1.3.0 про gitHead исполнен; гейт: 42 файла, .mimosa 0, двойная сборка байт-в-байт) |
+| versionKey | keccak256("1.4.0") = `0x649061b8d3f3b9c5692fcbef47cba88c670a745e17e5297d42ddc0aa82ab1129` |
+| npm | rugsnare@1.4.0 published 2026-10-13 (dist.shasum `664310a93e2f4148619d62b9229dbfd9df1dbcbb`, integrity `sha512-kcSt1...`; CDN-тарболл = артефакту байт-в-байт, 42 файла). gitHead не вшит (npm не считает его при publish готового tgz; эквивалентность тегу доказана паком из тегового worktree) |
+| Проверка | `npx rugsnare verify rugsnare-1.4.0.tgz --version 1.4.0 --chain base` -> **VERIFIED** (19:32:45 UTC; тарболл скачан с CDN реестра) |
+
+Состав релиза: PIN-SPEC v1.1 (identity+identityHash, policyVersion+POLICY, IDENTITY,
+байт-стабильная сериализация; публичные обещания autogen#7353 и snyk#482), R31 paywall,
+R30 hosted-feed (context7/deepwiki, первый живой улова за 40 минут), R32 provenance,
+R34 entry-pinning, R33 EXPANDED-доступность, verify-дефолт Base Mainnet, approve-флип
+(autoclav-67/68), JSON-фикс history-scan workflow. JS 354/354. Native: 1.3.0-native.1
+(без изменений).
+
 ## Пин 1.3.0 (2026-10-12) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |
