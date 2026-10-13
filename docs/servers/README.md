@@ -14,7 +14,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | @launchdarkly/mcp-server | 32k | 0.5.0 -> 0.7.0 | 1 NEW tool, unannounced | 2026-10-13 | 1.3.0 | [launchdarkly.md](launchdarkly.md) |
 | @currents/mcp | 103k | 2.3.3 -> 2.6.1 | 45 (32 BREAKING) | 2026-10-13 | 1.3.0 | [currents.md](currents.md) |
 | hostinger-api-mcp | 265k | 2.4.0 -> 2.11.0 | 6 injected resources | 2026-10-13 | 1.3.0 | [hostinger.md](hostinger.md) |
-| @upstash/context7-mcp | 486k | 4.0.4 -> 4.3.0 | 1 (EXPANDED) | 2026-10-13 | 1.3.0 | [context7.md](context7.md) |
+| @upstash/context7-mcp | 486k | 4.0.4 -> 4.4.1 | 1 (EXPANDED) + live hosted catch (prose-only) | 2026-10-13 | 1.3.0 | [context7.md](context7.md) |
 | bybit trading-mcp | - | 2.1.20 -> 2.1.23 | 9 + remote kill-switch | 2026-10-09 | 1.2.0 | [bybit.md](bybit.md) |
 | browserstack/mcp-server | - | v1.4.1 -> v2.2.1 | 24 (re-grade +2 from recursive decomposer) | 2026-10-13 | 1.3.0 | [browserstack.md](browserstack.md) |
 | @apify/actors-mcp-server | - | 0.16.0 -> 0.17.4 | 1 BREAKING | 2026-10-13 | 1.3.0 | [apify.md](apify.md) |
