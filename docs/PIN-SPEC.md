@@ -14,7 +14,11 @@
 A **pin file** records the approved state of every MCP tool contract at the
 moment a human reviewed it. Any consumer (CI runner, AI client, audit script)
 can compare a live server's tools against the pin and answer one question:
-**did anything change since approval?**
+**did anything change since approval?** — and, since v1.1, a second one:
+**is the deployment that serves it still the approved one?**
+
+Terminology: the **writer** (aka producer) is the tool that writes a pin
+file; the **verifier** is any consumer comparing live state against it.
 
 ## 2. File layout
 
@@ -75,6 +79,9 @@ Storage rules, verified against the writer implementation:
       "hash": "<sha256-hex>",
       "app": "claude-code",
       "scope": "user",
+      "relative": "<path relative to the skill root>",
+      "path": "<v1.1: same as relative; 1.3.0 wrote absolute - see storage rules>",
+      "size": 881,
       "content": "<full text>",
       "firstSeen": "…",
       "pinnedAt": "…",
@@ -168,7 +175,7 @@ contract hashes differently in JS (`1`) and Python (`1.0`) and
 cross-implementation reproducibility is void. (JS-based writers already
 conform de facto; the marker commits every writer to it.)
 8. *(v1.1)* Inputs that are not valid Unicode scalar sequences (unpaired
-surrogates) are **rejected at capture** — the pinner refuses to hash them
+surrogates) are **rejected at capture** — the writer refuses to hash them
 (I-JSON discipline). No hash is defined for such content; this is what
 keeps "exact UTF-8" in rule 4 well-defined.
 
@@ -214,6 +221,10 @@ drift:
 | `NEW` | tool present live, absent from pin | 1 |
 | `REMOVED` (aka `GONE`) | tool pinned, absent live | 1 |
 
+Class semantics are per-tool and apply to whole surfaces: a server absent
+from the live config reports every pinned tool as `REMOVED`; a server not in
+the pin reports every live tool as `NEW`.
+
 `LOOSENED` and `EXPANDED` shipped in rugsnare 1.2.0 (direction-based
 grading); they are listed here so the spec matches the shipped grader and
 the public drift records that use them.
@@ -237,10 +248,10 @@ co-occur with tool drift — both are reported.
 ## 5. Compatibility contract
 
 - `version: 1` consumers MUST ignore unknown keys at every level — top-level,
-  server-level, and tool-level (forward compatibility). This is the hole the
-  v1.1 `identity` block lives in: it is a **server-level** field, so the
-  ignore-unknown rule must cover server objects, not just top-level and tool
-  fields, for "version stays 1" to hold.
+  server-level, and tool-level (forward compatibility). This matters because
+  the v1.1 `identity` block is a **server-level** field: "version stays 1"
+  holds only if the ignore-unknown rule covers server objects, not just
+  top-level and tool fields.
 - Producers MUST bump `version` on any breaking change to this format.
 - A consumer implementing v1 needs: JSON, SHA-256, and the canonicalization
   rules above. No RugSnare code required.
@@ -253,7 +264,8 @@ co-occur with tool drift — both are reported.
 ## 6. Verification sketch (for the compat test)
 
 A third-party script, using only this spec, comparing the approval pin
-against a **live** `tools/list` (not a second pin file):
+against a **live** `tools/list` (not a second pin file). Shown for one
+server; wrap in `for s in pin.servers` for multi-server pins:
 
 ```
 pin    = load("pins.json@approval")
@@ -261,15 +273,15 @@ live   = tools/list from the running server
 if pin.policyVersion != verifier.policy → POLICY (stop for this pin, §3.1)
 if identityHash(pin.identity minus the member) != same over identity
        reconstructed from the launch config / install (§2.1) → IDENTITY
-for tool in pin.tools:
+for tool in pin.servers[s].tools:
   if tool not in live            → REMOVED
-  elif sha256(canonical(live[tool])) != pin.tools[tool].hash:
+  elif sha256(canonical(live[tool])) != pin.servers[s].tools[tool].hash:
        classify by schemaHash first (BREAKING / LOOSENED / EXPANDED /
        NOTATION), else by proseHash (COSMETIC)
-  if not annotationsEqual(pin.tools[tool].annotations,
+  if not annotationsEqual(pin.servers[s].tools[tool].annotations,
                           effective(live[tool].annotations)) → ANNOTATION
 for tool in live:
-  if tool not in pin.tools       → NEW
+  if tool not in pin.servers[s].tools → NEW
 any finding → exit 1
 ```
 
@@ -283,6 +295,12 @@ evidence of the approved surface:
 evidence_type: "tool_surface_snapshot"
 record:        the pins.json content (or its per-server subobject), opaque
 ```
+
+Record scope: bind the **whole file** or a **single-server pin file**. With a
+multi-server pin, a change to any server's contract invalidates receipts
+bound to the whole file. Extracting a per-server subobject yourself is a
+transformation, not saved text — its bytes are not the writer's, so do not
+do it ad hoc; re-scan the server alone instead.
 
 The receipt system does **not** canonicalize `record` — it stays the pin's
 saved text, untouched. What enters the `decision_ref` preimage is
@@ -399,7 +417,8 @@ Requirements for the composition to be sound:
   identity inside `external_evidence_hash`; a v1 record cannot be repaired
   receipt-side — re-pin first); §3 rules 7-8 marked *(v1.1)*; §4.1 IDENTITY
   row reworded (identity change per se, co-occurrence explicit). Catalog
-  validated: 45/45 parse, all legacy (no policyVersion, no identity).- v1.1 same-day revision 6 (fourth self-pass, implementer lens + code
+  validated: 45/45 parse, all legacy (no policyVersion, no identity).
+- v1.1 same-day revision 6 (fourth self-pass, implementer lens + code
   cross-check): storage rules verified against the writer — `prompts`/
   `resources` entry shape documented (`{ hash, description, firstSeen }`);
   `approved` two-write-path semantics documented (scan = true, proxy
@@ -410,3 +429,12 @@ Requirements for the composition to be sound:
   local layout (the published catalog's skills snapshots carry it); v1.1
   mandates relative paths. §4 annotation prose tightened (dropping *or
   flipping*); §6 sketch identity line now references §2.1 reconstruction.
+- v1.1 same-day revision 7 (convergence pass, fifth and sixth lenses):
+  §2 skills layout example synced with the documented 11-field shape;
+  terminology normalized (writer/producer/verifier defined in §1, "pinner"
+  removed); §1 states both questions a pin answers; §4 server-level
+  add/remove semantics defined (absent server → every tool REMOVED / NEW);
+  §6 sketch made multi-server-correct (`pin.servers[s].tools`, loop noted);
+  §7 record-scope guidance (bind whole file or single-server pin; ad-hoc
+  subobject extraction is a transformation, not saved text); §5 wording
+  de-holed; history line-break repaired (rev 6 was glued to rev 5).
