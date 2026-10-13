@@ -180,6 +180,18 @@ test('v1.1: unchanged contract still flips approved:false -> true (autoclav-67)'
   const hinted = { ...tool, annotations: { readOnlyHint: true } };
   const p4 = pinTool(sp, hinted, 'h1', { approved: true, reason: 'scan' });
   assert.deepEqual(p4.annotations, { readOnlyHint: true });
+  // key-order independence (the P0-2 trap, caught live on hubspot): stored
+  // annotations read back from the file with SORTED keys, the live object
+  // arrives in wire order - the guard must compare canonically, or every
+  // multi-key annotation set breaks byte-stability on each re-scan
+  const wireOrder = { title: 'Get X', readOnlyHint: true, destructiveHint: false };
+  const p5 = pinTool(sp, { ...tool, annotations: wireOrder }, 'h1', { approved: true, reason: 'scan' });
+  assert.ok(p5.pinnedAt, 'annotation-bearing entry written');
+  const storedOrder = JSON.parse(JSON.stringify({ destructiveHint: false, readOnlyHint: true, title: 'Get X' })); // file order = sorted
+  const sp2 = { tools: { t: { ...JSON.parse(JSON.stringify(p5)) } } };
+  sp2.tools.t.annotations = storedOrder;
+  const p6 = pinTool(sp2, { ...tool, annotations: wireOrder }, 'h1', { approved: true, reason: 'scan' });
+  assert.equal(p6, sp2.tools.t, 'same annotations in a different key order still skips');
 });
 
 test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grade', async () => {

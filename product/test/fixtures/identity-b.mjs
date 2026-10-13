@@ -5,8 +5,10 @@
 import readline from 'node:readline';
 
 const TOOLS = [
-  { name: 'search_objects', description: 'Search objects by query.', inputSchema: { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] } },
-  { name: 'get_object', description: 'Get one object by id.', inputSchema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } },
+  // identical contracts to identity-a.mjs, INCLUDING the multi-key
+  // annotations (title first) - only the serving PATH differs
+  { name: 'search_objects', description: 'Search objects by query.', annotations: { title: 'Search Objects', readOnlyHint: true, destructiveHint: false }, inputSchema: { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] } },
+  { name: 'get_object', description: 'Get one object by id.', annotations: { title: 'Get Object', readOnlyHint: true, openWorldHint: true }, inputSchema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } },
 ];
 
 const rl = readline.createInterface({ input: process.stdin });

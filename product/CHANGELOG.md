@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.0] - unreleased
+## [1.4.0] - 2026-10-13
 
 ### PIN-SPEC v1.1: identity, policy stamp, byte-stable pins (publicly promised 2026-10-13)
 

@@ -4,6 +4,36 @@ Working notes on what the current implementations leave on the table, and the
 next step for each. Written as we shipped the feature, so the rationale is
 not lost. (Public on purpose - this is a roadmap, not a secret.)
 
+## MIRRORED class + vendor annotation channel (R35, from currents#232 / twk3, 2026-10-13)
+
+A schema diff cannot distinguish "new restriction" from "the schema now
+documents what the backend already validated" - and operationally these are
+different universes: in the second, no previously-successful call starts
+failing. Currents' maintainer confirmed their 32 minLength "BREAKINGs" were
+validation moved into the schema, not new validation. Refined operational
+definition of BREAKING: "a previously-successful call starts failing", not
+"the contract text tightened". Plan: a vendor-annotation channel ("mirrors
+backend validation") that pin tools consume and downgrade to MIRRORED.
+Numbering owned by the research journal (tools/rugsnare-improvements).
+
+## openapi-crosscheck: automatic MIRRORED marking (R36, from currents#232, 2026-10-13)
+
+Where the vendor publishes an OpenAPI spec, constraint additions can be
+cross-checked against it automatically: "already existed in the published
+spec" marked MIRRORED with no vendor cooperation needed. Turns R35 from
+"wait for vendors to annotate" into "works today wherever a spec exists".
+Numbering owned by the research journal.
+
+## scan --prune / dead-soul warnings (R37, from the 1.4.0 pre-release blocker check, 2026-10-13)
+
+`scan` has union semantics: tools that disappeared from the live server
+stay in the pin forever (that is why `unpin` exists for whole servers). A
+re-scan against a new version absorbs new tools with approved:true - a
+deliberate act, but the user may not realize stale entries linger. Options:
+warn on re-scan about pinned-but-absent tools, or add `--prune` to drop
+them. Surfaced when the pre-release check misread scan's union behavior as
+a diff regression (it was not - diff never writes pins).
+
 ## Hosted endpoints in the public drift-feed (R30 - SHIPPED in 1.4.0 draft, 2026-10-12)
 
 Verified gap: `driftfeed.mjs` scans a curated list of 4-6 stdio npm packages

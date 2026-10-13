@@ -230,7 +230,11 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     && existing.schemaHash === computeSchemaHash(tool)
     && existing.proseHash === computeProseHash(tool)
     && existing.approved === true
-    && JSON.stringify(existing.annotations ?? null) === JSON.stringify(tool.annotations ?? null)) {
+    // canonical compare: the stored annotations come from the file with
+    // SORTED keys (stableStringify), the live object has wire order - a raw
+    // JSON.stringify compare fails on every multi-key annotation set
+    // (hubspot's {title,...} caught live by the pre-release blocker check)
+    && stableStringify(existing.annotations ?? null, 0) === stableStringify(tool.annotations ?? null, 0)) {
     return existing;
   }
   serverPin.tools[tool.name] = {

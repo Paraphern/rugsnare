@@ -1,6 +1,6 @@
 {
   "name": "rugsnare",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Runtime integrity gateway for AI agents: pin MCP tool descriptions, snare rug-pulls and drift, log every tool call.",
   "type": "module",
   "license": "Apache-2.0",

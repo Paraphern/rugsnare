@@ -5,8 +5,12 @@
 import readline from 'node:readline';
 
 const TOOLS = [
-  { name: 'search_objects', description: 'Search objects by query.', inputSchema: { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] } },
-  { name: 'get_object', description: 'Get one object by id.', inputSchema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } },
+  // annotations carry multiple keys with "title" FIRST: the wire order
+  // deliberately differs from the sorted order stableStringify writes to
+  // pins.json - this fixture exists to keep the key-order byte-stability
+  // trap (hubspot P0-2) covered at the CLI level
+  { name: 'search_objects', description: 'Search objects by query.', annotations: { title: 'Search Objects', readOnlyHint: true, destructiveHint: false }, inputSchema: { type: 'object', properties: { q: { type: 'string' } }, required: ['q'] } },
+  { name: 'get_object', description: 'Get one object by id.', annotations: { title: 'Get Object', readOnlyHint: true, openWorldHint: true }, inputSchema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } },
 ];
 
 const rl = readline.createInterface({ input: process.stdin });

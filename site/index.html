@@ -105,7 +105,7 @@
         <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
-          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.3.0 diff --config .mcp.json</span>
+          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.4.0 diff --config .mcp.json</span>
 <span class="l f">github  (npx -y @modelcontextprotocol/server-github)</span>
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
@@ -226,16 +226,16 @@
 <section id="new">
   <div class="shell">
     <div class="sec-head">
-      <h2>What's new in 1.3</h2>
-      <p>Deep schema analysis: drift grading now sees every nesting level, not just the surface.</p>
+      <h2>What's new in 1.4</h2>
+      <p>PIN-SPEC v1.1: pins know WHAT they pinned, and the file is byte-stable for third-party verification.</p>
     </div>
     <div class="pledges">
-      <div class="pledge"><b>Recursive Schema Analysis</b><p>The diff engine now recurses into <code>properties</code>, <code>items</code>, <code>anyOf</code>/<code>oneOf</code> at <b>any depth</b>, with the full path in the message. Changes at depth 2+ were previously graded as harmless notation; now they grade <b>BREAKING</b> or <b>LOOSENED</b>. Real case: MongoDB's <code>$vectorSearch</code> sits at depth 5 through <code>pipeline.items.anyOf</code>.</p></div>
-      <div class="pledge"><b>Router-Union Intelligence</b><p>When a union keyword switches <code>anyOf</code> to <code>oneOf</code> but branches are identical, it grades as a notation-level keyword swap instead of spurious removed+added branches. When an operation moves from one tool to another (Netlify's <code>initialize-database</code>), both findings are annotated with the move.</p></div>
-      <div class="pledge"><b>One Skill Table</b><p>The advisory scan and the pin layer now use the SAME location table - 16 platforms, project and user scope. Before, the advisory layer covered 3 platforms with a hand-copied list, so the canonical root <code>skills/</code> dir was pinned but never advisory-scanned. Two lists always drift; one list cannot.</p></div>
-      <div class="pledge"><b>The .agents/skills Standard</b><p>New location: <code>~/.agents/skills</code> and <code>.agents/skills</code> at repo root, in both scopes. Zed (91.6k+ stars) reads it with five open skill bugs about exactly this dir; superpowers ships it in-repo; it is a forming cross-platform standard.</p></div>
-      <div class="pledge"><b>ATR-Compatible</b><p>Every advisory signal and SARIF rule now cross-references the <a href="https://github.com/Agent-Threat-Rule/agent-threat-rules" target="_blank" rel="noopener">Agent Threat Rules</a> ID for the same technique (zero-width Unicode <code>ATR-2026-00129</code>, contract drift <code>ATR-2026-00581</code>), so pre-invocation and runtime findings correlate in one pipeline. Full table: <a href="https://github.com/Paraphern/rugsnare/blob/main/docs/ATR-MAPPING.md" target="_blank" rel="noopener">ATR-MAPPING.md</a>.</p></div>
-      <div class="pledge"><b>Field Evidence</b><p>This release is validated on live packages, not fixtures: MongoDB's SDK-wide <code>anyOf</code> wave, Netlify's cross-tool operation moves, playwright's two versioning epochs, azure-devops' mass renames. Audited microsoft/azure-skills: 950 files, 91 SKILL.md, risk profile posted as public evidence.</p></div>
+      <div class="pledge"><b>Identity + IDENTITY Drift</b><p>Every pin now carries an identity block: <code>package</code>, <code>resolvedVersion</code>, <code>entryPath</code>, <code>url</code>, bound by an <code>identityHash</code>. When every tool hash is intact but the surface is served by a different build or path - supabase moved its entry from <code>dist/transports/stdio.js</code> to <code>dist/cli.js</code> with contracts unchanged - diff reports <b>IDENTITY</b>: the surface is served by a different build/path than approved.</p></div>
+      <div class="pledge"><b>Policy Stamp + POLICY Drift</b><p>Pins record the verifier policy that graded them. Diffing a store graded under an older policy reports <b>POLICY</b> - "re-graded under a newer verifier policy; re-pin to accept" - never a silent re-grade. The ruler changes; the vendor did nothing wrong. Promised publicly in <a href="https://github.com/microsoft/autogen/issues/7353" target="_blank" rel="noopener">autogen#7353</a>.</p></div>
+      <div class="pledge"><b>Byte-Stable pins.json</b><p>Keys sorted, unchanged entries never rewritten, identical saves skip the write entirely. A third-party verifier can JCS-hash your pins.json as an opaque record and a re-scan of the same version does not change a byte - the <a href="https://github.com/snyk/agent-scan/issues/482" target="_blank" rel="noopener">snyk #482</a> ask.</p></div>
+      <div class="pledge"><b>Paywall Detection</b><p>"Now requires a paid plan" is schema-silent - it used to grade as a cosmetic edit. Now an anchored <code>[PAYWALL]</code> flag rides any drift (introduction only; finance tools describing prices as their subject never trip it). Field data: 58 of 66 review-events at a competitor are exactly this class.</p></div>
+      <div class="pledge"><b>Hosted Watch + Contract Provenance</b><p>The public drift-feed now watches hosted HTTP endpoints alongside npm (context7, deepwiki) - and caught its first live hosted drift <b>within 40 minutes</b> of a release. History scans record which zod/SDK versions each capture was taken against: a floating <code>zod ^4.x</code> can rewrite a server's contract with no release, and the scanner says so instead of letting dependency drift masquerade as server drift.</p></div>
+      <div class="pledge"><b>Honest Fixes</b><p>Pure-expand drift finally grades <b>EXPANDED</b> - the P5 label shipped in 1.2.0 but was unreachable (found live on hubspot: two optional additions graded BREAKING). <code>verify</code> now really defaults to Base Mainnet, as 1.0.1 promised. Approve flips first-sight proxy entries instead of leaving them "NEVER APPROVED" forever.</p></div>
     </div>
   </div>
 </section>
@@ -280,7 +280,7 @@
       <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener" style="color:var(--ink-2)">Releases</a>
     </div>
   </div>
-  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.3.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
+  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.4.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
 </footer>
 
 <script>
