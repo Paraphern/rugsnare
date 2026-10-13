@@ -18,7 +18,18 @@ can compare a live server's tools against the pin and answer one question:
 
 ## 2. File layout
 
-Path: `.rugsnare/pins.json` (JSON, UTF-8, LF or CRLF agnostic on read).
+Path: `.rugsnare/pins.json` (JSON, UTF-8, LF, no BOM; readers accept CRLF).
+The layout below is illustrative; the v1.1 writer emits the §3 canonical
+form on disk (see byte-stability, §7).
+
+Two non-obvious storage rules:
+
+- `annotations` are stored but **never hashed** — they are compared through
+  effective-value equality (§4), because spec defaults make raw-value
+  comparison wrong. `hash` covers text + schema only.
+- Skills entries hash over **raw octets** (sha256sum-compatible bytes of the
+  file, exactly as `sha256sum` computes them) — no canonicalization applies.
+  §3 governs tool contracts (JSON) only.
 
 ```json
 {
@@ -88,6 +99,12 @@ v1.1 binds identity into the envelope:
 - `entryPath` pins the launch entry; moving it is drift even when every tool
   hash holds.
 - `url` is set for remote (streamable HTTP) servers, `null` for stdio.
+  **Field presence is fixed for both transports — `null`, never omitted**
+  (rule 5 makes null/absent/`""` hash differently; an unspecified choice is
+  an interop break): stdio pins carry `package`, `resolvedVersion`,
+  `entryPath`, `url: null`; remote pins carry `url`, with `package: null`,
+  `entryPath: null`, and `resolvedVersion` from the server's `initialize`
+  response (`serverInfo.version`) when disclosed, `null` otherwise.
 - `identityHash` is computed over the four identity fields **with
   `identityHash` itself absent** — a digest is never a member of the object
   it hashes; it is stored beside them. **The hash input is the §3 canonical
@@ -105,9 +122,10 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 
 | Hash | Canonical input | Changes classified as |
 |---|---|---|
-| `hash` | `{ description, inputSchema, name }` - the full contract | any drift (the gate) |
-| `schemaHash` | `inputSchema` only | BREAKING or NOTATION |
+| `hash` | `{ description, inputSchema, name }` - text + schema (the gate) | any text/schema drift |
+| `schemaHash` | `inputSchema` only | BREAKING, LOOSENED, EXPANDED, or NOTATION |
 | `proseHash` | `description` only | COSMETIC |
+| — (no hash) | `annotations`, compared via effective-value equality (§4) | ANNOTATION |
 
 **Canonicalization rules** (identical bytes → identical hash, across
 implementations):
@@ -122,10 +140,22 @@ implementations):
    hashes differently from `{ }`.
 6. `$schema` is preserved **as-is** (a dialect switch is a real change -
    graded NOTATION, not invisible).
+7. Numbers serialize per RFC 8785 §3.2.2.3 (ECMAScript number-to-string):
+integers print without decimal point or exponent where exact, no leading
+`+`, `-0` preserved as `-0`. Without this rule the same contract hashes
+differently in JS (`1`) and Python (`1.0`) and cross-implementation
+reproducibility is void.
+8. Inputs that are not valid Unicode scalar sequences (unpaired surrogates)
+are **rejected at capture** — the pinner refuses to hash them (I-JSON
+discipline). No hash is defined for such content; this is what keeps
+"exact UTF-8" in rule 4 well-defined.
 
-These rules govern **hash inputs** (the canonical form that gets digested),
-not the display order of fields in the pin file. Wherever this spec names
-the fields of a hash input, they are listed in this sorted order.
+These rules govern **hash inputs** (the canonical form that gets digested).
+They do not oblige any particular display order when a human or tool *shows*
+pin fields — but the v1.1 writer emits this canonical form on disk as well,
+because file-level determinism is required for composition (§7). Wherever
+this spec names the fields of a hash input, they are listed in this sorted
+order.
 
 ### 3.1 Canonicalization policy version (v1.1, direction accepted 2026-10-13)
 
@@ -140,17 +170,25 @@ drift:
 - On comparison, if the pin's `policyVersion` differs from the verifier's
   current policy, the run emits `POLICY` (§4.1) recommending a re-pin —
   classes are NOT silently recomputed under a policy the approver never saw.
+  **On `POLICY`, the run reports the class and stops for that pin**; no
+  re-graded tool classes are emitted against it.
 
 ## 4. Drift classification
 
 | driftType | meaning | exit code |
 |---|---|---|
 | `BREAKING` | schema changed with parameter-level differences (added/removed/typed/required/enum) | 1 |
+| `LOOSENED` | constraints dropped, types widened, params removed — validation loosened | 1 |
+| `EXPANDED` | new optional parameter added — attack surface widened | 1 |
 | `NOTATION` | schema bytes changed but parameters did not ($schema dialect, additionalProperties form) | 1 |
 | `COSMETIC` | description text changed, schema identical | 1 |
 | `ANNOTATION` | text+schema identical, behavioral hints flipped (spec-default aware) | 1 |
 | `NEW` | tool present live, absent from pin | 1 |
 | `REMOVED` (aka `GONE`) | tool pinned, absent live | 1 |
+
+`LOOSENED` and `EXPANDED` shipped in rugsnare 1.2.0 (direction-based
+grading); they are listed here so the spec matches the shipped grader and
+the public drift records that use them.
 
 **Spec-default rule for annotations** (MCP 2025-06-18): an absent hint equals
 its spec default (`destructiveHint` defaults `true`, `readOnlyHint` `false`).
@@ -161,11 +199,12 @@ silently *dropping* an explicit non-default value IS drift.
 
 | driftType | meaning | exit code |
 |---|---|---|
-| `IDENTITY` | `identityHash` / `entryPath` / `package` changed while tool hashes hold — the surface is served by a different build or path than approved | 1 |
+| `IDENTITY` | `identityHash` / `package` / `entryPath` / `url` changed while tool hashes hold — the surface is served by a different build, path, or endpoint than approved | 1 |
 | `POLICY` | the pin's `policyVersion` differs from the verifier's policy — re-graded under a newer canonicalization policy; re-pin to accept | 1 |
 
 Neither is server drift: `IDENTITY` is deployment drift, `POLICY` is verifier
-drift. Consumers should never blame the vendor for either.
+drift. Consumers should never blame the vendor for either. `IDENTITY` may
+co-occur with tool drift — both are reported.
 
 ## 5. Compatibility contract
 
@@ -182,14 +221,25 @@ drift. Consumers should never blame the vendor for either.
 
 ## 6. Verification sketch (for the compat test)
 
-A third-party script, using only this spec:
+A third-party script, using only this spec, comparing the approval pin
+against a **live** `tools/list` (not a second pin file):
 
 ```
-pinsA = load("pins.json@approval")
-pinsB = load("pins.json@now")
-for tool in pinsA.tools:
-  liveHash = sha256(canonicalize(liveContract))
-  if liveHash != pinsA.tools[tool].hash → DRIFT (classify by schema/prose)
+pin    = load("pins.json@approval")
+live   = tools/list from the running server
+if pin.policyVersion != verifier.policy → POLICY (stop for this pin, §3.1)
+if identityHash(pin.identity minus the member) != same over live info
+                                         → IDENTITY (§2.1)
+for tool in pin.tools:
+  if tool not in live            → REMOVED
+  elif sha256(canonical(live[tool])) != pin.tools[tool].hash:
+       classify by schemaHash first (BREAKING / LOOSENED / EXPANDED /
+       NOTATION), else by proseHash (COSMETIC)
+  if not annotationsEqual(pin.tools[tool].annotations,
+                          effective(live[tool].annotations)) → ANNOTATION
+for tool in live:
+  if tool not in pin.tools       → NEW
+any finding → exit 1
 ```
 
 ## 7. Composition with action receipts (v1.1, normative pattern)
@@ -245,8 +295,13 @@ As implemented by the preaction-governance receipts in autogen#7353
 
 Requirements for the composition to be sound:
 
-- Pin serialization MUST be byte-stable for identical inputs (sorted keys,
-  no scan-time volatile fields) — third-party hashes must be reproducible.
+- Pin **file** serialization is deterministic (v1.1 writer): §3 canonical
+  form on disk — sorted keys, compact, UTF-8, LF, no BOM, one trailing
+  newline. `pinnedAt` changes only when the pin's content actually changes;
+  a re-scan of identical contracts reproduces the file **byte-for-byte**,
+  and `firstSeen` never changes for a tool. Without this, "identical
+  inputs" has no byte-level meaning and third-party hashes are not
+  reproducible.
 - A snapshot SHOULD also bind `policyVersion` (§3.1) and `identityHash`
   (§2.1): a snapshot of half the contract pins half the contract.
 - The canonicalization-profile discipline applies to digests of **structured
@@ -276,3 +331,16 @@ Requirements for the composition to be sound:
   §3 table row for `hash`); §2.1 now states explicitly that the input is the
   §3 canonical form regardless of file display order, `url: null` included
   per rule 5; §3 closes with the hash-input vs file-display distinction.
+- v1.1 same-day revision 3 (self-run hostile pass, the review rule this
+  thread triggered): drift-class table synced with the shipped grader —
+  `LOOSENED` and `EXPANDED` added (§4), §3 classification column updated;
+  §3 gains rule 7 (RFC 8785 number serialization — cross-language hash
+  reproducibility) and rule 8 (unpaired surrogates rejected at capture);
+  §2.1 fixes the nullability matrix for remote servers (fixed field
+  presence, `serverInfo.version` as remote `resolvedVersion`); §2 states
+  annotations are never hashed and skills hash over raw octets; §6 sketch
+  rewritten (was: unused `pinsB`, no NEW/REMOVED/ANNOTATION, undefined
+  `liveContract`); §7 byte-stability made precise (canonical on-disk form,
+  `pinnedAt` volatility rule, LF/no-BOM/trailing newline); §3.1 defines
+  POLICY as stop-for-that-pin; §4.1 IDENTITY covers `url` changes and may
+  co-occur with tool drift.
