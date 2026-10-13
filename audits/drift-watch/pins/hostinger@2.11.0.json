@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "servers": {
+    "hostinger": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "node_modules/hostinger-api-mcp/src/servers/all.js"
+        ]
+      },
+      "pinnedAt": "2026-10-13T08:26:27.510Z",
+      "tools": {
+        "search": {
+          "hash": "bb7c2d29a097e908a5db13a8fdb131be8cf7484ff39033527067133b1ec9816a",
+          "schemaHash": "c5d79e8e32654d883296ee01ad4744db8a8ab500cfecf9311cba483801a05b88",
+          "proseHash": "92c4b870594c1508d5d0e706d79b4c86511d382c2d11f7d8c5581a9302dfe254",
+          "description": "Find API operations by keyword. Returns the best matches, each with its operation name, hints and inputSchema. Pass a result's operation and params matching its inputSchema to execute or multi-execute.",
+          "annotations": {
+            "title": "Search API operations",
+            "readOnlyHint": true,
+            "destructiveHint": false
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Keywords, e.g. \"list vps\" or \"dns records\"."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20,
+                "default": 5,
+                "description": "Maximum number of results."
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:26:27.513Z",
+          "pinnedAt": "2026-10-13T08:26:36.344Z",
+          "approved": true
+        },
+        "execute": {
+          "hash": "013656b55478a00d5144c67f6b8ea0fdeb0bcca271bf36b0c98af548916ea6b3",
+          "schemaHash": "dcc9ddff5b6618dafaed1e533a83630a2c60bf88370750f7aad866d263d31124",
+          "proseHash": "f9db1f409b880364a2859646c2340d8943c6d198b120184f01f3c4765881e8f6",
+          "description": "Run one API operation found with search. params is a flat object holding the operation's path, query and body parameters as described by its inputSchema.",
+          "annotations": {
+            "title": "Execute an API operation",
+            "readOnlyHint": false,
+            "destructiveHint": true
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "description": "Operation name returned by search."
+              },
+              "params": {
+                "type": "object",
+                "description": "Parameters matching the operation inputSchema."
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:26:27.513Z",
+          "pinnedAt": "2026-10-13T08:26:36.346Z",
+          "approved": true
+        },
+        "multi-execute": {
+          "hash": "3619d930f556dd097238ab0ec3119024bc4f01b2de139d68f69b1a3d1d3653a4",
+          "schemaHash": "374c2391b56b0dc7575da37d1cd08737702fa6d7b5271bb93c018f3263b35606",
+          "proseHash": "9aa99390cca2be96603aa5e29cd4a4f1190b07e29fa7b04d45ea76be5da8021e",
+          "description": "Run up to 20 API operations in order, stopping at the first failure. A params value that is exactly \"$steps.<i>.<path>\" is replaced by that value from the result of earlier step <i> (dot-separated keys; numbers index arrays), e.g. \"$steps.0.0.id\".",
+          "annotations": {
+            "title": "Execute API operations in sequence",
+            "readOnlyHint": false,
+            "destructiveHint": true
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "steps": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "operation": {
+                      "type": "string",
+                      "description": "Operation name returned by search."
+                    },
+                    "params": {
+                      "type": "object",
+                      "description": "Parameters; may contain \"$steps.<i>.<path>\" references."
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "steps"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:26:27.513Z",
+          "pinnedAt": "2026-10-13T08:26:36.346Z",
+          "approved": true
+        }
+      },
+      "scannedAgainst": "hostinger-api-mcp@2.11.0",
+      "prompts": {},
+      "resources": {
+        "hostinger-headless/SKILL.md": {
+          "hash": "a58a5d028a799a8aea4b26d522853785e8aab9135c8a9cbe27dcc036e05002e4",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.347Z"
+        },
+        "hostinger-headless/references/DATABASE.md": {
+          "hash": "04c89d6cfeef7f1f825c2f1f7c76155d20d442a5b8401254418e76300e456c30",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.347Z"
+        },
+        "hostinger-headless/references/DEPLOYMENT.md": {
+          "hash": "73e8a1fff7b93dc2aa15d471c2a2b6bbdaf0b97c580b39bf1395cd28ae57e478",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "hostinger-headless/references/SETUP.md": {
+          "hash": "549fd71369e5b8bce1d32f84eee906b96209f9cd5dbe4f14deb4ac607200de1a",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "hostinger-headless/references/STORE.md": {
+          "hash": "f6375f610fcc63b6d30381cea6d99bb4c26620fd9ac6ecdae3042ec43d026a7f",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "hostinger-headless/references/WORDPRESS.md": {
+          "hash": "d3960e0e39c48424d2621219df63091d30aaaff6a749cc3c5998ec0e1d57da76",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "audit-hosting/SKILL.md": {
+          "hash": "721bd0a5b0db0549d749ab757a86182757cb060e5ef428a97ae55bcd617db992",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.347Z"
+        },
+        "connect-domain/SKILL.md": {
+          "hash": "fb06ea81ec8715782828b9ccb270429c5f51bffaf56aa66629de918ca3dc690d",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.347Z"
+        },
+        "deploy-to-hosting/SKILL.md": {
+          "hash": "5f0ed3a42707c09d720485df92c6534fe561a75901fbe1fa3095af027f86bc36",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.347Z"
+        },
+        "maintain-wordpress/SKILL.md": {
+          "hash": "110bc0369451bdd3e3295b386b8d4b69c58d9c1c33b575fc9ea237b01025da6f",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "migrate-to-hosting/SKILL.md": {
+          "hash": "93d40883073c2d1647ff26aaf106d9462e6b7222b549bc6472191f8cd9879f1d",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        },
+        "troubleshoot-website/SKILL.md": {
+          "hash": "1ed262038535c9d6188513424552186c3c9a576598631ab57f8b5f0663b343f2",
+          "description": "",
+          "firstSeen": "2026-10-13T08:26:36.348Z"
+        }
+      }
+    }
+  }
+}

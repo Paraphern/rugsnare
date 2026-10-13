@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "servers": {
+    "ui5": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "node_modules/@ui5/mcp-server/bin/ui5mcp.js"
+        ]
+      },
+      "pinnedAt": "2026-10-12T19:05:22.839Z",
+      "tools": {
+        "get_guidelines": {
+          "hash": "f95c8b44b713b1b84b5fd005104462a13efba65197cf937ed7209ee15f58e0e4",
+          "schemaHash": "92d408cc72d318d851fe94a810d1ecb2730528c3369566783ac7155d5ca51e53",
+          "proseHash": "78ff35bbae0bea99f6db7dc9e2979012ac13a4d8b5afe80003519a4e3a4ad98e",
+          "description": "This tool MUST be called once to retrieve UI5 guidelines before working on any UI5 (SAPUI5/OpenUI5) related task or project or creating a UI5 project. The guidelines provided by this tool MUST be followed to ensure best practices and avoid common pitfalls in UI5 development.",
+          "annotations": {
+            "title": "Get UI5 Guidelines",
+            "readOnlyHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:05:22.842Z",
+          "pinnedAt": "2026-10-13T08:27:28.294Z",
+          "approved": true
+        },
+        "run_ui5_linter": {
+          "hash": "8cbfdefd460c3d7e27f726096ea9090b93235853703f93eee09cf239788f2118",
+          "schemaHash": "e6a55fc1638515b630bd490b936d6019032d5f7f60ece1fb859ecf926e71b60f",
+          "proseHash": "62909a54d32e31821e9cc0f42b8ef6010294a5f0a456cd50189d257525b80492",
+          "description": "Run UI5 linter on a UI5 project to find and optionally fix UI5 related problems like the usage of deprecated API. After making changes, you should always run the linter again to verify that no new problems have been introduced.",
+          "annotations": {
+            "title": "UI5 linter",
+            "readOnlyHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectDir": {
+                "type": "string",
+                "description": "Root directory of the UI5 project to analyze. Must be an absolute path. Typically this the directory where the 'package.json' and 'ui5.yaml' files are located."
+              },
+              "fix": {
+                "default": false,
+                "description": "Attempt to automatically correct certain findings in the files. Only the remaining findings will be returned.",
+                "type": "boolean"
+              },
+              "filePatterns": {
+                "description": "File paths or patterns to lint. If not provided, all files in the project will be linted.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "provideContextInformation": {
+                "default": true,
+                "description": "Whether to include supplementary information in the output. This includes UI5 API reference and documentation resources. When calling the tool multiple times for the same file or project, refrain from requesting additional context every time.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "projectDir"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.842Z",
+          "pinnedAt": "2026-10-13T08:27:28.295Z",
+          "approved": true
+        },
+        "get_api_reference": {
+          "hash": "0c8e0d6645ceeb5b0c328819e5bf8ae6627751ebf89e8ef2cf0727bbaf6969ec",
+          "schemaHash": "b3e4ec71b70caca5b07e27c4160d34ef43fa65c825da4f2f80d64d93e4909576",
+          "proseHash": "3f7fade5e267e5e0fb061aacd23516b05f61b557f1eb884eb8d83b1740ce197b",
+          "description": "Search the UI5 API reference for module names and symbols",
+          "annotations": {
+            "title": "UI5 API Reference",
+            "readOnlyHint": true,
+            "idempotentHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectDir": {
+                "type": "string",
+                "description": "The root directory of the UI5 project, containing the 'package.json' and 'ui5.yaml' files. This is used to determine the UI5 framework version and libraries used in the project. "
+              },
+              "query": {
+                "type": "string",
+                "pattern": "^[^<>\"'()]+$",
+                "description": "Name of the UI5 module or symbol using either dot or slash notation. Examples: 'sap.m.Button', 'sap/ui/core/Core'. Individual symbols can be requested as well, e.g. 'sap.m.Button#text', 'sap.ui.core.Core#init'"
+              }
+            },
+            "required": [
+              "projectDir",
+              "query"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.842Z",
+          "pinnedAt": "2026-10-13T08:27:28.295Z",
+          "approved": true
+        },
+        "get_project_info": {
+          "hash": "c73b9f9eceec125440ac1a32dafd9ab7d72e078b064c53c5bd2fb9d9a6f7f67e",
+          "schemaHash": "d31dabe51bf437a11d49ae964fdcc7dd9b5ba9e6b1e8a852d279d283253f9025",
+          "proseHash": "04a88b91ab02e58517229d7facc84ec8751b10bc00be3c73b396f1cdb1d946ee",
+          "description": "Get general information about a local UI5 project.",
+          "annotations": {
+            "title": "UI5 Project Info",
+            "readOnlyHint": true,
+            "idempotentHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectDir": {
+                "type": "string",
+                "description": "Root directory of the UI5 project to analyze. Must be an absolute path. If a path to a file is provided, the root directory will be determined automatically."
+              }
+            },
+            "required": [
+              "projectDir"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.842Z",
+          "pinnedAt": "2026-10-13T08:27:28.295Z",
+          "approved": true
+        },
+        "create_ui5_app": {
+          "hash": "e9c061ba6a13a4b627082192f12961b82ecfa30983e3d4258416647a17f989ab",
+          "schemaHash": "f9e4c3a48ec1a765540f17349a02b9d4548869c1e81b869604688fcce41c0b0d",
+          "proseHash": "5e27ab7a7bf4889efc14f13fe6f83278563585195a8769256dbd90c2158e94a6",
+          "description": "Create a new basic SAPUI5 application implemented in TypeScript or JavaScript",
+          "annotations": {
+            "title": "Create SAPUI5 App",
+            "readOnlyHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "appNamespace": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_.]*$",
+                "description": "The namespace for the application, e.g. com.myorg.myapp. Only lowercase alpha-numeric characters, underscores and dots are allowed."
+              },
+              "basePath": {
+                "type": "string",
+                "description": "Absolute base path for the creation. The application will be created either immediately inside this path or in a subdirectory (its name equals the application namespace), depending on the 'createAppDirectory' parameter. This base path must be absolute, not just 'app' or '.' or './something'!"
+              },
+              "createAppDirectory": {
+                "default": true,
+                "description": "Whether to create a new directory (name equals the application namespace) inside the base path. Set this to 'false' when you want to place the 'app' directly in the given base path. In SAP CAP applications, typically give the path to the 'app' folder as basePath and set this to 'true' to create an application folder. Default: true.",
+                "type": "boolean"
+              },
+              "framework": {
+                "default": "SAPUI5",
+                "description": "Framework to use (OpenUI5 or SAPUI5), defaults to SAPUI5",
+                "type": "string",
+                "enum": [
+                  "OpenUI5",
+                  "SAPUI5"
+                ]
+              },
+              "frameworkVersion": {
+                "description": "Framework version, defaults to latest version. Omit this when in doubt. When provided, it must be a concrete semantic version, like e.g. 1.136.0. Versions older than 1.96.0 are not supported.",
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "author": {
+                "description": "Author of the application (auto-detected if not provided)",
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9 .,'@_-]+$"
+              },
+              "oDataV4Url": {
+                "description": "URL of an OData V4 service, if applicable. This is entirely optional, but without it, the generated app UI will have no OData Model configured. Setting an URL will configure an OData V4 model in the application. Only works for OData V4 services, not for OData V2. The URL must be either a valid complete URL starting with http:// or https:// or a server-root-relative URL like '/odata/v4/serviceName' when the OData service is running on the same server. In this case, the prefix 'http://localhost:4004/' will be assumed and used by this tool for inquiries about the service. When the port is not 4004, a complete 'http://localhost:<port>...' URL must be provided. In the generated application, any 'http://localhost:<port>' prefix will be removed. HINT: when the project is a SAP CAP project and CAP/CDS tools are available, you **MUST** use them to search for OData services and entities and properties **BEFORE** calling this tool. This will help you find the correct service URL.",
+                "type": "string"
+              },
+              "oDataEntitySet": {
+                "description": "Entity set of the OData V4 service to display. Only has an effect when 'oDataV4Url' is set as well. This is optional, but setting an entity set is beneficial, as it will configure a basic UI in the application which displays the entity set.",
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_]+$"
+              },
+              "entityProperties": {
+                "description": "Properties of the OData entity set to display. Only has an effect when 'oDataV4Url' and'oDataEntitySet' are set. This parameter is optional, but useful to display initial data, when the names of existing properties are known. If not provided and the service is active and reachable at tool execution time, some random properties will be displayed.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_]+$"
+                }
+              },
+              "initializeGitRepository": {
+                "default": true,
+                "description": "Initialize a local git repository for the application, default is 'true'",
+                "type": "boolean"
+              },
+              "runNpmInstall": {
+                "default": true,
+                "description": "Execute npm install after creating the application, default is 'true'",
+                "type": "boolean"
+              },
+              "typescript": {
+                "default": true,
+                "description": "Whether to create a TypeScript application (true) or JavaScript application (false), default is 'true'. Although the default is preferred, the user MUST know about this option before generation, but you should not require an active decision. Also, if an overall project already exists, this should influence the language choice to keep things consistent.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "appNamespace",
+              "basePath"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.295Z",
+          "approved": true
+        },
+        "get_version_info": {
+          "hash": "408946056d415fdc554ea5231f8353ebc5e1a14af6e90e2484f781d956267d7f",
+          "schemaHash": "72841e8f91b4219678cbde241ec67ffe92985fa9252fd9ea69ca59c87cf0c187",
+          "proseHash": "fd23d28c3708647dbf336c22cfcf36fb6283690222c2a43a6ab1f48f05fa1d52",
+          "description": "Get version information for UI5 (OpenUI5 or SAPUI5)",
+          "annotations": {
+            "title": "UI5 Version Info",
+            "readOnlyHint": true,
+            "idempotentHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "frameworkName": {
+                "type": "string",
+                "enum": [
+                  "OpenUI5",
+                  "SAPUI5"
+                ],
+                "description": "The UI5 framework to get version information for"
+              }
+            },
+            "required": [
+              "frameworkName"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.296Z",
+          "approved": true
+        },
+        "get_integration_cards_guidelines": {
+          "hash": "df65f428e6ef416db678cbd148f29caae9dda9f521f20b2d55df79cba78250fb",
+          "schemaHash": "8545131324d1d72802aaa27f22a574b34b564d096e2b8fa189e6d7b209b40bdc",
+          "proseHash": "fa168269ede074b70d8caba3cb164f87d23bd94c0be2bbd1af19e273fa051473",
+          "description": "This tool MUST be called once to retrieve Integration Cards guidelines before working on any Integration Card related task or creating an Integration Card. The guidelines provided by this tool MUST be followed to ensure best practices and avoid common pitfalls in Integration Cards development.Integration Cards are also called 'UI Integration Cards' or 'UI5 Integration Cards'.",
+          "annotations": {
+            "title": "Get Integration Cards Guidelines",
+            "readOnlyHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.296Z",
+          "approved": true
+        },
+        "create_integration_card": {
+          "hash": "d869e816bb677b2e48594368376eff0875a66908f86ece0149d548eeecf33842",
+          "schemaHash": "59d32b8d247acf751ac8d770e2c6be4e422169e1ae215b98cc682fb4a6a2ecbc",
+          "proseHash": "e5a8a58a8014ea105021eed0ed9af1884359b817e84dab21c494001c0182a511",
+          "description": "Create a new Integration Card, UI Integration Card, or UI5 Integration Card",
+          "annotations": {
+            "title": "Create Integration Card",
+            "readOnlyHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "basePath": {
+                "type": "string",
+                "description": "Absolute base path for the creation."
+              },
+              "cardFolderName": {
+                "default": "card",
+                "type": "string",
+                "description": "Name of the folder to create the card in, inside the base path."
+              },
+              "cardType": {
+                "default": "List",
+                "type": "string",
+                "enum": [
+                  "Analytical",
+                  "Calendar",
+                  "List",
+                  "Object",
+                  "Table",
+                  "Timeline"
+                ],
+                "description": "Type of the Integration Card to create."
+              },
+              "destinations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[a-zA-Z0-9 .,'@_-]+$",
+                      "description": "Name of the destination."
+                    },
+                    "defaultUrl": {
+                      "type": "string",
+                      "description": "Default URL of the destination."
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "defaultUrl"
+                  ]
+                },
+                "description": "List of destinations to be included in the card configuration."
+              }
+            },
+            "required": [
+              "basePath"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.296Z",
+          "approved": true
+        },
+        "run_manifest_validation": {
+          "hash": "1b117c1a1be985cc952b910c5e6f2f613472ed4e403b5ff20ef1d4b2048a5996",
+          "schemaHash": "5de5e4ed49ae3addea79e4563be0e70244878d1e849b4b90793666f59610b1c4",
+          "proseHash": "58a30ab553a09f5386e88de6dcf956ab2e64eb3fbe09a2f0d40fba02f76481ee",
+          "description": "Validates UI5 manifest file. After making changes, you should always run the validation again to verify that no new problems have been introduced.",
+          "annotations": {
+            "title": "Manifest Validation",
+            "readOnlyHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "manifestPath": {
+                "type": "string",
+                "description": "Absolute path to the manifest file to validate."
+              }
+            },
+            "required": [
+              "manifestPath"
+            ]
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.296Z",
+          "approved": true
+        },
+        "get_typescript_conversion_guidelines": {
+          "hash": "283f9bbc8d446968454f05276596856a31dbe0f698e2d3d0a354e1c5c5c8f422",
+          "schemaHash": "94c4e3499c687a326f0caf8a30b061ef8b0903055d89363733d4926a54ce7854",
+          "proseHash": "9f9f129ac63e0aaf132e2632a0efbed4ee0e0e065a81e02f8cdbbd93c6bdf503",
+          "description": "This tool MUST be called once before converting a UI5 (SAPUI5/OpenUI5) project from JavaScript to TypeScript. The instructions provided by this tool MUST be followed to ensure that the project setup and code is correctly converted.",
+          "annotations": {
+            "title": "Get TypeScript Conversion Guidelines",
+            "readOnlyHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:05:22.843Z",
+          "pinnedAt": "2026-10-13T08:27:28.296Z",
+          "approved": true
+        }
+      },
+      "scannedAgainst": "@ui5/mcp-server@0.3.2",
+      "prompts": {},
+      "resources": {}
+    }
+  }
+}

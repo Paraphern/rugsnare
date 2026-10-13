@@ -1,0 +1,2795 @@
+{
+  "version": 1,
+  "servers": {
+    "currents": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "node_modules/@currents/mcp/dist/index.mjs"
+        ]
+      },
+      "pinnedAt": "2026-10-13T08:18:44.838Z",
+      "tools": {
+        "currents-list-actions": {
+          "hash": "7823934d28dd93043342ffdb44c5f85cd70c0c000a52bb5c68d6fca97cc83ac8",
+          "schemaHash": "0e5108a91ae3921216f51f2218787cee1d3353d65f35bca38b6da6db0a508eab",
+          "proseHash": "acaffed1576069e2cc269135ca8565e22d2160e953d976e353e140d47b6b5778",
+          "description": "List all actions for a project with optional filtering. Actions are rules that automatically modify test behavior (skip, quarantine, tag). Supports filtering by status (active/disabled/archived/expired) and search by name. Requires a projectId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch actions from."
+              },
+              "status": {
+                "description": "Filter actions by status (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "disabled",
+                    "archived",
+                    "expired"
+                  ]
+                }
+              },
+              "search": {
+                "description": "Search actions by name.",
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.841Z",
+          "pinnedAt": "2026-10-13T08:18:52.685Z",
+          "approved": true
+        },
+        "currents-create-action": {
+          "hash": "79ffe4eb3d35e6591389a6d04d56c593d3419821b42737cbeab91868c779f023",
+          "schemaHash": "6d92d2c2a48efc8b100bb2b5f080e032abde8cba0fc5c6a85e470aa5178f6791",
+          "proseHash": "b945257110ce93da84513df049d7dc3574dc6a1d8eba9e092d3d7f63eff902f8",
+          "description": "Create a new action for a project. Actions define rules that automatically skip, quarantine, or tag tests based on conditions like test title, file path, git branch, etc. Requires projectId, name, action array, and matcher object.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to create the action for."
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Human-readable name for the action."
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Optional description for the action."
+              },
+              "action": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "skip"
+                        }
+                      },
+                      "required": [
+                        "op"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "quarantine"
+                        }
+                      },
+                      "required": [
+                        "op"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "tag"
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "tags": {
+                              "minItems": 1,
+                              "maxItems": 10,
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Tags to add to matching tests"
+                            }
+                          },
+                          "required": [
+                            "tags"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "op",
+                        "details"
+                      ]
+                    }
+                  ]
+                },
+                "description": "Actions to perform when conditions match."
+              },
+              "matcher": {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "AND",
+                      "OR"
+                    ],
+                    "description": "How to combine multiple conditions"
+                  },
+                  "cond": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "testId",
+                            "project",
+                            "title",
+                            "file",
+                            "git_branch",
+                            "git_authorName",
+                            "git_authorEmail",
+                            "git_remoteOrigin",
+                            "git_message",
+                            "error_message",
+                            "titlePath",
+                            "annotation",
+                            "tag"
+                          ]
+                        },
+                        "op": {
+                          "type": "string",
+                          "enum": [
+                            "eq",
+                            "neq",
+                            "any",
+                            "empty",
+                            "in",
+                            "notIn",
+                            "inc",
+                            "notInc",
+                            "incAll",
+                            "notIncAll"
+                          ]
+                        },
+                        "value": {
+                          "anyOf": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "op"
+                      ]
+                    },
+                    "description": "List of conditions to match"
+                  }
+                },
+                "required": [
+                  "op",
+                  "cond"
+                ],
+                "description": "Matcher defining which tests this action applies to."
+              },
+              "expiresAfter": {
+                "description": "Optional expiration date in ISO 8601 format.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "projectId",
+              "name",
+              "action",
+              "matcher"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.841Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-get-action": {
+          "hash": "76869bbbfea427998956385f152230e3920b532d1782bb2fba179780f5b85bdd",
+          "schemaHash": "546765c0f747a158ec177ea262441ac3e707067e9ce21216f2fb7aa22115a3e3",
+          "proseHash": "a025802018b649f29cfef7ff27ec79fc6c19e9f7b15386fe52560a0a3138e61e",
+          "description": "Get a single action by ID. The actionId is globally unique, so projectId is not required. Returns full action details including matcher conditions and current status.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to fetch."
+              }
+            },
+            "required": [
+              "actionId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.841Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-update-action": {
+          "hash": "d6050f2ae3070edbec0e8aa098c34dff86d8da520b66a1c154b41c75fefc3ebb",
+          "schemaHash": "be445ded0ac0d552c741d60b583e2e35174d70b9e0068de963ee42794b3f39b3",
+          "proseHash": "aa5ef7d4c670d264925421285e9a9b652d22f599ad2449f70cbfd6cddf5aa792",
+          "description": "Update an existing action. The actionId is globally unique. You can update name, description, action array, matcher, or expiration date. All fields are optional.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to update."
+              },
+              "name": {
+                "description": "Human-readable name for the action.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Optional description for the action."
+              },
+              "action": {
+                "description": "Actions to perform when conditions match.",
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "skip"
+                        }
+                      },
+                      "required": [
+                        "op"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "quarantine"
+                        }
+                      },
+                      "required": [
+                        "op"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string",
+                          "const": "tag"
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "tags": {
+                              "minItems": 1,
+                              "maxItems": 10,
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Tags to add to matching tests"
+                            }
+                          },
+                          "required": [
+                            "tags"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "op",
+                        "details"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "matcher": {
+                "description": "Matcher defining which tests this action applies to.",
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "AND",
+                      "OR"
+                    ],
+                    "description": "How to combine multiple conditions"
+                  },
+                  "cond": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "testId",
+                            "project",
+                            "title",
+                            "file",
+                            "git_branch",
+                            "git_authorName",
+                            "git_authorEmail",
+                            "git_remoteOrigin",
+                            "git_message",
+                            "error_message",
+                            "titlePath",
+                            "annotation",
+                            "tag"
+                          ]
+                        },
+                        "op": {
+                          "type": "string",
+                          "enum": [
+                            "eq",
+                            "neq",
+                            "any",
+                            "empty",
+                            "in",
+                            "notIn",
+                            "inc",
+                            "notInc",
+                            "incAll",
+                            "notIncAll"
+                          ]
+                        },
+                        "value": {
+                          "anyOf": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "op"
+                      ]
+                    },
+                    "description": "List of conditions to match"
+                  }
+                },
+                "required": [
+                  "op",
+                  "cond"
+                ]
+              },
+              "expiresAfter": {
+                "description": "Optional expiration date in ISO 8601 format.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "actionId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-delete-action": {
+          "hash": "01ce7b9c7721be963efb751a3923b1a99c52828132a66ee21355d9588fbaa191",
+          "schemaHash": "6de48492bafd67f31d72bcef6720eb5edac91d720198167dbbb2c2b6593e53fa",
+          "proseHash": "a33f3935ade381f2a7f88dd181dd603263d91a8a36c7c2a3dbd9d7d3650a6ae8",
+          "description": "Delete (archive) an action. This is a soft delete - the action will be marked as archived but not permanently removed. The actionId is globally unique.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to delete (archive)."
+              }
+            },
+            "required": [
+              "actionId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-enable-action": {
+          "hash": "32d9e36a04d3689763d410de2041c15b2f9298f9bcf324b7380699562e53cace",
+          "schemaHash": "bd6fa9b2757776e9533c2e60f368e6bf46bc4a85c07998bb1d59a61d80d3bad7",
+          "proseHash": "b8bbc222752716855914ba9f6305b899db516a99cfa6eca4df9eaa773e995ab4",
+          "description": "Enable a disabled action. Changes the action status from disabled to active, making it apply to matching tests again. The actionId is globally unique.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to enable."
+              }
+            },
+            "required": [
+              "actionId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-disable-action": {
+          "hash": "f3cbc4df60dc655da73b8a1593e3c7cc3874502a3defa8e6d09cd2f7ab6f8207",
+          "schemaHash": "3ed765c3acc97d4dca724d8f59b44de126e036eee7b6c72f426b67481d90c235",
+          "proseHash": "1de6e2c426356dc0264fa00ccf8bb7ea452f1fa0e84d2db01cbd4d490dc57c57",
+          "description": "Disable an active action. Changes the action status to disabled, temporarily preventing it from applying to tests. The actionId is globally unique.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to disable."
+              }
+            },
+            "required": [
+              "actionId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.686Z",
+          "approved": true
+        },
+        "currents-list-affected-tests": {
+          "hash": "dd4b2821d7d4bddd6375e8e1a81c2301d4c7836894a78d8ab7169a60bf9a082c",
+          "schemaHash": "4034d19cbf6dd51a9b781ee82b96c64e52ce7d432c4fe9bb1234244acedbf18a",
+          "proseHash": "7593bf578ede24e276e4aba4e935b838012be065e49db5afc1b543c66926693c",
+          "description": "List tests affected by actions (quarantine, skip, tag) for a project within a date range. Returns aggregated data grouped by test signature. Supports filtering by action types, action ID, status, and search. Requires projectId, date_start, and date_end. Preview endpoint: fields and path may change.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch affected tests from."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "page": {
+                "description": "Page number (0-indexed). Defaults to 0.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "limit": {
+                "description": "Maximum number of results (1-100). Defaults to 25.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "search": {
+                "description": "Search by spec file path, test title, or action name (case-insensitive).",
+                "type": "string",
+                "maxLength": 100
+              },
+              "action_type": {
+                "description": "Filter by action types (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "quarantine",
+                    "skip",
+                    "tag"
+                  ]
+                }
+              },
+              "action_id": {
+                "description": "Filter by a specific action ID.",
+                "type": "string"
+              },
+              "dir": {
+                "description": "Sort direction for lastSeen. Defaults to 'desc'.",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              },
+              "status": {
+                "description": "Filter by action status. Accepts multiple values. Omit for all statuses.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "disabled",
+                    "expired",
+                    "archived"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "projectId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-get-affected-test-executions": {
+          "hash": "1de5b02d99ac7f36e7bfa0ed4ab3fe78d831843806c697b0a774a8f3f142ea69",
+          "schemaHash": "43b947613d7271cca997a2d04b7d47f4a37dc542cc96c4ee8c07490fcf6072a5",
+          "proseHash": "e8f8bdab14dd3fd9e5196d2cfa9af76836d0bf92e60f77a8e99d03c4afbc27e3",
+          "description": "Keyed on a test: lists the executions of one test that an action applied to, within a date range, with the run, branch and commit of each. Requires projectId, signature, date_start and date_end; if the signature is not known, first call 'currents-get-tests-signatures'. For the executions of one rule across every test it touched, call 'currents-get-action-executions' instead. Uses cursor-based pagination.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID."
+              },
+              "signature": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The test signature hash to fetch affected executions for."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "limit": {
+                "description": "Maximum number of executions (1-50). Defaults to 25.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "search": {
+                "description": "Search by action name (case-insensitive).",
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "projectId",
+              "signature",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-get-affected-executions": {
+          "hash": "57a24f4c88d95fca28a6a6db9c03fd0a1ea1dd25b37554b3772416f867de4fe2",
+          "schemaHash": "a7a4a9af76f472e78b3d1e4116efe63ef9c01461f006ac8f60f7c8d4701f1e72",
+          "proseHash": "82f479a7a78cab217f08a3b0908a7dac6bd955548eaf8211b12eca20c4f9b790",
+          "description": "List test executions where a specific action/rule was applied, within a date range. Uses cursor-based pagination. Requires actionId, date_start, and date_end.",
+          "annotations": null,
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "description": "The action ID to fetch affected test executions for."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "limit": {
+                "description": "Maximum number of executions (1-50). Defaults to 25.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "search": {
+                "description": "Search by action name (case-insensitive).",
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "actionId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:44.842Z",
+          "approved": true
+        },
+        "currents-get-projects": {
+          "hash": "f5edb7f5288dd7f4fcd8d29d7ed14450bf1250280be8f3c06c948b8e2dd42687",
+          "schemaHash": "3b93b08f2ae0ba83f965d8a5f34ea44fe4420f0383a85584ab0d3207ada5df83",
+          "proseHash": "ca4f1916ce9b44381eb43b71364ab59c9b03cfa09c66298fc9e723d77fb3df41",
+          "description": "Retrieves projects available in the Currents platform. Supports cursor-based pagination with limit, starting_after, ending_before parameters, or set fetchAll=true for automatic pagination. This is a prerequisite for using any other tools that require project-specific information.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "limit": {
+                "description": "Maximum number of items to return (default: 10, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "fetchAll": {
+                "description": "If true, walks the pages automatically and returns up to 1000 projects. Starts after starting_after when it is set, so a list that came back marked incomplete can be continued. Ignores limit and ending_before.",
+                "type": "boolean"
+              }
+            }
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-get-project": {
+          "hash": "954a71e01198e90b6387f6a9ff29a6a7f7e6519078a72a5f069594813b86a4b3",
+          "schemaHash": "56b6ae500b85eab7ebe8e009f8bc9838edb7dd974dd580a7de878a7dbe2cdf96",
+          "proseHash": "ceea36975a5292fdad8bd2358f20196f037d25bed4c69d7d74b47c2a21de05fb",
+          "description": "Get a single project by ID. Returns project details including name, creation date, failFast setting, inactivity timeout, and default branch name.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch details for."
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.842Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-get-project-insights": {
+          "hash": "cc09c0c02b13ceacce6d68b53138937cea847bd9cd95628ca8138467c84345bc",
+          "schemaHash": "eb343f64cb2d975c9393e49e0927752840b61b2f9fb5bd805c18ab22d00fef6c",
+          "proseHash": "3280d4aa1f9f459802c91a064446316dbe828dbee5a91dd0a45dcba703f61cb1",
+          "description": "Get aggregated run and test metrics for a project within a date range. Returns overall metrics and timeline data with configurable resolution (1h/1d/1w). Supports filtering by tags, branches, groups, and authors. Requires projectId, date_start, and date_end.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch insights for."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "resolution": {
+                "description": "Time resolution for histogram data. Defaults to '1d'.",
+                "type": "string",
+                "enum": [
+                  "1h",
+                  "1d",
+                  "1w"
+                ]
+              },
+              "tags": {
+                "description": "Filter by tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "branches": {
+                "description": "Filter by branches (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "groups": {
+                "description": "Filter by groups (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter by git authors (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "projectId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-list-pull-requests": {
+          "hash": "56dad9880dbba17d329932058242f06be216d928c61fdbe0669852c9988d1356",
+          "schemaHash": "0dc1be8412a0f878a5d46335a0f422e07e435955ba15bb9974304a8ed1eb2d72",
+          "proseHash": "7a60356ce8b49d7ae4f10e768b104cb4331f8ad0195bd294a3e627c91ff928b2",
+          "description": "List pull-request cards for a project (runs grouped by meta.pr.id). Run filters (date range, tags, branches, authors, environments, pr_id, search) choose which runs count; status, completion_state and pr_search are checked on each PR's latest run among those runs. Supports order and dir, cursor pagination and the runs_per_pr preview count. Requires projectId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to list pull requests for."
+              },
+              "limit": {
+                "description": "Maximum number of PR cards per page (default: 10, max: 50).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "starting_after": {
+                "description": "Cursor for forward pagination.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for backward pagination.",
+                "type": "string"
+              },
+              "runs_per_pr": {
+                "description": "Number of recent runs to include in each card timelinePreview (default: 1, max: 10). 0 returns an empty timelinePreview; recentRuns (up to 10 latest runs per card) are still returned.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10
+              },
+              "tags": {
+                "description": "Filter by run tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "branches": {
+                "description": "Filter by git branch names (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter by git commit author glob patterns (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tag_operator": {
+                "description": "Logical operator for tag filtering. AND requires all tags (default), OR requires any tag.",
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ]
+              },
+              "status": {
+                "description": "Filter PR cards by the status of each PR's latest run among the runs the other filters keep (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "PASSED",
+                    "FAILED",
+                    "RUNNING",
+                    "FAILING"
+                  ]
+                }
+              },
+              "completion_state": {
+                "description": "Filter PR cards by the completion state of each PR's latest run among the runs the other filters keep (can be specified multiple times). COMPLETE: run finished normally, IN_PROGRESS: run is still executing, CANCELED: run was canceled, TIMEOUT: run timed out.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "COMPLETE",
+                    "IN_PROGRESS",
+                    "CANCELED",
+                    "TIMEOUT"
+                  ]
+                }
+              },
+              "pr_search": {
+                "description": "Find PRs by title, number or source branch, checked on each PR's latest run among the runs the other filters keep. Matches when the title or source branch contains the text (case-insensitive), or when the text is a PR number (123 or #123). Any characters except control characters; 1-200 characters after trimming.",
+                "type": "string"
+              },
+              "search": {
+                "description": "Count only runs whose ciBuildId or commit message contains the text (case-insensitive). Printable ASCII only; 1-200 characters after trimming.",
+                "type": "string"
+              },
+              "date_start": {
+                "description": "Count only runs created on or after this date (ISO 8601 date or date-time). Without date_start and date_end, runs of the whole project history count.",
+                "type": "string"
+              },
+              "date_end": {
+                "description": "Count only runs created before this date (ISO 8601 date or date-time). Must not be before date_start.",
+                "type": "string"
+              },
+              "environments": {
+                "description": "Count only runs from these environments (can be specified multiple times). Printable ASCII without spaces.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[!-~]+$"
+                }
+              },
+              "pr_id": {
+                "description": "Count only runs of this pull request, by normalized pull request id (meta.pr.id). Printable ASCII only, max 128 characters.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[!-~]+$"
+              },
+              "order": {
+                "description": "Sort PR cards by last_run (creation time of the latest run, default), first_run (creation time of the oldest run) or run_count (number of runs). Only runs the filters keep count.",
+                "type": "string",
+                "enum": [
+                  "last_run",
+                  "first_run",
+                  "run_count"
+                ]
+              },
+              "dir": {
+                "description": "Sort direction (default: desc). Keep order and dir the same across pages: a cursor returned for another order or dir is rejected.",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-list-project-terms": {
+          "hash": "43b908aac8e6f05c4195700dc0263692141509da3613239a79a36b75fa5b6d34",
+          "schemaHash": "99adbc6181b1b0c21356ae030dde594d1cc33cfa3123bf93d75bb3be4b43f798",
+          "proseHash": "6a248df98555691c234dbfb5f7867a7bf139cd51b93207791ee8a7bc54bc4ac3",
+          "description": "List cursor-paginated project terms for one type (tag, branch, authorName, etc.). Supports search, sort direction, and starting_after or ending_before cursors. Requires projectId and termType.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID."
+              },
+              "termType": {
+                "type": "string",
+                "enum": [
+                  "tag",
+                  "group",
+                  "branch",
+                  "authorName",
+                  "authorEmail",
+                  "framework",
+                  "frameworkVersion",
+                  "clientVersion",
+                  "ann_type",
+                  "ann_desc"
+                ],
+                "description": "Term kind to list: tag, group, branch, authorName, authorEmail, framework, frameworkVersion, clientVersion, ann_type, or ann_desc."
+              },
+              "limit": {
+                "description": "Maximum items per page (default: 100, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "dir": {
+                "description": "Sort direction by last update time (default: desc).",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              },
+              "starting_after": {
+                "description": "Cursor for forward pagination.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for backward pagination.",
+                "type": "string"
+              },
+              "search": {
+                "description": "Case-insensitive search filter for term values.",
+                "type": "string",
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "projectId",
+              "termType"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-create-jira-issue": {
+          "hash": "387c23aedda2c81d1bdc8e7e71546ddbb6c1037bd3070f92da6dd2c8dfc7e921",
+          "schemaHash": "fcb3911a0bb96426cd6305d61904f3f4731c5d49d640d1f354b924adaac20b30",
+          "proseHash": "f31eb019b0f57620777f16c014a393662155399bbaa41391881e02012b57eae2",
+          "description": "Create a Jira issue from a run test using the organization Jira integration. Requires projectId, runId, testId, jiraInstallationId, jiraProjectId, and jiraIssueType. Optional customFields array.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Currents project ID."
+              },
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Currents run ID containing the test."
+              },
+              "testId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Test ID within the run."
+              },
+              "jiraInstallationId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira installation ID for the org integration (dashboard Installation ID)."
+              },
+              "jiraProjectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira project ID in which to create the issue."
+              },
+              "jiraIssueType": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira issue type ID."
+              },
+              "customFields": {
+                "description": "Optional Jira custom fields for issue creation.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Jira field ID from issue type discovery."
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "String value for the Jira custom field."
+                    }
+                  },
+                  "required": [
+                    "fieldId",
+                    "value"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "projectId",
+              "runId",
+              "testId",
+              "jiraInstallationId",
+              "jiraProjectId",
+              "jiraIssueType"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-link-jira-issue": {
+          "hash": "f30ecabb17b0397edbb85d517f64a06e438238e3aef3c26787e6849422b52269",
+          "schemaHash": "5b03de77ad2fb736ad4545a880b47183ae58ece2992678ee6f3e42a24b326463",
+          "proseHash": "43db820766f88566eeb198696f21eb11f585126c9adfac544d2366f53a96e893",
+          "description": "Link an existing Jira issue to a run test using the organization Jira integration. Requires projectId, jiraIssueKey, runId, testId, jiraInstallationId, jiraProjectId, and jiraIssueType. Optional comment and includeContextInComment.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Currents project ID."
+              },
+              "jiraIssueKey": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Existing Jira issue key to link (e.g. PROJ-123)."
+              },
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Currents run ID containing the test."
+              },
+              "testId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Test ID within the run."
+              },
+              "jiraInstallationId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira installation ID for the org integration (dashboard Installation ID)."
+              },
+              "jiraProjectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira project ID for the linked issue."
+              },
+              "jiraIssueType": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira issue type identifier stored on the Currents ticket."
+              },
+              "comment": {
+                "description": "Optional text prepended to the Jira comment and Currents issue description before automated test context.",
+                "type": "string"
+              },
+              "includeContextInComment": {
+                "description": "When true (default), appends automated test context to the Jira comment. When false, comment is required and used alone.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "projectId",
+              "jiraIssueKey",
+              "runId",
+              "testId",
+              "jiraInstallationId",
+              "jiraProjectId",
+              "jiraIssueType"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-list-jira-projects": {
+          "hash": "ab149dcfdeca8d86b7133c8fce6be2f2a0c86ca50dcdbd59e2639c3c187de59c",
+          "schemaHash": "f9df71f251a22c8ef16901fa562a55a9a19782e9bfaade3e9848411e77878b7c",
+          "proseHash": "8b0a199c3104be7abe96a461bf6fadc32d555ff2d731aabf2dcfb153dd5139e8",
+          "description": "List Jira projects available for the organization integration. Use returned project IDs as jiraProjectId when creating issues. Requires jira_installation_id.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "jira_installation_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira installation ID for the organization integration."
+              },
+              "search": {
+                "description": "Search Jira projects by name or key.",
+                "type": "string"
+              },
+              "page": {
+                "description": "Page number for discovery results (default: 0).",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "limit": {
+                "description": "Maximum projects per page (default: 50, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "jira_installation_id"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-list-jira-issue-types": {
+          "hash": "ca72aae0083da516cd681f9e850e4d12aabf4ca9ce7558ca408e8f06037dff61",
+          "schemaHash": "d961141c6f7779ece09cf02ae04f97785521ccea33ee52b1865291ea57357dd6",
+          "proseHash": "66db2d090e22ad79f30d93bf6ea3207a0d49a59a0755158f9bc16d12665d400f",
+          "description": "List Jira issue types and custom fields for a Jira project. Requires jiraProjectId and jira_installation_id.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "jiraProjectId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "Jira project ID."
+              },
+              "jira_installation_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Jira installation ID for the organization integration."
+              },
+              "search": {
+                "description": "Search issue types by name.",
+                "type": "string"
+              },
+              "page": {
+                "description": "Page number for discovery results (default: 0).",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "limit": {
+                "description": "Maximum issue types per page (default: 50, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "jiraProjectId",
+              "jira_installation_id"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-get-runs": {
+          "hash": "005789d16f4e1ebd6295f9db9e3fd8e9626cff751743aaff6abab8b5593e8400",
+          "schemaHash": "49b3bf14c7ccb01ba014a8cc97a4a0830333e68e5361623056d4faaf10d48015",
+          "proseHash": "3753c05d4bfe2152afdb5e18fdb5d701c43e706c8a967653842499d3cc4d866f",
+          "description": "Retrieves a list of runs for a specific project with optional filtering. Supports filtering by branch, tags (with AND/OR operators), status (PASSED/FAILED/RUNNING/FAILING), completion state, date range, commit author, and free-text search over the run's CI build id, commit message, branch, sha, author, pull request title/number/branches, tags, environments, framework and browser. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch runs from."
+              },
+              "limit": {
+                "description": "The maximum number of results to return per page (default: 10, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "branches": {
+                "description": "Filter runs by git branch names (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tags": {
+                "description": "Filter runs by tags (can be specified multiple times). Use tag_operator to control matching behavior.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tag_operator": {
+                "description": "Logical operator for tag filtering. AND requires all tags to be present (default), OR requires any tag to be present.",
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ]
+              },
+              "search": {
+                "description": "Case-insensitive substring search over a run's CI build id, commit message, branch, sha, author name and email, pull request id/title/source/destination, tags, environments, framework and browser.",
+                "type": "string",
+                "maxLength": 200
+              },
+              "pr_id": {
+                "description": "Filter runs by normalized pull request id (meta.pr.id). Printable ASCII only, max 128 characters.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[!-~]+$"
+              },
+              "authors": {
+                "description": "Filter runs by git commit author names (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "description": "Filter runs by status. PASSED: all tests passed, FAILED: some tests failed, RUNNING: run is in progress and passing, FAILING: run is in progress but has failures.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "PASSED",
+                    "FAILED",
+                    "RUNNING",
+                    "FAILING"
+                  ]
+                }
+              },
+              "completion_state": {
+                "description": "Filter runs by completion state. COMPLETE: run finished normally, IN_PROGRESS: run is still executing, CANCELED: run was canceled, TIMEOUT: run timed out.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "COMPLETE",
+                    "IN_PROGRESS",
+                    "CANCELED",
+                    "TIMEOUT"
+                  ]
+                }
+              },
+              "date_start": {
+                "description": "Filter runs created on or after this date (ISO 8601 format).",
+                "type": "string"
+              },
+              "date_end": {
+                "description": "Filter runs created before this date (ISO 8601 format).",
+                "type": "string"
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-get-run-details": {
+          "hash": "14d9d2ce0194056ceec1096a387bd6ac758722190c6788f7fa6eb9ad5979e716",
+          "schemaHash": "81dd9db14d6e9db8ef0516a5f91a1e7d0bad66f7ea1be1c0987d919f7735894a",
+          "proseHash": "523ad9bbef169ef3e6e219d0e94eb87bfd90f2f093a1123eeaf68b9ac7989ab8",
+          "description": "Retrieves details of a specific test run. Requires a user-provided runId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The run ID to fetch details for."
+              }
+            },
+            "required": [
+              "runId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-find-run": {
+          "hash": "f8b957237e07fdaea532d006b89295f97801476838b6f38eab5d73b84b81efa5",
+          "schemaHash": "59828062c5cb33d2ce6b5548750eb7773da4379a30163f427836d4387867f305",
+          "proseHash": "8dd95d1268ff6b275236b5c08a83776849dd5bda391f0dfc4bc30a7fa85be570",
+          "description": "Find a run by query parameters. Returns the most recent completed run matching the criteria. Can search by ciBuildId (exact match) or by branch/tags. Supports pwLastRun flag for Playwright last run info. Requires projectId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to search for runs in."
+              },
+              "ciBuildId": {
+                "description": "The CI build ID. If provided, returns the run with this exact ciBuildId.",
+                "type": "string"
+              },
+              "branch": {
+                "description": "Git branch name. Applies only when ciBuildId is not provided — the API matches on ciBuildId alone when both are given.",
+                "type": "string"
+              },
+              "tags": {
+                "description": "Run tags to filter by (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "pwLastRun": {
+                "description": "If true, includes information about failed tests from the last run (Playwright only).",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-cancel-run": {
+          "hash": "513b66ef059e8ca64b85da702b8403477156081c7f5e0d35ffe846266bb6e18f",
+          "schemaHash": "a51acfe5a40e14e468fa2f383a1c7da2d7e3899a51cfc118559362cfa8f69232",
+          "proseHash": "9d18b773269fe5b6ed3a085ec4ff6bfe95f1c2cf9169943de8810597f537d81d",
+          "description": "Cancel a run in progress. This will stop the run and mark it as cancelled. Requires runId.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The run ID to cancel."
+              }
+            },
+            "required": [
+              "runId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-reset-run": {
+          "hash": "6b52ebadb249ee3808c319d6d05a7c390620f13e9a0a9244f205cf718d3ab937",
+          "schemaHash": "2702dcdc6eda584e67e587bbed47c76d14498962d8afa7b1bbba641185776078",
+          "proseHash": "a101c6c57e5ca0a103853c36f58a09b1f2783aad4f8f0a5ae74fc4ec72f32879",
+          "description": "Reset failed spec files in a run to allow re-execution. Requires runId and machineId array (1-63 machine IDs). Optionally supports batched orchestration.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The run ID to reset."
+              },
+              "machineId": {
+                "minItems": 1,
+                "maxItems": 63,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "Machine ID(s) to reset."
+              },
+              "isBatchedOr8n": {
+                "description": "Whether to use batched orchestration.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "runId",
+              "machineId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-delete-run": {
+          "hash": "3167ae05e6fc1d16df2689d997f56af522bc70a5e5a4e48d5bc55e96771d0cd0",
+          "schemaHash": "72df0e2f1afaba32507e011622d9e70cbda6c215a3ab6a4c163defa512b60077",
+          "proseHash": "726670641ffc30a7ca45e6efc6f361bdbf0a4cd37760cf54a6c9ce5deab81b5c",
+          "description": "Delete a run and all associated data. This is a permanent deletion. Requires runId.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The run ID to delete."
+              }
+            },
+            "required": [
+              "runId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-cancel-run-github-ci": {
+          "hash": "586580afd09956c8dc32bb55c6de4d21aa351cad55c43108bfa866d32eb55517",
+          "schemaHash": "621020ada6dfb87940cdbda3d68bf968051d754c15e7c7576ea1a87b72790741",
+          "proseHash": "bf0b6120c949f4681e4523537d5819ef10dfd2fe7ed330ecfd2dbf97a981d773",
+          "description": "Cancel a run by GitHub Actions workflow run ID and attempt number. Optionally scope by projectId or ciBuildId. Requires githubRunId and githubRunAttempt.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "githubRunId": {
+                "type": "string",
+                "description": "GitHub Actions workflow run ID."
+              },
+              "githubRunAttempt": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "GitHub Actions workflow run attempt number."
+              },
+              "projectId": {
+                "description": "Optional project ID to scope the cancellation.",
+                "type": "string"
+              },
+              "ciBuildId": {
+                "description": "Optional CI build ID to scope the cancellation.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "githubRunId",
+              "githubRunAttempt"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.688Z",
+          "approved": true
+        },
+        "currents-get-spec-instance": {
+          "hash": "73faddd0e4ca1c3eb03f1a6c0215ebcc2f74c383c812a0eaf078b2134dec9193",
+          "schemaHash": "c10c5266fc55764aa45835a3a687c8a345e775474f832225611e0165c74813f4",
+          "proseHash": "f84667041481e1bd9f8f1c6fd0d02506aad10634a91df1fcba9c439021af299e",
+          "description": "Retrieves debugging data from a specific execution of a test spec file by instanceId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "instanceId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The instance ID to fetch debugging data from."
+              }
+            },
+            "required": [
+              "instanceId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-spec-files-performance": {
+          "hash": "2b472ac1205b5287191ea6e589addf07162c54445ef198963d8093889554dadd",
+          "schemaHash": "5e75ed3fb5ecd71998a8dc7e96f4879da0ec2a5128663566b8ae500d75cd0029",
+          "proseHash": "06d1db9cccdaff99cb529529fe3b290f06d3f8f24ad28d4a96a8e6cc1031a61b",
+          "description": "Retrieves spec files performance metrics for a specific project within a date range. Supports ordering by avgDuration, failedExecutions, failureRate, flakeRate, flakyExecutions, fullyReported, overallExecutions, suiteSize, timeoutExecutions, or timeoutRate. Supports filtering by tags, branches, groups, and authors. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch spec files performance metrics from."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "The start of the date range to fetch the metrics from. ISO 8601 date format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "The end of the date range to fetch the metrics from. ISO 8601 date format (required)."
+              },
+              "specNameFilter": {
+                "description": "Filter spec files by name (partial match).",
+                "type": "string"
+              },
+              "order": {
+                "description": "The field to order the spec files by. Defaults to 'avgDuration'.",
+                "type": "string",
+                "enum": [
+                  "avgDuration",
+                  "failedExecutions",
+                  "failureRate",
+                  "flakeRate",
+                  "flakyExecutions",
+                  "fullyReported",
+                  "overallExecutions",
+                  "suiteSize",
+                  "timeoutExecutions",
+                  "timeoutRate"
+                ]
+              },
+              "dir": {
+                "description": "The direction to sort the results in. Defaults to 'desc'.",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              },
+              "limit": {
+                "description": "The maximum number of results to return per page (default: 50, max: 50).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "page": {
+                "description": "The page number to fetch (0-indexed). Defaults to 0.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tags": {
+                "description": "Filter results by tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "branches": {
+                "description": "Filter results by branches (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "groups": {
+                "description": "Filter results by groups (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter results by git authors (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includeFailedInDuration": {
+                "description": "Include failed executions in duration calculation. Defaults to false.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "projectId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-tests-performance": {
+          "hash": "7b6e22afa8f85485c378fa4a19d6b6f885d91e95efed5ef68e9a6667d6a5b262",
+          "schemaHash": "08988f92f6393e50832d996163e5e5d67671a1fd8772908aa2ed5feb11e15625",
+          "proseHash": "2766758516a80e87c0bbf941fae0d903f51d122230a413f0d9b39661a8ab8284",
+          "description": "Retrieves aggregated test metrics for a specific project within a date range. Supports ordering by failures, passes, flakiness, duration, executions, title, and various delta metrics. Supports filtering by spec name, test title, tags, branches, groups, authors, minimum executions, test state, and annotations. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch test performance metrics from."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "The start of the date range to fetch the metrics from. ISO 8601 date format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "The end of the date range to fetch the metrics from. ISO 8601 date format (required)."
+              },
+              "spec": {
+                "description": "Filter tests by spec file name (partial match).",
+                "type": "string"
+              },
+              "title": {
+                "description": "Filter tests by title (partial match).",
+                "type": "string"
+              },
+              "order": {
+                "description": "The field to order the results by. Defaults to 'title'.",
+                "type": "string",
+                "enum": [
+                  "failures",
+                  "passes",
+                  "flakiness",
+                  "flakinessXSamples",
+                  "failRateXSamples",
+                  "duration",
+                  "durationDelta",
+                  "flakinessRateDelta",
+                  "failureRateDelta",
+                  "durationXSamples",
+                  "executions",
+                  "title"
+                ]
+              },
+              "dir": {
+                "description": "The direction to sort the results in. Defaults to 'desc'.",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              },
+              "limit": {
+                "description": "The maximum number of results to return per page (default: 50).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "page": {
+                "description": "The page number to fetch (0-indexed). Defaults to 0.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tags": {
+                "description": "Filter results by tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "branches": {
+                "description": "Filter results by branches (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "groups": {
+                "description": "Filter results by groups (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter results by git authors (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "min_executions": {
+                "description": "Minimum number of executions to include.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "test_state": {
+                "description": "Filter by test state (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "pending",
+                    "skipped"
+                  ]
+                }
+              },
+              "metric_settings": {
+                "description": "Override which test statuses are included in metric calculations. Pass a JSON object with optional keys: executions, avgDuration, flakinessRate, failureRate. Each value is an array of status strings: passed, failed, pending, skipped. Example: {\"executions\":[\"failed\",\"passed\"],\"failureRate\":[\"failed\"]}",
+                "type": "string"
+              },
+              "annotations": {
+                "description": "Filter by test annotations. JSON-stringified array of objects: [{\"type\": \"string\", \"description\": \"string\" | [\"string\"] or null}]. Omit description or set to null to match any value for that annotation type.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "projectId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.843Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-tests-signatures": {
+          "hash": "c6f2c2973bc7b0431e60b2fc4b00608b9e785053c048f3ff0545529a8ecd14ac",
+          "schemaHash": "2463163f8ee148bea22ceac4bf1a046cff2160ccfc476c1340c29932c863d4f6",
+          "proseHash": "41c2113d16726d3bb3fc6b0bee72bd993c640af4abe104b7fab50763b7607288",
+          "description": "Generates a unique test signature based on project, spec file path, and test title. The test title can be a string or array of strings (for nested describe blocks). Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to generate the test signature for."
+              },
+              "specFilePath": {
+                "type": "string",
+                "description": "Full path to the spec file."
+              },
+              "testTitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "Test title or array of titles (for nested describe blocks)."
+              }
+            },
+            "required": [
+              "projectId",
+              "specFilePath",
+              "testTitle"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-test-results": {
+          "hash": "55eb8d37b82ceee6b474b62f2444ddc5fadada2a6b1a418d2da96ecd516420ea",
+          "schemaHash": "df101ce7160615b0530064045cf9d90471beb527e86922e9f5891e01ca137f56",
+          "proseHash": "d25bb9693bc87b3e7a079b9d0ecc99aa4c3a30ecabb815378b00dbdb9f5dc8ae",
+          "description": "Retrieves historical test execution results for a specific test signature. Supports filtering by date range, branch, tags, git author, test status (passed/failed/pending/skipped), run group, flaky status, and annotations. Requires the test signature. If the signature is not known, first call 'currents-get-tests-signatures'.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "signature": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The test signature."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "limit": {
+                "description": "Maximum number of items to return (default: 10, max: 100).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "branches": {
+                "description": "Filter by git branches (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tags": {
+                "description": "Filter by run tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter by git authors (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "description": "Filter by test status (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "pending",
+                    "skipped"
+                  ]
+                }
+              },
+              "groups": {
+                "description": "Filter by run groups (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "flaky": {
+                "description": "Filter by flaky status. When true, returns only flaky tests. When false, returns only non-flaky tests. When omitted, returns all tests regardless of flaky status.",
+                "type": "boolean"
+              },
+              "annotations": {
+                "description": "Filter by test annotations. JSON-stringified array of objects: [{\"type\": \"string\", \"description\": \"string\" | [\"string\"] or null}]. Omit description or set to null to match any value for that annotation type.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "signature",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-context": {
+          "hash": "ea4cc2d74e62170756395ed5478cb3545097b89e48ce8ca25f827d578391163c",
+          "schemaHash": "74a68de1e3087d9e1324bf5588c8bdba9c40ef0eb8dab12968b82ab031614f21",
+          "proseHash": "4d3ceda2042a6c09a6d1b72941d6ab4fa7017bb57cbddc70e20b6bd9e6a8149f",
+          "description": "Get test failure context for AI debugging at run, instance, or test level. Supports json or md format, detail level, and pagination for failed tests. Requires run_id for run-level, or instance_id with optional test_id.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "run_id": {
+                "description": "Run identifier. Required for run-level (run_id only) and instance-level (run_id + instance_id, no test_id). Omit for test-level (instance_id + test_id).",
+                "type": "string"
+              },
+              "instance_id": {
+                "description": "Instance identifier. Required for instance-level and test-level. Omit for run-level (use run_id only).",
+                "type": "string"
+              },
+              "test_id": {
+                "description": "Test identifier. When set, selects test-level detail and requires instance_id. run_id is not required in this case.",
+                "type": "string"
+              },
+              "attempt": {
+                "description": "Attempt number (0-indexed); defaults to latest.",
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "format": {
+                "description": "Response format. Falls back to Accept header when absent. Defaults to json.",
+                "type": "string",
+                "enum": [
+                  "json",
+                  "md"
+                ]
+              },
+              "detail": {
+                "description": "Controls output verbosity. default returns all available data; compact omits full steps and limits assets; summary minimizes output. Defaults to default.",
+                "type": "string",
+                "enum": [
+                  "default",
+                  "compact",
+                  "summary"
+                ]
+              },
+              "limit": {
+                "description": "Maximum number of failed tests per page (run-level and instance-level only). Default 10.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "page": {
+                "description": "Page number for failed tests pagination, 0-indexed (run-level and instance-level only). Default 0.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "max_length": {
+                "description": "Truncate markdown response to this character limit (only applies when format=md).",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50000
+              }
+            }
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-errors-explorer": {
+          "hash": "fb43325932fdbd4f9b59b797c56d575fa1bcbb0d9147b40e4f5d75a416a23945",
+          "schemaHash": "badb1184a7f0e7b66a0847d79b800a8d156ee11a474ab3331a5385358a1b2861",
+          "proseHash": "f8fbcc31121af4a2ddac92135017b6fca5efe60f10812ee1869cb40fd247c409",
+          "description": "Get aggregated error metrics for a project within a date range. Supports filtering by error_target, error_message, error_category, error_action, tags, branches, authors, and groups. Supports grouping by target, action, category, or message. Returns error counts, affected tests and branches, with timeline data. Requires projectId, date_start, and date_end.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch error metrics from."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "page": {
+                "description": "Page number (0-indexed). Defaults to 0.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "limit": {
+                "description": "Maximum number of results (1-100). Defaults to 50.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "tags": {
+                "description": "Filter by tags (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tags_logical_operator": {
+                "description": "Logical operator for tags filter: OR (match any) or AND (match all). Default: OR.",
+                "type": "string",
+                "enum": [
+                  "OR",
+                  "AND"
+                ]
+              },
+              "branches": {
+                "description": "Filter by branches (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "groups": {
+                "description": "Filter by groups (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authors": {
+                "description": "Filter by git authors (can be specified multiple times).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "error_target": {
+                "description": "Filter by error target (e.g. CSS selector, URL).",
+                "type": "string"
+              },
+              "error_message": {
+                "description": "Filter by error message (case-insensitive partial match).",
+                "type": "string"
+              },
+              "error_category": {
+                "description": "Filter by error category.",
+                "type": "string"
+              },
+              "error_action": {
+                "description": "Filter by error action.",
+                "type": "string"
+              },
+              "order_by": {
+                "description": "Field to order results by. Defaults to 'count'.",
+                "type": "string",
+                "enum": [
+                  "count",
+                  "tests",
+                  "branches",
+                  "error"
+                ]
+              },
+              "dir": {
+                "description": "Sort direction. Defaults to 'desc'.",
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              },
+              "group_by": {
+                "description": "Group results by dimension (can be specified multiple times). Order matters: the first value is the primary grouping and filters out nulls for that dimension.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "target",
+                    "action",
+                    "category",
+                    "message"
+                  ]
+                }
+              },
+              "metric": {
+                "description": "Metric used for timeline ranking. Defaults to 'occurrence'.",
+                "type": "string",
+                "enum": [
+                  "occurrence",
+                  "test",
+                  "branch"
+                ]
+              },
+              "top_n": {
+                "description": "Maximum number of top errors per timeline bucket (1-50). Default: 5.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [
+              "projectId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-list-webhooks": {
+          "hash": "7a7c3aea8ade60dac62d2b4b47a8e9cb224d093af6773a6b6906205e9d5da41f",
+          "schemaHash": "ad427634cc1c962f421cd92867aad138a0ca754a20f2eea159fce1e45c11451a",
+          "proseHash": "782fbfed3d7062798f9805aa8e9f6626e7887a97858be8701e599630a70d14c6",
+          "description": "List all webhooks for a project. Webhooks allow you to receive HTTP POST notifications when certain events occur in your test runs: RUN_FINISH (run completed), RUN_START (run started), RUN_TIMEOUT (run timed out), RUN_CANCELED (run was cancelled). Requires a projectId.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to fetch webhooks from."
+              }
+            },
+            "required": [
+              "projectId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-create-webhook": {
+          "hash": "4179f063b0921bd6a227b2c3c74ced0f05622ef22acc3eeb9144c3e986d8cd92",
+          "schemaHash": "71905b173b7280bf7b31f867a3fc52ecce6f89ffb030a354cdf29da5e7179a07",
+          "proseHash": "8bb6d7fd5512d30ffb60dc3007f258bb8c349936d813c41adeb0610e73bd737c",
+          "description": "Create a new webhook for a project. Specify the URL to receive POST notifications, optional custom headers (as JSON string), events to trigger on (RUN_FINISH, RUN_START, RUN_TIMEOUT, RUN_CANCELED), and an optional label. Requires projectId and url.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The project ID to create the webhook for."
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 2048,
+                "description": "URL to send webhook POST requests to."
+              },
+              "headers": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Custom headers as a JSON object string (e.g., {\"Authorization\": \"Bearer token\"})."
+              },
+              "hookEvents": {
+                "description": "Events that trigger this webhook. Options: RUN_FINISH (run completed), RUN_START (run started), RUN_TIMEOUT (run timed out), RUN_CANCELED (run was cancelled).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "RUN_FINISH",
+                    "RUN_START",
+                    "RUN_TIMEOUT",
+                    "RUN_CANCELED"
+                  ]
+                }
+              },
+              "label": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Human-readable label for the webhook."
+              }
+            },
+            "required": [
+              "projectId",
+              "url"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.844Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-webhook": {
+          "hash": "4eb2bc183fb7e07c8b1deb0aadcfffe265899725f4e89cb919cf9089ae9fb041",
+          "schemaHash": "418e3f53b0c575234ab7df0bf44b9c14dcb7f889c3112a069796378259db12a8",
+          "proseHash": "56425bcf91ed7e41a402ff77fb497af80b9dfc5e51047f31554f234e770d2b29",
+          "description": "Get a single webhook by ID. The hookId is a UUID. Returns full webhook details including url, headers, events, label, and timestamps.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "hookId": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "The webhook ID (UUID)."
+              }
+            },
+            "required": [
+              "hookId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.845Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-update-webhook": {
+          "hash": "05e04d4819ce102010cdbbcb2b434dbb00d3c89b8f45eefbeef50ba7d5f40439",
+          "schemaHash": "4748a826c98292dc16da5aa86e8c5e05042ddee7fe12c15d9b73ba3a76aeee54",
+          "proseHash": "69ee1023e6ec8f1994bb84102375279f155870f51b3b9943c8934dcea9f15cf0",
+          "description": "Update an existing webhook. You can update the url, headers (as JSON string), hookEvents array, or label. All fields are optional. The hookId is a UUID.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": true
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "hookId": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "The webhook ID (UUID)."
+              },
+              "url": {
+                "description": "URL to send webhook POST requests to.",
+                "type": "string",
+                "maxLength": 2048
+              },
+              "headers": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Custom headers as a JSON object string (e.g., {\"Authorization\": \"Bearer token\"})."
+              },
+              "hookEvents": {
+                "description": "Events that trigger this webhook. Options: RUN_FINISH (run completed), RUN_START (run started), RUN_TIMEOUT (run timed out), RUN_CANCELED (run was cancelled).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "RUN_FINISH",
+                    "RUN_START",
+                    "RUN_TIMEOUT",
+                    "RUN_CANCELED"
+                  ]
+                }
+              },
+              "label": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Human-readable label for the webhook."
+              }
+            },
+            "required": [
+              "hookId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.845Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-delete-webhook": {
+          "hash": "2a9dbb6134df5fafeb5db2a60aa51e84d21b2b4c490481d1e0beef764014c8dc",
+          "schemaHash": "c376032d8e65fd40a74482f8740dc0a558997d70e09c9685e04360e9c7500dd3",
+          "proseHash": "1a33e5f1400f1a8f6f86fb120ac2dc3eee7f9c720238c4a126514c055fa9e32a",
+          "description": "Delete a webhook. This permanently removes the webhook. The hookId is a UUID.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "hookId": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "The webhook ID (UUID)."
+              }
+            },
+            "required": [
+              "hookId"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:44.845Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        },
+        "currents-get-action-executions": {
+          "hash": "a0d28f21842d7f8f9aa8a704e93053d744060cfc4062537722f33bc237a97242",
+          "schemaHash": "946a965e3e572f217b1222cb958c1fc84b9a84a9d9227d741e31acef610837a1",
+          "proseHash": "709c2e4f4bbc8e54225b3ff0a69b31ac4bfb48795ad60cc0fa923c0aa1cf3a82",
+          "description": "Keyed on an action: lists the test executions one rule was applied to, across every test it touched, within a date range. Requires actionId, date_start and date_end; if the actionId is not known, first call 'currents-list-actions'. For the executions of one test, call 'currents-get-affected-test-executions' instead. Uses cursor-based pagination.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "actionId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The action ID to fetch affected test executions for."
+              },
+              "date_start": {
+                "type": "string",
+                "description": "Start date in ISO 8601 format (required)."
+              },
+              "date_end": {
+                "type": "string",
+                "description": "End date in ISO 8601 format (required)."
+              },
+              "limit": {
+                "description": "Maximum number of executions (1-50). Defaults to 25.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "starting_after": {
+                "description": "Cursor for pagination. Returns items after this cursor value.",
+                "type": "string"
+              },
+              "ending_before": {
+                "description": "Cursor for pagination. Returns items before this cursor value.",
+                "type": "string"
+              },
+              "search": {
+                "description": "Search by action name (case-insensitive).",
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "actionId",
+              "date_start",
+              "date_end"
+            ]
+          },
+          "firstSeen": "2026-10-13T08:18:52.687Z",
+          "pinnedAt": "2026-10-13T08:18:52.687Z",
+          "approved": true
+        },
+        "currents-get-test-evidence": {
+          "hash": "c9a8244b8a1202f59e8dc86e0d5e72410e800ba07d84f6105357a8dc44950389",
+          "schemaHash": "4ca1d560c18bd016b92838016b20f056510622bef91b28d400735b8c9ec4bb7f",
+          "proseHash": "881383cbea60009a3b50a35a43ec38ca20c94ce5bd43957155d4714899c4280d",
+          "description": "Collect evidence artifacts (screenshots, videos, traces, attachments) produced by tests in a CI run, with signed download URLs grouped per test. Use to gather proof or a demo of an implemented feature from CI — e.g. before/after screenshots, text output stored as test attachments, or Playwright videos and traces — instead of running tests locally. Locates the run by runId, or by projectId with ciBuildId or branch (latest run). Supports filtering by spec file, test title, and test status. URLs are signed and time-limited, so download the files promptly.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          },
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "description": "The project ID. Required unless runId is provided. Used to locate the run by ciBuildId or branch.",
+                "type": "string"
+              },
+              "runId": {
+                "description": "The run ID to collect evidence from. When provided, projectId, ciBuildId, and branch are ignored.",
+                "type": "string"
+              },
+              "ciBuildId": {
+                "description": "CI build ID for exact run lookup. Requires projectId. Takes precedence over branch.",
+                "type": "string"
+              },
+              "branch": {
+                "description": "Git branch name. The most recent completed run on this branch is used. Requires projectId.",
+                "type": "string"
+              },
+              "spec": {
+                "description": "Filter spec files by substring match on the spec file path (case-insensitive).",
+                "type": "string"
+              },
+              "testTitle": {
+                "description": "Filter tests by substring match on the full test title, including describe blocks (case-insensitive).",
+                "type": "string"
+              },
+              "testStatus": {
+                "description": "Filter tests by status. When omitted, all tests are included.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "pending",
+                    "skipped"
+                  ]
+                }
+              },
+              "maxInstances": {
+                "description": "Maximum number of spec file instances to fetch artifacts for (default: 10, max: 25). Narrow with the spec filter instead of raising this.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 25
+              }
+            }
+          },
+          "firstSeen": "2026-10-13T08:18:52.689Z",
+          "pinnedAt": "2026-10-13T08:18:52.689Z",
+          "approved": true
+        }
+      },
+      "scannedAgainst": "@currents/mcp@2.6.1",
+      "prompts": {
+        "browser-evidence": {
+          "hash": "e7e8e5e5752c0e3dda697c5d1626547a8926524ce40bbe9d6a163a48f5498e53",
+          "description": "Prove a change works in a browser you drove yourself, when there is no test to run — reproduce a bug, fix it, and post before/after evidence on a pull request or issue. Use when asked to \"reproduce this\", \"show the bug\", \"prove the fix\", \"record a session\", \"capture before and after\", or to demonstrate a change on a ticket that has no automated test. Records the browser as a Currents run and returns links that read without a Currents login. For evidence from tests that already run in CI, use collect-evidence instead.",
+          "firstSeen": "2026-10-13T08:18:52.691Z"
+        },
+        "collect-evidence": {
+          "hash": "27b073c5e62dc98eb5e29f19bee68485583d7e8333d4893bd2d4359465d6a4a8",
+          "description": "Show that work you implemented actually works, or demo it, using artifacts from tests running in CI via Currents — before/after screenshots, text and JSON attachments, videos, traces, and GIFs. Use when asked to \"collect evidence\", \"prove it works\", \"show me it works\", \"demo the feature\", \"capture a before/after\", or to attach proof of a change to a PR, issue, ticket, or status update. Evidence comes from CI runs retrieved through the Currents MCP tools or REST API, not from a local run.",
+          "firstSeen": "2026-10-13T08:18:52.691Z"
+        }
+      },
+      "resources": {
+        "browser-evidence/SKILL.md": {
+          "hash": "684e1808284637821a8db7f74e65ae8374e69153031f43bfe79fd9fdc0405c15",
+          "description": "Prove a change works in a browser you drove yourself, when there is no test to run — reproduce a bug, fix it, and post before/after evidence on a pull request or issue. Use when asked to \"reproduce this\", \"show the bug\", \"prove the fix\", \"record a session\", \"capture before and after\", or to demonstrate a change on a ticket that has no automated test. Records the browser as a Currents run and returns links that read without a Currents login. For evidence from tests that already run in CI, use collect-evidence instead.",
+          "firstSeen": "2026-10-13T08:18:52.691Z"
+        },
+        "collect-evidence/references/instrumentation.md": {
+          "hash": "b1a6e0fa27eb2808feb89c503bf18bfa1d0a58e80bd021f018a735284059f2ea",
+          "description": "Supporting reference for the collect-evidence skill.",
+          "firstSeen": "2026-10-13T08:18:52.691Z"
+        },
+        "collect-evidence/SKILL.md": {
+          "hash": "7bbf7369d64f5602de54b859b2393e2cdb22ecf216d8f591ca14fe4878049261",
+          "description": "Show that work you implemented actually works, or demo it, using artifacts from tests running in CI via Currents — before/after screenshots, text and JSON attachments, videos, traces, and GIFs. Use when asked to \"collect evidence\", \"prove it works\", \"show me it works\", \"demo the feature\", \"capture a before/after\", or to attach proof of a change to a PR, issue, ticket, or status update. Evidence comes from CI runs retrieved through the Currents MCP tools or REST API, not from a local run.",
+          "firstSeen": "2026-10-13T08:18:52.691Z"
+        }
+      }
+    }
+  }
+}

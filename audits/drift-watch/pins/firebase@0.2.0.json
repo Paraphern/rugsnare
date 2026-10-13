@@ -1,0 +1,335 @@
+{
+  "version": 1,
+  "servers": {
+    "firebase": {
+      "cmd": {
+        "command": "node",
+        "args": [
+          "node_modules/firebase-mcp/dist/cli/index.js"
+        ]
+      },
+      "pinnedAt": "2026-10-12T19:11:00.071Z",
+      "tools": {
+        "create_config": {
+          "hash": "ada58175aa4375c9ab47fb418d40169f23c82923f67ed59699412f8898cfe444",
+          "schemaHash": "b564eb03b147cf09d727e2c99fab114d940ba3893c5aef7b73189684487ebb88",
+          "proseHash": "ba7e4df28c6fa1eda323a81f618b303d194390e94b97406cbc4992427020915b",
+          "description": "Returns a template showing the required structure of the firebase-mcp.json config file. Use this when no config file has been found. After creating the file, call reload_config to load it without restarting the server.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:11:00.073Z",
+          "pinnedAt": "2026-10-13T08:14:14.919Z",
+          "approved": true
+        },
+        "get_config": {
+          "hash": "cda5e6ccb20529c244736393d5f773247fba95e1889ab9cf8f87d1c4d085b6ca",
+          "schemaHash": "e311fe1e7943d8d403badd34ce414267da6217cab89b290e70aefc99801b2326",
+          "proseHash": "fccee3eaec39a3bb8f82c2ed51070fbbbaf915bd70188b92392fd15621972d24",
+          "description": "Returns all in-memory project configs (excluding sensitive fields, e.g. serviceAccountPath). Use to find available projectId values. If hasPaths is true, use firestore_read list_paths for path templates.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:11:00.073Z",
+          "pinnedAt": "2026-10-13T08:14:14.920Z",
+          "approved": true
+        },
+        "reload_config": {
+          "hash": "a9e77fdce2a752aec26056d5c013c9e156c275f1382ea250f72755eed4365787",
+          "schemaHash": "5450cf33368e14dcba5b7ab6a6eb0a4f0af446de14111749433c8642e4e6a2e5",
+          "proseHash": "a768dbac7e52bd6812abc7b850140f2e52e62a209315f0c40d6651cf923e7519",
+          "description": "Re-reads the config file from disk and evicts all cached project runtimes. Use this after the user says they have changed their firebase-mcp.json config.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "firstSeen": "2026-10-12T19:11:00.073Z",
+          "pinnedAt": "2026-10-13T08:14:14.921Z",
+          "approved": true
+        },
+        "firestore_read": {
+          "hash": "6f140aa700bc2cc4c12afe864c3dbb4fa83f7392691e6cec45d2b220a9be8f89",
+          "schemaHash": "aecf3b008803d5453eb66e4f8a0ef7e9f06544cb99de1fbe1efc8f84f88f6445",
+          "proseHash": "cd2c818d4ccd430a9dc0ff716e89c76619b70c832468908635eddb17a64f16ee",
+          "description": "Read from Firebase Firestore. Use the operation field to select what to do.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "required": [
+              "operation",
+              "projectId"
+            ],
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "list_paths",
+                  "list_collections",
+                  "list_documents",
+                  "read_collection",
+                  "get_document",
+                  "get_many_documents",
+                  "query_collection",
+                  "query_collection_group",
+                  "count_documents",
+                  "aggregate_collection",
+                  "get_collection_schema",
+                  "list_indexes",
+                  "distinct_values"
+                ],
+                "description": "- list_paths: Returns all named path templates registered in config for this project. Each entry has a template (using {param} placeholders), the extracted parameter names, whether it resolves to a document (even segments) or collection (odd segments), and an optional description. Call this early to avoid exploring the schema from scratch.\n- list_collections: List root collections, or subcollections of a document. Args: path?(EVEN segments — document path, e.g. \"stores/ABC\"), includeCounts?(bool). Returns collection paths (ODD segments) → use with list_documents or read_collection.\n- list_documents: List all doc IDs including phantoms. Always includes subcollections per doc. Args: collection(ODD segments). Returns document paths (EVEN segments) with collections[] → use with get_document or list_collections.\n- read_collection: Read documents from a collection. Args: collection(ODD segments), limit?, select?[], startAfter?(doc ID), includePhantoms?(bool)\n- get_document: Fetch a single document by path. Args: path(EVEN segments, e.g. \"users/123\"), select?[]\n- get_many_documents: Batch-fetch documents. Args: paths?[](each EVEN segments) OR (collection(ODD segments) + ids[]); select?[]\n- query_collection: Query with filters/ordering/pagination. Args: collection(ODD segments), filters?[], orderBy?[], limit?, select?[], startAfter?(doc ID)\n- query_collection_group: Query across all subcollections with the same name. Args: collectionId(single name, no slashes), filters?[], orderBy?[], limit?, select?[], startAfter?(full doc path)\n- count_documents: Server-side count without fetching docs. Args: collection(ODD segments), filters?[]\n- aggregate_collection: Server-side sum/avg/count aggregations. Args: collection(ODD segments), aggregations[]{alias,type,field?}, filters?[]\n- get_collection_schema: Infer field types by sampling docs. Args: collection(ODD segments), sampleSize?(default 20)\n- list_indexes: List composite indexes. Args: collectionGroup?(filter by name), includeNotReady?(bool)\n- distinct_values: Count occurrences of each unique value (or value combination) of one or more fields. Source: collection(ODD segments) OR collectionId(single name — queries across ALL subcollections with that name, like query_collection_group). Fields: field(single field name) OR fields([array of field names] — each result value becomes an object keyed by field name). groupByFields?([subset of fields] — use only these as the identity/grouping key;   remaining fields become label arrays of unique values seen per group,   e.g. groupByFields:[\"cashier\"] with fields:[\"cashier\",\"cashierNm\"] groups by cashier ID   while collecting all cashierNm variants as a label — useful when a display name varies across collections but the ID is stable). filters?[]. groupByPathSegment?(integer — when using collectionId, extracts this segment from the parent collection path as the byCollection key,   e.g. 2 turns \"shared/stores_data/ABC123/data/purchase_orders\" into \"ABC123\"). minCollections?(integer or \"all\" — only return values present in at least this many distinct collection buckets;   \"all\" means present in every bucket found without knowing the count upfront;   operates on the groupByFields key so label variation across buckets does not cause missed matches;   all values are annotated with collectionCount and collections[] regardless). Fetches all matching docs internally (up to maxBatchFetchSize). Returns values[] sorted by count desc. When using collectionId, also returns byCollection{} broken down by parent collection (or extracted segment)."
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project key as defined in firebase-mcp.json"
+              },
+              "path": {
+                "type": "string",
+                "description": "Document path (EVEN segments, e.g. 'users/123' or 'stores/ABC')"
+              },
+              "includeCounts": {
+                "type": "boolean",
+                "description": "Include document count per collection"
+              },
+              "collection": {
+                "type": "string",
+                "description": "Collection path (ODD segments, e.g. 'users' or 'users/123/posts')"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Max number of documents to return"
+              },
+              "select": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Field paths to return. Omit for all fields."
+              },
+              "startAfter": {
+                "type": "string",
+                "description": "Pagination cursor: doc ID for collection queries, full doc path for collection group queries"
+              },
+              "includePhantoms": {
+                "type": "boolean",
+                "description": "Fall back to listDocuments() when the collection returns no docs"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Full document paths for batch fetch (e.g. ['users/123', 'orders/456'])"
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Document IDs within the collection field (used with collection for get_many_documents)"
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "description": "Field name to filter on"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "<",
+                        "<=",
+                        "==",
+                        "!=",
+                        ">=",
+                        ">",
+                        "array-contains",
+                        "array-contains-any",
+                        "in",
+                        "not-in"
+                      ],
+                      "description": "Comparison operator"
+                    },
+                    "value": {
+                      "description": "Value to compare against (string, number, boolean, null, or array for in/array-contains-any/not-in)"
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "operator",
+                    "value"
+                  ]
+                },
+                "description": "Where-clause filters"
+              },
+              "orderBy": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "description": "Field to order by"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "description": "Sort direction (default: 'asc')"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ]
+                },
+                "description": "Ordering of results"
+              },
+              "collectionId": {
+                "type": "string",
+                "description": "Collection name without slashes (e.g. 'orders') for collection group operations"
+              },
+              "aggregations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "alias": {
+                      "type": "string",
+                      "description": "Key name for this result in the response"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "sum",
+                        "avg",
+                        "count"
+                      ],
+                      "description": "\"sum\" and \"avg\" require a field; \"count\" does not"
+                    },
+                    "field": {
+                      "type": "string",
+                      "description": "Field path to aggregate (required for sum/avg)"
+                    }
+                  },
+                  "required": [
+                    "alias",
+                    "type"
+                  ]
+                },
+                "description": "Aggregation specs for aggregate_collection"
+              },
+              "sampleSize": {
+                "type": "number",
+                "description": "Number of documents to sample (default 20)"
+              },
+              "collectionGroup": {
+                "type": "string",
+                "description": "Filter results to a specific collection group name"
+              },
+              "includeNotReady": {
+                "type": "boolean",
+                "description": "Include indexes still being created or needing repair"
+              },
+              "field": {
+                "type": "string",
+                "description": "Single field name to count unique values for. Use fields[] for multi-field grouping."
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Multiple field names to fetch. Each result value is an object keyed by field name. Use groupByFields to group on a subset."
+              },
+              "groupByFields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Subset of fields[] to use as the grouping/identity key. Remaining fields are collected as label arrays (unique values seen per group). Allows minCollections to operate on a stable ID field even when a display name varies across collections."
+              },
+              "groupByPathSegment": {
+                "type": "number",
+                "description": "When using collectionId: 0-based index of the path segment to use as the byCollection key instead of the full path (e.g. 2 extracts \"ABC123\" from \"shared/stores_data/ABC123/data/purchase_orders\")"
+              },
+              "minCollections": {
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "description": "When using collectionId: only return values that appear in at least this many distinct collection buckets. Pass a number (e.g. 2) or \"all\" to mean \"present in every collection bucket found\". All returned values are annotated with collectionCount and collections[] regardless."
+              }
+            }
+          },
+          "firstSeen": "2026-10-12T19:11:00.074Z",
+          "pinnedAt": "2026-10-13T08:14:14.921Z",
+          "approved": true
+        },
+        "auth_read": {
+          "hash": "9f53aa13bef690153d6108ccd784bb1068c55ae1f403f435d6ed3ae4582bd618",
+          "schemaHash": "4e3fecc989df1e55d2147d3f6e2bfe7364e07b4985a4c7c591171e509786b633",
+          "proseHash": "ba814e276721cd42d261b0927f79cbec57043abc99f065efc4a752c674d780c3",
+          "description": "Read from Firebase Authentication.",
+          "annotations": null,
+          "inputSchema": {
+            "type": "object",
+            "required": [
+              "operation",
+              "projectId"
+            ],
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get_user",
+                  "list_users"
+                ],
+                "description": "- get_user: Fetch a user by uid, email, or phoneNumber. Args: uid? OR email? OR phoneNumber?\n- list_users: List users with pagination. Args: maxResults?(1-1000, default 100), pageToken?"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project key as defined in firebase-mcp.json"
+              },
+              "uid": {
+                "type": "string",
+                "description": "Firebase Auth UID"
+              },
+              "email": {
+                "type": "string",
+                "description": "User email address"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "E.164 phone number, e.g. +15555550100"
+              },
+              "maxResults": {
+                "type": "number",
+                "description": "Maximum number of users to return, 1–1000 (default 100)"
+              },
+              "pageToken": {
+                "type": "string",
+                "description": "Page token from a previous list_users response"
+              }
+            }
+          },
+          "firstSeen": "2026-10-12T19:11:00.074Z",
+          "pinnedAt": "2026-10-13T08:14:14.921Z",
+          "approved": true
+        }
+      },
+      "scannedAgainst": "firebase-mcp@0.4.4",
+      "prompts": {},
+      "resources": {}
+    }
+  }
+}
