@@ -26,3 +26,5 @@
 {"ts":"2026-10-11T11:39:38.912Z","server":"server-memory","type":"DRIFT","tool":"search_nodes","oldHash":"f931cc8a5ae4584a","newHash":"6d7747a733a7d3ef"}
 {"ts":"2026-10-11T11:39:41.370Z","server":"server-everything","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
 {"ts":"2026-10-11T11:39:43.860Z","server":"server-sequential-thinking","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
+{"ts":"2026-10-13T13:00:18.478Z","server":"context7-hosted","transport":"http","type":"FIRST_SCAN","detail":"hosted, 2 tools"}
+{"ts":"2026-10-13T13:00:18.651Z","server":"deepwiki-hosted","transport":"http","type":"FIRST_SCAN","detail":"hosted, 3 tools"}
