@@ -164,6 +164,11 @@ drift. Consumers should never blame the vendor for either.
 - Producers MUST bump `version` on any breaking change to this format.
 - A consumer implementing v1 needs: JSON, SHA-256, and the canonicalization
   rules above. No RugSnare code required.
+- **Format decision (2026-10-13):** the v1.1 additions (identity block,
+  `policyVersion`, `IDENTITY`/`POLICY` classes) are additive — **`version`
+  stays `1`.** v1 readers ignore the new keys per the rule above; no bump
+  required. A future change that breaks a v1 consumer's ability to read the
+  file still MUST bump `version`.
 
 ## 6. Verification sketch (for the compat test)
 
@@ -239,5 +244,7 @@ Requirements for the composition to be sound:
 - v1 (draft 2026-10-08): initial extraction from rugsnare@1.1.0 behavior.
 - v1.1 (draft 2026-10-13, direction accepted): server identity block +
   `identityHash` (§2.1), `policyVersion` stamp (§3.1), `IDENTITY`/`POLICY`
-  classes (§4.1), action-receipt composition (§7). Publicly committed in
-  autogen#7353 and snyk#482; binary implementation pending.
+  classes (§4.1), action-receipt composition (§7, §7.1 receipt-side byte
+  semantics). Publicly committed in autogen#7353 and snyk#482. Format
+  decision 2026-10-13: `version` stays `1` (§5). Implementation lands in
+  rugsnare 1.4.0.
