@@ -79,7 +79,7 @@ v1.1 binds identity into the envelope:
   "resolvedVersion": "1.2.3",
   "entryPath": "dist/index.js",
   "url": null,
-  "identityHash": "<sha256-hex over the canonicalized identity object>"
+  "identityHash": "<sha256-hex of { package, resolvedVersion, entryPath, url }>"
 }
 ```
 
@@ -88,9 +88,11 @@ v1.1 binds identity into the envelope:
 - `entryPath` pins the launch entry; moving it is drift even when every tool
   hash holds.
 - `url` is set for remote (streamable HTTP) servers, `null` for stdio.
-- `identityHash` participates in comparison; a mismatch emits `IDENTITY`
-  (§4.1), not `BREAKING` — the vendor did not change the contract, the
-  deployment did.
+- `identityHash` is computed over the four identity fields **with
+  `identityHash` itself absent** — a digest is never a member of the object
+  it hashes; it is stored beside them. It participates in comparison; a
+  mismatch emits `IDENTITY` (§4.1), not `BREAKING` — the vendor did not
+  change the contract, the deployment did.
 - v1 consumers MUST ignore the block (§5); adding it does not bump `version`.
 
 ## 3. Hash semantics (the interop core)
@@ -193,8 +195,12 @@ evidence_type: "tool_surface_snapshot"
 record:        the pins.json content (or its per-server subobject), opaque
 ```
 
-The receipt system hashes the record with its own canonicalization (e.g.
-JCS / RFC 8785) into its `decision_ref`. Two independent checks result:
+The receipt system does **not** canonicalize `record` — it stays the pin's
+saved text, untouched. What enters the `decision_ref` preimage is
+`external_evidence_hash`: `sha256:` plus the SHA-256 of the RFC 8785
+encoding of the whole evidence array (§7.1). A verifier who runs JCS on the
+pin itself and hashes those bytes will not recompute the receipt. Two
+independent checks result:
 
 1. **The receipt recomputes** → the action was approved against these exact
    bytes.
@@ -221,8 +227,9 @@ As implemented by the preaction-governance receipts in autogen#7353
 - `external_evidence_hash` = `sha256:` + SHA-256 of the RFC 8785 encoding of
   the whole evidence array; that field sits in the `decision_ref` preimage.
 - `canonicalization_version` is its own preimage field on the receipt side —
-  a canonicalizer change is visible independently, the same principle this
-  spec enforces with `POLICY` (§3.1, §4.1).
+  a canonicalizer change is visible independently. Same principle as this
+  spec's `POLICY` (§3.1, §4.1), at the other layer: **they are distinct
+  fields and neither derives from the other.**
 - The binding commits to the bytes the caller supplied. It does **not**
   check `record_sha256`, does **not** authenticate the pin, and does **not**
   compare the snapshot to a later `tools/list` — check 2 is the pin layer's
@@ -234,8 +241,10 @@ Requirements for the composition to be sound:
   no scan-time volatile fields) — third-party hashes must be reproducible.
 - A snapshot SHOULD also bind `policyVersion` (§3.1) and `identityHash`
   (§2.1): a snapshot of half the contract pins half the contract.
-- Consumers hashing the record MUST record which canonicalization profile
-  they used (a `canonicalization_profile_id` next to the digest). Otherwise
+- The canonicalization-profile discipline applies to digests of **structured
+  fields** (such as the evidence array in §7.1) — wherever a verifier
+  canonicalizes structured fields, it records the profile used next to the
+  digest. `record` has no structured digest; it is opaque text. Otherwise
   two verifiers that canonicalize differently both "verify" and disagree —
   the lone-surrogate lesson from autogen#7353.
 
@@ -248,3 +257,9 @@ Requirements for the composition to be sound:
   semantics). Publicly committed in autogen#7353 and snyk#482. Format
   decision 2026-10-13: `version` stays `1` (§5). Implementation lands in
   rugsnare 1.4.0.
+- v1.1 same-day revision (receipt-side review, autogen#7353): §7 opening
+  corrected — the preimage field is `external_evidence_hash` over the RFC
+  8785 encoding of the whole evidence array, the record itself is never
+  canonicalized; the canonicalization-profile bullet reframed to
+  structured-field digests; §2.1 fixed a self-reference bug —
+  `identityHash` hashes the four identity fields with the member absent.
