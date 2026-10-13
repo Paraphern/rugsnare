@@ -95,7 +95,10 @@ v1.1 binds identity into the envelope:
 ```
 
 - `resolvedVersion` is the version **actually resolved at scan time** (after
-  install), never the selector.
+  install), never the selector. For npx-style launches the writer MUST
+  resolve what actually ran (npx cache or lockfile); if it cannot determine
+  the version it records `null` — an unresolvable selector is a weak
+  identity, not a fabricated one.
 - `entryPath` pins the launch entry; moving it is drift even when every tool
   hash holds.
 - `url` is set for remote (streamable HTTP) servers, `null` for stdio.
@@ -135,14 +138,16 @@ implementations):
    its meaning).
 3. Whitespace between tokens: none (compact serialization, no indentation).
 4. String values: exact UTF-8, no escape normalization beyond JSON's minimum
-   (`"` → `\"`, `\` → `\\`, control chars → `\uXXXX`).
+   (`"` → `\"`, `\` → `\\`, control chars → `\uXXXX`), and no Unicode
+   normalization — NFC vs NFD differences are distinct content and hash
+   differently.
 5. `undefined`/missing fields are **not** the same as `null`: `{ a: null }`
    hashes differently from `{ }`.
 6. `$schema` is preserved **as-is** (a dialect switch is a real change -
    graded NOTATION, not invisible).
 7. Numbers serialize per RFC 8785 §3.2.2.3 (ECMAScript number-to-string):
-integers print without decimal point or exponent where exact, no leading
-`+`, `-0` preserved as `-0`. Without this rule the same contract hashes
+`1` — never `1.0` or `1e0` — and `-0` serializes as `0` (ES6 semantics;
+JSON.stringify(-0) is `"0"`). Without this rule the same contract hashes
 differently in JS (`1`) and Python (`1.0`) and cross-implementation
 reproducibility is void.
 8. Inputs that are not valid Unicode scalar sequences (unpaired surrogates)
@@ -344,3 +349,12 @@ Requirements for the composition to be sound:
   `pinnedAt` volatility rule, LF/no-BOM/trailing newline); §3.1 defines
   POLICY as stop-for-that-pin; §4.1 IDENTITY covers `url` changes and may
   co-occur with tool drift.
+- v1.1 same-day revision 4 (second self-pass over revision 3): rule 7
+  corrected — it claimed "`-0` preserved as `-0`" while citing RFC 8785,
+  whose ES6 semantics serialize `-0` as `0` (verified against
+  JSON.stringify); rule 4 gains the no-Unicode-normalization clause
+  (NFC/NFD are distinct content); §2.1 adds the npx honesty rule — an
+  unresolvable selector records `null`, never a fabricated version
+  (the §2 layout example is itself an npx launch). Skills raw-octet hashing
+  verified against implementation (sha256 of file bytes, sha256sum-
+  compatible).
