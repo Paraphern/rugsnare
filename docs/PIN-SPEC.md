@@ -118,6 +118,10 @@ v1.1 binds identity into the envelope:
   mismatch emits `IDENTITY` (§4.1), not `BREAKING` — the vendor did not
   change the contract, the deployment did.
 - v1 consumers MUST ignore the block (§5); adding it does not bump `version`.
+- **Legacy pins (no `identity` block):** the IDENTITY check is skipped and
+  reported as an *identity-unpinned* advisory — a pin without identity
+  answers "what", never "who". Re-pin to close it; the advisory is not an
+  error and does not fail the gate by itself.
 
 ## 3. Hash semantics (the interop core)
 
@@ -145,15 +149,16 @@ implementations):
    hashes differently from `{ }`.
 6. `$schema` is preserved **as-is** (a dialect switch is a real change -
    graded NOTATION, not invisible).
-7. Numbers serialize per RFC 8785 §3.2.2.3 (ECMAScript number-to-string):
-`1` — never `1.0` or `1e0` — and `-0` serializes as `0` (ES6 semantics;
-JSON.stringify(-0) is `"0"`). Without this rule the same contract hashes
-differently in JS (`1`) and Python (`1.0`) and cross-implementation
-reproducibility is void.
-8. Inputs that are not valid Unicode scalar sequences (unpaired surrogates)
-are **rejected at capture** — the pinner refuses to hash them (I-JSON
-discipline). No hash is defined for such content; this is what keeps
-"exact UTF-8" in rule 4 well-defined.
+7. *(v1.1)* Numbers serialize per RFC 8785 §3.2.2.3 (ECMAScript
+number-to-string): `1` — never `1.0` or `1e0` — and `-0` serializes as `0`
+(ES6 semantics; JSON.stringify(-0) is `"0"`). Without this rule the same
+contract hashes differently in JS (`1`) and Python (`1.0`) and
+cross-implementation reproducibility is void. (JS-based writers already
+conform de facto; the marker commits every writer to it.)
+8. *(v1.1)* Inputs that are not valid Unicode scalar sequences (unpaired
+surrogates) are **rejected at capture** — the pinner refuses to hash them
+(I-JSON discipline). No hash is defined for such content; this is what
+keeps "exact UTF-8" in rule 4 well-defined.
 
 These rules govern **hash inputs** (the canonical form that gets digested).
 They do not oblige any particular display order when a human or tool *shows*
@@ -177,6 +182,12 @@ drift:
   classes are NOT silently recomputed under a policy the approver never saw.
   **On `POLICY`, the run reports the class and stops for that pin**; no
   re-graded tool classes are emitted against it.
+- **Legacy pins (no `policyVersion`, i.e. everything written before v1.1)
+  are policy-unknown**: the verifier emits `POLICY` once and asks for a
+  re-pin to stamp it. It never grades legacy pins silently under a policy
+  the approver never saw. (All 45 snapshots in the initial drift-watch
+  catalog are legacy pins — this path is the rule for them, not the
+  exception.)
 
 ## 4. Drift classification
 
@@ -204,7 +215,7 @@ silently *dropping* an explicit non-default value IS drift.
 
 | driftType | meaning | exit code |
 |---|---|---|
-| `IDENTITY` | `identityHash` / `package` / `entryPath` / `url` changed while tool hashes hold — the surface is served by a different build, path, or endpoint than approved | 1 |
+| `IDENTITY` | identity changed — a different build, path, or endpoint than approved (`identityHash` covers `package`/`entryPath`/`url`/`resolvedVersion`); may co-occur with tool drift, both are reported | 1 |
 | `POLICY` | the pin's `policyVersion` differs from the verifier's policy — re-graded under a newer canonicalization policy; re-pin to accept | 1 |
 
 Neither is server drift: `IDENTITY` is deployment drift, `POLICY` is verifier
@@ -213,8 +224,11 @@ co-occur with tool drift — both are reported.
 
 ## 5. Compatibility contract
 
-- `version: 1` consumers MUST ignore unknown top-level keys and unknown tool
-  fields (forward compatibility).
+- `version: 1` consumers MUST ignore unknown keys at every level — top-level,
+  server-level, and tool-level (forward compatibility). This is the hole the
+  v1.1 `identity` block lives in: it is a **server-level** field, so the
+  ignore-unknown rule must cover server objects, not just top-level and tool
+  fields, for "version stays 1" to hold.
 - Producers MUST bump `version` on any breaking change to this format.
 - A consumer implementing v1 needs: JSON, SHA-256, and the canonicalization
   rules above. No RugSnare code required.
@@ -307,8 +321,11 @@ Requirements for the composition to be sound:
   and `firstSeen` never changes for a tool. Without this, "identical
   inputs" has no byte-level meaning and third-party hashes are not
   reproducible.
-- A snapshot SHOULD also bind `policyVersion` (§3.1) and `identityHash`
-  (§2.1): a snapshot of half the contract pins half the contract.
+- Bind a **v1.1 pin** as the record: `external_evidence_hash` then covers
+  `policyVersion` and `identityHash` transitively — they are inside the
+  record. A v1 pin (no identity block, no policy stamp) is a snapshot of
+  half the contract, and no receipt-side mechanism can repair that from
+  outside; re-pin first.
 - The canonicalization-profile discipline applies to digests of **structured
   fields** (such as the evidence array in §7.1) — wherever a verifier
   canonicalizes structured fields, it records the profile used next to the
@@ -349,6 +366,18 @@ Requirements for the composition to be sound:
   `pinnedAt` volatility rule, LF/no-BOM/trailing newline); §3.1 defines
   POLICY as stop-for-that-pin; §4.1 IDENTITY covers `url` changes and may
   co-occur with tool drift.
+- v1.1 same-day revision 5 (third self-pass, fresh lenses): §5 ignore-unknown
+  rule extended to **server-level** fields — the v1.1 `identity` block lives
+  exactly there, and the "version stays 1" decision rests on that rule
+  covering it; legacy-pin behavior defined in both directions — no
+  `policyVersion` → `POLICY` once, re-pin to stamp (all 45 initial catalog
+  snapshots are legacy pins); no `identity` block → IDENTITY check skipped
+  with an *identity-unpinned* advisory, not a gate failure; §7 snapshot
+  bullet corrected to the transitive truth (a v1.1 record covers policy and
+  identity inside `external_evidence_hash`; a v1 record cannot be repaired
+  receipt-side — re-pin first); §3 rules 7-8 marked *(v1.1)*; §4.1 IDENTITY
+  row reworded (identity change per se, co-occurrence explicit). Catalog
+  validated: 45/45 parse, all legacy (no policyVersion, no identity).
 - v1.1 same-day revision 4 (second self-pass over revision 3): rule 7
   corrected — it claimed "`-0` preserved as `-0`" while citing RFC 8785,
   whose ES6 semantics serialize `-0` as `0` (verified against
