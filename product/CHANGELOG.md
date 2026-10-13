@@ -4,8 +4,8 @@
 
 ### PIN-SPEC v1.1: identity, policy stamp, byte-stable pins (publicly promised 2026-10-13)
 
-Promised in microsoft/autogen#7353 and snyk/agent-scan#482; format text in
-`docs/PIN-SPEC.md` (research chat), implementation here:
+Promised in [microsoft/autogen#7353 (comment)](https://github.com/microsoft/autogen/issues/7353#issuecomment-6141000039) and [snyk/agent-scan#482 (comment)](https://github.com/snyk/agent-scan/issues/482#issuecomment-6141000342); format text in
+[docs/PIN-SPEC.md](docs/PIN-SPEC.md) (research chat), implementation here:
 
 - **Identity block + identityHash** on every pinned server: `{ package,
   resolvedVersion, entryPath, url, identityHash }`. A server can keep every
