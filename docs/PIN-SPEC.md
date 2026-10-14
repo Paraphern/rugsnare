@@ -438,3 +438,9 @@ Requirements for the composition to be sound:
   §7 record-scope guidance (bind whole file or single-server pin; ad-hoc
   subobject extraction is a transformation, not saved text); §5 wording
   de-holed; history line-break repaired (rev 6 was glued to rev 5).
+- v1.1 rollout completion (2026-10-14, rugsnare 1.4.1/1.4.2): skills `path`
+  relative (1.4.1) and skills timestamp stability (1.4.2 - `firstSeen` preserved,
+  `pinnedAt` moves only on content change) close the §7 byte-stability promise for
+  the skills arm; verified cross-directory with a carried pin store (identical bytes
+  from a different checkout location). The drift-watch catalog's skills snapshots
+  regenerated on 1.4.2 (812 entries, zero absolute paths).
