@@ -175,6 +175,21 @@ Decoded input from the transaction:
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
 
+## Пин 1.4.1 (2026-10-14) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x2e4909417f8c735b66854d4df8ce7515855fc833c4c01a1370df431fb1302a2d` (block 52591536) |
+| Event check | topics[1]=versionKey `0x7015c1a4...` ✓, data=artifactHash `0x37cbf185...` + "1.4.1" ✓ (через Basescan Write Contract - основной канал для всех будущих пинов) |
+| artifact sha256 | `37cbf1853015c3864b6cf73ac701bae2dfdfd77aa884e44b944199d0e51fc80e` (пак ИЗ тегового worktree v1.4.1=40b15857; гейт: 42 файла, двойная сборка байт-в-байт) |
+| versionKey | keccak256("1.4.1") = `0x7015c1a48403d132ad83884b326109f1b309c42f752b2abd1db79522ee074673` |
+| npm | rugsnare@1.4.1 published 2026-10-14 (dist.shasum `3bc326bb...`; CDN-тарболл = артефакту байт-в-байт, 42 файла) |
+| Проверка | `npx rugsnare verify rugsnare-1.4.1.tgz --version 1.4.1 --chain base` -> **VERIFIED** (10:06:59 UTC; тарболл скачан с CDN) |
+
+Состав: skills pin path relative (PIN-SPEC §2, фикс утечки абсолютных путей и
+байт-стабильности между каталогами), legacy-fallback для старых пинов в JS и Go,
+CLI-интеграционный тест на ноль абсолютных путей. JS 357/357.
+
 ## Пин 1.4.0 (2026-10-13) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |
