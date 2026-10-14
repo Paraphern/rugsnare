@@ -214,3 +214,28 @@ test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grad
     cleanup(dir);
   }
 });
+
+// §7 for prompts/resources: re-scan of the same server must not touch
+// prompt or resource entries whose hash is unchanged. Before this fix,
+// firstSeen churned on every scan (cli.js:342/348 always wrote now()).
+test('v1.1: re-scan of server with prompts/resources = byte-identical pins.json', async () => {
+  const FIXTURE = path.join(HERE, 'fixtures', 'prompts-stable.mjs');
+  const dir = tmp();
+  try {
+    const cfg = path.join(dir, 'mcp.json');
+    fs.writeFileSync(cfg, JSON.stringify({ mcpServers: { pr: { command: 'node', args: [FIXTURE] } } }));
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    const before = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    // verify prompts and resources were actually pinned (not empty)
+    const pins = JSON.parse(before);
+    assert.ok(Object.keys(pins.servers.pr.prompts ?? {}).length > 0, 'prompts pinned');
+    assert.ok(Object.keys(pins.servers.pr.resources ?? {}).length > 0, 'resources pinned');
+    // give the clock a beat so timestamps WOULD differ if churned
+    await new Promise((r) => setTimeout(r, 50));
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    const after = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    assert.equal(before, after, 're-scan with unchanged prompts/resources must be byte-identical');
+  } finally {
+    cleanup(dir);
+  }
+});
