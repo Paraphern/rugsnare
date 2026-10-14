@@ -288,3 +288,27 @@ test('CLI: diff exit 1 on DANGEROUS', async () => {
     assert.match(d.stdout, /DANGEROUS/);
   } finally { cleanup(); }
 });
+
+// Belt-and-suspenders: run the FULL CLI `skills scan` in a tmp directory,
+// then read the actual pins.json and verify NO skill entry carries a
+// machine-absolute path anywhere. Catches the case where a future code
+// path calls pinSkillFile with the wrong argument - unit tests on the
+// existing function would pass while the CLI-level output regresses.
+test('CLI integration: skills scan produces pins.json with zero absolute paths', async () => {
+  const { dir, cleanup } = tmp();
+  try {
+    mkdeploy(dir, CLEAN);
+    await cli(dir, ['skills', 'scan']);
+    const pinsFile = path.join(dir, '.rugsnare', 'pins.json');
+    assert.ok(fs.existsSync(pinsFile), 'pins.json written');
+    const pins = JSON.parse(fs.readFileSync(pinsFile, 'utf8'));
+    const skills = pins.skills ?? {};
+    assert.ok(Object.keys(skills).length > 0, 'at least one skill pinned');
+    for (const [key, pin] of Object.entries(skills)) {
+      assert.ok(typeof pin.path === 'string', `${key}: path must be a string`);
+      assert.ok(!path.isAbsolute(pin.path), `${key}: CLI wrote absolute path "${pin.path}"`);
+      assert.ok(!/^[A-Za-z]:[\\\\/]/.test(pin.path), `${key}: CLI wrote drive letter "${pin.path}"`);
+      assert.equal(pin.path, pin.relative, `${key}: path must mirror relative`);
+    }
+  } finally { cleanup(); }
+});
