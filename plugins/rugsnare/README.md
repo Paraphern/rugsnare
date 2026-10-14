@@ -16,7 +16,7 @@ Pin the MCP tool contracts your agent was approved on; block the build when a se
 ## Manual install (no agent)
 
 ```bash
-npm i -D rugsnare@1.4.0
+npm i -D rugsnare@1.4.1
 npx rugsnare scan --config .mcp.json   # pin what you approved
 git add .rugsnare/pins.json
 ```

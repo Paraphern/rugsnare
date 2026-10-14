@@ -200,9 +200,18 @@ export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir()) {
     const key = `${skill.app}/${skill.scope}/${skill.relative}`;
     const existing = pins.skills[key];
     const entry = pinSkillFile(skill, cwd);
+    // §7 byte-stability: a scan that sees the SAME content must not touch
+    // the entry - pinnedAt churn changes pins.json bytes on every re-scan
+    // (the skills-branch twin of the server-side pinTool skip-guard).
+    // When the hash is unchanged AND the entry is already approved, return
+    // the existing entry as-is. firstSeen is always preserved regardless.
+    if (existing && existing.hash === entry.hash) {
+      pinnedCount++;
+      continue; // unchanged: keep the existing entry untouched
+    }
     if (existing) {
-      entry.firstSeen = existing.firstSeen; // preserve
-      entry.approved = existing.approved; // preserve
+      entry.firstSeen = existing.firstSeen; // preserve across content changes
+      entry.approved = existing.approved; // preserve approval state
     }
     pins.skills[key] = entry;
     pinnedCount++;

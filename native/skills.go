@@ -274,8 +274,15 @@ func PinAllSkills(pins SkillPinMap, cwd, home string) int {
 			continue // unreadable file: skip, same spirit as JS walk guards
 		}
 		if existing, ok := pins[key]; ok {
-			entry.FirstSeen = existing.FirstSeen // preserve
-			entry.Approved = existing.Approved   // preserve
+			// §7 byte-stability: unchanged content = untouched entry (the
+			// skills-branch twin of the JS pinTool skip-guard; without this,
+			// pinnedAt churns on every re-scan and pins.json bytes change)
+			if existing.Hash == entry.Hash {
+				count++
+				continue
+			}
+			entry.FirstSeen = existing.FirstSeen // preserve across changes
+			entry.Approved = existing.Approved   // preserve approval state
 		}
 		pins[key] = *entry
 		count++

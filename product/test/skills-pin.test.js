@@ -312,3 +312,24 @@ test('CLI integration: skills scan produces pins.json with zero absolute paths',
     }
   } finally { cleanup(); }
 });
+
+// §7 byte-stability for skills: a RE-SCAN of the same directory must not
+// change a byte of pins.json (the skills-branch twin of the pinTool
+// skip-guard). Both firstSeen and pinnedAt must survive when the content
+// hash is unchanged - before this fix, pinAllSkills always rewrote pinnedAt
+// (and firstSeen on fresh cross-directory scans), churning the file on
+// every scan. Found by the research chat's field diff (293/293 entries).
+test('skills re-scan: unchanged content = untouched pins.json entry', async () => {
+  const { dir, cleanup } = tmp();
+  try {
+    mkdeploy(dir, CLEAN);
+    await cli(dir, ['skills', 'scan']);
+    const pinsFile = path.join(dir, '.rugsnare', 'pins.json');
+    const before = fs.readFileSync(pinsFile, 'utf8');
+    // give the clock a beat so timestamps WOULD differ if churned
+    await new Promise((r) => setTimeout(r, 50));
+    await cli(dir, ['skills', 'scan']);
+    const after = fs.readFileSync(pinsFile, 'utf8');
+    assert.equal(before, after, 're-scan of unchanged skills must be byte-identical');
+  } finally { cleanup(); }
+});

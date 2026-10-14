@@ -21,7 +21,7 @@ RugSnare pins the tool contracts (name + description + inputSchema, sha-256) of 
 In the project that owns the config:
 
 ```bash
-npm install --save-dev rugsnare@1.4.0
+npm install --save-dev rugsnare@1.4.1
 ```
 
 Pin the exact version. RugSnare's own upgrades are deliberate acts, same discipline it enforces on MCP servers.
@@ -79,7 +79,7 @@ Expected output: `rugsnare diff: clean`, exit code 0. If you see drift immediate
 RugSnare runs as a read-only MCP server (tools: `drift_feed_status` - public drift data for popular MCP servers; `pins_report` - the local pin store). Add to the user's config if they ask for it:
 
 ```json
-{ "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.4.0", "mcp"] } } }
+{ "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.4.1", "mcp"] } } }
 ```
 
 ## Report back to the user

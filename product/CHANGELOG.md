@@ -9,6 +9,11 @@
   snapshots. `path` now mirrors `relative`; pre-v1.4.1 pins with absolute
   paths are read via a legacy fallback in diff. The Go native launcher's
   writer is fixed in the same pass.
+- **Skills re-scan is byte-stable** (§7): `pinAllSkills` always rewrote
+  `pinnedAt` on every scan even when the content hash was unchanged,
+  churning pins.json bytes (293/293 entries in the field diff). Now the
+  same skip-guard as the server-side `pinTool`: unchanged hash = untouched
+  entry. Fixed in JS and Go.
 
 ## [1.4.0] - 2026-10-13
 

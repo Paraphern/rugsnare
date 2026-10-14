@@ -335,17 +335,26 @@ async function cmdScan(flags) {
       const serverPin = ensureServer(pins, name, serverCmd);
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
 
-      // pin prompts and resources too (if the server exposes them)
+      // pin prompts and resources too (if the server exposes them).
+      // §7 byte-stability: entries with unchanged hashes are left untouched
+      // (the prompts/resources twin of the pinTool skip-guard; before this,
+      // firstSeen churned on every re-scan)
       if (!serverPin.prompts) serverPin.prompts = {};
       for (const p of prompts ?? []) {
         const { promptHash } = await import('./prompts.js');
-        serverPin.prompts[p.name] = { hash: promptHash(p), description: p.description ?? '', firstSeen: new Date().toISOString() };
+        const h = promptHash(p);
+        const existing = serverPin.prompts[p.name];
+        if (existing && existing.hash === h) continue; // unchanged: skip
+        serverPin.prompts[p.name] = { hash: h, description: p.description ?? '', firstSeen: existing?.firstSeen ?? new Date().toISOString() };
       }
       if (!serverPin.resources) serverPin.resources = {};
       for (const r of resources ?? []) {
         const { resourceHash } = await import('./prompts.js');
         const key = r.name ?? r.uri ?? '(unnamed)';
-        serverPin.resources[key] = { hash: resourceHash(r), description: r.description ?? '', firstSeen: new Date().toISOString() };
+        const h = resourceHash(r);
+        const existing = serverPin.resources[key];
+        if (existing && existing.hash === h) continue; // unchanged: skip
+        serverPin.resources[key] = { hash: h, description: r.description ?? '', firstSeen: existing?.firstSeen ?? new Date().toISOString() };
       }
 
       // advisory signals: catch suspicious descriptions even on first contact
