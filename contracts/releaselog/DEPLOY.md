@@ -175,6 +175,20 @@ Decoded input from the transaction:
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
 
+## Пин 1.4.2 (2026-10-14) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x9befe1218ccdf400264287f1917c9f7bee7400a8cf623b333adfb580d86f464f` (block 52600809) |
+| Event check | topics[1]=versionKey `0xe4c52b33...` ✓, data=artifactHash `0xd3f9d643...` + "1.4.2" ✓ (через Basescan Write Contract) |
+| artifact sha256 | `d3f9d643a0f82652422685b7bbdfe2f045290f111fe0ad4001969d1e9ef2a71a` (теговый worktree v1.4.2=e7c0bb30; гейт: 42/0, двойная сборка) |
+| versionKey | keccak256("1.4.2") = `0xe4c52b330ac918ecd3087eee29205db51f5893be7589440ae71e8879e39688b4` |
+| npm | rugsnare@1.4.2 published 2026-10-14; CDN-тарболл = артефакту байт-в-байт |
+| Проверка | `npx rugsnare verify rugsnare-1.4.2.tgz --version 1.4.2 --chain base` -> **VERIFIED** (15:16:05 UTC) |
+
+Состав: §7 byte-stability для skills (skip-guard в pinAllSkills), prompts/resources
+(skip-guard в cmdScan), Go-лаунчер синхронно. JS 359/359.
+
 ## Пин 1.4.1 (2026-10-14) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |
