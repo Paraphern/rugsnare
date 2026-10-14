@@ -28,3 +28,4 @@
 {"ts":"2026-10-11T11:39:43.860Z","server":"server-sequential-thinking","type":"VERSION","detail":"2026.8.31 → 1.0.0"}
 {"ts":"2026-10-13T13:00:18.478Z","server":"context7-hosted","transport":"http","type":"FIRST_SCAN","detail":"hosted, 2 tools"}
 {"ts":"2026-10-13T13:00:18.651Z","server":"deepwiki-hosted","transport":"http","type":"FIRST_SCAN","detail":"hosted, 3 tools"}
+{"ts":"2026-10-14T10:40:51.739Z","server":"context7-hosted","transport":"http","type":"DRIFT","tool":"query-docs","oldHash":"fc3018160ad356fb","newHash":"b812de1262cc5e4b"}
