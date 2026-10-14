@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2] - 2026-10-14
+
+- **§7 byte-stability for skills, prompts and resources**: a re-scan of
+  unchanged content no longer rewrites timestamp fields. Before this fix,
+  `pinAllSkills` always rewrote `pinnedAt` (293/293 entries in the field
+  diff), and `cmdScan` always rewrote `firstSeen` for prompts and resources.
+  Now all three pin branches (tools, skills, prompts/resources) share the
+  same skip-guard pattern: unchanged hash = untouched entry. The Go native
+  launcher's skills writer is fixed in the same pass.
+
 ## [1.4.1] - 2026-10-14
 
 - **Skills pin `path` is now relative** (PIN-SPEC §2): the 1.3.0/1.4.0

@@ -43,7 +43,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.4.1): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.4.2): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -52,7 +52,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.4.1):**
+**npm (latest: rugsnare@1.4.2):**
 
 ```bash
 npx rugsnare init
@@ -226,4 +226,4 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **v1.4.1** | ✅ shipped | Skills pin `path` is now relative (PIN-SPEC §2): the 1.4.0 writer emitted machine-absolute paths, breaking §7 byte-stability across machines and leaking local layout in published catalog snapshots. Fixed in both the JS CLI and the Go native launcher; pre-v1.4.1 pins read via a legacy fallback · [on-chain pin](https://basescan.org/tx/0x2e4909417f8c735b66854d4df8ce7515855fc833c4c01a1370df431fb1302a2d) |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · R35 MIRRORED class + R36 openapi-crosscheck · R37 scan `--prune` (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
 
-*357 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*359 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
