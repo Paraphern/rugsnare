@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.1] - unreleased
+## [1.4.1] - 2026-10-14
 
 - **Skills pin `path` is now relative** (PIN-SPEC §2): the 1.3.0/1.4.0
   writer emitted machine-absolute paths, breaking §7 byte-stability across
