@@ -533,12 +533,16 @@ async function cmdDiff(flags) {
     logEvent({ kind: 'shadow', tool: s.tool, servers: s.servers });
   }
   const report = [];
-  // PIN-SPEC v1.1: pins graded under a different verifier policy must NOT be
-  // silently re-graded - the ruler changed, the vendor did nothing wrong
-  // (acceptance: a 1.2.x-era pin store diffed by a v1.1 binary says POLICY)
+  // PIN-SPEC v1.1 §3.1: pins graded under a different verifier policy must NOT be
+  // silently re-graded - the ruler changed, the vendor did nothing wrong. The
+  // spec says POLICY STOPS for that pin: no re-graded tool classes are emitted,
+  // because each would look like ordinary drift to anyone who scrolled past
+  // the POLICY line. Exit 1 with exactly one finding; re-pin to grade under
+  // the current policy.
   const { policyVersionFor } = await import('./pins.js');
   const currentPolicy = policyVersionFor();
-  if ((pins.policyVersion ?? null) !== currentPolicy) {
+  const policyMismatch = (pins.policyVersion ?? null) !== currentPolicy;
+  if (policyMismatch) {
     driftCount++;
     logEvent({ kind: 'policy', pinnedUnder: pins.policyVersion ?? null, currentPolicy });
     report.push({
@@ -548,7 +552,13 @@ async function cmdDiff(flags) {
     if (!flags.json && !flags.sarif) {
       console.log(`(policy)`);
       printVerdict('(policy)', [{ tool: '(policy)', status: 'DRIFT', driftType: 'POLICY', pinnedUnder: pins.policyVersion ?? null, currentPolicy }], false);
+      console.log(`  re-run after \`rugsnare scan\` to grade under the current policy`);
     }
+    // §3.1: POLICY STOPS here - exit 1, no tool classes follow
+    console.error(`rugsnare diff: DRIFT DETECTED (${driftCount} finding(s))`);
+    const { getVersion } = await import('./version.js');
+    console.error(`rugsnare ${getVersion()}`);
+    process.exit(1);
   }
   for (const name of names) {
     const sp = pins.servers[name];

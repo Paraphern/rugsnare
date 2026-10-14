@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.3] - unreleased
+
+- **POLICY stop-rule (§3.1)**: when the pin store's `policyVersion` differs
+  from the running binary, diff now emits the POLICY finding and **stops** -
+  exactly one finding, no tool-level classes (BREAKING, LOOSENED, COSMETIC,
+  GONE, NEW) follow. Each re-graded class would look like ordinary drift to
+  anyone who scrolled past the POLICY line; the spec says "stops for that
+  pin", and now the code does too. Exit 1 with a hint: "re-run after
+  `rugsnare scan` to grade under the current policy".
+
 ## [1.4.2] - 2026-10-14
 
 - **§7 byte-stability for skills, prompts and resources**: a re-scan of

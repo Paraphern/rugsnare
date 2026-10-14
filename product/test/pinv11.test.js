@@ -210,6 +210,12 @@ test('v1.1 acceptance: pins from an older policy -> POLICY, not a silent re-grad
     assert.match(out, /POLICY/);
     assert.match(out, /re-graded under a newer verifier policy/);
     assert.equal(r.code ?? r.exitCode, 1, 'POLICY is a finding: exit 1');
+    // §3.1 stop-rule: POLICY is the ONLY finding - no tool classes follow
+    assert.match(out, /1 finding/, 'exactly 1 finding (the POLICY)');
+    // no tool-level DRIFT/NEW/GONE for actual tools (the POLICY entry itself
+    // uses [DRIFT] status but its tool field is "(policy)", not a real tool name)
+    assert.doesNotMatch(out, /\[(DRIFT|NEW |GONE)\] (?!\(policy\))/, 'no tool-level classes after POLICY');
+    assert.match(out, /re-run after .rugsnare scan/, 'hint to re-pin');
   } finally {
     cleanup(dir);
   }
