@@ -45,7 +45,19 @@ Storage rules, verified against the writer implementation:
   component. ***(v1.1)*** `path` MUST be stored **relative to the skill
   root** — the 1.3.0 writer emits machine-absolute paths, which breaks §7
   byte-stability across machines and leaks local layout; fixed in the v1.1
-  writer.
+  writer. Skills entries carry **no identity block**; their identity is the
+  file path (`relative`) and content hash — server identity (§2.1) applies
+  to MCP server launches only.
+- `scannedAgainst` (server-level, string) records the installed package
+  version at scan time (e.g. `"@hubspot/mcp-server@0.2.0"`). The diff uses
+  it to warn when pins were taken against a different installed version
+  than the one currently on disk — a convenience signal, not a drift class.
+- A companion file `.rugsnare/pins.sig` (ECDSA signature over pins.json
+  bytes) may exist alongside the pin store. When present, the diff verifies
+  it and fails with exit 2 on mismatch (an edited pins.json in CI is an
+  integrity attack, not drift). `--allow-unsigned-pins` skips the check for
+  bootstrap workflows. The signature file is outside this format spec —
+  it covers transport integrity, not the pin format itself.
 
 ```json
 {
@@ -444,3 +456,12 @@ Requirements for the composition to be sound:
   the skills arm; verified cross-directory with a carried pin store (identical bytes
   from a different checkout location). The drift-watch catalog's skills snapshots
   regenerated on 1.4.2 (812 entries, zero absolute paths).
+- v1.1 same-day revision 8 (final pre-B5 pass, undocumented fields found by
+  comparing real pins against the spec layout): §2 documents `scannedAgainst`
+  (records installed package version at scan time; powers the version-mismatch
+  warning in diff) and the `pins.sig` companion file (ECDSA signature over
+  pins.json; exit 2 on mismatch when present and not `--allow-unsigned-pins`;
+  transport integrity, not pin format). §2.1 skills-entry note: no identity
+  block, identity is the file path + content hash. All three fields exist in
+  every rugsnare-written pin since 1.0; this revision documents what the
+  implementation has always done.
