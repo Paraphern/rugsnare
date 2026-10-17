@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.3] - unreleased
+## [1.4.3] - 2026-10-14
 
 - **POLICY stop-rule (§3.1)**: when the pin store's `policyVersion` differs
   from the running binary, diff now emits the POLICY finding and **stops** -

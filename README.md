@@ -43,7 +43,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.4.2): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.4.3): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -52,7 +52,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.4.2):**
+**npm (latest: rugsnare@1.4.3):**
 
 ```bash
 npx rugsnare init
