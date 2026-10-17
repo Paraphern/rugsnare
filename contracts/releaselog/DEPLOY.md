@@ -175,6 +175,20 @@ Decoded input from the transaction:
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
 
+## Пин 1.4.3 (2026-10-17) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x04354ca5de51e67a5b977d88720b03d76a074d5ab7f11c80036bd3f940e095e8` (block 52706667) |
+| Event check | topics[1]=versionKey `0x62a7d083...` ✓, data=artifactHash `0x57483327...` + "1.4.3" ✓ (Basescan Write Contract) |
+| artifact sha256 | `574833273fb22bb306ced01c8c0057507ba426785d0c0f70da774e65d3006727` (теговый worktree v1.4.3=06998c98; гейт: 42/0, двойная сборка) |
+| versionKey | keccak256("1.4.3") = `0x62a7d083420caa3116e736d7d542f3e34460a3e7c8ec67264b1eb7c094260e1b` |
+| npm | rugsnare@1.4.3 published 2026-10-17; CDN-тарболл = артефакту байт-в-байт |
+| Проверка | **VERIFIED** (02:04:41 UTC, via publicnode RPC - mainnet.base.org rate-limited) |
+
+Состав: POLICY stop-rule (§3.1) - POLICY единственная находка, ноль tool-классов,
+exit 1, hint "re-run after scan". JS 359/359.
+
 ## Пин 1.4.2 (2026-10-14) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |
