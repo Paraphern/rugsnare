@@ -127,11 +127,30 @@ for (const { server, verdicts } of report) {
     lines.push(`hash: \`${(sample.oldHash ?? '').slice(0, 16)}\` → \`${(sample.hash ?? '').slice(0, 16)}\``, '');
   }
 
-  for (const v of nonDrift) {
-    if (v.status === 'NEW') {
-      lines.push(`### ${icon.NEW} \`${v.tool}\` - unapproved new tool${v.note ? ` (${v.note})` : ''}`, '');
-    } else if (v.status === 'REMOVED') {
-      lines.push(`### ${icon.REMOVED} \`${v.tool}\` - approved tool disappeared`, '');
+  // group NEW and REMOVED into single sections (playwright case: 18 NEW
+  // tools as 18 separate ### headings = PR comment spam)
+  const newTools = nonDrift.filter((v) => v.status === 'NEW');
+  const removedTools = nonDrift.filter((v) => v.status === 'REMOVED');
+
+  if (newTools.length > 0) {
+    if (newTools.length === 1) {
+      lines.push(`### ${icon.NEW} \`${newTools[0].tool}\` - unapproved new tool${newTools[0].note ? ` (${newTools[0].note})` : ''}`, '');
+    } else {
+      const list = newTools.slice(0, 8).map((v) => `\`${v.tool}\``).join(', ');
+      const more = newTools.length > 8 ? `, +${newTools.length - 8} more` : '';
+      lines.push(`### ${icon.NEW} ${newTools.length} new tools - not in the approved baseline`, '');
+      lines.push(`${list}${more}`, '');
+    }
+  }
+
+  if (removedTools.length > 0) {
+    if (removedTools.length === 1) {
+      lines.push(`### ${icon.REMOVED} \`${removedTools[0].tool}\` - approved tool disappeared`, '');
+    } else {
+      const list = removedTools.slice(0, 8).map((v) => `\`${v.tool}\``).join(', ');
+      const more = removedTools.length > 8 ? `, +${removedTools.length - 8} more` : '';
+      lines.push(`### ${icon.REMOVED} ${removedTools.length} approved tools disappeared`, '');
+      lines.push(`${list}${more}`, '');
     }
   }
 }
