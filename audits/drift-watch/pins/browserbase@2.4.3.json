@@ -13,23 +13,9 @@
         "resolvedVersion": "2.4.3",
         "url": null
       },
-      "pinnedAt": "2026-10-18T15:07:22.145Z",
+      "pinnedAt": "2026-10-18T15:45:44.184Z",
       "prompts": {
-        "browserbase_system": {
-          "description": "System prompt defining the scope and capabilities of Browserbase MCP server",
-          "firstSeen": "2026-10-18T15:07:22.151Z",
-          "hash": "37f97d098591fc77d7db07d08e541f8e14c369e74bf31fa8f8c04b97bb0b0d21"
-        },
-        "multi_session_guidance": {
-          "description": "Guidance on when and how to use multi-session browser automation",
-          "firstSeen": "2026-10-18T15:07:22.151Z",
-          "hash": "defea4bbd428cfe77321df2dd9d17097e93944de7bd9e29b2a8b659cd954411d"
-        },
-        "stagehand_usage": {
-          "description": "Guidelines on how to use Stagehand's act, observe, and extract utilities effectively",
-          "firstSeen": "2026-10-18T15:07:22.151Z",
-          "hash": "61c0f621e8275ed4698aeeda5adac2f6c29af771873f3026afb01ef7f57edb87"
-        }
+
       },
       "resources": {
 
@@ -40,7 +26,7 @@
           "annotations": null,
           "approved": true,
           "description": "Capture a full-page screenshot and return it (and save as a resource).",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "e8d7765863c66773110a0db65f350913632804986709b19d89871e1361c829ba",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -54,7 +40,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "0eae3d8a69eb637e423709b20634bcb6416dae1aa679fd1b1799af21291baf0b",
           "schemaHash": "3ca46d5563501a0f1ff08d7fd00555e4ea08d779415312621600e12334bba3f7"
         },
@@ -62,7 +48,7 @@
           "annotations": null,
           "approved": true,
           "description": "Close the current Browserbase session and reset the active context.",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "5c2ebe6a6766e44e68b3c731066cf24a9486af5b6dfd9c83558ca4481f42c473",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -72,7 +58,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "4731c825bfa9a98c3337a2a710f8980e25a1363f4a6ac13638fc877d95751bbf",
           "schemaHash": "235cf0a266fbbeabee583086e1153bb18ed6c7b9461ef5188f02860d93d17d9f"
         },
@@ -80,7 +66,7 @@
           "annotations": null,
           "approved": true,
           "description": "Create or reuse a Browserbase browser session and set it as active.",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "4893327336ece791d8d5d1d5a347582ec454801bb362975d9f9e0e1cf34c101e",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -94,7 +80,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.952Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "8db0c47bf4ae71628cfcae4785724c7e32ebb584ea18bf1724cbd2c607a4e075",
           "schemaHash": "5fdfa0e202fa7b4ee70f3032a325348c0a245989040ab4e0fbb634427eb51bdd"
         },
@@ -102,7 +88,7 @@
           "annotations": null,
           "approved": true,
           "description": "Perform a single action on the page (e.g., click, type).",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "ad72cf03adc4a1ac981a5f7a72c3f10296edc07ea4085f6d4f0d4127408c836f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -125,7 +111,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "c6f77cb1460babd4c1556abd534abac12f97905429ca5fea2fb63ced77ac4714",
           "schemaHash": "7163c2d74ae96fae2f7345ba84a349525bf0bf7eb9582efefd97ca53c9992bd0"
         },
@@ -133,7 +119,7 @@
           "annotations": null,
           "approved": true,
           "description": "Execute a task autonomously using Gemini Computer Use agent. The agent will navigate and interact with web pages to complete the given task.",
-          "firstSeen": "2026-10-18T15:08:02.954Z",
+          "firstSeen": "2026-10-18T15:45:44.188Z",
           "hash": "dd6fe6c6d45cab67a8cd4ec28aeb1a0b7869ff2a530b2b9b25a16c24b18d6351",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -148,7 +134,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.188Z",
           "proseHash": "bb33ce9b2688da2969759ecb586e4d67377fc9a86bbafc3f6fefd37e18dc5b99",
           "schemaHash": "b89d091e7be95675cded534b6a36ed43c2de91749c7df69d0a8a6850d392eefa"
         },
@@ -156,7 +142,7 @@
           "annotations": null,
           "approved": true,
           "description": "Extract structured data or text from the current page using an instruction.",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "be146a2572183c50a4233a0610870cc028dc3908cf0b358cc9de9d0390f35af1",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -171,7 +157,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "b87004d7b2a329a128d3500aac33206ef70a5882c3ba2664ebba5c594b459984",
           "schemaHash": "6c343c513edd6934041da981d7cb246a0a51503a72c7f2aa040d754a3a698b75"
         },
@@ -179,7 +165,7 @@
           "annotations": null,
           "approved": true,
           "description": "Return the current page URL (full URL with query/fragment).",
-          "firstSeen": "2026-10-18T15:08:02.954Z",
+          "firstSeen": "2026-10-18T15:45:44.188Z",
           "hash": "35b1d22af7d86db0a7d4a53992f65d45afb328640718681cf87c043e32214cec",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -189,7 +175,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.188Z",
           "proseHash": "df85559582eb081695067e90f77308b77f6580bf01ed5602b13946f8d0a430a4",
           "schemaHash": "a4044b0d1f905099af228d2344d33c416fb11361e73c7b4fd0063366f4eb624d"
         },
@@ -197,7 +183,7 @@
           "annotations": null,
           "approved": true,
           "description": "Navigate to a URL in the browser. Only use this tool with URLs you're confident will work and be up to date. \n    Otherwise, use https://google.com as the starting point",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "17941032e85351bedcd316e279eb20092c6d4c8fc39bbed775b126130fcb9a7b",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -212,7 +198,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "78b4470e4be3d6636f651db2a5a8ad3efdaef8a7c349c5bb922fd932e5a7034e",
           "schemaHash": "99efac6f46e369be4739ce6d12490d2bd22f206fa4a820aac49d2e56077859b6"
         },
@@ -220,7 +206,7 @@
           "annotations": null,
           "approved": true,
           "description": "Find interactive elements on the page from an instruction; optionally return an action.",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
+          "firstSeen": "2026-10-18T15:45:44.187Z",
           "hash": "bf6efe848182172d073eab10227861667159475c703ef1a8a87c835151ec38e8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -235,196 +221,9 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:08:02.954Z",
+          "pinnedAt": "2026-10-18T15:45:44.187Z",
           "proseHash": "68c18085ebcbbcb7bde5d9aeade919ec923cc5e2e2f2758427a49cc4ff096d1d",
           "schemaHash": "5be458987f09f5e068ecf05956ea3a98f9835e1b1473fbe1f496badf56739188"
-        },
-        "multi_browserbase_stagehand_act_session": {
-          "annotations": null,
-          "approved": true,
-          "description": "Performs an action on a web page element. Act actions should be as atomic and specific as possible, i.e. \"Click the sign in button\" or \"Type 'hello' into the search input\". AVOID actions that are more than one step, i.e. \"Order me pizza\" or \"Send an email to Paul asking him to call me\". (for a specific session)",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "2efa3b6ea471206dd37f2f8c349641be8eb684aded1eda5a906b9cff0cccc12a",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "description": "The action to perform. Should be as atomic and specific as possible, i.e. 'Click the sign in button' or 'Type 'hello' into the search input'. AVOID actions that are more than one step, i.e. 'Order me pizza' or 'Send an email to Paul asking him to call me'. The instruction should be just as specific as possible, and have a strong correlation to the text on the page. If unsure, use observe before using act.",
-                "type": "string"
-              },
-              "sessionId": {
-                "description": "The session ID to use",
-                "type": "string"
-              },
-              "variables": {
-                "additionalProperties": false,
-                "description": "Variables used in the action template. ONLY use variables if you're dealing with sensitive data or dynamic content. For example, if you're logging in to a website, you can use a variable for the password. When using variables, you MUST have the variable key in the action template. For example: {\"action\": \"Fill in the password\", \"variables\": {\"password\": \"123456\"}}",
-                "properties": {
-
-                },
-                "type": "object"
-              }
-            },
-            "required": ["sessionId","action"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "86149c7dcccb259cf7e5f750c899e9d05f8a318700c7e78fd24f31ef24d3d82b",
-          "schemaHash": "fc229f2c110a809ca1509ada50c0728d8feb88afa127ebe627a62011be63126a"
-        },
-        "multi_browserbase_stagehand_extract_session": {
-          "annotations": null,
-          "approved": true,
-          "description": "Extracts structured information and text content from the current web page based on specific instructions and a defined schema. This tool is ideal for scraping data, gathering information, or pulling specific content from web pages. Use this tool when you need to get text content, data, or information from a page rather than interacting with elements. For interactive elements like buttons, forms, or clickable items, use the observe tool instead. The extraction works best when you provide clear, specific instructions about what to extract and a well-defined JSON schema for the expected output format. This ensures the extracted data is properly structured and usable. (for a specific session)",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "d6e13b5ceb57cf7a5c04b0c26e4e513debaad05c69990d88a39a9df17e85c11d",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "instruction": {
-                "description": "The specific instruction for what information to extract from the current page. Be as detailed and specific as possible about what you want to extract. For example: 'Extract all product names and prices from the listing page' or 'Get the article title, author, and publication date from this blog post'. The more specific your instruction, the better the extraction results will be. Avoid vague instructions like 'get everything' or 'extract the data'. Instead, be explicit about the exact elements, text, or information you need.",
-                "type": "string"
-              },
-              "sessionId": {
-                "description": "The session ID to use",
-                "type": "string"
-              }
-            },
-            "required": ["sessionId","instruction"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "48ca615ffc668790a7f974f096e4147cf92c6aa9753d2dca03760d784ca686be",
-          "schemaHash": "bcd6ddf5537d42a5e343acdaad9fdf53ba157e94f1023c7f139071d4d31952d8"
-        },
-        "multi_browserbase_stagehand_navigate_session": {
-          "annotations": null,
-          "approved": true,
-          "description": "Navigate to a URL in the browser. Only use this tool with URLs you're confident will work and stay up to date. Otherwise, use https://google.com as the starting point (for a specific session)",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "0d7da5688605f0056f22859a70a0820e7f527dc64aaecc25cd612185aa54a5ed",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "sessionId": {
-                "description": "The session ID to use",
-                "type": "string"
-              },
-              "url": {
-                "description": "The URL to navigate to",
-                "type": "string"
-              }
-            },
-            "required": ["sessionId","url"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "55ae60a2f61fd150e20dbc13ffde071b6430393d3ec6c1e5d20a3f5527e2d99a",
-          "schemaHash": "b01ef6351d7d63a7485fbddb7c90e9fe068d1dab10311cb8a6066372125da093"
-        },
-        "multi_browserbase_stagehand_observe_session": {
-          "annotations": null,
-          "approved": true,
-          "description": "Observes and identifies specific interactive elements on the current web page that can be used for subsequent actions. This tool is specifically designed for finding actionable (interactable) elements such as buttons, links, form fields, dropdowns, checkboxes, and other UI components that you can interact with. Use this tool when you need to locate elements before performing actions with the act tool. DO NOT use this tool for extracting text content or data - use the extract tool instead for that purpose. The observe tool returns detailed information about the identified elements including their properties, location, and interaction capabilities. This information can then be used to craft precise actions. The more specific your observation instruction, the more accurate the element identification will be. Think of this as your 'eyes' on the page to find exactly what you need to interact with. (for a specific session)",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "1e265c8b151be6547b2ee6ee3235ce84ebf0a735564fcb6c61ddbed1edd6092e",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "instruction": {
-                "description": "Detailed instruction for what specific elements or components to observe on the web page. This instruction must be extremely specific and descriptive. For example: 'Find the red login button in the top right corner', 'Locate the search input field with placeholder text', or 'Identify all clickable product cards on the page'. The more specific and detailed your instruction, the better the observation results will be. Avoid generic instructions like 'find buttons' or 'see elements'. Instead, describe the visual characteristics, location, text content, or functionality of the elements you want to observe. This tool is designed to help you identify interactive elements that you can later use with the act tool for performing actions like clicking, typing, or form submission.",
-                "type": "string"
-              },
-              "returnAction": {
-                "description": "Whether to return the action to perform on the element. If true, the action will be returned as a string. If false, the action will not be returned.",
-                "type": "boolean"
-              },
-              "sessionId": {
-                "description": "The session ID to use",
-                "type": "string"
-              }
-            },
-            "required": ["sessionId","instruction"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "84a1becd4973d9dc3052d05afcc286bcdec47ebff296b3ccb12f27d3113a1109",
-          "schemaHash": "f064ae9297d27d4a2b927fb79524a30e955b297bc400f76696b3452b6842a857"
-        },
-        "multi_browserbase_stagehand_session_close": {
-          "annotations": null,
-          "approved": true,
-          "description": "Cleanup parallel session for multi-session workflows. Properly terminates a browser session, ends the Browserbase session, and frees cloud resources. Always use this when finished with a session to avoid resource waste and billing charges. Critical for responsible multi-session automation - each unclosed session continues consuming resources!",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "ab7cd23f1eab080daf37da334723f8cd552926896157cf20889617936aff1ec3",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "sessionId": {
-                "description": "Exact session ID to close (get from 'multi_browserbase_stagehand_session_list'). Double-check this ID - once closed, the session cannot be recovered!",
-                "type": "string"
-              }
-            },
-            "required": ["sessionId"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "fd30fd248aeac94864f5e1c7c74c615f6df65010b391bac965ab1263e0f97b27",
-          "schemaHash": "787e26e82d0889c94b26c9c9bf08d0899899b9c8644649dd73ff41584df05b72"
-        },
-        "multi_browserbase_stagehand_session_create": {
-          "annotations": null,
-          "approved": true,
-          "description": "Create parallel browser session for multi-session workflows. Use this when you need multiple browser instances running simultaneously: parallel data scraping, concurrent automation, A/B testing, multiple user accounts, cross-site operations, batch processing, or any task requiring more than one browser. Creates an isolated browser session with independent cookies, authentication, and state. Always pair with session-specific tools (those ending with '_session'). Perfect for scaling automation tasks that require multiple browsers working in parallel.",
-          "firstSeen": "2026-10-18T15:07:22.148Z",
-          "hash": "2280687b5ac9fad8bcf3050be92f920a09cbf1d39527d41c35a3f6e858757a90",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "browserbaseSessionID": {
-                "description": "Resume an existing Browserbase session by providing its session ID. Use this to continue work in a previously created browser session that may have been paused or disconnected.",
-                "type": "string"
-              },
-              "name": {
-                "description": "Highly recommended: Descriptive name for tracking multiple sessions (e.g. 'amazon-scraper', 'user-login-flow', 'checkout-test-1'). Makes debugging and session management much easier!",
-                "type": "string"
-              }
-            },
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.148Z",
-          "proseHash": "7540fd99a9c78dfee7c2d89a6fee7712c56869559010b66bbf08172e3f3362cd",
-          "schemaHash": "0ec31b8b487cf8df8d13de8954d1270f432756e7ee540660cc4961d371a11874"
-        },
-        "multi_browserbase_stagehand_session_list": {
-          "annotations": null,
-          "approved": true,
-          "description": "ONLY WORKS WITH MULTI-SESSION TOOLS! Track all parallel sessions: Critical tool for multi-session management! Shows all active browser sessions with their IDs, names, ages, and Browserbase session IDs. Use this frequently to monitor your parallel automation workflows, verify sessions are running, and get session IDs for session-specific tools. Essential for debugging and resource management in complex multi-browser scenarios.",
-          "firstSeen": "2026-10-18T15:07:22.149Z",
-          "hash": "fb36e69f5b78544bb27bd511a8fc95bdcc65626781c210d1b66bf5f006edde89",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "properties": {
-
-            },
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:07:22.149Z",
-          "proseHash": "3dbbb019380ebf54b6912b2854e8572128959d9f0068c90e3385773cf4fa6940",
-          "schemaHash": "b7ba46da5fbadda7b2e231fe0dddac5f0623cb580b3be09742f67099c575d06e"
         }
       }
     }

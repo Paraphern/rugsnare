@@ -4,7 +4,7 @@ npm 195k+ installs/week. Two verified windows, graded with rugsnare 1.4.3, 2026-
 
 **Recent window 2.4.1 -> 2.5.2: 0 findings.** Zero contract drift across three months of minor releases. A fast-moving, heavily installed official server whose tool contracts stayed byte-stable - evidence that disciplined publishing exists, and the yardstick "silent drift" is measured against. (The 2026-10-13 pin with all 24 tools: [pins/notion@2.4.1.json](../../audits/drift-watch/pins/notion@2.4.1.json).)
 
-**Full-history window 1.0.0 -> 2.5.2: 27 findings.** Tools 19 -> 27. Even the disciplined vendor drifted over the long arc:
+**Full-history window 1.0.0 -> 2.5.2: 27 findings.** Tools 19 -> 24. Even the disciplined vendor drifted over the long arc:
 
 - **1 BREAKING** - `API-patch-page`
 - **4 LOOSENED** - `API-post-search`, `API-update-a-block`, `API-post-page`, +1

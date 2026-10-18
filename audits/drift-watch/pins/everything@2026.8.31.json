@@ -13,172 +13,75 @@
         "resolvedVersion": "2026.8.31",
         "url": null
       },
-      "pinnedAt": "2026-10-18T15:01:03.320Z",
+      "pinnedAt": "2026-10-18T15:44:15.252Z",
       "prompts": {
         "args-prompt": {
           "description": "A prompt with two arguments, one required and one optional",
-          "firstSeen": "2026-10-18T15:01:12.020Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "55ede49d9079e4fe38e6e0d22432194dd4aca8380a1ebdc2360d44232c75db6b"
         },
         "completable-prompt": {
           "description": "First argument choice narrows values for second argument.",
-          "firstSeen": "2026-10-18T15:01:12.020Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "cb5275973d39cb526b34290cd3d5b3c3d6e1419fa0868d07d4a77e3dfac1966b"
-        },
-        "complex_prompt": {
-          "description": "A prompt with arguments",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "048121ace90580a1b710e4dba28d030fbd7ec119994a62b94791442a95f498d1"
         },
         "resource-prompt": {
           "description": "A prompt that includes an embedded resource reference",
-          "firstSeen": "2026-10-18T15:01:12.020Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "f12d0e2427f3c67f7d04efefd3547708d1f3164c9ba962bdcb2085deb898750a"
         },
         "simple-prompt": {
           "description": "A prompt with no arguments",
-          "firstSeen": "2026-10-18T15:01:12.020Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "cf7ff079d9c0929b7da9e2f0acc04020adf0c27626c3c48568ae5c22621a5c3d"
-        },
-        "simple_prompt": {
-          "description": "A prompt without arguments",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "9ae39dfd33ec22b047f34a308a1a00c38f64921578f7411b32c4389d5f168975"
         }
       },
       "resources": {
-        "Resource 1": {
-          "contentHash": "d70a871e53478e830502f9c1d2cce17e14403531c51c12e975f630ab67021d79",
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "ef292559cc2fb8f555d515b0165c88247e976d9d1ab0cec820203dcb527a3949"
-        },
-        "Resource 10": {
-          "contentHash": null,
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "b0ef19f37c18d732ffdea98128be2a4dc48af127145060532d0657543a1048df"
-        },
-        "Resource 2": {
-          "contentHash": null,
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "1aa55f8843acd9d99d262f8e6dac2c420d22b1a38d1a4c600ec9fa8b4a91546b"
-        },
-        "Resource 3": {
-          "contentHash": "bd4f74974a44a3e4f962aef0c97e16b8b5595c954f60cd4beffd24854ed2567c",
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "dfe6c874642ad8496fc4edb42e8ae4dfa357ff6e3d87e4c5d85815f9110636e9"
-        },
-        "Resource 4": {
-          "contentHash": null,
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "018c4e0710d0d587e76e4523412363cbc3fc4923579bc55fefa7b965eb9636e7"
-        },
-        "Resource 5": {
-          "contentHash": "507270e2eaf491055f3ff5fea1e9a16967a0187cf663288cf3cbd4842181aa9f",
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "e0bc6796a96189df47f82914bc66f4c75e4f60be454fdbdd4d3d90a5223850ff"
-        },
-        "Resource 6": {
-          "contentHash": null,
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "5f2710a33db9348fb0ff547706da1d97815a2d76d28509180eb397821465811d"
-        },
-        "Resource 7": {
-          "contentHash": "1ae39466d874ca8c8d1b507cd67a604de18ee6ccba81c734ecdf508e9b61ad01",
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "002c1f17f9005379be30081417b662f9752eafe0a3a25a51a077bb04b0080ee3"
-        },
-        "Resource 8": {
-          "contentHash": null,
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "04535d93669dfacbd71a18abfd99e96b78feb3b843d27f827e6c303a30070ac9"
-        },
-        "Resource 9": {
-          "contentHash": "56f88ee78d00f5d795a6ea8a07e21fafb227c8b572c16768ed4fd4727ecf10f5",
-          "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
-          "hash": "f5154007e0af4c859005553935fed0a7e057f820cc2852768ae61c3865dfc2b6"
-        },
         "architecture.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: architecture.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "2c20d670559c5f8e5c1fdc5083748904ff777a50f5923037e69f796b988e1285"
         },
         "extension.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: extension.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "47ef1bd632531fe13787c5932c560955438255e453704f6323c39409df651b6a"
         },
         "features.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: features.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "a08e8c87acd23077793275612cade06c10232b5fd1bf002d64c9799653d45ce8"
         },
         "how-it-works.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: how-it-works.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "ce967617e2adb7bb0d791e555900c0a2b75a3dfda0530b01457f72f5ccd733f0"
         },
         "instructions.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: instructions.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "1c195708b086444f539cda90255b565d69cf06149598e32b8c924a67baad654f"
         },
         "startup.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: startup.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "224e8dc0f1250a1c218d51d4ace93b5fb4ef08c06f9b7bec4eef23a166455039"
         },
         "structure.md": {
           "contentHash": null,
           "description": "Static document file exposed from /docs: structure.md",
-          "firstSeen": "2026-10-18T15:01:12.021Z",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
           "hash": "85cf6cdfbb158db69d51a7a9af2b3611828145416ddaadf9dffe2a96d2d7868f"
         }
       },
       "scannedAgainst": "@modelcontextprotocol/server-everything@2026.8.31",
       "tools": {
-        "add": {
-          "annotations": null,
-          "approved": true,
-          "description": "Adds two numbers",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
-          "hash": "3bc6ebbd1ad270ccdfa0c28ee35f854eb3cd34318f6488d0642611af6cdb2757",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "a": {
-                "description": "First number",
-                "type": "number"
-              },
-              "b": {
-                "description": "Second number",
-                "type": "number"
-              }
-            },
-            "required": ["a","b"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
-          "proseHash": "1efcb1f3567517e507fe44f6853681a389c3ac9ec493ea45f8e0da09b2d6aaf8",
-          "schemaHash": "b5e7636f67327947cb9cd2e836cd25ad71390b98f05c51b1cef09b6d86c3c0e2"
-        },
         "echo": {
           "annotations": {
             "destructiveHint": false,
@@ -188,7 +91,7 @@
           },
           "approved": true,
           "description": "Echoes back the input string",
-          "firstSeen": "2026-10-18T15:01:03.323Z",
+          "firstSeen": "2026-10-18T15:44:15.256Z",
           "hash": "87a6b5c343ddeeed1922f71fdce50c470e5f572d675ad848b1e3781e01463abe",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -202,7 +105,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.017Z",
+          "pinnedAt": "2026-10-18T15:44:15.256Z",
           "proseHash": "4d00e170dfb2475b38d7c595d6b83ddc873f4119814d8c3e96321a53aaf18fca",
           "schemaHash": "5dbbd91b9bf026a4e72ab8f7b03a9c499eb50aaf77b033401a70797cfea7c755"
         },
@@ -215,7 +118,7 @@
           },
           "approved": true,
           "description": "Demonstrates how annotations can be used to provide metadata about content.",
-          "firstSeen": "2026-10-18T15:01:12.018Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "e2dc5dd6b859e8246fb25583d4fbce6bfc210ae8afaef6701e3d0a7f251b93e8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -235,7 +138,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.018Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "6050c40378a145a00c1912f5904b37edb1266ce1c43fa430b6655a6f302d5222",
           "schemaHash": "c30bd1be684732c7ed09df1f2dab66346003f74e6cb5898c083f46045d081c5d"
         },
@@ -248,7 +151,7 @@
           },
           "approved": true,
           "description": "Returns all environment variables, helpful for debugging MCP server configuration",
-          "firstSeen": "2026-10-18T15:01:12.018Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "95de105e967bcf1fd5060892121192d6725149d42be8031464799e186bc3d6a5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -258,7 +161,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.018Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "41cecdc4e2e1e3ab2be769fefe6cb155289da5ade9c381a1578bda7948111c26",
           "schemaHash": "e9856fd5b84285260762540febf5471c37f9ae703f4bc8ff3a23b85ad94e9846"
         },
@@ -271,7 +174,7 @@
           },
           "approved": true,
           "description": "Returns up to ten resource links that reference different types of resources",
-          "firstSeen": "2026-10-18T15:01:12.018Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "f9febf0e0f7ef468c08bfcaab44108f8d0ecedd2248f0dc6b7b282e70157f6c8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -287,7 +190,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.018Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "0574c9e3571c77380de27d3927dbac8133e68c558150b8f0b95d2e884403613c",
           "schemaHash": "58d0bc4517a22089b8b4f561407582781fc74841b1fbfba500b9d714e89a9074"
         },
@@ -300,7 +203,7 @@
           },
           "approved": true,
           "description": "Returns a resource reference that can be used by MCP clients",
-          "firstSeen": "2026-10-18T15:01:12.018Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "5e3b65b8d495e8350f7e52b3cd82b622d4d8e1ea82479eef15741d296d1d2345",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -319,7 +222,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.018Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "f65488ea8977f68a7680a0ba04efa98d742a3007664649c9e00899f43f1d89de",
           "schemaHash": "969a4053eb93bae1e8bcf6c50661ce79da5a19d14af6ca7cead8023727a2dfc1"
         },
@@ -332,7 +235,7 @@
           },
           "approved": true,
           "description": "Returns structured content along with an output schema for client data validation",
-          "firstSeen": "2026-10-18T15:01:12.018Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "24fd310fc318335d22160e7652f6061a5bd25789133bce62e0f07eb858e85b13",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -347,7 +250,7 @@
             "type": "object"
           },
           "outputHash": "c2b0083215a57373f29510b3ef2b41bf44c11505693062311190519759aba475",
-          "pinnedAt": "2026-10-18T15:01:12.018Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "276d76ef534072c914d17df7855f06d6c44a8c5be3ee2b8eb686afdeb357d88c",
           "schemaHash": "b748c1abca732d096a75348c93a7953425c0d471248e8f38f4d34ee4549a67bb"
         },
@@ -360,7 +263,7 @@
           },
           "approved": true,
           "description": "Returns the sum of two numbers",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "090e34d8f6e1cb4c079f4d9cc62e4c105d67fa629dc3af18c2aba2bba5891489",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -378,7 +281,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "98b4e89d761c05f63a8acce7100a3950f49ca67537dea3716c0ba2a9431316f9",
           "schemaHash": "f222ff8a28adbfa01fd09bab57cf4e8b23effc86c749f9fcea1a34ab1cc1051d"
         },
@@ -391,7 +294,7 @@
           },
           "approved": true,
           "description": "Returns a tiny MCP logo image.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "945e15749abef23ba3a1cbf4f22caddfaed882a65a6fd109f2bd9ae40beeb945",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -401,28 +304,9 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "7eba2275ba1ae93a58102c84bcd8f1fb29126fb998d3cbd2947457cdbe685bde",
           "schemaHash": "c868ebeb6b2e01a02f5802bdfde246ae9efc7779af477d8ebbbdadbf4feba240"
-        },
-        "getTinyImage": {
-          "annotations": null,
-          "approved": true,
-          "description": "Returns the MCP_TINY_IMAGE",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
-          "hash": "a6dd0bade5370c56515cb3731ae4145442522fa915d8664ea888c5098f141c90",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-
-            },
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
-          "proseHash": "e05d66ca9c64728b0a6bb482363447a84c28caffab8df5c51e604876fd30b6fb",
-          "schemaHash": "9e853d38bf02a514eb1eb6162a75f0b11f1c4f306f71e88c6b0491383ac80b32"
         },
         "gzip-file-as-resource": {
           "annotations": {
@@ -433,7 +317,7 @@
           },
           "approved": true,
           "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "ecf41b3e2d4f69333bf6f1f3c26387923005722e50fc53abd0274d2f3b34a1b9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -459,65 +343,9 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "e74512860ba0e5a1d47699b6bc8099970a510674295e14a861287882ed715243",
           "schemaHash": "f362c7ad6bf900bc3310fd58ebdbcdd98be5dc9edc1e8e39c65018d69630cbdc"
-        },
-        "longRunningOperation": {
-          "annotations": null,
-          "approved": true,
-          "description": "Demonstrates a long running operation with progress updates",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
-          "hash": "d53eca14aecc5ee3410cf5da8b8ec14d2fefa062774ac47096fc75ec55f0d07f",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "duration": {
-                "default": 10,
-                "description": "Duration of the operation in seconds",
-                "type": "number"
-              },
-              "steps": {
-                "default": 5,
-                "description": "Number of steps in the operation",
-                "type": "number"
-              }
-            },
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
-          "proseHash": "56b51dc5e58071626c7d2658ccc5f1e252cbc9cae02a03d228fbb82ca57d5562",
-          "schemaHash": "5cd3b6cf0498f06800396ead1a16ec3b8447b099ac334c6988bd97238b30f667"
-        },
-        "sampleLLM": {
-          "annotations": null,
-          "approved": true,
-          "description": "Samples from an LLM using MCP's sampling feature",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
-          "hash": "505f491c4b696b70a9c49d267e71e04ee000f7090a03971264f3eeb739949463",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "maxTokens": {
-                "default": 100,
-                "description": "Maximum number of tokens to generate",
-                "type": "number"
-              },
-              "prompt": {
-                "description": "The prompt to send to the LLM",
-                "type": "string"
-              }
-            },
-            "required": ["prompt"],
-            "type": "object"
-          },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
-          "proseHash": "585d6f5a9315c93685cfc6daa069743de7a0b05e1a055e593cb413d2dd466363",
-          "schemaHash": "642e5ca9d3fdcf9148c46a86edd76bc168e40dab730f1af73b7db233640c66cb"
         },
         "simulate-research-query": {
           "annotations": {
@@ -528,7 +356,7 @@
           },
           "approved": true,
           "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "048a7f704c1efd20baa40df316ec000e3e6830435fce117db553172f89d39b7a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -547,7 +375,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "f5f7e777245aa22952c650a222f0ee442c52bf6fc697e1577fe29a1588d78d58",
           "schemaHash": "9d02fa7f11c778f21f0798b9768422b8402a559dbeaa7148e8e07a9e3c4d1806"
         },
@@ -560,7 +388,7 @@
           },
           "approved": true,
           "description": "Toggles simulated, random-leveled logging on or off.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "cbe3245cd4d770b26c9643f2ef726bff083802c1f3b619d6a0bf1dcdaed6fff0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -570,7 +398,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "4ece88d0dc82c58f375c0df4229b4fad8a4ee98398486f5d3e64f8b5d1f2219d",
           "schemaHash": "cd30a1c26caa0371dd94f58e22af111fbe8c17f8b7b77c1b21dd97eab0fa3270"
         },
@@ -583,7 +411,7 @@
           },
           "approved": true,
           "description": "Toggles simulated resource subscription updates on or off.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "d383d176f3fe178244980d05e402f6e3750cf91177f444155cf89661a63c6de3",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -593,7 +421,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "8d2608e7a48902396a0c7b08e56cfdcf93667ecd09de825d71a6c47b207f22c8",
           "schemaHash": "941c37159ed364507d683a6fbc59f3c44fcc343109271bda7931af1cdeeb1ee9"
         },
@@ -606,7 +434,7 @@
           },
           "approved": true,
           "description": "Demonstrates a long running operation with progress updates.",
-          "firstSeen": "2026-10-18T15:01:12.019Z",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
           "hash": "7efbac46cf0b694fa8e4d07440e16b14900fd884527a065317edd85b8625162b",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -625,7 +453,7 @@
             "type": "object"
           },
           "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:12.019Z",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
           "proseHash": "d047c3fcbcb25a9255d0bd7584d019509a8aa5a181ce7e3c6109d76ea820d125",
           "schemaHash": "d96aae33ebcef41d5a34c4a11386cfb2c571ea59af5d7c635f405b0ef32666e2"
         }

@@ -1,6 +1,6 @@
 # @browserbasehq/mcp-server-browserbase (Browserbase)
 
-npm 1,598 installs/week. Verified window 2.0.0 -> 2.4.3 (19 findings). Graded with rugsnare 1.4.3, 2026-10-18. Tools 14 -> 16.
+npm 1,598 installs/week. Verified window 2.0.0 -> 2.4.3 (19 findings). Graded with rugsnare 1.4.3, 2026-10-18. Tools 14 -> 9.
 
 The clean demonstration that "minor-looking" releases still rewire the agent surface: the multi-session Stagehand surface was removed wholesale and a new agent tool appeared, at 2.x with no major bump.
 

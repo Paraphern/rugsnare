@@ -35,6 +35,8 @@ const { toolHash } = await mod('hash.js');
 const { comparePinned, promptHash, resourceHash } = await mod('prompts.js');
 const { readJsonFile } = await mod('jsonfile.js');
 
+const pins = loadPins(cwd);
+
 // ---- 0. POLICY stop-rule (PIN-SPEC §3.1) ----
 // The pin store records the verifier policy that graded it. When a newer
 // rugsnare grades old pins, the CLI stops with exactly one POLICY finding.
@@ -71,7 +73,6 @@ if ((pins.policyVersion ?? null) !== currentPolicy) {
 // ---- 1. run the diff (in-process) ----
 const configPath = path.isAbsolute(configFile) ? configFile : path.join(cwd, configFile);
 const config = readJsonFile(configPath);
-const pins2 = pins; // same store, already loaded
 
 const servers = Object.fromEntries(
   Object.entries(config.mcpServers ?? {}).filter(([, v]) => v && typeof v.command === 'string')

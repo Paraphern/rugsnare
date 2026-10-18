@@ -1,6 +1,6 @@
 # @transcend-io/mcp-server-dsr (Transcend)
 
-84 stable versions on npm - the highest release count we have scanned. Verified window 0.2.0 -> 2.0.13 (15 findings; 7 BREAKING). Graded with rugsnare 1.4.3, 2026-10-18. Tools 12 -> 14.
+84 stable versions on npm - the highest release count we have scanned. Verified window 0.2.0 -> 2.0.13 (15 findings; 7 BREAKING). Graded with rugsnare 1.4.3, 2026-10-18. Tools 12 -> 10.
 
 Privacy/data-subject-request surface: these tools move customer PII (submit, export, erase). Silent contract changes here are compliance-relevant, not just breaking.
 
