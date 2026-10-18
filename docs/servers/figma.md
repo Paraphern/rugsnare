@@ -2,6 +2,8 @@
 
 Community Figma Dev Mode MCP server (widely used as the Figma bridge for coding agents). Package: [figma-developer-mcp](https://www.npmjs.com/package/figma-developer-mcp), ~91k installs/week.
 
+**Registry identity:** `io.github.GLips/Figma-Context-MCP` (community). This is **not** the official Figma MCP server (`com.figma.mcp/mcp`, hosted remote) - a row labeled "figma" can describe two different servers depending on where you look.
+
 **Window:** 0.7.0 -> 0.13.2 (17 releases). **Findings: 2 (both NOTATION).**
 
 ```

@@ -2,6 +2,8 @@
 
 npm 264,539 installs/week - window 2.4.0 -> 2.11.0.
 
+**Registry identity:** `io.github.hostinger/hostinger-api-mcp` exists in the official MCP Registry, but its version line (0.1.x through 1.x) is **disjoint** from the npm package (2.x). These are two separate artifacts under one name - see [registry-mapping](../../audits/drift-watch/registry-mapping.json).
+
 **Findings: 6 injected agent-skill resources.** Between 2.4.0 and 2.11.0 six SKILL.md resources appeared, none mentioned in docs or changelog:
 
 - audit-hosting/SKILL.md
