@@ -59,3 +59,33 @@ If something after a release needs rebuilding:
 
 A tag may only be re-pointed BEFORE anything consumed it (npm publish, on-chain
 pin, GitHub Release) — after that it is history.
+
+## Publishing the PR-diff Action (Paraphern/rugsnare-pr-diff)
+
+The action iterates in this repo (`action/pr-diff/`, exercised by
+`pr-diff-demo.yml` via `uses: ./action/pr-diff`), but external users install
+it from a separate repository. Publishing is a manual step and MUST run with
+every rugsnare release that changes `action/pr-diff/` — this section exists
+because v1.1.0 (2026-10-12) stayed the published version for six days while
+the in-repo copy gained direction grading, prompts/resources comparison and
+the POLICY stop, all invisible to `@v1` users.
+
+1. Sync files to `Paraphern/rugsnare-pr-diff` (contents API, payload file —
+   `-f` args break on the 8191-char cmd limit with base64 bodies):
+   `action/pr-diff/pr-comment.mjs` and `action/pr-diff/action.yml`
+   (README lives only in the action repo).
+2. In `action.yml`, bump the `rugsnare-ref` default to the rugsnare release
+   tag being shipped (never `main`: the action checks other people's pinning
+   discipline, so it pins itself). The default must be a tag where every API
+   the script imports exists (comparePinned, policyVersionFor — v1.4.3+).
+3. Tag `vX.Y.Z` on the action repo HEAD **after** all file commits, then cut
+   the GitHub Release. Release notes state what changed since the previous
+   action version and the verification case (findings shown vs previous).
+4. Move the floating major tag (`v1`) to the new commit — it is a pointer by
+   convention, not a release tag; the immutability rule above does not
+   apply to it, but `uses: @v1` installs resolve through it.
+5. Verify at the tag, not at `main`: (a) fetch each file at `?ref=vX.Y.Z`
+   and hash-compare against local; (b) full-fidelity run — clone rugsnare at
+   the `rugsnare-ref` default tag, run the published `pr-comment.mjs`
+   (RUGSNARE_SRC=<clone>/product/src) against a known drift stand, expect
+   the exact findings count and exit 1.
