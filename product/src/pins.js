@@ -267,8 +267,10 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
  *   title           absent = null (display prose, social-engineering vector)
  *
  * Excluded by design (v1.2 decision, from the autogen#7353 thread):
- *   icons           SVG can contain scripts (spec warning) - pinned via
- *                   toolHash, not annotations; a changed icon = hash drift
+ *   icons           SVG can contain scripts (spec warning) - NOT YET PINNED.
+ *                   Adding icons to toolHash changes every tool's hash, so
+ *                   it ships with 1.5.0 where policyVersion bump triggers
+ *                   POLICY stop for legacy pins (not a silent re-grade).
  *   _meta           client-specific metadata, not behavioral
  *
  * A server spelling out a hint it was already relying on changes nothing
