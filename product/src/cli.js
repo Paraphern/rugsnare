@@ -730,7 +730,12 @@ async function cmdApprove(flags, serverName) {
   const nextResources = {};
   for (const r of resources) {
     const key = r.name ?? r.uri ?? '(unnamed)';
-    nextResources[key] = { hash: resourceHash(r), description: r.description ?? '', firstSeen: prevResources[key]?.firstSeen ?? now };
+    // P2 (preverification): preserve contentHash across approve - without
+    // this, approve nulls contentHash and the next diff gives a false
+    // resource-DRIFT on unchanged text
+    const { resourceContentHash } = await import('./prompts.js');
+    const contentHash = resourceContentHash(r) ?? prevResources[key]?.contentHash ?? null;
+    nextResources[key] = { hash: resourceHash(r), description: r.description ?? '', contentHash, firstSeen: prevResources[key]?.firstSeen ?? now };
   }
   serverPin.resources = nextResources;
 

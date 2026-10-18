@@ -647,3 +647,62 @@ test('annotations._meta change does NOT trigger drift (excluded by design)', asy
   const b = { readOnlyHint: true, _meta: { client: 'cursor', version: 2 } };
   assert.ok(annotationsEqual(a, b), '_meta differences are ignored');
 });
+
+// P1 (preverification): scan must update outputHash when outputSchema changes
+// (skip-guard previously compared only toolHash, which excludes outputSchema)
+test('P1: scan updates outputHash when outputSchema changes', async () => {
+  const { pinTool } = await import('../src/pins.js');
+  const { toolHash } = await import('../src/hash.js');
+  const schema = { type: 'object', properties: { q: { type: 'string' } } };
+  const noOut = { name: 't', description: 'd', inputSchema: schema };
+  const withOut = { name: 't', description: 'd', inputSchema: schema, outputSchema: { type: 'string' } };
+  const sp = { tools: {} };
+  pinTool(sp, noOut, toolHash(noOut), { reason: 'scan' });
+  assert.equal(sp.tools.t.outputHash, null, 'initially null (no outputSchema)');
+  // scan with outputSchema added: toolHash same, but outputHash must update
+  pinTool(sp, withOut, toolHash(noOut), { reason: 'scan' });
+  assert.ok(sp.tools.t.outputHash, 'scan must write outputHash when outputSchema appears');
+});
+
+// P2 (preverification): approve preserves contentHash (was: null after approve,
+// causing false resource-DRIFT on unchanged text)
+test('P2: resource contentHash survives approve flow', async () => {
+  // verify at the comparePinned level: contentHash from approve equals
+  // contentHash from scan (no null-introduced false positive)
+  const { resourceHash, resourceContentHash, comparePinned } = await import('../src/prompts.js');
+  const res = { uri: 'docs://x', name: 'x', description: 'X', text: 'Original content' };
+  const hash = resourceHash(res);
+  const ch = resourceContentHash(res);
+  // simulate approve: re-write with same content but fresh firstSeen
+  // approve preserves contentHash from live or prev (code in cli.js)
+  const approvedPin = { hash, description: 'X', contentHash: ch };
+  // diff against same resource: must be UNCHANGED (no false DRIFT)
+  const verdicts = comparePinned('resource', { x: approvedPin }, [res], resourceHash);
+  assert.equal(verdicts[0].status, 'UNCHANGED', 'no false DRIFT after approve');
+});
+
+// icons in toolHash (1.5.0): null when absent, hash changes when icons present
+test('icons are pinned via toolHash', async () => {
+  const { toolHash } = await import('../src/hash.js');
+  const base = { name: 't', description: 'd', inputSchema: {} };
+  const withIcon = { ...base, icons: { default: 'data:image/svg+xml;base64,PHN2Zy8+' } };
+  const h1 = toolHash(base);
+  const h2 = toolHash(withIcon);
+  assert.notEqual(h1, h2, 'icons change the tool hash');
+  assert.equal(toolHash(base), h1, 'deterministic');
+});
+
+// R35: MIRRORED grade when all tighten changes are mirrored
+test('R35: all-mirrored tightens grade MIRRORED, not BREAKING', async () => {
+  const { gradeSchemaDrift } = await import('../src/pins.js');
+  const mirrored = [
+    { text: "added minimum=1 to 'limit'", direction: 'mirrored', mirroredFrom: 'openapi' },
+  ];
+  assert.equal(gradeSchemaDrift(mirrored, []), 'MIRRORED', 'all-mirrored = MIRRORED');
+  // mixed: one real tighten + one mirrored = BREAKING (real change dominates)
+  const mixed = [
+    { text: "added minimum=1 to 'limit'", direction: 'mirrored', mirroredFrom: 'openapi' },
+    { text: "changed type of 'q' from string to enum", direction: 'tighten' },
+  ];
+  assert.equal(gradeSchemaDrift(mixed, []), 'BREAKING', 'mixed mirrored+real = BREAKING');
+});

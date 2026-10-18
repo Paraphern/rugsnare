@@ -257,4 +257,4 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **v1.4.3** | ✅ shipped | POLICY stop-rule (PIN-SPEC §3.1): when the pin store's policyVersion differs from the running binary, diff emits the POLICY finding and STOPS - exactly one finding, no tool-level classes follow. Each re-graded class would look like ordinary drift to anyone who scrolled past the POLICY line; the spec says "stops for that pin", and now the code does too · [on-chain pin](https://basescan.org/tx/0x04354ca5de51e67a5b977d88720b03d76a074d5ab7f11c80036bd3f940e095e8) |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · R35 MIRRORED class + R36 openapi-crosscheck · R37 scan `--prune` (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
 
-*359 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*375 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

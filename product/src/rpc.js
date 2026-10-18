@@ -109,7 +109,25 @@ export function fetchTools({ command, args = [], env = {}, cwd, timeoutMs = 1500
       } catch { /* server doesn't support prompts - fine */ }
       try {
         const rr = await request('resources/list', {});
-        if (rr?.result?.resources) resources = rr.result.resources;
+        if (rr?.result?.resources) {
+          resources = rr.result.resources;
+          // R13 full: read the content of each text resource (not just the
+          // list envelope). Some servers include text in list; others need
+          // a separate resources/read call. Cap at 20 reads to avoid DoS.
+          const withText = resources.filter((r) => typeof r.text === 'string' && r.text.length > 0);
+          const withoutText = resources.filter((r) => !(typeof r.text === 'string' && r.text.length > 0));
+          const toRead = withoutText.slice(0, 20);
+          for (const r of toRead) {
+            if (!r.uri) continue;
+            try {
+              const rd = await request('resources/read', { uri: r.uri });
+              if (rd?.result?.contents?.[0]?.text) {
+                r.text = rd.result.contents[0].text;
+                if (rd.result.contents[0].mimeType) r.mimeType = rd.result.contents[0].mimeType;
+              }
+            } catch { /* unreadable resource - envelope pin only */ }
+          }
+        }
       } catch { /* server doesn't support resources - fine */ }
 
       finish(resolve, { tools, prompts, resources });
