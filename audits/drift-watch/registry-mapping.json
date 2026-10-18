@@ -1,0 +1,27 @@
+{
+  "comment": "Corpus slug -> MCP Registry id. Built 2026-10-18 via registry search API (WebFetch). null = not found in registry or no official entry. Community entries noted where relevant.",
+  "servers": {
+    "chrome-devtools": {"registryId": "io.github.ChromeDevTools/chrome-devtools-mcp", "note": "official"},
+    "mongodb": {"registryId": "io.github.mongodb-js/mongodb-mcp-server", "note": "official"},
+    "hostinger": {"registryId": "io.github.hostinger/hostinger-api-mcp", "note": "official; registry version line 0.1.x-1.x is disjoint from npm 2.x (two artifacts)"},
+    "browserstack": {"registryId": "io.github.browserstack/mcp-server", "note": "official; registry latest 2.2.3"},
+    "context7": {"registryId": "io.github.upstash/context7", "note": "official"},
+    "currents": {"registryId": "io.github.pipeworx-io/currents", "note": "pipeworx is the Currents company; also dev.currents/mcp"},
+    "figma": {"registryId": "io.github.GLips/Figma-Context-MCP", "note": "community server we track; the official is com.figma.mcp/mcp (different namespace, not our corpus)"},
+    "sentry": {"registryId": "io.github.getsentry/sentry-mcp", "note": "getsentry org; our npm package is @sentry/mcp-server - may be a different artifact"},
+    "supabase": {"registryId": null, "note": "no clear official entry; io.github.mcp-dir/supabase-mcp is community; npm @supabase/mcp-server-supabase may not be registered"},
+    "azure-devops": {"registryId": null, "note": "not found in search"},
+    "notion": {"registryId": null, "note": "no official @notionhq entry; community alternatives exist"},
+    "heroku": {"registryId": null, "note": "no official entry; io.github.dsouzaAnush/heroku-code-mcp is community"},
+    "launchdarkly": {"registryId": null, "note": "io.github.pipeworx-io/launchdarkly exists but uncertain provenance"},
+    "netlify": {"registryId": null, "note": "all entries are app.netlify.* format, not io.github.*"},
+    "bybit": {"registryId": null, "note": "not found; trading-mcp npm package may not be registered"},
+    "apify": {"registryId": null, "note": "not searched yet"},
+    "transcend": {"registryId": null, "note": "not searched yet"},
+    "sap-fiori": {"registryId": null, "note": "not searched yet"},
+    "hubspot": {"registryId": null, "note": "no official HubSpot entry; community alternatives exist"},
+    "ui5": {"registryId": null, "note": "not searched yet"},
+    "shopify": {"registryId": null, "note": "no official @shopify/dev-mcp entry; community shopify MCP servers exist"},
+    "firebase": {"registryId": null, "note": "not searched yet"}
+  }
+}
