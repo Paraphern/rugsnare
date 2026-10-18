@@ -4,7 +4,8 @@
 
 [![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
 [![rugsnare](https://rugsnare.com/badge/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare#trust-model)
-[![Glama rating](https://glama.ai/mcp/servers/Paraphern/rugsnare/badges/score.svg)](https://glama.ai/mcp/servers/Paraphern/rugsnare)
+[![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
 [![Dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
@@ -81,6 +82,33 @@ rugsnare verify <artifact.tgz> --version <v>   # check an artifact against the o
 ```
 
 Each tool's `{ name, description, inputSchema }` is canonicalized and hashed - so both poisoned descriptions and hidden "session" parameters in schemas trip the pin, while cosmetic reordering doesn't.
+
+### GitHub Action (CI gate, one line)
+
+After `rugsnare scan` and committing `.rugsnare/pins.json`, add this to any workflow:
+
+```yaml
+- uses: Paraphern/rugsnare/.github/actions/diff@v1
+```
+
+That's it. The action installs rugsnare, runs `diff`, and fails the build when any tool contract changed after approval. Optional inputs:
+
+```yaml
+- uses: Paraphern/rugsnare/.github/actions/diff@v1
+  with:
+    config: .mcp.json           # path to your MCP config (default: .mcp.json)
+    version: '1.4.3'            # pin the rugsnare version (default: 1.4.3)
+    schema-only: 'true'         # fail only on BREAKING/EXPANDED (skip prose edits)
+    sarif: 'true'               # also emit a SARIF report for code scanning
+```
+
+Badge for your README:
+
+```markdown
+![rugsnare](https://rugsnare.com/badge/YOUR_USERNAME/YOUR_REPO.svg)
+```
+
+Shows `N tools · N skills` in green when pinned, gray when not.
 
 ### Live proxy (optional, v0.2+)
 

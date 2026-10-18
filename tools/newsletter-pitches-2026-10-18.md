@@ -81,7 +81,11 @@ Would this work as a Changelog news item or full guest post?
 
 ## 4. TLDR DevOps
 
-**To:** через форму на https://tldr.tech/submit
+**How to submit:** Нет публичной формы (tldr.tech/submit = 404). Два пути:
+1. Reply на любой выпуск TLDR DevOps (каждое письмо имеет reply-to)
+2. Twitter: @tldrnewsletter (DM или mention)
+
+**Subject (если reply):** [Link Submission] rugsnare - MCP contract drift detection for CI
 
 **Subject:** [Link Submission] rugsnare - MCP contract drift detection for CI
 
@@ -98,9 +102,12 @@ Project: https://github.com/Paraphern/rugsnare
 
 ---
 
-## 5. Bytes
+## 5. Bytes (by Fireship)
 
-**To:** через контакт на https://bytes.dev (или ответ на любую рассылку)
+**How to submit:** Нет публичной формы. sponsor@fireship.dev = только реклама.
+Путь: reply на любой выпуск Bytes newsletter.
+
+**Subject (если reply):** [Suggestion] rugsnare - your AI agent follows instructions you never approved
 
 **Subject:** [Suggestion] rugsnare - your AI agent follows instructions you never approved
 
@@ -125,7 +132,9 @@ Drift corpus: https://github.com/Paraphern/rugsnare/tree/main/audits/drift-watch
 
 ## 6. PortSwigger Weekly
 
-**To:** через контактную форму на https://portswigger.net
+**To:** hello@portswigger.net (общий контакт; research = in-house, но можно спросить)
+
+**Subject:** [Research Pitch] MCP contract drift as a supply chain vector
 
 **Subject:** [Research Pitch] MCP contract drift as a supply chain vector
 

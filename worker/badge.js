@@ -2,7 +2,7 @@
 //
 // Fetches the repo's committed .rugsnare/pins.json and renders a
 // shields.io-style SVG showing how many tools and skills are pinned.
-// No server-side state — all information comes from the user's public
+// No server-side state - all information comes from the user's public
 // repository. This is the viral loop: every repo with our badge is
 // free advertising.
 
