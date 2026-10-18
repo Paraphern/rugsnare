@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.0] - unreleased
+## [1.5.0] - 2026-10-18
 
 ### P1: scan updates outputHash (preverification fix)
 

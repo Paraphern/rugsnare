@@ -1,64 +1,76 @@
 {
-  "version": 1,
+  "policyVersion": "rugsnare-1.5.0",
   "servers": {
     "cloudflare-docs": {
       "cmd": {
         "url": "https://docs.mcp.cloudflare.com/mcp"
       },
+      "identity": {
+        "entryPath": null,
+        "identityHash": "sha256:1e6e4f8221369aa496dbce880601f3b564c3d0b1d1bfedbc109f0587a2fb505f",
+        "package": null,
+        "resolvedVersion": null,
+        "url": "https://docs.mcp.cloudflare.com/mcp"
+      },
       "pinnedAt": "2026-10-02T19:29:42.250Z",
+      "prompts": {
+        "workers-prompt-full": {
+          "description": "Detailed prompt for generating Cloudflare Workers code (and other developer platform products) from https://developers.cloudflare.com/workers/prompt.txt",
+          "firstSeen": "2026-10-03T21:21:47.869Z",
+          "hash": "304f2e859293911f0589e70c3d20f870204b0358f3d90063bb932d936821a50b"
+        }
+      },
+      "resources": {
+
+      },
       "tools": {
-        "search_cloudflare_documentation": {
-          "hash": "36d204d5334dd872f1d5779b39f9a74b42636f273cea41f09d7558d58bd30b2f",
-          "schemaHash": "f71ae375cd08f20f0988de3e2b722fdfc1cf582c833c9f89a6d8ea003ba1fea5",
-          "proseHash": "a62a944aca09d4b974c1417d3001b74172bd203dee05323a4880729e90aa4660",
-          "description": "Search the Cloudflare documentation.\n\n\t\tThis tool should be used to answer any question about Cloudflare products or features, including:\n\t\t- Workers, Pages, R2, Images, Stream, D1, Durable Objects, KV, Workflows, Hyperdrive, Queues\n\t\t- AI Search, Workers AI, Vectorize, AI Gateway, Browser Run\n\t\t- Zero Trust, Access, Tunnel, Gateway, Browser Isolation, WARP, DDOS, Magic Transit, Magic WAN\n\t\t- CDN, Cache, DNS, Zaraz, Argo, Rulesets, Terraform, Account and Billing\n\n\t\tResults are returned as semantically similar chunks to the query.\n\t\t",
+        "migrate_pages_to_workers_guide": {
           "annotations": {
-            "title": "Search Cloudflare docs",
-            "readOnlyHint": true
+            "readOnlyHint": true,
+            "title": "Get Pages migration guide"
           },
+          "approved": true,
+          "description": "ALWAYS read this guide before migrating Pages projects to Workers.",
+          "firstSeen": "2026-10-02T19:29:42.252Z",
+          "hash": "7a673ae3563705185bd45a6873b6544989e1b695500e902f4b6f94936c093d04",
           "inputSchema": {
-            "type": "object",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T19:20:46.795Z",
+          "proseHash": "b4cb2be102688e578ea48fe243b1373bff866460305b3ab1e64702471960c714",
+          "schemaHash": "18404747d999185a1d4b746798ae014ae4901501223607e8cd3cfff1451cee5e"
+        },
+        "search_cloudflare_documentation": {
+          "annotations": {
+            "readOnlyHint": true,
+            "title": "Search Cloudflare docs"
+          },
+          "approved": true,
+          "description": "Search the Cloudflare documentation.\n\n\t\tThis tool should be used to answer any question about Cloudflare products or features, including:\n\t\t- Workers, Pages, R2, Images, Stream, D1, Durable Objects, KV, Workflows, Hyperdrive, Queues\n\t\t- AI Search, Workers AI, Vectorize, AI Gateway, Browser Run\n\t\t- Zero Trust, Access, Tunnel, Gateway, Browser Isolation, WARP, DDOS, Magic Transit, Magic WAN\n\t\t- CDN, Cache, DNS, Zaraz, Argo, Rulesets, Terraform, Account and Billing\n\n\t\tResults are returned as semantically similar chunks to the query.\n\t\t",
+          "firstSeen": "2026-10-02T19:29:42.252Z",
+          "hash": "eca8613bac14a67b8673d96e7636624c769e8aa7fe108c4b7b707996bbc0b5fe",
+          "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "properties": {
               "query": {
                 "type": "string"
               }
             },
-            "required": [
-              "query"
-            ]
+            "required": ["query"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-02T19:29:42.252Z",
-          "pinnedAt": "2026-10-03T21:21:47.866Z",
-          "approved": true
-        },
-        "migrate_pages_to_workers_guide": {
-          "hash": "ac50928cbe399b5f822d3703fec0d15f769ff3ae68b4f195a067ab12c14a10e8",
-          "schemaHash": "18404747d999185a1d4b746798ae014ae4901501223607e8cd3cfff1451cee5e",
-          "proseHash": "b4cb2be102688e578ea48fe243b1373bff866460305b3ab1e64702471960c714",
-          "description": "ALWAYS read this guide before migrating Pages projects to Workers.",
-          "annotations": {
-            "title": "Get Pages migration guide",
-            "readOnlyHint": true
-          },
-          "inputSchema": {
-            "type": "object",
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "properties": {}
-          },
-          "firstSeen": "2026-10-02T19:29:42.252Z",
-          "pinnedAt": "2026-10-03T21:21:47.868Z",
-          "approved": true
+          "outputHash": "c52a5cec6447b4dd0a303437b0e34911e930e0a49334c7167db60c1037e13c2a",
+          "pinnedAt": "2026-10-18T19:20:46.794Z",
+          "proseHash": "a62a944aca09d4b974c1417d3001b74172bd203dee05323a4880729e90aa4660",
+          "schemaHash": "f71ae375cd08f20f0988de3e2b722fdfc1cf582c833c9f89a6d8ea003ba1fea5"
         }
-      },
-      "prompts": {
-        "workers-prompt-full": {
-          "hash": "304f2e859293911f0589e70c3d20f870204b0358f3d90063bb932d936821a50b",
-          "description": "Detailed prompt for generating Cloudflare Workers code (and other developer platform products) from https://developers.cloudflare.com/workers/prompt.txt",
-          "firstSeen": "2026-10-03T21:21:47.869Z"
-        }
-      },
-      "resources": {}
+      }
     }
-  }
+  },
+  "version": 1
 }

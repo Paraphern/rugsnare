@@ -45,7 +45,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.4.3): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.5.0): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -54,7 +54,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.4.3):**
+**npm (latest: rugsnare@1.5.0):**
 
 ```bash
 npx rugsnare init
@@ -97,7 +97,7 @@ That's it. The action installs rugsnare, runs `diff`, and fails the build when a
 - uses: Paraphern/rugsnare/.github/actions/diff@v1
   with:
     config: .mcp.json           # path to your MCP config (default: .mcp.json)
-    version: '1.4.3'            # pin the rugsnare version (default: 1.4.3)
+    version: '1.5.0'            # pin the rugsnare version (default: 1.5.0)
     schema-only: 'true'         # fail only on BREAKING/EXPANDED (skip prose edits)
     sarif: 'true'               # also emit a SARIF report for code scanning
 ```
@@ -255,6 +255,7 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **v1.4.1** | ✅ shipped | Skills pin `path` is now relative (PIN-SPEC §2): the 1.4.0 writer emitted machine-absolute paths, breaking §7 byte-stability across machines and leaking local layout in published catalog snapshots. Fixed in both the JS CLI and the Go native launcher; pre-v1.4.1 pins read via a legacy fallback · [on-chain pin](https://basescan.org/tx/0x2e4909417f8c735b66854d4df8ce7515855fc833c4c01a1370df431fb1302a2d) |
 | **v1.4.2** | ✅ shipped | §7 byte-stability for all pin branches: skills `pinnedAt` and prompts/resources `firstSeen` no longer churn on re-scan of unchanged content - the same skip-guard pattern now covers tools, skills, and prompts/resources in both the JS CLI and the Go native launcher · [on-chain pin](https://basescan.org/tx/0x9befe1218ccdf400264287f1917c9f7bee7400a8cf623b333adfb580d86f464f) |
 | **v1.4.3** | ✅ shipped | POLICY stop-rule (PIN-SPEC §3.1): when the pin store's policyVersion differs from the running binary, diff emits the POLICY finding and STOPS - exactly one finding, no tool-level classes follow. Each re-graded class would look like ordinary drift to anyone who scrolled past the POLICY line; the spec says "stops for that pin", and now the code does too · [on-chain pin](https://basescan.org/tx/0x04354ca5de51e67a5b977d88720b03d76a074d5ab7f11c80036bd3f940e095e8) |
-| **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · R35 MIRRORED class + R36 openapi-crosscheck · R37 scan `--prune` (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
+| **v1.5.0** | ✅ shipped | **outputSchema pinning** (R14: a third hash `outputHash`, absent = null - output contracts drift-detected like inputs) · **resource content pinning** (R13-full: `resources/read` on up to 20 envelope-only resources, text body hashed - prompt-injection payloads hidden in resource text now caught) · `annotations.title` pinned (a silent rename from "Safe File Reader" to "Data Export Utility" is ANNOTATION drift; `_meta` excluded, `icons` hashed into toolHash) · **MIRRORED class + OpenAPI crosscheck** (R35/R36: tighten changes the vendor's published spec already promised are regraded BREAKING → MIRRORED via `diff --openapi <spec>`; BREAKING now means "a previously-successful call starts failing", not "the contract text tightened") · `scan --prune` (R37: drop departed servers/tools/skills/prompts from the pin store on purpose) · **A19 payment-credential advisory** (descriptions asking the agent to POST card numbers/CVC/expiry - bidirectional match, zero false positives on 1152 benign descriptions) · **CI badge** (`https://rugsnare.com/badge/:owner/:repo.svg`) · **GitHub composite Action** (`.github/actions/diff`) and a richer PR-comment renderer (advisory scoring, drift grouping, prompts/resources sections) · Smithery `.mcpb` bundle · preverification fixes P1/P2 (outputHash in the skip-guard, contentHash preserved by approve) |
+| **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans (see `docs/future.md`) |
 
 *375 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

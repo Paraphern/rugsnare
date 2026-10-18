@@ -1,5 +1,5 @@
 {
-  "policyVersion": "rugsnare-1.4.3",
+  "policyVersion": "rugsnare-1.5.0",
   "servers": {
     "flights-search": {
       "cmd": {

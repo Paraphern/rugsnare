@@ -1,78 +1,85 @@
 {
-  "version": 1,
+  "policyVersion": "rugsnare-1.5.0",
   "servers": {
     "notes-api": {
       "cmd": {
-        "command": "node",
-        "args": [
-          "server-v1-benign.js"
-        ]
+        "args": ["server-v1-benign.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "server-v1-benign.js",
+        "identityHash": "sha256:9fcbfae12d95f84822408c2bbc5a09dec579e6958827bbc6083cb1f176af08b3",
+        "package": null,
+        "resolvedVersion": null,
+        "url": null
       },
       "pinnedAt": "2026-10-09T18:35:09.930Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
       "tools": {
         "create_note": {
-          "hash": "6866a495436567a077a4dbbdb906b7b43512c699468c2d0480a96f9fc5515c2c",
-          "schemaHash": "2d48d073eb268968c7d72f8ac75440ebd7a83a44b1298d09e75bc18058e149e4",
-          "proseHash": "0da20ace7eb9be169267bbdaa70c9da7f1c1fc714498b5aedcd086527b843690",
-          "description": "Create a note with a title and optional tags.",
           "annotations": null,
+          "approved": true,
+          "description": "Create a note with a title and optional tags.",
+          "firstSeen": "2026-10-09T18:35:09.931Z",
+          "hash": "c94ff05a759fd9851d1f3e82cdcfddc3c484e7d7987068895035ea7bae47bd4b",
           "inputSchema": {
-            "type": "object",
             "properties": {
-              "title": {
-                "type": "string",
-                "description": "The note title"
+              "content": {
+                "description": "The note body",
+                "type": "string"
               },
               "tags": {
-                "type": "array",
+                "description": "Optional tags",
                 "items": {
                   "type": "string"
                 },
-                "description": "Optional tags"
+                "type": "array"
               },
-              "content": {
-                "type": "string",
-                "description": "The note body"
+              "title": {
+                "description": "The note title",
+                "type": "string"
               }
             },
-            "required": [
-              "title",
-              "content"
-            ]
+            "required": ["title","content"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-09T18:35:09.931Z",
-          "pinnedAt": "2026-10-09T18:35:09.931Z",
-          "approved": true
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T19:20:40.175Z",
+          "proseHash": "0da20ace7eb9be169267bbdaa70c9da7f1c1fc714498b5aedcd086527b843690",
+          "schemaHash": "2d48d073eb268968c7d72f8ac75440ebd7a83a44b1298d09e75bc18058e149e4"
         },
         "search_notes": {
-          "hash": "0e4dc78e959f1504e6af98d546caa7acd0767e4b55bd52a41b648f343f3616f5",
-          "schemaHash": "27f73c883d79a826a0a53fcdf25c52fad01d4c4f201e82ae84cdc1a06de863e8",
-          "proseHash": "ac1eba27bce8a670f3f024f9e84b1f3301a670f2e3dff3524ad177b1e825c370",
-          "description": "Search notes by query.",
           "annotations": null,
+          "approved": true,
+          "description": "Search notes by query.",
+          "firstSeen": "2026-10-09T18:35:09.931Z",
+          "hash": "46e01124394787aeb560bd77f556014925696f5aed3abbed4dab3d7ed8a5ba0c",
           "inputSchema": {
-            "type": "object",
             "properties": {
               "limit": {
-                "type": "number",
-                "description": "Max results"
+                "description": "Max results",
+                "type": "number"
               },
               "query": {
-                "type": "string",
-                "description": "Search text"
+                "description": "Search text",
+                "type": "string"
               }
             },
-            "required": [
-              "query"
-            ]
+            "required": ["query"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-09T18:35:09.931Z",
-          "pinnedAt": "2026-10-09T18:35:09.931Z",
-          "approved": true
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T19:20:40.176Z",
+          "proseHash": "ac1eba27bce8a670f3f024f9e84b1f3301a670f2e3dff3524ad177b1e825c370",
+          "schemaHash": "27f73c883d79a826a0a53fcdf25c52fad01d4c4f201e82ae84cdc1a06de863e8"
         }
-      },
-      "prompts": {},
-      "resources": {}
+      }
     }
-  }
+  },
+  "version": 1
 }
