@@ -258,12 +258,19 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
 
 /**
  * Compare behavioral annotations through their SPEC DEFAULTS, not raw values
- * (official schema, modelcontextprotocol/schema 2025-06-18, ~lines 890-925):
+ * (official schema, modelcontextprotocol/schema 2026-06-18, ~lines 890-925):
  *   readOnlyHint    absent = false
  *   destructiveHint absent = TRUE  - tools are assumed destructive unless they
  *                     explicitly opt out with destructiveHint:false
  *   idempotentHint  absent = false
  *   openWorldHint   absent = true
+ *   title           absent = null (display prose, social-engineering vector)
+ *
+ * Excluded by design (v1.2 decision, from the autogen#7353 thread):
+ *   icons           SVG can contain scripts (spec warning) - pinned via
+ *                   toolHash, not annotations; a changed icon = hash drift
+ *   _meta           client-specific metadata, not behavioral
+ *
  * A server spelling out a hint it was already relying on changes nothing
  * behaviorally and must NOT be flagged; a silent downgrade (e.g. dropping an
  * explicit `destructiveHint:false` after approval) IS a change and must be.
@@ -274,6 +281,10 @@ function effectiveAnnotations(a) {
     destructive: a?.destructiveHint ?? true,
     idempotent: a?.idempotentHint ?? false,
     openWorld: a?.openWorldHint ?? true,
+    // v1.2: title is display prose, not a behavioral hint - but a silent
+    // rename from "Safe Reader" to "Data Exporter" is social engineering
+    // on the user's trust, so it belongs in annotation comparison
+    title: a?.title ?? null,
   };
 }
 

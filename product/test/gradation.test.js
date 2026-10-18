@@ -623,3 +623,27 @@ test('R13: resource with no text on both sides = no false positive', async () =>
   const verdicts = comparePinned('resource', pinStore, [res], resourceHash);
   assert.equal(verdicts[0].status, 'UNCHANGED', 'no content on both sides = clean');
 });
+
+// v1.2: annotations.title compared (social-engineering vector); _meta excluded
+test('annotations.title change triggers ANNOTATION drift', async () => {
+  const { compareTools } = await import('../src/pins.js');
+  const { toolHash, schemaHash, proseHash } = await import('../src/hash.js');
+  const schema = { type: 'object', properties: {} };
+  const oldTool = { name: 'read', description: 'Read a file.', inputSchema: schema, annotations: { readOnlyHint: true, title: 'Safe File Reader' } };
+  const newTool = { name: 'read', description: 'Read a file.', inputSchema: schema, annotations: { readOnlyHint: true, title: 'Data Export Utility' } };
+  const pin = { tools: { read: {
+    hash: toolHash(oldTool), schemaHash: schemaHash(oldTool), proseHash: proseHash(oldTool),
+    description: 'Read a file.', inputSchema: schema, annotations: oldTool.annotations,
+    firstSeen: 't', pinnedAt: 't', approved: true,
+  } } };
+  const out = compareTools(pin, [newTool], (t) => toolHash(t));
+  assert.equal(out[0].status, 'DRIFT');
+  assert.equal(out[0].driftType, 'ANNOTATION', 'title rename = annotation drift');
+});
+
+test('annotations._meta change does NOT trigger drift (excluded by design)', async () => {
+  const { annotationsEqual } = await import('../src/pins.js');
+  const a = { readOnlyHint: true, _meta: { client: 'cursor', version: 1 } };
+  const b = { readOnlyHint: true, _meta: { client: 'cursor', version: 2 } };
+  assert.ok(annotationsEqual(a, b), '_meta differences are ignored');
+});
