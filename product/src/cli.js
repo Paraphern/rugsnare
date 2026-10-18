@@ -43,6 +43,8 @@ Usage:
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
                 [--expect-tool <t>]... [--forbid-tool <t>]...   contract assertions (forbid catches shadow injection)
                 [--allow-unsigned-pins]   skip the pins.sig check when no signature exists (bootstrap)
+                [--openapi <url-or-file>]   crosscheck vendor spec: tightens the spec already
+                                                         promised are regraded BREAKING -> MIRRORED (R36)
                                                          signed pins: an edited pins.json (CI attacker) fails with exit 2
   rugsnare diff --server <name> --url <https://remote/mcp>    compare pins against THIS endpoint (overrides config)
   rugsnare approve <server> [--config <mcp.json>]
@@ -603,10 +605,12 @@ async function cmdDiff(flags) {
         try {
           await crosscheck.load();
           for (const v of allVerdicts) {
-            if (v.status === 'DRIFT' && Array.isArray(v.schemaChanges)) {
+            if (v.status === 'DRIFT' && Array.isArray(v.schemaChanges) && v.schemaChanges.length > 0) {
               v.schemaChanges = applyMirrored(v.schemaChanges, crosscheck, v.tool);
-              // regrade if all tightens became mirrored
-              if (v.schemaChanges.every((c) => c.direction !== 'tighten')) {
+              // regrade if all tightens became mirrored (guard: empty array
+              // .every() is vacuously true and would regrade prose-only COSMETIC
+              // to NOTATION — the preverification round-79 defect)
+              if (v.schemaChanges.length > 0 && v.schemaChanges.every((c) => c.direction !== 'tighten')) {
                 const { gradeSchemaDrift: regrade } = await import('./pins.js');
                 v.driftType = regrade(v.schemaChanges, v.notationChanges ?? []);
               }
