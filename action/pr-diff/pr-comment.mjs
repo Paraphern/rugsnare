@@ -64,6 +64,7 @@ const tools = [];
 // ---- 2. render markdown ----
 const clip = (s, n = 700) => (s.length > n ? s.slice(0, n) + ' …[truncated]' : s || '(empty)');
 const icon = { DRIFT: '🔴', NEW: '🟡', REMOVED: '⚫', UNCHANGED: '🟢' };
+const gradeIcon = { BREAKING: '🔴', LOOSENED: '🟠', EXPANDED: '🟡', NOTATION: '🔵', COSMETIC: '⚪', ANNOTATION: '🟣', POLICY: '⛔', IDENTITY: '🔄' };
 
 let findings = 0;
 const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare — MCP tool contract diff', ''];
@@ -73,32 +74,68 @@ for (const { server, verdicts } of report) {
     lines.push(`**${server}** — 🟢 all ${verdicts.length} tool contracts unchanged`, '');
     continue;
   }
-  lines.push(`**${server}** — ${bad.length} finding(s):`, '');
+
+  // group DRIFT verdicts by identical change signature (SDK waves: 24 tools
+  // with the same notation change collapse into one line, not 24 sections)
+  const driftGroups = new Map(); // signature -> { tools: [], sample: verdict }
+  const nonDrift = [];
   for (const v of bad) {
     findings++;
-    if (v.status === 'DRIFT') {
-      lines.push(
-        `### ${icon.DRIFT} \`${v.tool}\` — description changed after approval`,
-        '',
-        '**Before (pinned):**',
-        '```',
-        clip(v.oldDescription),
-        '```',
-        '**After (live):**',
-        '```',
-        clip(v.newDescription),
-        '```',
-        `hash: \`${(v.oldHash ?? '').slice(0, 16)}\` → \`${(v.hash ?? '').slice(0, 16)}\``,
-        ''
-      );
-    } else if (v.status === 'NEW') {
+    if (v.status !== 'DRIFT') { nonDrift.push(v); continue; }
+    const changes = v.schemaChanges ?? [];
+    const notation = v.notationChanges ?? [];
+    const sig = JSON.stringify({
+      driftType: v.driftType,
+      changes: changes.map((c) => c.text).sort(),
+      notation,
+      prose: v.proseChanged ? 'changed' : 'same',
+    });
+    if (!driftGroups.has(sig)) driftGroups.set(sig, { tools: [], sample: v });
+    driftGroups.get(sig).tools.push(v.tool);
+  }
+
+  lines.push(`**${server}** — ${bad.length} finding(s):`, '');
+
+  for (const { tools, sample } of driftGroups.values()) {
+    const g = gradeIcon[sample.driftType] ?? '🔴';
+    const label = sample.driftType ?? 'DRIFT';
+    const toolList = tools.length === 1 ? `\`${tools[0]}\`` : `${tools.length} tools (\`${tools[0]}\`, \`${tools[1]}\`… )`;
+
+    lines.push(`### ${g} ${toolList} — ${label}`);
+
+    const changes = sample.schemaChanges ?? [];
+    if (changes.length > 0) {
+      lines.push('', '**Schema changes:**');
+      for (const c of changes.slice(0, 5)) {
+        const dir = c.direction ? ` \`${c.direction}\`` : '';
+        lines.push(`- ${c.text}${dir}`);
+      }
+      if (changes.length > 5) lines.push(`- … +${changes.length - 5} more`);
+    }
+    const notation = sample.notationChanges ?? [];
+    if (notation.length > 0) {
+      lines.push('', '**Notation (no parameter structure changed):**');
+      for (const n of notation.slice(0, 3)) lines.push(`- ${n}`);
+      if (notation.length > 3) lines.push(`- … +${notation.length - 3} more`);
+    }
+    if (sample.paywallWarning) {
+      lines.push('', `⚠️ **[PAYWALL]** ${sample.paywallWarning}`);
+    }
+    if (sample.proseChanged && sample.oldDescription !== sample.newDescription) {
+      lines.push('', '**Description changed:**', '**Before:**', '```', clip(sample.oldDescription, 300), '```', '**After:**', '```', clip(sample.newDescription, 300), '```');
+    }
+    lines.push(`hash: \`${(sample.oldHash ?? '').slice(0, 16)}\` → \`${(sample.hash ?? '').slice(0, 16)}\``, '');
+  }
+
+  for (const v of nonDrift) {
+    if (v.status === 'NEW') {
       lines.push(`### ${icon.NEW} \`${v.tool}\` — unapproved new tool${v.note ? ` (${v.note})` : ''}`, '');
     } else if (v.status === 'REMOVED') {
       lines.push(`### ${icon.REMOVED} \`${v.tool}\` — approved tool disappeared`, '');
     }
   }
 }
-lines.push('---', '_RugSnare pins tool contracts (`{name, description, inputSchema}`) at approval; this comment shows every silent change. Baseline pins live in the repo — update them deliberately via `rugsnare approve`._');
+lines.push('---', '_RugSnare pins tool contracts (`{name, description, inputSchema}`) at approval; this comment shows every silent change with direction grading (BREAKING / LOOSENED / EXPANDED / NOTATION). Identical changes are grouped. Baseline pins live in the repo — update them deliberately via `rugsnare approve`._');
 
 const body = lines.join('\n');
 console.log(body);
