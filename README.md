@@ -68,6 +68,11 @@ node src/cli.js init
 
 Zero dependencies, no `npm install` needed - just Node.js ≥ 18.
 
+## Installation guide translations
+
+- [简体中文（Chinese）](llms-install.zh.md)
+- [日本語（Japanese）](llms-install.ja.md)
+
 ## Quick start
 
 After install (use `node src/cli.js` instead of `rugsnare` if installing from GitHub):
@@ -228,11 +233,3 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · R35 MIRRORED class + R36 openapi-crosscheck · R37 scan `--prune` (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
 
 *359 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
-
-
-## Installation guide translations
-
-- [简体中文（Chinese）](llms-install.zh.md)
-- [日本語（Japanese）](llms-install.ja.md)
-
-
