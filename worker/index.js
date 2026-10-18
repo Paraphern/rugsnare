@@ -12,6 +12,7 @@
 
 import { handleHistoryRun, handleHistoryResult } from './run.js';
 import { handleHistoryArchive } from './archive.js';
+import { handleBadge } from './badge.js';
 
 export default {
   async fetch(request, env) {
@@ -19,6 +20,7 @@ export default {
     if (url.pathname === '/api/history-run') return handleHistoryRun(request, env);
     if (url.pathname === '/api/history-result') return handleHistoryResult(request);
     if (url.pathname === '/api/history-archive') return handleHistoryArchive(request, env);
+    if (url.pathname.startsWith('/badge/')) return handleBadge(request);
     return env.ASSETS.fetch(request);
   },
 };
