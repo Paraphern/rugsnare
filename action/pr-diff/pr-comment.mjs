@@ -33,6 +33,7 @@ const { loadPins, compareTools, policyVersionFor } = await mod('pins.js');
 const { fetchTools } = await mod('rpc.js');
 const { toolHash } = await mod('hash.js');
 const { comparePinned, promptHash, resourceHash } = await mod('prompts.js');
+const { scanToolDescription, atrRuleIds } = await mod('advisory.js');
 const { readJsonFile } = await mod('jsonfile.js');
 
 const pins = loadPins(cwd);
@@ -108,6 +109,22 @@ const clip = (s, n = 700) => (s.length > n ? s.slice(0, n) + ' …[truncated]' :
 const icon = { DRIFT: '🔴', NEW: '🟡', REMOVED: '⚫', UNCHANGED: '🟢' };
 const gradeIcon = { BREAKING: '🔴', LOOSENED: '🟠', EXPANDED: '🟡', NOTATION: '🔵', COSMETIC: '⚪', ANNOTATION: '🟣', POLICY: '⛔', IDENTITY: '🔄' };
 
+// Advisory scoring: structural grades say WHAT changed, advisory signals say
+// WHETHER the new text is suspicious. A tool that changes its description to
+// "ignore previous instructions" grades COSMETIC (schema untouched) - the
+// advisory layer flags it as A15 (instruction hijack). Run on new/changed
+// descriptions, not on unchanged ones (a pinned-and-approved description
+// already passed review).
+function advisoryWarning(description) {
+  if (!description || typeof description !== 'string') return null;
+  const r = scanToolDescription(description);
+  if (!r.advisory) return null;
+  const atr = atrRuleIds(r);
+  const signalList = r.signals.map((s) => `${s.id} (${s.desc.slice(0, 60)})`).slice(0, 3).join('; ');
+  const atrList = atr.length ? ` [${atr.join(' ')}]` : '';
+  return `⚠️ **[ADVISORY]** score ${r.score}: ${signalList}${atrList}${r.signals.length > 3 ? ` +${r.signals.length - 3} more` : ''}`;
+}
+
 let findings = 0;
 const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare - MCP tool contract diff', ''];
 for (const r of report) {
@@ -167,6 +184,12 @@ for (const r of report) {
     if (sample.proseChanged && sample.oldDescription !== sample.newDescription) {
       lines.push('', '**Description changed:**', '**Before:**', '```', clip(sample.oldDescription, 300), '```', '**After:**', '```', clip(sample.newDescription, 300), '```');
     }
+    // advisory: is the new text suspicious? (structural grade says WHAT
+    // changed; advisory says whether the new prose contains attack patterns)
+    if (sample.newDescription) {
+      const adv = advisoryWarning(sample.newDescription);
+      if (adv) lines.push('', adv);
+    }
     lines.push(`hash: \`${(sample.oldHash ?? '').slice(0, 16)}\` → \`${(sample.hash ?? '').slice(0, 16)}\``, '');
   }
 
@@ -184,6 +207,14 @@ for (const r of report) {
       lines.push(`### ${icon.NEW} ${newTools.length} new tools - not in the approved baseline`, '');
       lines.push(`${list}${more}`, '');
     }
+    // advisory scan on new tools' descriptions (first contact, no baseline)
+    for (const v of newTools) {
+      if (v.description) {
+        const adv = advisoryWarning(v.description);
+        if (adv) lines.push(`- \`${v.tool}\`: ${adv}`);
+      }
+    }
+    if (newTools.some((v) => v.description && advisoryWarning(v.description))) lines.push('');
   }
 
   if (removedTools.length > 0) {

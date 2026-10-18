@@ -720,7 +720,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
   for (const tool of liveTools) {
     const pin = serverPin.tools[tool.name];
     const hash = toolHashFn(tool);
-    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash });
+    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash, description: tool.description ?? '' });
     else if (pin.hash !== hash) {
       const liveSchemaHash = computeSchemaHash(tool);
       const liveProseHash = computeProseHash(tool);
