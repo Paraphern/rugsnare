@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { readJsonFile } from './jsonfile.js';
-import { schemaHash as computeSchemaHash, proseHash as computeProseHash } from './hash.js';
+import { schemaHash as computeSchemaHash, proseHash as computeProseHash, outputHash as computeOutputHash } from './hash.js';
 import { getVersion } from './version.js';
 
 /**
@@ -246,6 +246,9 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     // Canonical inputSchema for human-readable diffs ("added required param mode"
     // instead of just "schema changed") - from the DescriptorPin learning
     inputSchema: tool.inputSchema ?? null,
+    // R14: pin the output side too - null when the tool declares no
+    // outputSchema (absence is the pin; appearing later = outputSchema added)
+    outputHash: computeOutputHash(tool),
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
     approved,
@@ -755,7 +758,38 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         newDescription: tool.description ?? '',
       });
     }
-    else result.push({ tool: tool.name, status: 'UNCHANGED', hash });
+    // R14: outputSchema-only drift - toolHash does NOT include outputSchema,
+    // so a change on the response side alone lands here (after annotations,
+    // before UNCHANGED). GitHub: 123/131 tool changes were outputSchema-only.
+    else {
+      const liveOutput = computeOutputHash(tool);
+      const pinOutput = pin.outputHash ?? null;
+      if (pinOutput !== liveOutput) {
+        const outputChanges = [];
+        if (liveOutput === null) {
+          outputChanges.push({ text: 'outputSchema removed (response shape no longer declared)', direction: 'loosen' });
+        } else if (pinOutput === null) {
+          outputChanges.push({ text: 'outputSchema added (response shape now declared)', direction: 'notationOnly', notationOnly: true });
+        } else {
+          outputChanges.push({ text: 'outputSchema changed (response shape differs)', direction: 'tighten' });
+        }
+        result.push({
+          tool: tool.name,
+          status: 'DRIFT',
+          driftType: gradeSchemaDrift(outputChanges, []),
+          schemaChanged: false,
+          proseChanged: false,
+          outputSchemaChanged: true,
+          schemaChanges: outputChanges,
+          oldHash: pin.hash,
+          hash,
+          oldDescription: pin.description ?? '',
+          newDescription: tool.description ?? '',
+        });
+      } else {
+        result.push({ tool: tool.name, status: 'UNCHANGED', hash });
+      }
+    }
   }
   const liveNames = new Set(liveTools.map((t) => t.name));
   for (const name of Object.keys(serverPin.tools)) {

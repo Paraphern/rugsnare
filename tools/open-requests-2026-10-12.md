@@ -947,3 +947,83 @@ sorted, live - wire-порядок -> ложное неравенство -> pin
 
 Каталог почищен: 4 union-загрязнённых снимка (hubspot x2, shopify, supabase) заменены на
 чистые 1.4.2-сканы. Коммит 466d529. Корень - sweep без rm .rugsnare (тот же урок).
+
+## 2026-10-17: МАССОВОЕ ЗАКРЫТИЕ (5 тредов)
+
+1. RFC#12356: НАШИ ДАННЫЕ ВСТРОЕНЫ В ДИЗАЙН. Автор принял: per-tool hold + batch accept,
+   canonicalise before digesting, notation/description/parameter separation (= наша
+   таксономия). Аудит цитируется как обоснование архитектуры.
+2. OWASP PR#2764 СМЕРЖЕНО (jmanico, 16.10 08:33). Pin-гайденс + градация в официальном
+   MCP Security Cheat Sheet.
+3. gemini-cli#25693 закрыто completed (не репрод. на 0.63.0). Наш pattern-note последний.
+4. ext-skills#142 открыто; мейнтейнер loganaden пинает автора PR ("gentle reminder").
+   Наш hash-режимы вклад принят, ждём мержа спеки.
+5. goose#12068: alexhancock -> DaleSeo будет делать rust-sdk implementation next week.
+   Наш surface-diff фидбек - последний substantive комментарий.
+Итого за день: RFC принял таксономию, OWASP смержен, 3 треда живы с нашим вкладом внутри.
+
+- KyttoMCP Windows-тест ВЫПОЛНЕН и отправлен Якубу (discussioncomment-18987080).
+  Три пункта чек-листа: baseline-фикс ПОДТВЕРЖДЁН (ParkStore.Record держит ContractTools
+  = baseline), reorder НЕ срабатывает (canonicalization sorted keys + preserved array
+  order), UX: 5 классов близко к нашим, но без LOOSENED/EXPANDED (schema не градуируется
+  по направлению). Trojan Source покрытие обстоятельнее нашего. Обязательство закрыто.
+
+## 2026-10-17: КАТАЛОГИ - МАССОВОЕ РАЗМЕЩЕНИЕ
+
+- MCP Registry: 1.4.3 опубликован (device-flow, user авторизовался). isLatest.
+- MCP Directory (mcp.directory): ПОДАН пользователем, review <24h, бесплатно.
+- MCPMarket (mcpmarket.com): ПОДАН пользователем, категория Security & Testing, бесплатно.
+- mcp.so: ВЫЧЕРКНУТ - платный ($39), бесплатного пути не нашли.
+- Glama: уже есть (auto, Responsive, бейдж A).
+- mcpservers.org: уже есть (auto).
+- Smithery: нужен MCPB-бандл - хенд-офф продуктовому чату.
+- PulseMCP: 403 из моего env, опционально из браузера пользователя.
+
+Каталоги исчерпаны на текущий момент. 6 размещений + 3 PR ждут.
+
+## 2026-10-18: PUNKPEYE СМЕРЖЕН - ГЛАВНЫЙ СПИСОК
+
+punkpeye/awesome-mcp-servers PR#15692 СМЕРЖЕН (punkpeye, 02:36 UTC 18 окт).
+rugsnare в README на строке 4060 с Glama-бейджем. 96,313★ - самый крупный каталог MCP.
+
+КАТАЛОГИ - ФИНАЛЬНАЯ КАРТА:
+✓ punkpeye (96k★)     - СМЕРЖЕН
+✓ MCP Registry         - 1.4.3 isLatest
+✓ Glama                - auto, Responsive, бейдж A
+✓ mcpservers.org       - auto
+✓ Smithery             - @paraphernal/rugsnare (MCPB)
+✓ GitHub Marketplace   - action
+⏳ MCP Directory       - review
+⏳ MCPMarket           - review
+⏳ raphabot (604★)     - PR #87
+⏳ Puliczek (743★)     - PR #368
+
+ВОСЕМЬ живых + три в ожидании.
+
+## 2026-10-18: ДВОЙНАЯ НОВОСТЬ (RFC закрыт + AAtomless correction)
+
+1. RFC#12356 (DeepSeek-Reasonix) ЗАКРЫТ КАК DELIVERED: pin-at-approval реализован в Studio.
+   "MCP tool definitions are pinned when you approve a server, a tool whose definition
+   changed is held back from the model until you accept it." Наш вклад: дрейф-данные,
+   канонизация, direction grading. Третья независимая реализация нашей модели
+   (после rugsnare и KyttoMCP 1.0.8 direction diffs).
+
+2. AAtomless нашёл: get_logs description менялся в SOURCE (0.9.0, 0.10.0), но runtime
+   tools/list отдаёт одинаковый текст в 0.8.3 и 0.13.0 (144 chars, hash same). Наш ответ
+   запощен (id=6248888223): runtime surface vs source code = два разных слоя анализа,
+   дополняют друг друга. Source = early warning; runtime pin = ground truth для модели.
+
+## 2026-10-18: МАРКЕТИНГОВАЯ ВОЛНА (7 действий)
+
+1. ✓ Good First Issues #7-#11 созданы (Homebrew, JSON output, CI example, HTTP tests, переводы)
+2. ✗ MCP Servers PR — пропущено (только официальные reference-серверы Anthropic)
+3. ✓ MCP Inspector feature request #2727 запощен (contract verification panel, 11k★)
+4. ✓ Newsletter pitches: 6 писем готовы в tools/newsletter-pitches-2026-10-18.md
+5. ✓ CFP abstracts: 3 конференции готовы в tools/cfp-abstracts-2026-10-18.md
+6. ✓ Security Lab pitch готов в tools/security-lab-pitch-2026-10-18.md
+7. → Dev.to статья — ПОСЛЕДНЯЯ, ждёт пользователя
+
+Плюс создан второй чат:
+- tools/CHAT2-PROMPT.md — полный промт с контекстом
+- tools/chat2-journal.md — журнал
+- tools/chat2-status.md — статус

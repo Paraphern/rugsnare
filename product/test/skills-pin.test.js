@@ -294,6 +294,36 @@ test('CLI: diff exit 1 on DANGEROUS', async () => {
 // machine-absolute path anywhere. Catches the case where a future code
 // path calls pinSkillFile with the wrong argument - unit tests on the
 // existing function would pass while the CLI-level output regresses.
+// R37: scan --prune removes dead souls; without the flag they warn.
+test('R37: scan --prune removes dead souls, without it warns', async () => {
+  const { dir, cleanup } = tmp();
+  try {
+    // pin 2 skills
+    fs.mkdirSync(path.join(dir, '.claude', 'skills', 'a'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.claude', 'skills', 'a', 'SKILL.md'), 'Skill A');
+    fs.mkdirSync(path.join(dir, '.claude', 'skills', 'b'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.claude', 'skills', 'b', 'SKILL.md'), 'Skill B');
+    await cli(dir, ['skills', 'scan']);
+    let pins = JSON.parse(fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8'));
+    assert.equal(Object.keys(pins.skills).length, 2, 'both skills pinned');
+
+    // delete skill B
+    fs.rmSync(path.join(dir, '.claude', 'skills', 'b'), { recursive: true, force: true });
+
+    // re-scan WITHOUT --prune: warning, but entry stays
+    const warn = await cli(dir, ['skills', 'scan']);
+    assert.match(warn.stdout, /1 pinned skill\(s\) no longer exist/, 'warning shown');
+    pins = JSON.parse(fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8'));
+    assert.equal(Object.keys(pins.skills).length, 2, 'dead soul still in pins without --prune');
+
+    // re-scan WITH --prune: entry removed
+    const pruned = await cli(dir, ['skills', 'scan', '--prune']);
+    assert.match(pruned.stdout, /Pruned 1 dead soul/, 'prune message shown');
+    pins = JSON.parse(fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8'));
+    assert.equal(Object.keys(pins.skills).length, 1, 'dead soul removed with --prune');
+  } finally { cleanup(); }
+});
+
 test('CLI integration: skills scan produces pins.json with zero absolute paths', async () => {
   const { dir, cleanup } = tmp();
   try {

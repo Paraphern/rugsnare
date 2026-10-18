@@ -1,0 +1,12 @@
+{
+  "name": "rugsnare",
+  "displayName": "RugSnare",
+  "description": "Pin MCP tool contracts by sha-256, catch silent drift after approval. Read-only: public drift-feed status + local pin store report.",
+  "version": "1.4.3",
+  "author": { "name": "Paraphern" },
+  "license": "Apache-2.0",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js"
+  }
+}

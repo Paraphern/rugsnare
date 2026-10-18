@@ -192,7 +192,7 @@ export function pinSkillFile(skill, cwd = process.cwd()) {
  * Pin all discovered skills into the pins store.
  * Returns { pinned, skipped } counts.
  */
-export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir()) {
+export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir(), { prune = false } = {}) {
   if (!pins.skills) pins.skills = {};
   const skills = discoverSkills(cwd, home);
   let pinnedCount = 0;
@@ -216,7 +216,18 @@ export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir()) {
     pins.skills[key] = entry;
     pinnedCount++;
   }
-  return { pinned: pinnedCount };
+  // R37: prune dead souls - pinned entries whose file no longer exists.
+  // Without --prune, they linger forever and ghost as REMOVED on every
+  // diff (union semantics). With --prune, they are dropped from the pin.
+  const liveKeys = new Set(skills.map((s) => `${s.app}/${s.scope}/${s.relative}`));
+  const deadSouls = [];
+  for (const key of Object.keys(pins.skills)) {
+    if (!liveKeys.has(key)) {
+      deadSouls.push(key);
+      if (prune) delete pins.skills[key];
+    }
+  }
+  return { pinned: pinnedCount, deadSouls, pruned: prune ? deadSouls.length : 0 };
 }
 
 // ---- diff & severity ---------------------------------------------------------

@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.5.0] - unreleased
+
+### outputSchema pinning (R14)
+
+The response half of the contract. GitHub's 123/131 tool changes were ALL
+outputSchema additions - invisible without this. Tools now carry an
+`outputHash`; changes are detected even when the input side is identical:
+
+- outputSchema **added** (SDK wave) -> NOTATION
+- outputSchema **changed** (response shape shifted) -> BREAKING
+- outputSchema **removed** -> LOOSENED
+
+### Resource content pinning (R13)
+
+The hostinger case: SKILL.md resources silently rewritten while the envelope
+(uri, name, description) stays identical. Resources now carry a
+`contentHash` (sha-256 of the text body) when content is available from
+`resources/list`. Envelope-identical but body-changed = DRIFT with the
+detail "resource body text changed while envelope is identical".
+
+### Skills scan `--prune` (R37)
+
+`rugsnare skills scan --prune` removes pinned entries whose file no longer
+exists ("dead souls" that ghost as REMOVED on every diff). Without the
+flag, a warning is printed with the count.
+
 ## [1.4.3] - 2026-10-14
 
 - **POLICY stop-rule (§3.1)**: when the pin store's `policyVersion` differs

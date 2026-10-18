@@ -51,4 +51,16 @@ export function proseHash(tool) {
   return crypto.createHash('sha256').update(stable(tool?.description ?? '')).digest('hex');
 }
 
+/**
+ * R14: outputSchema hash - the response half of the contract. GitHub's
+ * 123/131 tool changes were ALL outputSchema additions (Go SDK artifact);
+ * without this, we are blind on the output side. Graded separately:
+ * additions = NOTATION (SDK waves), narrowings = BREAKING (output shape
+ * changed for consumers who parse it).
+ */
+export function outputHash(tool) {
+  if (!tool?.outputSchema) return null;
+  return crypto.createHash('sha256').update(JSON.stringify(stable(tool.outputSchema))).digest('hex');
+}
+
 export const short = (h) => String(h).slice(0, 16);
