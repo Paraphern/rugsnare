@@ -1,36 +1,42 @@
 {
-  "version": 1,
+  "policyVersion": "rugsnare-1.4.3",
   "servers": {
     "chrome-devtools": {
       "cmd": {
-        "command": "node",
-        "args": [
-          "node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js"
-        ]
+        "args": ["node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js"],
+        "command": "node"
       },
-      "pinnedAt": "2026-10-13T08:22:43.289Z",
+      "identity": {
+        "entryPath": "build/src/bin/chrome-devtools-mcp.js",
+        "identityHash": "sha256:ae8ba96e75e1c5a0838864faa13f737f4d6918197d83df96bec51413d89fa2ed",
+        "package": "chrome-devtools-mcp",
+        "resolvedVersion": "1.10.1",
+        "url": null
+      },
+      "pinnedAt": "2026-10-17T02:52:38.152Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "chrome-devtools-mcp@1.10.1",
       "tools": {
         "click": {
-          "hash": "58e274c38fa0c9b63449f2939763a09aba19a46f74eb2045dabc0d5aec9d114c",
-          "schemaHash": "0720dc71f35be8a286daf1f9be625dd4ab2aa510e9c077ae4b9f26d4148be3b0",
-          "proseHash": "cf18169fd6e9437eb35b18e573419a0959606fe69716d5156d50a1ef7075fa7b",
-          "description": "Clicks on the provided element",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Clicks on the provided element",
+          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "hash": "58e274c38fa0c9b63449f2939763a09aba19a46f74eb2045dabc0d5aec9d114c",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "uid": {
-                "type": "string",
-                "description": "The uid of an element on the page from the page content snapshot"
-              },
               "dblClick": {
                 "description": "Set to true for double clicks. Default is false.",
                 "type": "boolean"
@@ -38,353 +44,383 @@
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "uid": {
+                "description": "The uid of an element on the page from the page content snapshot",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "uid"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","uid"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.456Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.247Z",
+          "proseHash": "cf18169fd6e9437eb35b18e573419a0959606fe69716d5156d50a1ef7075fa7b",
+          "schemaHash": "0720dc71f35be8a286daf1f9be625dd4ab2aa510e9c077ae4b9f26d4148be3b0"
         },
         "close_page": {
-          "hash": "9856ee221b8540027c7be9ab44ecf4b85a188333f50f17f5aa0f0687eaec1685",
-          "schemaHash": "393ab0d3085817ce800f0920f8214c79b02de2e7b8b71a4d1a20f4cad8c8ab0a",
-          "proseHash": "72772d7dcc4eb8c109af7e2e6c2cf50442643faea5c88b0d15218b78a56f8d28",
-          "description": "Closes the page by its index. The last open page cannot be closed.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Closes the page by its index. The last open page cannot be closed.",
+          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "hash": "9856ee221b8540027c7be9ab44ecf4b85a188333f50f17f5aa0f0687eaec1685",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
               "pageId": {
-                "type": "number",
-                "description": "The ID of the page to close. Call list_pages to list pages."
+                "description": "The ID of the page to close. Call list_pages to list pages.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "72772d7dcc4eb8c109af7e2e6c2cf50442643faea5c88b0d15218b78a56f8d28",
+          "schemaHash": "393ab0d3085817ce800f0920f8214c79b02de2e7b8b71a4d1a20f4cad8c8ab0a"
         },
         "drag": {
-          "hash": "212a0ef996d87101f2493ff415682de6e49109a7cd0477f774c8cf8efd672cb4",
-          "schemaHash": "df01c86cddc187e60f9917d8307411fd9b23a340ed899cf82a26a8c535980119",
-          "proseHash": "6a4f6762db2d98d889f789cd6fa4e52f820151fa1749483d45bd90c937d26929",
-          "description": "Drag an element onto another element",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Drag an element onto another element",
+          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "hash": "212a0ef996d87101f2493ff415682de6e49109a7cd0477f774c8cf8efd672cb4",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "from_uid": {
-                "type": "string",
-                "description": "The uid of the element to drag"
-              },
-              "to_uid": {
-                "type": "string",
-                "description": "The uid of the element to drop into"
+                "description": "The uid of the element to drag",
+                "type": "string"
               },
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "to_uid": {
+                "description": "The uid of the element to drop into",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "from_uid",
-              "to_uid"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","from_uid","to_uid"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "6a4f6762db2d98d889f789cd6fa4e52f820151fa1749483d45bd90c937d26929",
+          "schemaHash": "df01c86cddc187e60f9917d8307411fd9b23a340ed899cf82a26a8c535980119"
         },
         "emulate": {
-          "hash": "cac1c310fee80b90a75ab61811405096dafa5a892bfad328fbdb9000177780c0",
-          "schemaHash": "b0b86deae834ffb46d58a29d04e4ad906ec7d366f87395b754489c27d91b88bc",
-          "proseHash": "3df669ee6c8c3d4632895b066ca5aebaa4edaa168d228f7d76ff9b3079d96441",
-          "description": "Emulates various features on the target page.",
           "annotations": {
             "category": "emulation",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Emulates various features on the target page.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "cac1c310fee80b90a75ab61811405096dafa5a892bfad328fbdb9000177780c0",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "networkConditions": {
-                "description": "Throttle network. Omit to disable throttling.",
-                "type": "string",
-                "enum": [
-                  "Offline",
-                  "Slow 3G",
-                  "Fast 3G",
-                  "Slow 4G",
-                  "Fast 4G"
-                ]
+              "colorScheme": {
+                "description": "Emulate the dark or the light mode. Set to \"auto\" to reset to the default.",
+                "enum": ["dark","light","auto"],
+                "type": "string"
               },
               "cpuThrottlingRate": {
                 "description": "Represents the CPU slowdown factor. Omit or set the rate to 1 to disable throttling",
-                "type": "number",
+                "maximum": 20,
                 "minimum": 1,
-                "maximum": 20
+                "type": "number"
+              },
+              "extraHttpHeaders": {
+                "description": "Extra HTTP headers as a JSON string object, e.g. {\"X-Custom\": \"value\", \"Authorization\": \"Bearer token\"}. Headers are included into every HTTP request originating from the page and persist across navigations until cleared. Pass an empty string to clear all extra headers.",
+                "type": "string"
               },
               "geolocation": {
                 "description": "Geolocation (`<latitude>,<longitude>`) to emulate. Latitude between -90 and 90. Longitude between -180 and 180. Omit to clear the geolocation override.",
                 "type": "string"
               },
+              "networkConditions": {
+                "description": "Throttle network. Omit to disable throttling.",
+                "enum": ["Offline","Slow 3G","Fast 3G","Slow 4G","Fast 4G"],
+                "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
               "userAgent": {
                 "description": "User agent to emulate. Set to empty string to clear the user agent override.",
                 "type": "string"
               },
-              "colorScheme": {
-                "description": "Emulate the dark or the light mode. Set to \"auto\" to reset to the default.",
-                "type": "string",
-                "enum": [
-                  "dark",
-                  "light",
-                  "auto"
-                ]
-              },
               "viewport": {
                 "description": "Emulate device viewports '<width>x<height>x<devicePixelRatio>[,mobile][,touch][,landscape]'. 'touch' and 'mobile' to emulate mobile devices. 'landscape' to emulate landscape mode.",
                 "type": "string"
-              },
-              "extraHttpHeaders": {
-                "description": "Extra HTTP headers as a JSON string object, e.g. {\"X-Custom\": \"value\", \"Authorization\": \"Bearer token\"}. Headers are included into every HTTP request originating from the page and persist across navigations until cleared. Pass an empty string to clear all extra headers.",
-                "type": "string"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "3df669ee6c8c3d4632895b066ca5aebaa4edaa168d228f7d76ff9b3079d96441",
+          "schemaHash": "b0b86deae834ffb46d58a29d04e4ad906ec7d366f87395b754489c27d91b88bc"
         },
         "evaluate_script": {
-          "hash": "9051517720295dc2bc094e2f9b4d61e64ca3f617451b0dd740faa01beaffc9a8",
-          "schemaHash": "73f84d049c7eaf8a0bfaa0f12baf04d1eee8bac1177e2fba21035609caee57d9",
-          "proseHash": "0f5b277be7c538eb2029596e9c27b3e50b7e1d076b3f488ad3e904b678d21854",
-          "description": "Evaluate a JavaScript function inside the target page. Returns the response as JSON, so returned values have to be JSON-serializable.",
           "annotations": {
             "category": "debugging",
-            "readOnlyHint": false,
-            "conditions": [
-              "javascriptEvaluation"
-            ]
+            "conditions": ["javascriptEvaluation"],
+            "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Evaluate a JavaScript function inside the target page. Returns the response as JSON, so returned values have to be JSON-serializable.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "9051517720295dc2bc094e2f9b4d61e64ca3f617451b0dd740faa01beaffc9a8",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "function": {
-                "type": "string",
-                "description": "A JavaScript function declaration to be executed by the tool in the target page.\nExample without arguments: `() => document.title` or `async () => await fetch(\"example.com\")`.\nExample with arguments: `(el) => el.innerText`\n"
-              },
               "args": {
                 "description": "An optional list of arguments to pass to the function.",
-                "type": "array",
                 "items": {
-                  "type": "string",
-                  "description": "The uid of an element on the page from the page content snapshot"
-                }
+                  "description": "The uid of an element on the page from the page content snapshot",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "dialogAction": {
+                "description": "Handle dialogs while execution. \"accept\", \"dismiss\", or string for response of window.prompt. Defaults to accept.",
+                "type": "string"
               },
               "filePath": {
                 "description": "The absolute or relative path to a file to save the script output to. If omitted, the output is returned inline.",
                 "type": "string"
               },
-              "dialogAction": {
-                "description": "Handle dialogs while execution. \"accept\", \"dismiss\", or string for response of window.prompt. Defaults to accept.",
+              "function": {
+                "description": "A JavaScript function declaration to be executed by the tool in the target page.\nExample without arguments: `() => document.title` or `async () => await fetch(\"example.com\")`.\nExample with arguments: `(el) => el.innerText`\n",
                 "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "waitForStableDom": {
                 "description": "Whether to wait for the DOM to settle. Pass false if the script only reads data. Defaults to true.",
                 "type": "boolean"
               }
             },
-            "required": [
-              "pageId",
-              "function"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","function"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "0f5b277be7c538eb2029596e9c27b3e50b7e1d076b3f488ad3e904b678d21854",
+          "schemaHash": "73f84d049c7eaf8a0bfaa0f12baf04d1eee8bac1177e2fba21035609caee57d9"
         },
         "fill": {
-          "hash": "57a3096ddf68a8e30745ccd6375c358ad63790af83a805759bee29edbcad3cbb",
-          "schemaHash": "429fa094856bbf1ff60482718389102cd82b0fe9eeec8362d536a5017d997851",
-          "proseHash": "c57b5127ef097052c6f1aa8823bca0661b1d4fe81092c7f7f8e7ba1e57912d00",
-          "description": "Type text into an input, text area or select an option from a <select> element.",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Type text into an input, text area or select an option from a <select> element.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "57a3096ddf68a8e30745ccd6375c358ad63790af83a805759bee29edbcad3cbb",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
+              "includeSnapshot": {
+                "description": "Whether to include a snapshot in the response. Default is false.",
+                "type": "boolean"
+              },
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "uid": {
-                "type": "string",
-                "description": "The uid of an element on the page from the page content snapshot"
+                "description": "The uid of an element on the page from the page content snapshot",
+                "type": "string"
               },
               "value": {
-                "type": "string",
-                "description": "The value to fill in. \"true\" or \"false\" for checkboxes and toggles, \"true\" for radio buttons."
-              },
-              "includeSnapshot": {
-                "description": "Whether to include a snapshot in the response. Default is false.",
-                "type": "boolean"
+                "description": "The value to fill in. \"true\" or \"false\" for checkboxes and toggles, \"true\" for radio buttons.",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "uid",
-              "value"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","uid","value"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "c57b5127ef097052c6f1aa8823bca0661b1d4fe81092c7f7f8e7ba1e57912d00",
+          "schemaHash": "429fa094856bbf1ff60482718389102cd82b0fe9eeec8362d536a5017d997851"
         },
         "fill_form": {
-          "hash": "efe1c29f4dc38f19d94a2aee1bc254285b487f0e3e41a3adb3691fabd25245f2",
-          "schemaHash": "5d30980069dffe6b1e42d638f95397d3141bec2b387e5389265221b92c7803f3",
-          "proseHash": "d4a0f3b9215244006f894f822f790276299181acf3b9a6f38aca6e28972ead13",
-          "description": "Fill out multiple form elements (inputs, selects, checkboxes, radios) at once. ALWAYS prefer this tool over multiple individual 'fill' or 'click' calls when interacting with forms. It is significantly faster, more reliable, and reduces turn count. Example: Fill username, password, and check \"Remember Me\" in one call.",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Fill out multiple form elements (inputs, selects, checkboxes, radios) at once. ALWAYS prefer this tool over multiple individual 'fill' or 'click' calls when interacting with forms. It is significantly faster, more reliable, and reduces turn count. Example: Fill username, password, and check \"Remember Me\" in one call.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "efe1c29f4dc38f19d94a2aee1bc254285b487f0e3e41a3adb3691fabd25245f2",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "elements": {
-                "type": "array",
+                "description": "Elements from snapshot to fill out.",
                 "items": {
-                  "type": "object",
+                  "description": "An element to fill out",
                   "properties": {
                     "uid": {
-                      "type": "string",
-                      "description": "The uid of the element to fill out"
+                      "description": "The uid of the element to fill out",
+                      "type": "string"
                     },
                     "value": {
-                      "type": "string",
-                      "description": "Value for the element. \"true\" or \"false\" for checkboxes and toggles, \"true\" for radio buttons."
+                      "description": "Value for the element. \"true\" or \"false\" for checkboxes and toggles, \"true\" for radio buttons.",
+                      "type": "string"
                     }
                   },
-                  "required": [
-                    "uid",
-                    "value"
-                  ],
-                  "description": "An element to fill out"
+                  "required": ["uid","value"],
+                  "type": "object"
                 },
-                "description": "Elements from snapshot to fill out."
+                "type": "array"
               },
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "elements"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","elements"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "d4a0f3b9215244006f894f822f790276299181acf3b9a6f38aca6e28972ead13",
+          "schemaHash": "5d30980069dffe6b1e42d638f95397d3141bec2b387e5389265221b92c7803f3"
         },
         "get_console_message": {
-          "hash": "d15fbfc7ea24473fac0cd262893e743da12af4b079a89c95f2d9c0975cd22e45",
-          "schemaHash": "d1956b186d16ab6f31d7da98fd1cfa760f47f0898b6e7dcbc606903bd6f886c9",
-          "proseHash": "f2bc92edb8428d89e4319937dc6da16b8b75ce4f5a8cd211dd0199b18dbbf397",
-          "description": "Gets a console message by its ID. You can get all messages by calling list_console_messages.",
           "annotations": {
             "category": "debugging",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Gets a console message by its ID. You can get all messages by calling list_console_messages.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "d15fbfc7ea24473fac0cd262893e743da12af4b079a89c95f2d9c0975cd22e45",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "msgid": {
-                "type": "number",
-                "description": "The msgid of a console message on the page from the listed console messages"
+                "description": "The msgid of a console message on the page from the listed console messages",
+                "type": "number"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "msgid"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","msgid"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "f2bc92edb8428d89e4319937dc6da16b8b75ce4f5a8cd211dd0199b18dbbf397",
+          "schemaHash": "d1956b186d16ab6f31d7da98fd1cfa760f47f0898b6e7dcbc606903bd6f886c9"
+        },
+        "get_css_styles": {
+          "annotations": {
+            "category": "debugging",
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Retrieve matched CSS rules, inline styles, inherited styles, and cascade information for an element identified by its UID.\nUse this tool to debug why specific CSS properties are applied, overridden, or conflicting. Results are paginated and return 10 rules per page by default; use pageIdx to page through the remaining rules. Requires a UID from take_snapshot.",
+          "firstSeen": "2026-10-17T02:52:49.249Z",
+          "hash": "85d7b470afb117ed719ad4485e6131be1f731762f0e017745b83a8ce62d5fa43",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
+            "properties": {
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "pageIdx": {
+                "default": 0,
+                "description": "Page number to return (0-based). Defaults to 0 (the first page).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "pageSize": {
+                "default": 10,
+                "description": "Maximum number of CSS rules to return per page. Defaults to 10.",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              },
+              "uid": {
+                "description": "The uid of the element on the page from the page content snapshot to inspect CSS styles for",
+                "type": "string"
+              }
+            },
+            "required": ["pageId","uid"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "4097b60b08be6731bf6bf4af9c605e75c6adc385861e3b0b90974901191d6ec0",
+          "schemaHash": "2356bc9269aecb4e66a3dbbed7c936f74c64b837f32c3c4e4b5a643eee4719d8"
         },
         "get_network_request": {
-          "hash": "a103d494849731c6e4de3f42eb2d8446b6a9f02792a764915127fb9429cf7b22",
-          "schemaHash": "ac9d8bee5e1074d580470a8944ad77162e82161f95b97a067254f13adb92efd2",
-          "proseHash": "6941950a139442bd7c4e4d9b8258dd5333b765168bf68c19fdf6a7e50acd73c5",
-          "description": "Gets a network request by an optional reqid, if omitted returns the currently selected request in the DevTools Network panel. Useful for inspecting request headers (including 'Cookie') and response headers (including 'Set-Cookie' and directives).",
           "annotations": {
             "category": "network",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Gets a network request by an optional reqid, if omitted returns the currently selected request in the DevTools Network panel. Useful for inspecting request headers (including 'Cookie') and response headers (including 'Set-Cookie' and directives).",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "a103d494849731c6e4de3f42eb2d8446b6a9f02792a764915127fb9429cf7b22",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "reqid": {
                 "description": "The reqid of the network request. If omitted returns the currently selected request in the DevTools Network panel.",
@@ -399,393 +435,333 @@
                 "type": "string"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.249Z",
+          "proseHash": "6941950a139442bd7c4e4d9b8258dd5333b765168bf68c19fdf6a7e50acd73c5",
+          "schemaHash": "ac9d8bee5e1074d580470a8944ad77162e82161f95b97a067254f13adb92efd2"
         },
         "handle_dialog": {
-          "hash": "c6b7420b18d81c226737874e89f6c47697d813ea4ac88fcba0c49a2e0424d948",
-          "schemaHash": "68e828cf9126c36f08f9a290572d734decce334c68153773cf4f94c6a294e7f7",
-          "proseHash": "0d5fdb4c4e351267cc0a9e0ff049f33c5add9a8e8bd8c0bc2eb9e4a74766e27e",
-          "description": "If a browser dialog was opened, use this command to handle it",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "If a browser dialog was opened, use this command to handle it",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "c6b7420b18d81c226737874e89f6c47697d813ea4ac88fcba0c49a2e0424d948",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "action": {
-                "type": "string",
-                "enum": [
-                  "accept",
-                  "dismiss"
-                ],
-                "description": "Whether to dismiss or accept the dialog"
+                "description": "Whether to dismiss or accept the dialog",
+                "enum": ["accept","dismiss"],
+                "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "promptText": {
                 "description": "Optional prompt text to enter into the dialog.",
                 "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "action"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","action"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.292Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "0d5fdb4c4e351267cc0a9e0ff049f33c5add9a8e8bd8c0bc2eb9e4a74766e27e",
+          "schemaHash": "68e828cf9126c36f08f9a290572d734decce334c68153773cf4f94c6a294e7f7"
         },
         "hover": {
-          "hash": "bf1420a3cf73769ae16eebe2893db654d04ac2149a1610966200895e0929b062",
-          "schemaHash": "4b4229c3cf408ce78b4b5fa62ed93b3020264bd896ec35deffc4005af2e01021",
-          "proseHash": "341bb0352d5e05ca5cc749685c459496c8d19d5f5f78e7309d8c8c6d2b4e6959",
-          "description": "Hover over the provided element",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Hover over the provided element",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "bf1420a3cf73769ae16eebe2893db654d04ac2149a1610966200895e0929b062",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "uid": {
-                "type": "string",
-                "description": "The uid of an element on the page from the page content snapshot"
-              },
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "uid": {
+                "description": "The uid of an element on the page from the page content snapshot",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "uid"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","uid"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "341bb0352d5e05ca5cc749685c459496c8d19d5f5f78e7309d8c8c6d2b4e6959",
+          "schemaHash": "4b4229c3cf408ce78b4b5fa62ed93b3020264bd896ec35deffc4005af2e01021"
         },
         "lighthouse_audit": {
-          "hash": "6f209768407fa1f01dc058f6891cd8dd39196082187d244f9ed1bd7a053f5302",
-          "schemaHash": "1d977a04ea5fa3f4ca9cec6de7635ba22097bd18121f0f425f5515780153b68b",
-          "proseHash": "cb94d3a5ac1176c789f4678256e47e19110a6cc2a18a948e4c384f25ebacb48a",
-          "description": "Get Lighthouse score and reports for accessibility, SEO, best practices, and agentic browsing. This excludes performance. For performance audits, run performance_start_trace",
           "annotations": {
             "category": "debugging",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Get Lighthouse score and reports for accessibility, SEO, best practices, and agentic browsing. This excludes performance. For performance audits, run performance_start_trace",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "6f209768407fa1f01dc058f6891cd8dd39196082187d244f9ed1bd7a053f5302",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+              "device": {
+                "default": "desktop",
+                "description": "Device to emulate.",
+                "enum": ["desktop","mobile"],
+                "type": "string"
               },
               "mode": {
                 "default": "navigation",
                 "description": "\"navigation\" reloads & audits. \"snapshot\" analyzes current state.",
-                "type": "string",
-                "enum": [
-                  "navigation",
-                  "snapshot"
-                ]
-              },
-              "device": {
-                "default": "desktop",
-                "description": "Device to emulate.",
-                "type": "string",
-                "enum": [
-                  "desktop",
-                  "mobile"
-                ]
+                "enum": ["navigation","snapshot"],
+                "type": "string"
               },
               "outputDirPath": {
                 "description": "Directory for reports. If omitted, uses temporary files.",
                 "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "cb94d3a5ac1176c789f4678256e47e19110a6cc2a18a948e4c384f25ebacb48a",
+          "schemaHash": "1d977a04ea5fa3f4ca9cec6de7635ba22097bd18121f0f425f5515780153b68b"
         },
         "list_console_messages": {
-          "hash": "13089a704bfd6654b344b66a3b2e880d0efe7625eafba57323a3f735be225f9d",
-          "schemaHash": "241915201354d54084c99a4a9d82af4b135c1afb93f51e19ca2cd543d4bcda02",
-          "proseHash": "4785fc3de6a1991772ff3175ff445fec9377dca71ddccd7888f6a8bb8e51c5c3",
-          "description": "List all console messages for the target page since the last navigation.",
           "annotations": {
             "category": "debugging",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "List all console messages for the target page since the last navigation.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "13089a704bfd6654b344b66a3b2e880d0efe7625eafba57323a3f735be225f9d",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "pageSize": {
-                "description": "Maximum number of messages to return. When omitted, returns all messages.",
-                "type": "integer",
-                "exclusiveMinimum": 0,
-                "maximum": 9007199254740991
-              },
-              "pageIdx": {
-                "description": "Page number to return (0-based). When omitted, returns the first page.",
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
-              },
-              "types": {
-                "description": "Filter messages to only return messages of the specified resource types. When omitted or empty, returns all messages.",
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "enum": [
-                    "log",
-                    "debug",
-                    "info",
-                    "error",
-                    "warn",
-                    "dir",
-                    "dirxml",
-                    "table",
-                    "trace",
-                    "clear",
-                    "startGroup",
-                    "startGroupCollapsed",
-                    "endGroup",
-                    "assert",
-                    "profile",
-                    "profileEnd",
-                    "count",
-                    "timeEnd",
-                    "verbose",
-                    "issue"
-                  ]
-                }
-              },
               "includePreservedMessages": {
-                "description": "Set to true to return the preserved messages over the last 3 navigations.",
                 "default": false,
+                "description": "Set to true to return the preserved messages over the last 3 navigations.",
                 "type": "boolean"
               },
               "includeStackTraces": {
-                "description": "Set to true to include the stack trace for each message when available. Increases the response size.",
                 "default": false,
+                "description": "Set to true to include the stack trace for each message when available. Increases the response size.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "pageIdx": {
+                "description": "Page number to return (0-based). When omitted, returns the first page.",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "pageSize": {
+                "description": "Maximum number of messages to return. When omitted, returns all messages.",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               },
               "serviceWorkerId": {
                 "description": "Filter messages to only return messages of the specified service worker.",
                 "type": "string"
+              },
+              "types": {
+                "description": "Filter messages to only return messages of the specified resource types. When omitted or empty, returns all messages.",
+                "items": {
+                  "enum": ["log","debug","info","error","warn","dir","dirxml","table","trace","clear","startGroup","startGroupCollapsed","endGroup","assert","profile","profileEnd","count","timeEnd","verbose","issue"],
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "4785fc3de6a1991772ff3175ff445fec9377dca71ddccd7888f6a8bb8e51c5c3",
+          "schemaHash": "241915201354d54084c99a4a9d82af4b135c1afb93f51e19ca2cd543d4bcda02"
         },
         "list_network_requests": {
-          "hash": "6309792966fed3f039d8433ff2b10c962a946716c9b15294a245679b2497d0b0",
-          "schemaHash": "b574d7e1b8d513e5325e49b6745ffdcc336d300f88c375fe4221db5727e1b5d5",
-          "proseHash": "a2cb174d216a9a44d70e89f6d7d9100d4b001ac4ec683896bf52ccb6d7037d77",
-          "description": "Lists the most recent requests for the target page since the last navigation.",
           "annotations": {
             "category": "network",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Lists the most recent requests for the target page since the last navigation.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "6309792966fed3f039d8433ff2b10c962a946716c9b15294a245679b2497d0b0",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+              "includePreservedRequests": {
+                "default": false,
+                "description": "Set to true to return the preserved requests over the last 3 navigations.",
+                "type": "boolean"
               },
-              "pageSize": {
-                "description": "Maximum number of requests to return. When omitted, returns all requests.",
-                "type": "integer",
-                "exclusiveMinimum": 0,
-                "maximum": 9007199254740991
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "pageIdx": {
                 "description": "Page number to return (0-based). When omitted, returns the first page.",
-                "type": "integer",
+                "maximum": 9007199254740991,
                 "minimum": 0,
-                "maximum": 9007199254740991
+                "type": "integer"
+              },
+              "pageSize": {
+                "description": "Maximum number of requests to return. When omitted, returns all requests.",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               },
               "resourceTypes": {
                 "description": "Filter requests to only return requests of the specified resource types. When omitted or empty, returns all requests.",
-                "type": "array",
                 "items": {
-                  "type": "string",
-                  "enum": [
-                    "document",
-                    "stylesheet",
-                    "image",
-                    "media",
-                    "font",
-                    "script",
-                    "texttrack",
-                    "xhr",
-                    "fetch",
-                    "prefetch",
-                    "eventsource",
-                    "websocket",
-                    "manifest",
-                    "signedexchange",
-                    "ping",
-                    "cspviolationreport",
-                    "preflight",
-                    "fedcm",
-                    "other"
-                  ]
-                }
-              },
-              "includePreservedRequests": {
-                "description": "Set to true to return the preserved requests over the last 3 navigations.",
-                "default": false,
-                "type": "boolean"
+                  "enum": ["document","stylesheet","image","media","font","script","texttrack","xhr","fetch","prefetch","eventsource","websocket","manifest","signedexchange","ping","cspviolationreport","preflight","fedcm","other"],
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "a2cb174d216a9a44d70e89f6d7d9100d4b001ac4ec683896bf52ccb6d7037d77",
+          "schemaHash": "b574d7e1b8d513e5325e49b6745ffdcc336d300f88c375fe4221db5727e1b5d5"
         },
         "list_pages": {
-          "hash": "a68c3ae526642f4c119594aa36832b3a43632c5b3b986224078dcc5d918a44ed",
-          "schemaHash": "d03b395d3c04ae63afed84aa06f936aee95c318560456023e2bebc5ba08df00d",
-          "proseHash": "88ebfb3dff57b13ebe0215467783a0fb17093cdeef62bb270324791736a3b258",
-          "description": "Get a list of pages open in the browser.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Get a list of pages open in the browser.",
+          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "hash": "a68c3ae526642f4c119594aa36832b3a43632c5b3b986224078dcc5d918a44ed",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "properties": {},
-            "additionalProperties": {}
+            "additionalProperties": {
+
+            },
+            "properties": {
+
+            },
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "88ebfb3dff57b13ebe0215467783a0fb17093cdeef62bb270324791736a3b258",
+          "schemaHash": "d03b395d3c04ae63afed84aa06f936aee95c318560456023e2bebc5ba08df00d"
         },
         "navigate_page": {
-          "hash": "2d9e31da8f3e2be651ac44118e2782e615dfb10ef297f7fd3da0de53646646ed",
-          "schemaHash": "2fc399bded39557448526e9d804f9fd73c30d3e1ec1783b7740b1698568b31de",
-          "proseHash": "731dae5a078816beb4af6fbe0583cd650dd463f7f2ffff70892d7e48b44c9158",
-          "description": "Go to a URL, or back, forward, or reload. Use project URL if not specified otherwise.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Go to a URL, or back, forward, or reload. Use project URL if not specified otherwise.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "2d9e31da8f3e2be651ac44118e2782e615dfb10ef297f7fd3da0de53646646ed",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "type": {
-                "description": "Navigate the page by URL, back or forward in history, or reload.",
-                "type": "string",
-                "enum": [
-                  "url",
-                  "back",
-                  "forward",
-                  "reload"
-                ]
-              },
-              "url": {
-                "description": "Target URL (only type=url)",
+              "handleBeforeUnload": {
+                "description": "Whether to auto accept or beforeunload dialogs triggered by this navigation. Default is accept.",
+                "enum": ["accept","dismiss"],
                 "type": "string"
               },
               "ignoreCache": {
                 "description": "Whether to ignore cache on reload.",
                 "type": "boolean"
               },
-              "handleBeforeUnload": {
-                "description": "Whether to auto accept or beforeunload dialogs triggered by this navigation. Default is accept.",
-                "type": "string",
-                "enum": [
-                  "accept",
-                  "dismiss"
-                ]
-              },
               "initScript": {
                 "description": "A JavaScript script to be executed on each new document before any other scripts for the next navigation.",
                 "type": "string"
               },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
               "timeout": {
                 "description": "Maximum wait time in milliseconds. If set to 0, the default timeout will be used.",
-                "type": "integer",
+                "maximum": 9007199254740991,
                 "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "type": "integer"
+              },
+              "type": {
+                "description": "Navigate the page by URL, back or forward in history, or reload.",
+                "enum": ["url","back","forward","reload"],
+                "type": "string"
+              },
+              "url": {
+                "description": "Target URL (only type=url)",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "731dae5a078816beb4af6fbe0583cd650dd463f7f2ffff70892d7e48b44c9158",
+          "schemaHash": "2fc399bded39557448526e9d804f9fd73c30d3e1ec1783b7740b1698568b31de"
         },
         "new_page": {
-          "hash": "c7ef8da2dfd779ade2a2b302685d5cb5c8704283ab961fc3891c6fa3ae5c9fda",
-          "schemaHash": "586972e8741327b9348142c79cd2e3a202d98527fedf445996d2a93d72bb80b6",
-          "proseHash": "0d37567ebbe2a8a5efa3e7fcd0e54cebc7542db192850be2958a497ea1841f6b",
-          "description": "Open a new tab and load a URL. Use project URL if not specified otherwise.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Open a new tab and load a URL. Use project URL if not specified otherwise.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "c7ef8da2dfd779ade2a2b302685d5cb5c8704283ab961fc3891c6fa3ae5c9fda",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "url": {
-                "type": "string",
-                "description": "URL to load in a new page."
-              },
               "background": {
                 "description": "Whether to open the page in the background without bringing it to the front. Default is false (foreground).",
                 "type": "boolean"
@@ -796,79 +772,72 @@
               },
               "timeout": {
                 "description": "Maximum wait time in milliseconds. If set to 0, the default timeout will be used.",
-                "type": "integer",
+                "maximum": 9007199254740991,
                 "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "type": "integer"
+              },
+              "url": {
+                "description": "URL to load in a new page.",
+                "type": "string"
               }
             },
-            "required": [
-              "url"
-            ],
-            "additionalProperties": {}
+            "required": ["url"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "0d37567ebbe2a8a5efa3e7fcd0e54cebc7542db192850be2958a497ea1841f6b",
+          "schemaHash": "586972e8741327b9348142c79cd2e3a202d98527fedf445996d2a93d72bb80b6"
         },
         "performance_analyze_insight": {
-          "hash": "ed8dee81a37bc832a8f988f3a7e140a8009b7c0ae82ba1d7f9544fbb7944824e",
-          "schemaHash": "6e1cf45b9b59f0d971b990713c3e55a746622266a146a1b980518f6d1f415d37",
-          "proseHash": "46ccbaf3dbb06abc2d517c55d7ca1e36fbbcdd1dbf00b241dab1b78a9fcf5a94",
-          "description": "Provides more detailed information on a specific Performance Insight of an insight set that was highlighted in the results of a trace recording.",
           "annotations": {
             "category": "performance",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Provides more detailed information on a specific Performance Insight of an insight set that was highlighted in the results of a trace recording.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "ed8dee81a37bc832a8f988f3a7e140a8009b7c0ae82ba1d7f9544fbb7944824e",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+              "insightName": {
+                "description": "The name of the Insight you want more information on. For example: \"DocumentLatency\" or \"LCPBreakdown\"",
+                "type": "string"
               },
               "insightSetId": {
-                "type": "string",
-                "description": "The id for the specific insight set. Only use the ids given in the \"Available insight sets\" list."
+                "description": "The id for the specific insight set. Only use the ids given in the \"Available insight sets\" list.",
+                "type": "string"
               },
-              "insightName": {
-                "type": "string",
-                "description": "The name of the Insight you want more information on. For example: \"DocumentLatency\" or \"LCPBreakdown\""
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "insightSetId",
-              "insightName"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","insightSetId","insightName"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "46ccbaf3dbb06abc2d517c55d7ca1e36fbbcdd1dbf00b241dab1b78a9fcf5a94",
+          "schemaHash": "6e1cf45b9b59f0d971b990713c3e55a746622266a146a1b980518f6d1f415d37"
         },
         "performance_start_trace": {
-          "hash": "f3b7f6ebd9888ab551e09c84c26533f05d302a29c1667fbc2b882caa461bff9b",
-          "schemaHash": "7100668e5c0b376f14283b6160ee7e9ae712cbaac5d175761c1da743a938ef6b",
-          "proseHash": "da37cef521df2ddc6d892b1213894d4289a038c9089c2dc4aa7b6a2f353da6b1",
-          "description": "Start a performance trace on the target webpage. Use to find frontend performance issues, Core Web Vitals (LCP, INP, CLS), and improve page load speed.",
           "annotations": {
             "category": "performance",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Start a performance trace on the target webpage. Use to find frontend performance issues, Core Web Vitals (LCP, INP, CLS), and improve page load speed.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "f3b7f6ebd9888ab551e09c84c26533f05d302a29c1667fbc2b882caa461bff9b",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "reload": {
-                "default": true,
-                "description": "Determines if, once tracing has started, the target page should be automatically reloaded. Navigate the page to the right URL using the navigate_page tool BEFORE starting the trace if reload or autoStop is set to true.",
-                "type": "boolean"
-              },
               "autoStop": {
                 "default": true,
                 "description": "Determines if the trace recording should be automatically stopped.",
@@ -877,447 +846,394 @@
               "filePath": {
                 "description": "The absolute file path, or a file path relative to the current working directory, to save the raw trace data. For example, trace.json.gz (compressed) or trace.json (uncompressed).",
                 "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "reload": {
+                "default": true,
+                "description": "Determines if, once tracing has started, the target page should be automatically reloaded. Navigate the page to the right URL using the navigate_page tool BEFORE starting the trace if reload or autoStop is set to true.",
+                "type": "boolean"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "da37cef521df2ddc6d892b1213894d4289a038c9089c2dc4aa7b6a2f353da6b1",
+          "schemaHash": "7100668e5c0b376f14283b6160ee7e9ae712cbaac5d175761c1da743a938ef6b"
         },
         "performance_stop_trace": {
-          "hash": "6204dcfbe732e23979d6aaeceb1f9de6a784dca40b47561cf60c4af53073f5d3",
-          "schemaHash": "6af1bc1c50bbdf7a9cef9cf5baac3b7fea6c3c4e12415c4c7f57a7d8a0a54ece",
-          "proseHash": "53ff49e2ccd2e6a4cc3f9ae52a9db875b3e232a15ddcc0a0897637cad5046f1d",
-          "description": "Stop the active performance trace recording on the target webpage.",
           "annotations": {
             "category": "performance",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Stop the active performance trace recording on the target webpage.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "6204dcfbe732e23979d6aaeceb1f9de6a784dca40b47561cf60c4af53073f5d3",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "filePath": {
                 "description": "The absolute file path, or a file path relative to the current working directory, to save the raw trace data. For example, trace.json.gz (compressed) or trace.json (uncompressed).",
                 "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "53ff49e2ccd2e6a4cc3f9ae52a9db875b3e232a15ddcc0a0897637cad5046f1d",
+          "schemaHash": "6af1bc1c50bbdf7a9cef9cf5baac3b7fea6c3c4e12415c4c7f57a7d8a0a54ece"
         },
         "press_key": {
-          "hash": "03380efb5a0232593a318b38af483a00081e6243e03789b707b0b467fb6f9464",
-          "schemaHash": "764741a210e0d9dd53a4baeac2231ea692c20f4174135c24332f7d8dc0e10fcf",
-          "proseHash": "c297a1546875c43d45dca2f6ff11b6e1ad61198ff46dd446e8111d2fb6e7c28a",
-          "description": "Press a key or key combination. Use this when other input methods like fill() cannot be used (e.g., keyboard shortcuts, navigation keys, or special key combinations).",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Press a key or key combination. Use this when other input methods like fill() cannot be used (e.g., keyboard shortcuts, navigation keys, or special key combinations).",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "03380efb5a0232593a318b38af483a00081e6243e03789b707b0b467fb6f9464",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "key": {
-                "type": "string",
-                "description": "A key or a combination (e.g., \"Enter\", \"Control+A\", \"Control++\", \"Control+Shift+R\"). Modifiers: Control, Shift, Alt, Meta"
-              },
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "key": {
+                "description": "A key or a combination (e.g., \"Enter\", \"Control+A\", \"Control++\", \"Control+Shift+R\"). Modifiers: Control, Shift, Alt, Meta",
+                "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "key"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","key"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "c297a1546875c43d45dca2f6ff11b6e1ad61198ff46dd446e8111d2fb6e7c28a",
+          "schemaHash": "764741a210e0d9dd53a4baeac2231ea692c20f4174135c24332f7d8dc0e10fcf"
         },
         "resize_page": {
-          "hash": "eee922b523d2d857fa3b2ebaf638ba6cfde0cae1a8f4cc580024cb5fef0983a3",
-          "schemaHash": "330e7e1a9971769f805cd07d2bc1e4ca227c492fe31dda1aac6e78e20bd0df17",
-          "proseHash": "1bddb42330b3f364ed647820a6c86b55634ef326a730e1af636c1279747a7371",
-          "description": "Resizes the page's window so that the page has specified dimension",
           "annotations": {
             "category": "emulation",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Resizes the page's window so that the page has specified dimension",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "eee922b523d2d857fa3b2ebaf638ba6cfde0cae1a8f4cc580024cb5fef0983a3",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
+              "height": {
+                "description": "Page height",
+                "type": "number"
+              },
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "width": {
-                "type": "number",
-                "description": "Page width"
-              },
-              "height": {
-                "type": "number",
-                "description": "Page height"
+                "description": "Page width",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "width",
-              "height"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","width","height"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "1bddb42330b3f364ed647820a6c86b55634ef326a730e1af636c1279747a7371",
+          "schemaHash": "330e7e1a9971769f805cd07d2bc1e4ca227c492fe31dda1aac6e78e20bd0df17"
         },
         "select_page": {
-          "hash": "89e26f93b526569dfe4f2495dd2984569abc636637a0af8965d881cbe169f015",
-          "schemaHash": "c48629ad806bc082b2ad0b74b5ab9d8fb014c2cefb86891010eec2cad501d342",
-          "proseHash": "384cbcb7e759dd4dfdaa5da4f37e9ff1f52ef3618938d2f5c1fedc4697eefb6e",
-          "description": "Select a page as a context for future tool calls.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Select a page as a context for future tool calls.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "89e26f93b526569dfe4f2495dd2984569abc636637a0af8965d881cbe169f015",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "The ID of the page to select. Call list_pages to get available pages."
-              },
               "bringToFront": {
                 "description": "Whether to focus the page and bring it to the top.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "The ID of the page to select. Call list_pages to get available pages.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "384cbcb7e759dd4dfdaa5da4f37e9ff1f52ef3618938d2f5c1fedc4697eefb6e",
+          "schemaHash": "c48629ad806bc082b2ad0b74b5ab9d8fb014c2cefb86891010eec2cad501d342"
         },
         "take_heapsnapshot": {
-          "hash": "0c7f902db6c842b854d908e19f2efe19e98f5e1a1d0e8899e5b0deb1c702b747",
-          "schemaHash": "70619dc14137a303536b5dbfb7237134ed8fe553eed048a18d184a74d0a0b328",
-          "proseHash": "0cb4e6426c39d188d642a40290ed34df07b6eacd3085feda66f09b8ab07a5ccb",
-          "description": "Capture a heap snapshot of the target page. Use to analyze the memory distribution of JavaScript objects and debug memory leaks.",
           "annotations": {
             "category": "memory",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Capture a heap snapshot of the target page. Use to analyze the memory distribution of JavaScript objects and debug memory leaks.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "0c7f902db6c842b854d908e19f2efe19e98f5e1a1d0e8899e5b0deb1c702b747",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
               "filePath": {
-                "type": "string",
-                "description": "A path to a .heapsnapshot file to save the heapsnapshot to."
+                "description": "A path to a .heapsnapshot file to save the heapsnapshot to.",
+                "type": "string"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               }
             },
-            "required": [
-              "pageId",
-              "filePath"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","filePath"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.293Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "0cb4e6426c39d188d642a40290ed34df07b6eacd3085feda66f09b8ab07a5ccb",
+          "schemaHash": "70619dc14137a303536b5dbfb7237134ed8fe553eed048a18d184a74d0a0b328"
         },
         "take_screenshot": {
-          "hash": "54b0331ef456742c0f8028935933c371c312c499ddfe2e42e47c2cc548edb7b3",
-          "schemaHash": "3d9530a48c5cd41d362c2f0507759c1022abe71493289f080f308baa03167bd7",
-          "proseHash": "7492e37b99f207cc0ed38e35d80c6044de289385ef99b311111d60718cf0b984",
-          "description": "Take a screenshot of the page or element.",
           "annotations": {
             "category": "debugging",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Take a screenshot of the page or element.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "54b0331ef456742c0f8028935933c371c312c499ddfe2e42e47c2cc548edb7b3",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+              "filePath": {
+                "description": "The absolute path, or a path relative to the current working directory, to save the screenshot to instead of attaching it to the response.",
+                "type": "string"
               },
               "format": {
                 "default": "png",
                 "description": "Type of format to save the screenshot as. Default is \"png\"",
-                "type": "string",
-                "enum": [
-                  "png",
-                  "jpeg",
-                  "webp"
-                ]
-              },
-              "quality": {
-                "description": "Compression quality for JPEG and WebP formats (0-100). Higher values mean better quality but larger file sizes. Ignored for PNG format.",
-                "type": "number",
-                "minimum": 0,
-                "maximum": 100
-              },
-              "uid": {
-                "description": "The uid of an element on the page from the page content snapshot. If omitted, takes a page screenshot.",
+                "enum": ["png","jpeg","webp"],
                 "type": "string"
               },
               "fullPage": {
                 "description": "If set to true takes a screenshot of the full page instead of the currently visible viewport. Incompatible with uid.",
                 "type": "boolean"
               },
-              "filePath": {
-                "description": "The absolute path, or a path relative to the current working directory, to save the screenshot to instead of attaching it to the response.",
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "quality": {
+                "description": "Compression quality for JPEG and WebP formats (0-100). Higher values mean better quality but larger file sizes. Ignored for PNG format.",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "uid": {
+                "description": "The uid of an element on the page from the page content snapshot. If omitted, takes a page screenshot.",
                 "type": "string"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.294Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "7492e37b99f207cc0ed38e35d80c6044de289385ef99b311111d60718cf0b984",
+          "schemaHash": "3d9530a48c5cd41d362c2f0507759c1022abe71493289f080f308baa03167bd7"
         },
         "take_snapshot": {
-          "hash": "8d63cddd51fae09cb39f3001a9842074c2962d77d1567c42728a394407b6fb0d",
-          "schemaHash": "bdd1d32c23da105d66d4b4824cd8df959dd59bf1f3efd4c93ca8ccbdf192ad0d",
-          "proseHash": "e0a8a019ef575affa5bbabc519c7efd33e1d939b6ffb759e89983e96fb8e2035",
-          "description": "Take a text snapshot of the target page based on the a11y tree. The snapshot lists page elements along with a unique\nidentifier (uid). Always use the latest snapshot. Prefer taking a snapshot over taking a screenshot. The snapshot indicates the element selected\nin the DevTools Elements panel (if any).",
           "annotations": {
             "category": "debugging",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Take a text snapshot of the target page based on the a11y tree. The snapshot lists page elements along with a unique\nidentifier (uid). Always use the latest snapshot. Prefer taking a snapshot over taking a screenshot. The snapshot indicates the element selected\nin the DevTools Elements panel (if any).",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "8d63cddd51fae09cb39f3001a9842074c2962d77d1567c42728a394407b6fb0d",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
+              "filePath": {
+                "description": "The absolute path, or a path relative to the current working directory, to save the snapshot to instead of attaching it to the response.",
+                "type": "string"
+              },
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "verbose": {
                 "description": "Whether to include all possible information available in the full a11y tree. Default is false.",
                 "type": "boolean"
-              },
-              "filePath": {
-                "description": "The absolute path, or a path relative to the current working directory, to save the snapshot to instead of attaching it to the response.",
-                "type": "string"
               }
             },
-            "required": [
-              "pageId"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.294Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "e0a8a019ef575affa5bbabc519c7efd33e1d939b6ffb759e89983e96fb8e2035",
+          "schemaHash": "bdd1d32c23da105d66d4b4824cd8df959dd59bf1f3efd4c93ca8ccbdf192ad0d"
         },
         "type_text": {
-          "hash": "32d8309a73260e71f4939fa8d1d1206d22d288133f7c6a15c0a3c2928cdf4495",
-          "schemaHash": "7e02c0b1cb9eb29b83cf32b96038dfa228636318fcaa24ff4e4b384ca96ea7ee",
-          "proseHash": "28dd0c117bdc91244e6f2be615f905d0ba4981ff72850f49eefb455d9e7f82c9",
-          "description": "Type text using keyboard into a previously focused input",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Type text using keyboard into a previously focused input",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "32d8309a73260e71f4939fa8d1d1206d22d288133f7c6a15c0a3c2928cdf4495",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "text": {
-                "type": "string",
-                "description": "The text to type"
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "submitKey": {
                 "description": "Optional key to press after typing. E.g., \"Enter\", \"Tab\", \"Escape\"",
                 "type": "string"
+              },
+              "text": {
+                "description": "The text to type",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "text"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","text"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.294Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.250Z",
+          "proseHash": "28dd0c117bdc91244e6f2be615f905d0ba4981ff72850f49eefb455d9e7f82c9",
+          "schemaHash": "7e02c0b1cb9eb29b83cf32b96038dfa228636318fcaa24ff4e4b384ca96ea7ee"
         },
         "upload_file": {
-          "hash": "41b2de536c11cc1c6cd13d5e455b4723ce9d639a528411f89b62a47c68576e5f",
-          "schemaHash": "1688bfa906b1a1e1bff1c327fdbac67b0186c108661febe1db12d510d37baa87",
-          "proseHash": "2a953552df50a33c056f8344a8f496a08f5d85a53928a68b282d108b79129fc9",
-          "description": "Upload a file through a provided element.",
           "annotations": {
             "category": "input",
             "readOnlyHint": false
           },
+          "approved": true,
+          "description": "Upload a file through a provided element.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "41b2de536c11cc1c6cd13d5e455b4723ce9d639a528411f89b62a47c68576e5f",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "uid": {
-                "type": "string",
-                "description": "The uid of the file input element or an element that will open file chooser on the page from the page content snapshot"
-              },
               "filePaths": {
-                "minItems": 1,
-                "type": "array",
+                "description": "One or more files paths to upload. File paths have to be local to the browser instance (not the MCP).",
                 "items": {
                   "type": "string"
                 },
-                "description": "One or more files paths to upload. File paths have to be local to the browser instance (not the MCP)."
+                "minItems": 1,
+                "type": "array"
               },
               "includeSnapshot": {
                 "description": "Whether to include a snapshot in the response. Default is false.",
                 "type": "boolean"
+              },
+              "pageId": {
+                "description": "Targets a specific page by ID.",
+                "type": "number"
+              },
+              "uid": {
+                "description": "The uid of the file input element or an element that will open file chooser on the page from the page content snapshot",
+                "type": "string"
               }
             },
-            "required": [
-              "pageId",
-              "uid",
-              "filePaths"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","uid","filePaths"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.294Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.251Z",
+          "proseHash": "2a953552df50a33c056f8344a8f496a08f5d85a53928a68b282d108b79129fc9",
+          "schemaHash": "1688bfa906b1a1e1bff1c327fdbac67b0186c108661febe1db12d510d37baa87"
         },
         "wait_for": {
-          "hash": "358bfe66080d7109a22dce793ea8299df410aa56c2aa1a28eb9f4b3e3268c5af",
-          "schemaHash": "fb134a8f70c032237f0e6a95727b98579a92e2dd7a338b9fc27e26f4c3eb6103",
-          "proseHash": "f4ce5ee67541a6aa2efb7ee3dc0bfe152918f15e20bd005b1cea66980ff59583",
-          "description": "Wait for the specified text to appear on the selected page.",
           "annotations": {
             "category": "navigation",
             "readOnlyHint": true
           },
+          "approved": true,
+          "description": "Wait for the specified text to appear on the selected page.",
+          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "hash": "358bfe66080d7109a22dce793ea8299df410aa56c2aa1a28eb9f4b3e3268c5af",
           "inputSchema": {
-            "type": "object",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+
+            },
             "properties": {
               "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
+                "description": "Targets a specific page by ID.",
+                "type": "number"
               },
               "text": {
-                "minItems": 1,
-                "type": "array",
+                "description": "Non-empty list of texts. Resolves when any value appears on the page.",
                 "items": {
                   "type": "string"
                 },
-                "description": "Non-empty list of texts. Resolves when any value appears on the page."
+                "minItems": 1,
+                "type": "array"
               },
               "timeout": {
                 "description": "Maximum wait time in milliseconds. If set to 0, the default timeout will be used.",
-                "type": "integer",
+                "maximum": 9007199254740991,
                 "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "type": "integer"
               }
             },
-            "required": [
-              "pageId",
-              "text"
-            ],
-            "additionalProperties": {}
+            "required": ["pageId","text"],
+            "type": "object"
           },
-          "firstSeen": "2026-10-13T08:22:43.294Z",
-          "pinnedAt": "2026-10-13T08:22:55.459Z",
-          "approved": true
-        },
-        "get_css_styles": {
-          "hash": "85d7b470afb117ed719ad4485e6131be1f731762f0e017745b83a8ce62d5fa43",
-          "schemaHash": "2356bc9269aecb4e66a3dbbed7c936f74c64b837f32c3c4e4b5a643eee4719d8",
-          "proseHash": "4097b60b08be6731bf6bf4af9c605e75c6adc385861e3b0b90974901191d6ec0",
-          "description": "Retrieve matched CSS rules, inline styles, inherited styles, and cascade information for an element identified by its UID.\nUse this tool to debug why specific CSS properties are applied, overridden, or conflicting. Results are paginated and return 10 rules per page by default; use pageIdx to page through the remaining rules. Requires a UID from take_snapshot.",
-          "annotations": {
-            "category": "debugging",
-            "readOnlyHint": true
-          },
-          "inputSchema": {
-            "type": "object",
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "properties": {
-              "pageId": {
-                "type": "number",
-                "description": "Targets a specific page by ID."
-              },
-              "uid": {
-                "type": "string",
-                "description": "The uid of the element on the page from the page content snapshot to inspect CSS styles for"
-              },
-              "pageSize": {
-                "default": 10,
-                "description": "Maximum number of CSS rules to return per page. Defaults to 10.",
-                "type": "integer",
-                "exclusiveMinimum": 0,
-                "maximum": 9007199254740991
-              },
-              "pageIdx": {
-                "default": 0,
-                "description": "Page number to return (0-based). Defaults to 0 (the first page).",
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
-              }
-            },
-            "required": [
-              "pageId",
-              "uid"
-            ],
-            "additionalProperties": {}
-          },
-          "firstSeen": "2026-10-13T08:22:55.458Z",
-          "pinnedAt": "2026-10-13T08:22:55.458Z",
-          "approved": true
+          "pinnedAt": "2026-10-17T02:52:49.251Z",
+          "proseHash": "f4ce5ee67541a6aa2efb7ee3dc0bfe152918f15e20bd005b1cea66980ff59583",
+          "schemaHash": "fb134a8f70c032237f0e6a95727b98579a92e2dd7a338b9fc27e26f4c3eb6103"
         }
-      },
-      "scannedAgainst": "chrome-devtools-mcp@1.10.1",
-      "prompts": {},
-      "resources": {}
+      }
     }
-  }
+  },
+  "version": 1
 }
