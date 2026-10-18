@@ -1027,3 +1027,16 @@ rugsnare в README на строке 4060 с Glama-бейджем. 96,313★ - �
 - tools/CHAT2-PROMPT.md — полный промт с контекстом
 - tools/chat2-journal.md — журнал
 - tools/chat2-status.md — статус
+
+## 2026-10-18 (вечер): chrome-devtools-mcp питч + PR diff Action fix
+
+1. PR diff Action ИСПРАВЛЕН продуктовым чатом: schema diff, direction grading,
+   группировка (23 идентичных = 1 секция), proseChanged показывается отдельно.
+   Все 4 проблемы из нашего ревью закрыты. Протестировано на симуляторе
+   chrome-devtools (26 findings → 2 groups + 1 NEW).
+2. ChromeDevTools/chrome-devtools-mcp #3232 запощен (53,779★): предложение
+   contract review для PRs. Реальные данные (30 findings, 1.8.0→1.10.1),
+   точный формат Action output, 4 выгоды для reviewers. Первый вход в 50k+★
+   репо с предложением инструмента (не данных).
+3. Issue #11 (переводы) — добавлен комментарий "можно один язык, issue остаётся
+   открытым для второго".

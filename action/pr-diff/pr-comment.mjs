@@ -4,7 +4,7 @@
  *
  * Compares the committed pin store against the live MCP servers declared in
  * a config file, and posts (or updates) a PR comment with a HUMAN-READABLE
- * diff of tool contracts — reviewers see the changed words, not hashes.
+ * diff of tool contracts - reviewers see the changed words, not hashes.
  *
  * Runs in-process (imports rugsnare modules directly, spawns nothing).
  * Environment:
@@ -49,7 +49,7 @@ const tools = [];
   for (const [name, entry] of Object.entries(servers)) {
     const pin = pins.servers[name];
     if (!pin?.cmd) {
-      report.push({ server: name, verdicts: [{ tool: '(all)', status: 'NEW', note: 'not pinned yet — run rugsnare scan on main first' }] });
+      report.push({ server: name, verdicts: [{ tool: '(all)', status: 'NEW', note: 'not pinned yet - run rugsnare scan on main first' }] });
       continue;
     }
     const liveFromConfig = servers[name];
@@ -67,11 +67,11 @@ const icon = { DRIFT: '🔴', NEW: '🟡', REMOVED: '⚫', UNCHANGED: '🟢' };
 const gradeIcon = { BREAKING: '🔴', LOOSENED: '🟠', EXPANDED: '🟡', NOTATION: '🔵', COSMETIC: '⚪', ANNOTATION: '🟣', POLICY: '⛔', IDENTITY: '🔄' };
 
 let findings = 0;
-const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare — MCP tool contract diff', ''];
+const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare - MCP tool contract diff', ''];
 for (const { server, verdicts } of report) {
   const bad = verdicts.filter((v) => v.status !== 'UNCHANGED');
   if (bad.length === 0) {
-    lines.push(`**${server}** — 🟢 all ${verdicts.length} tool contracts unchanged`, '');
+    lines.push(`**${server}** - 🟢 all ${verdicts.length} tool contracts unchanged`, '');
     continue;
   }
 
@@ -94,14 +94,14 @@ for (const { server, verdicts } of report) {
     driftGroups.get(sig).tools.push(v.tool);
   }
 
-  lines.push(`**${server}** — ${bad.length} finding(s):`, '');
+  lines.push(`**${server}** - ${bad.length} finding(s):`, '');
 
   for (const { tools, sample } of driftGroups.values()) {
     const g = gradeIcon[sample.driftType] ?? '🔴';
     const label = sample.driftType ?? 'DRIFT';
     const toolList = tools.length === 1 ? `\`${tools[0]}\`` : `${tools.length} tools (\`${tools[0]}\`, \`${tools[1]}\`… )`;
 
-    lines.push(`### ${g} ${toolList} — ${label}`);
+    lines.push(`### ${g} ${toolList} - ${label}`);
 
     const changes = sample.schemaChanges ?? [];
     if (changes.length > 0) {
@@ -129,13 +129,13 @@ for (const { server, verdicts } of report) {
 
   for (const v of nonDrift) {
     if (v.status === 'NEW') {
-      lines.push(`### ${icon.NEW} \`${v.tool}\` — unapproved new tool${v.note ? ` (${v.note})` : ''}`, '');
+      lines.push(`### ${icon.NEW} \`${v.tool}\` - unapproved new tool${v.note ? ` (${v.note})` : ''}`, '');
     } else if (v.status === 'REMOVED') {
-      lines.push(`### ${icon.REMOVED} \`${v.tool}\` — approved tool disappeared`, '');
+      lines.push(`### ${icon.REMOVED} \`${v.tool}\` - approved tool disappeared`, '');
     }
   }
 }
-lines.push('---', '_RugSnare pins tool contracts (`{name, description, inputSchema}`) at approval; this comment shows every silent change with direction grading (BREAKING / LOOSENED / EXPANDED / NOTATION). Identical changes are grouped. Baseline pins live in the repo — update them deliberately via `rugsnare approve`._');
+lines.push('---', '_RugSnare pins tool contracts (`{name, description, inputSchema}`) at approval; this comment shows every silent change with direction grading (BREAKING / LOOSENED / EXPANDED / NOTATION). Identical changes are grouped. Baseline pins live in the repo - update them deliberately via `rugsnare approve`._');
 
 const body = lines.join('\n');
 console.log(body);
@@ -163,7 +163,7 @@ if (prNumber && process.env.GITHUB_TOKEN) {
   console.error(`pr-comment: ${existing ? 'updated' : 'posted'} comment → ${res.status}`);
   if (!res.ok) console.error(`pr-comment: failed: ${await res.text()}`);
 } else {
-  console.error('pr-comment: no PR number/token — dry-run, markdown printed above only');
+  console.error('pr-comment: no PR number/token - dry-run, markdown printed above only');
 }
 
 process.exit(findings > 0 && failOnDrift ? 1 : 0);
