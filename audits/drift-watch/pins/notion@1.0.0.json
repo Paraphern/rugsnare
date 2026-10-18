@@ -1,0 +1,1108 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "notion": {
+      "cmd": {
+        "args": ["run.mjs"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "run.mjs",
+        "identityHash": "sha256:31a3994fbfea8d609f5e9a4602d410c379a55d74b44e44cb99f8ed63d28ea8b3",
+        "package": null,
+        "resolvedVersion": null,
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T15:12:35.531Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "tools": {
+        "API-create-a-comment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Create comment",
+          "firstSeen": "2026-10-18T15:12:35.536Z",
+          "hash": "a4f542ce145e17050afbffdc838f4fcb84129f8c9d422230b41094b45ad49659",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "parent": {
+                "additionalProperties": true,
+                "description": "The page that contains the comment",
+                "properties": {
+                  "page_id": {
+                    "description": "the page ID",
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              },
+              "rich_text": {
+                "items": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "text": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "content": {
+                          "description": "The content of the comment",
+                          "type": "string"
+                        }
+                      },
+                      "required": ["content"],
+                      "type": "object"
+                    }
+                  },
+                  "required": ["text"],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["parent","rich_text"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.536Z",
+          "proseHash": "1cf44abde6508ae75f3c866eba8a08eb24a74c5dad94f813c09415892844a9f1",
+          "schemaHash": "7536f110ec5b270a49fcb92d7a6177c13113b8a6af2e8145fec4057328918407"
+        },
+        "API-create-a-database": {
+          "annotations": null,
+          "approved": true,
+          "description": "Create a database",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "f084efa526ac796fe734d4d05299e6204044f310b256b77323f4090650121db3",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "parent": {
+                "description": "A [page parent](/reference/database#page-parent)",
+                "format": "json",
+                "type": "string"
+              },
+              "properties": {
+                "description": "Property schema of database. The keys are the names of properties as they appear in Notion and the values are [property schema objects](https://developers.notion.com/reference/property-schema-object).",
+                "format": "json",
+                "type": "string"
+              },
+              "title": {
+                "description": "Title of database as it appears in Notion. An array of [rich text objects](ref:rich-text).",
+                "type": "array"
+              }
+            },
+            "required": ["parent","properties"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "0c4d32832f46802e297eafb102362f820aee2e6f0177fa9dc6d6ee757b9c0380",
+          "schemaHash": "cd4784a512b1fce01fb5246fdaaaef1d1047ce774c46bf2b5bbd7867f75f111a"
+        },
+        "API-delete-a-block": {
+          "annotations": null,
+          "approved": true,
+          "description": "Delete a block",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "8b746f5b2f433c1cec4eca6aaa64a5b49c55a998791471270efe3da28bc8e1b9",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "block_id": {
+                "description": "Identifier for a Notion block",
+                "type": "string"
+              }
+            },
+            "required": ["block_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "ff8c9f2e015f6e739de171932d2524e290bc8ea79b5b1f654c2203569fd1db23",
+          "schemaHash": "e8ab76d328c2f515e67231c23dabeb6136199e11276b7351f85fff76b393b73b"
+        },
+        "API-get-block-children": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve block children",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "1e2148b525b32595e415ad685bc34fae13cd7a2bc17d12c9c123506c6034e0f3",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "block_id": {
+                "description": "Identifier for a [block](ref:block)",
+                "type": "string"
+              },
+              "page_size": {
+                "default": 100,
+                "description": "The number of items from the full list desired in the response. Maximum: 100",
+                "format": "int32",
+                "type": "integer"
+              },
+              "start_cursor": {
+                "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
+                "type": "string"
+              }
+            },
+            "required": ["block_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "da3023fae08d3eeb47ca99d24d773168c09b2505b9eea9a33650cadd3c45f68c",
+          "schemaHash": "904ee072373abb19b6173169f36fa2412f41d9cb381d672544b9fb2229b899d5"
+        },
+        "API-get-self": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve your token's bot user",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "5a3f8d96acefcb7011975b2456b1fd68448d5b3228d6a54ab19262a2ab6da1b3",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+
+            },
+            "required": [],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "f85e198803128737113544ba6f34b54ee768ac7efb522f84f42a3cc31aedcc37",
+          "schemaHash": "5bcff512d7a4aaab2bd269eafa45594dc664dd07197edf177cd4de421aa514c7"
+        },
+        "API-get-user": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve a user\nError Responses:\n400: 400",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "addb688ae956018233eb7f856f283515b89c00d93e15efd6889fae190b0eceba",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "user_id": {
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": ["user_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "727869918a2bb6ceed20bc01ba4fb145450664ff250ac9a0d260e83a69fc4bd2",
+          "schemaHash": "528a9847d358b314afccc4c6b2452ead4c40fe7feb58524e8e28bb21b52053ad"
+        },
+        "API-get-users": {
+          "annotations": null,
+          "approved": true,
+          "description": "List all users\nError Responses:\n400: 400",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "46b86a20af3537cfa7eb2fe2339257e204ee79116556905eeda8136888598425",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "page_size": {
+                "default": 100,
+                "description": "The number of items from the full list desired in the response. Maximum: 100",
+                "type": "integer"
+              },
+              "start_cursor": {
+                "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "7f8a2d0b73f3ce289a62c88574d19f11d293a676b3bbc8147a8111972108e7b7",
+          "schemaHash": "a30bfd2096a51291a2f0c514632c093afe28d0e40262d2ac3db21caee54dc2ff"
+        },
+        "API-patch-block-children": {
+          "annotations": null,
+          "approved": true,
+          "description": "Append block children",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "b2fec99d1cbf4ba8392d503e981edca1efdec4b50bf49443a36ab91b697ae8ce",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "after": {
+                "description": "The ID of the existing block that the new block should be appended after.",
+                "type": "string"
+              },
+              "block_id": {
+                "description": "Identifier for a [block](ref:block). Also accepts a [page](ref:page) ID.",
+                "type": "string"
+              },
+              "children": {
+                "description": "Child content to append to a container block as an array of [block objects](ref:block)",
+                "type": "array"
+              }
+            },
+            "required": ["block_id","children"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "9bb75c455eec4f782777a8eb1d4ae66ff1405fc116075870ad15cf7d4142dcb1",
+          "schemaHash": "5d8a861f72ba9bab12644795fffbd2f3e51d166adca96aded9fc2464f77ec68c"
+        },
+        "API-patch-page": {
+          "annotations": null,
+          "approved": true,
+          "description": "Update page properties",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "83bbc70759599d29c506bd70fd6b198928017fadb80c6fd6913738ea073f78e8",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "Notion-Version": {
+                "description": "The [API version](/reference/versioning) to use for this request. The latest version is `<<latestNotionVersion>>`.",
+                "type": "string"
+              },
+              "cover": {
+                "description": "A cover image for the page. Only [external file objects](https://developers.notion.com/reference/file-object) are supported.",
+                "format": "json",
+                "type": "string"
+              },
+              "icon": {
+                "description": "A page icon for the page. Supported types are [external file object](https://developers.notion.com/reference/file-object) or [emoji object](https://developers.notion.com/reference/emoji-object).",
+                "format": "json",
+                "type": "string"
+              },
+              "in_trash": {
+                "default": false,
+                "description": "Set to true to delete a block. Set to false to restore a block.",
+                "type": "boolean"
+              },
+              "page_id": {
+                "description": "The identifier for the Notion page to be updated.",
+                "type": "string"
+              },
+              "properties": {
+                "description": "The property values to update for the page. The keys are the names or IDs of the property and the values are property values. If a page property ID is not included, then it is not changed.",
+                "format": "json",
+                "type": "string"
+              }
+            },
+            "required": ["page_id","Notion-Version"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "725ffb46cb4484d0b6db71d621c028e51ee043f97b2413299991fc40c4d61706",
+          "schemaHash": "9fa0d18f6a01ed0f1ebcdd29b69ca1b009fde762f5b5ea6ee6e66f23c428ec3d"
+        },
+        "API-post-database-query": {
+          "annotations": null,
+          "approved": true,
+          "description": "Query a database",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "fa15069c925c29dbf1fe1ab90da0260dd8ac0a2c9a1d0945e2229ff7cb4f2f8b",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "database_id": {
+                "description": "Identifier for a Notion database.",
+                "type": "string"
+              },
+              "filter": {
+                "description": "When supplied, limits which pages are returned based on the [filter conditions](ref:post-database-query-filter).",
+                "format": "json",
+                "type": "string"
+              },
+              "filter_properties": {
+                "description": "A list of page property value IDs associated with the database. Use this param to limit the response to a specific page property value or values for pages that meet the `filter` criteria.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "page_size": {
+                "default": 100,
+                "description": "The number of items from the full list desired in the response. Maximum: 100",
+                "type": "integer"
+              },
+              "sorts": {
+                "description": "When supplied, orders the results based on the provided [sort criteria](ref:post-database-query-sort).",
+                "items": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "direction": {
+                      "enum": ["ascending","descending"]
+                    },
+                    "property": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["property","direction"],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "start_cursor": {
+                "description": "When supplied, returns a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
+                "type": "string"
+              }
+            },
+            "required": ["database_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "aa89e5751799ff61d77270aae00c6ef47fcd596d025126006c76e8a3d1bc9c4b",
+          "schemaHash": "7ea919a91ddf3139afff3fe9990c2d483a9ef836ba9c1820670759f3fc3bee91"
+        },
+        "API-post-page": {
+          "annotations": null,
+          "approved": true,
+          "description": "Create a page",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "f8c73de4771c1abb628a6c9006913d46b717fc18111150e09ae78b544d24e7a9",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "children": {
+                "description": "The content to be rendered on the new page, represented as an array of [block objects](https://developers.notion.com/reference/block).",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "cover": {
+                "description": "The cover image of the new page, represented as a [file object](https://developers.notion.com/reference/file-object).",
+                "format": "json",
+                "type": "string"
+              },
+              "icon": {
+                "description": "The icon of the new page. Either an [emoji object](https://developers.notion.com/reference/emoji-object) or an [external file object](https://developers.notion.com/reference/file-object)..",
+                "format": "json",
+                "type": "string"
+              },
+              "parent": {
+                "$ref": "#/$defs/pageIdObject"
+              },
+              "properties": {
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "text": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["content"],
+                          "type": "object"
+                        }
+                      },
+                      "required": ["text"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "type": {
+                    "enum": ["title"]
+                  }
+                },
+                "required": ["title"],
+                "type": "object"
+              }
+            },
+            "required": ["parent","properties"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "b682233a5002907c4bc71179c53d6a8665ef446828d3b49cebc2295a1db3315b",
+          "schemaHash": "cc1e9c4334ae0a6838264ebe9872a80da9a3f1c5fb5c31d7c09216fa81eec055"
+        },
+        "API-post-search": {
+          "annotations": null,
+          "approved": true,
+          "description": "Search by title",
+          "firstSeen": "2026-10-18T15:12:35.534Z",
+          "hash": "552ac7e301b92f68463641e0d0a81c38bc82f2d666275c756e02b8575d600c65",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "filter": {
+                "additionalProperties": true,
+                "description": "A set of criteria, `value` and `property` keys, that limits the results to either only pages or only databases. Possible `value` values are `\"page\"` or `\"database\"`. The only supported `property` value is `\"object\"`.",
+                "properties": {
+                  "property": {
+                    "description": "The name of the property to filter by. Currently the only property you can filter by is the object type.  Possible values include `object`.   Limitation: Currently the only filter allowed is `object` which will filter by type of object (either `page` or `database`)",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "The value of the property to filter the results by.  Possible values for object type include `page` or `database`.  **Limitation**: Currently the only filter allowed is `object` which will filter by type of object (either `page` or `database`)",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "page_size": {
+                "default": 100,
+                "description": "The number of items from the full list to include in the response. Maximum: `100`.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "query": {
+                "description": "The text that the API compares page and database titles against.",
+                "type": "string"
+              },
+              "sort": {
+                "additionalProperties": true,
+                "description": "A set of criteria, `direction` and `timestamp` keys, that orders the results. The **only** supported timestamp value is `\"last_edited_time\"`. Supported `direction` values are `\"ascending\"` and `\"descending\"`. If `sort` is not provided, then the most recently edited results are returned first.",
+                "properties": {
+                  "direction": {
+                    "description": "The direction to sort. Possible values include `ascending` and `descending`.",
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "description": "The name of the timestamp to sort against. Possible values include `last_edited_time`.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "start_cursor": {
+                "description": "A `cursor` value returned in a previous response that If supplied, limits the response to results starting after the `cursor`. If not supplied, then the first page of results is returned. Refer to [pagination](https://developers.notion.com/reference/intro#pagination) for more details.",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.534Z",
+          "proseHash": "6b5b4c14c7630a2ab91fa1e874d92664c976b51469742d93591fd0b49bc2953c",
+          "schemaHash": "0756ef6b6a0ba849db07a1d702b6a00dac7270368a3d4f00ff6d1df8533b718b"
+        },
+        "API-retrieve-a-block": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve a block",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "9b26937cc13b196c01f908587b3b5d5ed1dfb920ced9ed037e385c60259362b5",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "block_id": {
+                "description": "Identifier for a Notion block",
+                "type": "string"
+              }
+            },
+            "required": ["block_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "0eee5d7cbca7bb7d3af0e294f295a6aebf0a25cdd857388c662293238f73b2ce",
+          "schemaHash": "70433199df45350ee87391086f9cce413b794fccd73ce090f724f4a7041f47d7"
+        },
+        "API-retrieve-a-comment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve comments",
+          "firstSeen": "2026-10-18T15:12:35.536Z",
+          "hash": "e03f37fc6df77419ddcb937a2b0171a37965db269fbbdb520f318366e89e9b89",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "block_id": {
+                "description": "Identifier for a Notion block or page",
+                "type": "string"
+              },
+              "page_size": {
+                "description": "The number of items from the full list desired in the response. Maximum: 100",
+                "format": "int32",
+                "type": "integer"
+              },
+              "start_cursor": {
+                "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
+                "type": "string"
+              }
+            },
+            "required": ["block_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.536Z",
+          "proseHash": "338c62fbb4fe8309e148e93a54bde82311c970ecd81cb51ba17d52a748aa0d0a",
+          "schemaHash": "b62055b154910fc293fdc9318320d050a92605a1503a549d4a90f4fdf3c70b0c"
+        },
+        "API-retrieve-a-database": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve a database",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "43367619318e93856e1ca012be637fa2782d89d0639d666fd7f73e62a0c1597c",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "database_id": {
+                "description": "An identifier for the Notion database.",
+                "type": "string"
+              }
+            },
+            "required": ["database_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "518ea41f01b56703f518c40cb76a88942803b6049734fcd23835c3614e10d4df",
+          "schemaHash": "cf5d2ff610959e14ad0f72700a5e613ba3e486a7cb58d1d3aa5c8e5b27405b9a"
+        },
+        "API-retrieve-a-page": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve a page",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "7612d957e4fdda9fa72a628b27a2582188fed5ee08a572d7343b3e95b4b8c1b5",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "filter_properties": {
+                "description": "A list of page property value IDs associated with the page. Use this param to limit the response to a specific page property value or values. To retrieve multiple properties, specify each page property ID. For example: `?filter_properties=iAk8&filter_properties=b7dh`.",
+                "type": "string"
+              },
+              "page_id": {
+                "description": "Identifier for a Notion page",
+                "type": "string"
+              }
+            },
+            "required": ["page_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "a06af6b3d748466cd0ede9733c78709ffc04af5881d322c9547320c236b1318d",
+          "schemaHash": "b18f8f6c02271460fb6f51b02403a187284323d68d10e807ca091f1354b27cea"
+        },
+        "API-retrieve-a-page-property": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve a page property item",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "9fd960d3535177997c53818a7b6cccfe8d700e4291e1b7a660eaa063201bfd11",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "page_id": {
+                "description": "Identifier for a Notion page",
+                "type": "string"
+              },
+              "page_size": {
+                "description": "For paginated properties. The max number of property item objects on a page. The default size is 100",
+                "format": "int32",
+                "type": "integer"
+              },
+              "property_id": {
+                "description": "Identifier for a page [property](https://developers.notion.com/reference/page#all-property-values)",
+                "type": "string"
+              },
+              "start_cursor": {
+                "description": "For paginated properties.",
+                "type": "string"
+              }
+            },
+            "required": ["page_id","property_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "63709857408947091c44c5536e44267574ddebe6568b91debf9b5545f5101c70",
+          "schemaHash": "2eece79c4d14ef731ab4327848a8c1f6465105bb679974849e31b5c107cbfde7"
+        },
+        "API-update-a-block": {
+          "annotations": null,
+          "approved": true,
+          "description": "Update a block",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "3a13c84f7a8b1dce86704cb6bf494b1bd49e4bfa40efd9ae208f4a94a0c28581",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "archived": {
+                "default": true,
+                "description": "Set to true to archive (delete) a block. Set to false to un-archive (restore) a block.",
+                "type": "boolean"
+              },
+              "block_id": {
+                "description": "Identifier for a Notion block",
+                "type": "string"
+              },
+              "type": {
+                "additionalProperties": true,
+                "description": "The [block object `type`](ref:block#block-object-keys) value with the properties to be updated. Currently only `text` (for supported block types) and `checked` (for `to_do` blocks) fields can be updated.",
+                "properties": {
+
+                },
+                "type": "object"
+              }
+            },
+            "required": ["block_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "fa8813d7c2db87b4833d9583f764f50b810c24cfe7cd6a3931f82fda2d83b98c",
+          "schemaHash": "fcb9c631a439d1319bac790d068b0c78db42885538fb3ab7c79bacf6544ae5c5"
+        },
+        "API-update-a-database": {
+          "annotations": null,
+          "approved": true,
+          "description": "Update a database",
+          "firstSeen": "2026-10-18T15:12:35.535Z",
+          "hash": "d4fcd09c624052fae4db1afc81e5431d68fa299b20a143916c3f6c2e118d3c35",
+          "inputSchema": {
+            "$defs": {
+              "databaseIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "database_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["database_id"],
+                "type": "object"
+              },
+              "pageIdObject": {
+                "additionalProperties": false,
+                "properties": {
+                  "page_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["page_id"],
+                "type": "object"
+              }
+            },
+            "properties": {
+              "Notion-Version": {
+                "description": "The [API version](/reference/versioning) to use for this request. The latest version is `<<latestNotionVersion>>`.",
+                "type": "string"
+              },
+              "database_id": {
+                "description": "identifier for a Notion database",
+                "type": "string"
+              },
+              "description": {
+                "description": "An array of [rich text objects](https://developers.notion.com/reference/rich-text) that represents the description of the database that is displayed in the Notion UI. If omitted, then the database description remains unchanged.",
+                "type": "array"
+              },
+              "properties": {
+                "description": "The properties of a database to be changed in the request, in the form of a JSON object. If updating an existing property, then the keys are the names or IDs of the properties as they appear in Notion, and the values are [property schema objects](ref:property-schema-object). If adding a new property, then the key is the name of the new database property and the value is a [property schema object](ref:property-schema-object).",
+                "format": "json",
+                "type": "string"
+              },
+              "title": {
+                "description": "An array of [rich text objects](https://developers.notion.com/reference/rich-text) that represents the title of the database that is displayed in the Notion UI. If omitted, then the database title remains unchanged.",
+                "type": "array"
+              }
+            },
+            "required": ["database_id","Notion-Version"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:12:35.535Z",
+          "proseHash": "8fa57e069d31ba547c5d8d0da2867ffc414c672f042002bdc498777fb98afc59",
+          "schemaHash": "ec6904a7ac077d39d5d9f6d70532e4353099057717c017190ebb9bd415f5ae90"
+        }
+      }
+    }
+  },
+  "version": 1
+}

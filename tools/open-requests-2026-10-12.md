@@ -1040,3 +1040,13 @@ rugsnare в README на строке 4060 с Glama-бейджем. 96,313★ - �
    репо с предложением инструмента (не данных).
 3. Issue #11 (переводы) — добавлен комментарий "можно один язык, issue остаётся
    открытым для второго".
+
+## 2026-10-18 (ночь): playwright-mcp питч
+
+- microsoft/playwright-mcp #1796 запощен (38,321★): contract review для PRs.
+  Данные: 11→29 тулов, 7 BREAKING, 18 NEW, 4 REMOVED (1.52.0-alpha → 0.0.83).
+  Формат: точный dry-run pr-comment.mjs (9 секций из 30 находок).
+  Второй вход в 30k+★ репо (после chrome-devtools #3232).
+- PR diff Action исправлен продуктовым чатом: NEW/REMOVED группируются,
+  30 секций → 9. Проверено dry-run на реальных playwright данных.
+- PIN-SPEC: LOOSENED для removed outputSchema добавлен (cda70e9).

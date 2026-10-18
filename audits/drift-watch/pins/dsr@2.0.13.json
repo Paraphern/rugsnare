@@ -1,0 +1,550 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "dsr": {
+      "cmd": {
+        "args": ["node_modules/@transcend-io/mcp-server-dsr/./dist/cli.mjs"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "./dist/cli.mjs",
+        "identityHash": "sha256:aa943d9c147c2f0450b4739ed95c9a65653b957f68b1356d907950a955417711",
+        "package": "@transcend-io/mcp-server-dsr",
+        "resolvedVersion": "2.0.13",
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T15:04:03.165Z",
+      "prompts": {
+        "dsr-submit-request": {
+          "description": "Submit a Data Subject Request safely: list workflows, pick a published config by action/subject type, submit, then poll status. Prefer unique test emails for silent ACCESS.",
+          "firstSeen": "2026-10-18T15:04:15.181Z",
+          "hash": "68cccbd5e0fe4b56efae032dd1ac6f3ae8148474894e95c0f299a124e11a1121"
+        }
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@transcend-io/mcp-server-dsr@2.0.13",
+      "tools": {
+        "dsr_analyze": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Summarize the 100 most recent DSRs: counts by type and status, completion rate, and a configurable recent-days window (default 30). For full-fleet analytics, page through dsr_list and aggregate yourself.",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "94ba3f2c1fd2c9631cab6f40e3e0c6c01acdcdf1e09f1ca2b6f00b9f7567b3df",
+          "inputSchema": {
+            "properties": {
+              "days": {
+                "description": "Filter analysis to requests within N days (default: 30). Only analyzes from the 100 most recent requests.",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "1f4da1e50fed432c9fc2d645765c2ee5c72603896db74990a6b27573f05412c4",
+          "schemaHash": "dfd4c34b8676632821595accfe3ff15a30623c2ed2c2a36817e1b4c46e185d33"
+        },
+        "dsr_cancel": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Cancel a Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "d5a6144312a7ebe81d053e9b22b8141bc3fb974bb0354659c6f5ff069ae9b878",
+          "inputSchema": {
+            "properties": {
+              "approvalToken": {
+                "description": "Approval token from a previous confirmation_required response for this exact call. Omit it on the first call. Only send it back after the user has agreed to the pending action; it is single-use and expires shortly.",
+                "type": "string"
+              },
+              "reason": {
+                "description": "Reason for cancellation (optional)",
+                "type": "string"
+              },
+              "requestId": {
+                "description": "ID of the DSR to cancel",
+                "type": "string"
+              }
+            },
+            "required": ["requestId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "4e36a04a4689fef128558baa246495e4d4f35436f84fb5fc901b177d1df77568",
+          "schemaHash": "b3711a1b048e310732940a94e58dff26a91e24a4786b7346ead22b92988845f2"
+        },
+        "dsr_download_keys": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get download keys for a completed Data Subject Request. These keys can be used to download the DSR results.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "1602806a85473e0ec6469d850e9c4befb0fab14fe1422c8754198d65861c698c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "request_id": {
+                "description": "ID of the completed DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "c8714f2c915ae505d86e9352c10ee1c55390da254508ae4066b23d5d0567ebcd",
+          "schemaHash": "0fabea073cef91122e3943af2d6d1a526d10f6692e80ba376bf6696d10bb1aca"
+        },
+        "dsr_employee_submit": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Submit a Data Subject Request as an employee on behalf of a data subject. Requires subjectType to be specified.",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "f15538ab736b9dd48ba7f7c8d1940a99faa9d068a57e7c15fed0f3f2ada49833",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "coreIdentifier": {
+                "description": "Core identifier for the data subject (optional)",
+                "type": "string"
+              },
+              "email": {
+                "description": "Email address of the data subject",
+                "type": "string"
+              },
+              "isSilent": {
+                "description": "Whether to suppress email notifications",
+                "type": "boolean"
+              },
+              "locale": {
+                "description": "Locale for communications (e.g., en-US)",
+                "type": "string"
+              },
+              "subjectType": {
+                "description": "Type of data subject (e.g., customer, employee). Required by the Transcend API.",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of DSR request",
+                "enum": ["AUTOMATED_DECISION_MAKING_OPT_OUT","USE_OF_SENSITIVE_INFORMATION_OPT_OUT","CONTACT_OPT_OUT","SALE_OPT_OUT","TRACKING_OPT_OUT","CUSTOM_OPT_OUT","AUTOMATED_DECISION_MAKING_OPT_IN","USE_OF_SENSITIVE_INFORMATION_OPT_IN","SALE_OPT_IN","TRACKING_OPT_IN","CONTACT_OPT_IN","CUSTOM_OPT_IN","ACCESS","ERASURE","RECTIFICATION","RESTRICTION","BUSINESS_PURPOSE","PLACE_ON_LEGAL_HOLD","REMOVE_FROM_LEGAL_HOLD"],
+                "type": "string"
+              }
+            },
+            "required": ["type","email","subjectType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "42a8424ae07ff364dc61f99e59d7d1a1e9de846a0cf06299e26eb691eb746543",
+          "schemaHash": "eb42602607a53dc43c24a7e948f2ae0997c8a24a110e2f18fd0a8dec09832ff2"
+        },
+        "dsr_enrich_identifiers": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Enrich a Data Subject Request with additional identifiers during preflight. Prefer a nonce from dsr_list_pending_requests (enrichment stage) or the webhook. Alternate with no nonce: pass requestId + enricherId (official enrich-only header path). Access/erasure respond tools still require a real fulfillment nonce. Requires Sombra. Listing pending jobs needs a Transcend API key associated with that data silo (not OAuth-only).",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "61dd2ec89fbb8193d381e3cba083beac7dba295d033fbdeb7ec2ff70c683067d",
+          "inputSchema": {
+            "properties": {
+              "approvalToken": {
+                "description": "Approval token from a previous confirmation_required response for this exact call. Omit it on the first call. Only send it back after the user has agreed to the pending action; it is single-use and expires shortly.",
+                "type": "string"
+              },
+              "enricherId": {
+                "description": "Alternate (no nonce): enricher ID together with requestId (sent as x-transcend-enricher-id). Discover via dsr_get_details → requestEnrichers[].enricher.id.",
+                "type": "string"
+              },
+              "identifiers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Key-value pairs of identifier names and values to add",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "nonce": {
+                "description": "Preferred: Sombra-signed JWT from dsr_list_pending_requests item.nonce for the enrichment stage (or webhook x-transcend-nonce). Never invent; never use encryptedCekContext.",
+                "type": "string"
+              },
+              "requestId": {
+                "description": "Alternate (no nonce): privacy request ID together with enricherId (sent as x-transcend-request-id). Respond paths still need a real nonce.",
+                "type": "string"
+              }
+            },
+            "required": ["identifiers"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "f5fc4e4802f5bd047ae94ebd9eb1eb3d2320a6c5ee96e2566618f7a686f91f05",
+          "schemaHash": "21b1e4ee6290be0c845ce71fe4160808aa303afbcc81fcc1b8145f08e5d914ef"
+        },
+        "dsr_get_details": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get detailed information about a specific Data Subject Request, including assigned request owners (individual assignees), teams, and request enrichers (enricher.id for dsr_enrich_identifiers without a nonce). For connected system status, failures, and system owners, use dsr_list_request_data_silos.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "8d6aaf66ac68987df89893c84c31e82ba0926ba3acfe910a9bca5379260e2c15",
+          "inputSchema": {
+            "properties": {
+              "requestId": {
+                "description": "ID of the DSR to retrieve",
+                "type": "string"
+              }
+            },
+            "required": ["requestId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "da251bb735e4acf9b3b66258f4ab581e726be22a76fdc8654d2484ddd4657c66",
+          "schemaHash": "5531cb4a0f12ad376667a4ed83043db6130619b8578c97feb7df86b119b1dbd6"
+        },
+        "dsr_list": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List Data Subject Requests with assigned owners and teams. Filter by identifierValue to look up requests by email or phone (fuzzy/exact across request identifiers, same as admin \"Identifier Value (Fuzzy)\"). Use emails only for exact match on primary email address. Note: Server-side date filtering is not available — filter results client-side if needed. For per-system failures and system owners, use dsr_list_request_data_silos on a specific request.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "5d0404b4c1648541c854431d2cc742165085f0ea6e6a15930332f3f1fc500e8f",
+          "inputSchema": {
+            "properties": {
+              "cursor": {
+                "description": "Continuation token from the previous response.",
+                "type": "string"
+              },
+              "emails": {
+                "description": "Exact match on primary email address only. Does not search phone or other identifiers — use identifierValue for those.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "identifierValue": {
+                "description": "Fuzzy/exact search across request identifiers (email, phone, etc.). Prefer this for looking up DSRs by email or phone. Maps to admin \"Identifier Value (Fuzzy)\".",
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "85bda3f2db5f354dfacf2f112dd3df1f7fc2530e7f29fec6393263b0dcf438e1",
+          "schemaHash": "dd22d6387c9217242be01bc80cdbd64b9b688c52b307a82db988116b08236069"
+        },
+        "dsr_list_identifiers": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List decrypted identifiers attached to a Data Subject Request.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "d06e35cd6c6cd93e94791a89e82e3a1361bfc4360b7e06e44c11f5bd7f052e1b",
+          "inputSchema": {
+            "properties": {
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "requestId": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["requestId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "2e59e798f25098ff1660926f82d4daaaa6bc69a72176568d0c0650a2b4cd236f",
+          "schemaHash": "fbdda11fcab19f6c68af2dfbdcc3be294d5dd5a56e4bec22e501db7f6c58f3c1"
+        },
+        "dsr_list_pending_requests": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List outstanding ACCESS or ERASURE jobs waiting on one data silo (integration), oldest first. Each item carries the requestId, the identifier to process, and the Sombra-signed nonce that dsr_enrich_identifiers requires for that job. Requires Sombra and a Transcend API key linked to this data silo; OAuth-only auth returns 401.",
+          "firstSeen": "2026-10-18T15:04:15.179Z",
+          "hash": "a308447d9d83c4cda71a8788ad1d4c6b1f964db4d3f421affa6d3e2b2c4e2dc3",
+          "inputSchema": {
+            "properties": {
+              "dataSiloId": {
+                "description": "UUID of the data silo whose pending jobs to list (from dsr_list_request_data_silos or inventory). The authenticated Transcend API key MUST be associated with this same data silo (Admin → Developer → API Keys → linked Data Silos). Do not pass a silo the key is not linked to.",
+                "type": "string"
+              },
+              "requestType": {
+                "description": "Pending job type: ACCESS (fulfillment) or ERASURE (fulfillment)",
+                "enum": ["ACCESS","ERASURE"],
+                "type": "string"
+              }
+            },
+            "required": ["dataSiloId","requestType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "a11d36cc95a122ffeec10cdb5c49f00b6d02397240274daf1d673102d746630f",
+          "schemaHash": "9c7a516e423070ff52aeb1aae788a1e62a6ab64636156b7ddf5baee37bf9e42e"
+        },
+        "dsr_list_request_data_silos": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List connected data systems (request data silos) for a Data Subject Request, including each system's processing status, error message when failed, and the responsible system owners and teams. Use this to diagnose approval or compilation bottlenecks caused by failed or stalled systems. Filter with status=[\"ERROR\"] for failures.",
+          "firstSeen": "2026-10-18T15:04:15.179Z",
+          "hash": "ec5ac594483d78fa61dc846c5a5f6488bd108dd087a755f1eba65239a5eb4067",
+          "inputSchema": {
+            "properties": {
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "requestId": {
+                "description": "ID of the Data Subject Request whose connected systems to list",
+                "type": "string"
+              },
+              "status": {
+                "description": "Optional filter by request-data-silo status values (e.g. ERROR, RESOLVED, WAITING, ACTION_REQUIRED). Use ERROR to find failed systems.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "text": {
+                "description": "Optional free-text filter on the connected data silo title",
+                "type": "string"
+              },
+              "visualStatus": {
+                "description": "Optional filter by a single visual status, including WAITING_ON_DEPENDENCIES, DATA_SILO_DISCONNECTED, DATA_SILO_PAUSED, MANUAL, etc.",
+                "type": "string"
+              }
+            },
+            "required": ["requestId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "53303276358db5f20eb6ba1e73271565305996d4dae68a1c7f34f2627f5f833c",
+          "schemaHash": "b7209dd6ae528994dd981f98d534aabb78b3efac80dbcb29d62fd5d96a8d50fd"
+        },
+        "dsr_poll_status": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Poll the current status of a Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "a04b04df4d19238ea8e7a9f2d7c09fffd9d834fa73498b587386903cef36a12c",
+          "inputSchema": {
+            "properties": {
+              "requestId": {
+                "description": "ID of the DSR to check",
+                "type": "string"
+              }
+            },
+            "required": ["requestId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.179Z",
+          "proseHash": "cee12ff828405c8eb4aecb267b7d9bbda2c9dd1d471c3349e477e2805b548cdb",
+          "schemaHash": "3da23a6dac99eb378f59dffa9741327fcdcfc489c1c47abba9c7ef35ff6a26f3"
+        },
+        "dsr_respond_access": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Respond to an ACCESS request by uploading user data",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "1b1e0d2eec025cde0e0d449440902adc2f66d8e99da1a6a09f49150ca15b2996",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "data_silo_id": {
+                "description": "ID of the data silo responding",
+                "type": "string"
+              },
+              "profiles": {
+                "description": "Array of profile data objects to return",
+                "items": {
+                  "additionalProperties": {
+
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "request_id": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id","data_silo_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "39dc24e5488fa1f06d77b9ae248ca4e72c99cab7e7bd17f700571306bd45ba1c",
+          "schemaHash": "0fd99607acccb648331b2c99bcc82160e1d082dbf1010bcb2faf5fa19a9721c2"
+        },
+        "dsr_respond_erasure": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Confirm that data erasure has been completed for a data silo",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "d426584b598b68583108f8eee974c0155ead22f8bea2b132b2a605b2875bd6c0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "data_silo_id": {
+                "description": "ID of the data silo that completed erasure",
+                "type": "string"
+              },
+              "profile_ids": {
+                "description": "IDs of profiles that were erased (optional)",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "request_id": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id","data_silo_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "9838ede2bc3eb0ad014469ddff8cf44a90c5238ddddc944c8f66a5b00198f9fa",
+          "schemaHash": "7194768444586a3069dc791d0b8ac15f2097da51f7f45a9327bbf09db547bc6b"
+        },
+        "dsr_submit": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Submit a Data Subject Request via customer-ingress REST bulk create (`POST /v1/data-subject-request-bulk`). Call `workflows_list` first and pass a returned `id` as `workflowConfigId` — type and subjectType are derived from that workflow (do not invent them). Sombra attests the subject from the provided email/identifiers. coreIdentifier defaults to email. Returns a minimal summary for each created request. Requires Sombra (SOMBRA_URL or organization customerUrl).",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "06c2a37842ce6f81c7c66fdd79e8545c95971e9fbece2590415626a065127349",
+          "inputSchema": {
+            "properties": {
+              "approvalToken": {
+                "description": "Approval token from a previous confirmation_required response for this exact call. Omit it on the first call. Only send it back after the user has agreed to the pending action; it is single-use and expires shortly.",
+                "type": "string"
+              },
+              "coreIdentifier": {
+                "description": "Core identifier for the data subject (defaults to email if not provided)",
+                "type": "string"
+              },
+              "email": {
+                "description": "Email address of the data subject",
+                "type": "string"
+              },
+              "isSilent": {
+                "description": "Whether to suppress email notifications",
+                "type": "boolean"
+              },
+              "locale": {
+                "description": "Locale for communications (e.g., en-US)",
+                "type": "string"
+              },
+              "workflowConfigId": {
+                "description": "UUID of the published workflow config (Privacy Requests → Workflows, or workflows_list). Request type and subject class are derived from this config — do not pass type/subjectType.",
+                "type": "string"
+              }
+            },
+            "required": ["workflowConfigId","email"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:15.177Z",
+          "proseHash": "f75abcc566261c0d7243274d4e88970026046111d5d14282e429cff84b030e8d",
+          "schemaHash": "c6bc785d4c2dbfc9c6c79ba58e8ab604324d9ac6133c994596a12997e1677708"
+        }
+      }
+    }
+  },
+  "version": 1
+}

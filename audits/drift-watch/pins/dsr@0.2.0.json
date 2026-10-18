@@ -1,0 +1,445 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "dsr": {
+      "cmd": {
+        "args": ["node_modules/@transcend-io/mcp-server-dsr/./dist/cli.mjs"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "./dist/cli.mjs",
+        "identityHash": "sha256:58b947b7aedfccc948e7e47b52b2547832e386520ce6b43e82d40695d931d7e6",
+        "package": "@transcend-io/mcp-server-dsr",
+        "resolvedVersion": "0.2.0",
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T15:04:03.165Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@transcend-io/mcp-server-dsr@0.2.0",
+      "tools": {
+        "dsr_analyze": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Analyze DSR metrics from most recent 100 requests. Note: For complete analysis of all requests, use dsr_list with pagination to fetch all data first.",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "f5b02ec05165685b7dcf6bd8c4f07752a663c220d7524f00ccb92906bc4327c5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "days": {
+                "description": "Filter analysis to requests within N days (default: 30). Only analyzes from the 100 most recent requests.",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "514bba2accff97ad310ef7b47af3ca334370894764b2f8190103ebde19e05b0d",
+          "schemaHash": "f1c5125b0bd5b8fd1bdee2f2bc3ed01ddaca72641df853df9df3c7375960654d"
+        },
+        "dsr_cancel": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Cancel a Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "feb8260f235e61e931511f1284aecc8b97e9203a65bd3e5e9f2825e9edd00767",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "reason": {
+                "description": "Reason for cancellation (optional)",
+                "type": "string"
+              },
+              "request_id": {
+                "description": "ID of the DSR to cancel",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "4e36a04a4689fef128558baa246495e4d4f35436f84fb5fc901b177d1df77568",
+          "schemaHash": "cbf382da27f5432f9bf06cf89c47461bc2af2f2153601fb104e37400a1823f9b"
+        },
+        "dsr_download_keys": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get download keys for a completed Data Subject Request. These keys can be used to download the DSR results.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "1602806a85473e0ec6469d850e9c4befb0fab14fe1422c8754198d65861c698c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "request_id": {
+                "description": "ID of the completed DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "c8714f2c915ae505d86e9352c10ee1c55390da254508ae4066b23d5d0567ebcd",
+          "schemaHash": "0fabea073cef91122e3943af2d6d1a526d10f6692e80ba376bf6696d10bb1aca"
+        },
+        "dsr_employee_submit": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Submit a Data Subject Request as an employee on behalf of a data subject. Requires subjectType to be specified.",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "f15538ab736b9dd48ba7f7c8d1940a99faa9d068a57e7c15fed0f3f2ada49833",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "coreIdentifier": {
+                "description": "Core identifier for the data subject (optional)",
+                "type": "string"
+              },
+              "email": {
+                "description": "Email address of the data subject",
+                "type": "string"
+              },
+              "isSilent": {
+                "description": "Whether to suppress email notifications",
+                "type": "boolean"
+              },
+              "locale": {
+                "description": "Locale for communications (e.g., en-US)",
+                "type": "string"
+              },
+              "subjectType": {
+                "description": "Type of data subject (e.g., customer, employee). Required by the Transcend API.",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of DSR request",
+                "enum": ["AUTOMATED_DECISION_MAKING_OPT_OUT","USE_OF_SENSITIVE_INFORMATION_OPT_OUT","CONTACT_OPT_OUT","SALE_OPT_OUT","TRACKING_OPT_OUT","CUSTOM_OPT_OUT","AUTOMATED_DECISION_MAKING_OPT_IN","USE_OF_SENSITIVE_INFORMATION_OPT_IN","SALE_OPT_IN","TRACKING_OPT_IN","CONTACT_OPT_IN","CUSTOM_OPT_IN","ACCESS","ERASURE","RECTIFICATION","RESTRICTION","BUSINESS_PURPOSE","PLACE_ON_LEGAL_HOLD","REMOVE_FROM_LEGAL_HOLD"],
+                "type": "string"
+              }
+            },
+            "required": ["type","email","subjectType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "42a8424ae07ff364dc61f99e59d7d1a1e9de846a0cf06299e26eb691eb746543",
+          "schemaHash": "eb42602607a53dc43c24a7e948f2ae0997c8a24a110e2f18fd0a8dec09832ff2"
+        },
+        "dsr_enrich_identifiers": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Enrich a Data Subject Request with additional identifiers during preflight processing",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "f6c1260ec3415c55c771f28988b9d610906728b0cc37cf91c486a004abbc865b",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "identifiers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Key-value pairs of identifier names and values to add",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "request_id": {
+                "description": "ID of the DSR to enrich",
+                "type": "string"
+              }
+            },
+            "required": ["request_id","identifiers"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "e4dd954b993361bd3e42c09f98f8cf2a2597905c96469882c82d88d856e039c8",
+          "schemaHash": "4b5367095414143c1655e47d8d8595d39b7832816be0518aeb2fa2dc463a4f1b"
+        },
+        "dsr_get_details": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get detailed information about a specific Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "66bc68b2f30930124f5f990bc73760cc1def4a2fd2903ee00355a2ad972a3288",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "request_id": {
+                "description": "ID of the DSR to retrieve",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "9971ed0de5896fe9ea0b6f1ab4f3c144b951ebb9541b06fdff080e3d7f89fa21",
+          "schemaHash": "4009643609ebb5aedc0ab6d8973b64ab4f236bba35053eb4fa0a97bb4f1b9b44"
+        },
+        "dsr_list": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List all Data Subject Requests. Use cursor pagination to retrieve all results (max 100 per page). Note: Server-side date filtering is not available - filter results client-side if needed.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "e3a2ac75f7f452d9bcc19604f626d721a0160ef974f04eab3bca60e18fb155a1",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "cursor": {
+                "description": "Pagination cursor from previous response",
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default: 50)",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "b8ba89ccbf330622347b38d89e8ce30a00139aa65b7addb25133505e4abbef0c",
+          "schemaHash": "2052cfdd48f58f00efa58db09af0eb9b21d85084d774c732463e9cbbaf707ffc"
+        },
+        "dsr_list_identifiers": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List all identifiers attached to a Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "386fd5d4d1dd8410763a0dacb640b7a2dc379eb5e78326c3987efac0ef328b64",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "cursor": {
+                "description": "Pagination cursor from previous response",
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default: 50)",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "number"
+              },
+              "request_id": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "f03c6c10aea364a8c07eca9d9f70b1c412a64469c434ed45cf668c9c4ebb7173",
+          "schemaHash": "b4609430aaa7b2f8497f60df5c9dce4ee9a1d75d9bcaa5c3cc6f8d925aee35d0"
+        },
+        "dsr_poll_status": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Poll the current status of a Data Subject Request",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "10a59a233ef87342e96b4ec83ca11e03d4b4f3d195d380996913356b7ed51f23",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "request_id": {
+                "description": "ID of the DSR to check",
+                "type": "string"
+              }
+            },
+            "required": ["request_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "cee12ff828405c8eb4aecb267b7d9bbda2c9dd1d471c3349e477e2805b548cdb",
+          "schemaHash": "a790e50915dd91b653d41b2931b75dd3521a19e04fa968746b24a05fe3c47948"
+        },
+        "dsr_respond_access": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Respond to an ACCESS request by uploading user data",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "1b1e0d2eec025cde0e0d449440902adc2f66d8e99da1a6a09f49150ca15b2996",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "data_silo_id": {
+                "description": "ID of the data silo responding",
+                "type": "string"
+              },
+              "profiles": {
+                "description": "Array of profile data objects to return",
+                "items": {
+                  "additionalProperties": {
+
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "request_id": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id","data_silo_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "39dc24e5488fa1f06d77b9ae248ca4e72c99cab7e7bd17f700571306bd45ba1c",
+          "schemaHash": "0fd99607acccb648331b2c99bcc82160e1d082dbf1010bcb2faf5fa19a9721c2"
+        },
+        "dsr_respond_erasure": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Confirm that data erasure has been completed for a data silo",
+          "firstSeen": "2026-10-18T15:04:03.170Z",
+          "hash": "d426584b598b68583108f8eee974c0155ead22f8bea2b132b2a605b2875bd6c0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "data_silo_id": {
+                "description": "ID of the data silo that completed erasure",
+                "type": "string"
+              },
+              "profile_ids": {
+                "description": "IDs of profiles that were erased (optional)",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "request_id": {
+                "description": "ID of the DSR",
+                "type": "string"
+              }
+            },
+            "required": ["request_id","data_silo_id"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.170Z",
+          "proseHash": "9838ede2bc3eb0ad014469ddff8cf44a90c5238ddddc944c8f66a5b00198f9fa",
+          "schemaHash": "7194768444586a3069dc791d0b8ac15f2097da51f7f45a9327bbf09db547bc6b"
+        },
+        "dsr_submit": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Submit a new Data Subject Request (DSR). Supports ACCESS, ERASURE, RECTIFICATION, and other request types. The coreIdentifier defaults to the email if not provided.",
+          "firstSeen": "2026-10-18T15:04:03.169Z",
+          "hash": "d8a8a406bd714d7a09cb9ea305dca5412cbce1a8684a12ea4738a78eb5f30d48",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "coreIdentifier": {
+                "description": "Core identifier for the data subject (defaults to email if not provided)",
+                "type": "string"
+              },
+              "email": {
+                "description": "Email address of the data subject",
+                "type": "string"
+              },
+              "isSilent": {
+                "description": "Whether to suppress email notifications",
+                "type": "boolean"
+              },
+              "locale": {
+                "description": "Locale for communications (e.g., en-US)",
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the data subject (optional)",
+                "type": "string"
+              },
+              "subjectType": {
+                "description": "Type of data subject (e.g., customer, employee, prospect). Required by the Transcend API.",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of DSR request",
+                "enum": ["AUTOMATED_DECISION_MAKING_OPT_OUT","USE_OF_SENSITIVE_INFORMATION_OPT_OUT","CONTACT_OPT_OUT","SALE_OPT_OUT","TRACKING_OPT_OUT","CUSTOM_OPT_OUT","AUTOMATED_DECISION_MAKING_OPT_IN","USE_OF_SENSITIVE_INFORMATION_OPT_IN","SALE_OPT_IN","TRACKING_OPT_IN","CONTACT_OPT_IN","CUSTOM_OPT_IN","ACCESS","ERASURE","RECTIFICATION","RESTRICTION","BUSINESS_PURPOSE","PLACE_ON_LEGAL_HOLD","REMOVE_FROM_LEGAL_HOLD"],
+                "type": "string"
+              }
+            },
+            "required": ["type","email","subjectType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:04:03.169Z",
+          "proseHash": "447aa8136abcd8143e0164b2d790f5d33d6da623c5c628bdfe0dd5fddf2a0819",
+          "schemaHash": "92ac7c0ebab89b9a691abe9e6fd2f3517e2d70f9d28f3e927cd7f78d53ac4ab1"
+        }
+      }
+    }
+  },
+  "version": 1
+}
