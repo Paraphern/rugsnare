@@ -144,11 +144,16 @@ for (const r of report) {
     if (v.status !== 'DRIFT') { nonDrift.push(v); continue; }
     const changes = v.schemaChanges ?? [];
     const notation = v.notationChanges ?? [];
+    // advisory result is part of the group signature: tools with different
+    // advisory outcomes must not share a section, otherwise the warning
+    // from the sample tool gets misattributed to (or hidden from) others
+    const advResult = v.newDescription ? (scanToolDescription(v.newDescription).advisory ? 'adv' : 'clean') : 'none';
     const sig = JSON.stringify({
       driftType: v.driftType,
       changes: changes.map((c) => c.text).sort(),
       notation,
       prose: v.proseChanged ? 'changed' : 'same',
+      advisory: advResult,
     });
     if (!driftGroups.has(sig)) driftGroups.set(sig, { tools: [], sample: v });
     driftGroups.get(sig).tools.push(v.tool);
@@ -239,8 +244,18 @@ for (const r of report) {
       const i = prIcon[v.status] ?? '🔴';
       if (v.status === 'DRIFT') {
         lines.push(`- ${i} \`${v.item}\` - ${v.contentChanged ? 'body text changed (envelope identical)' : 'definition changed'}`);
+        // advisory on changed prompt descriptions (same as tools)
+        if (v.newDescription) {
+          const adv = advisoryWarning(v.newDescription);
+          if (adv) lines.push(`  ${adv}`);
+        }
       } else if (v.status === 'NEW') {
         lines.push(`- ${i} \`${v.item}\` - new, not in the approved baseline`);
+        // advisory on new prompts (first contact)
+        if (v.newDescription) {
+          const adv = advisoryWarning(v.newDescription);
+          if (adv) lines.push(`  ${adv}`);
+        }
       } else if (v.status === 'REMOVED') {
         lines.push(`- ${i} \`${v.item}\` - approved, no longer served`);
       }

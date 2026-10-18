@@ -33,6 +33,11 @@ const SIGNALS = [
   { id: 'A15', weight: 3, atr: ['ATR-2026-00120', 'ATR-2026-00095'], test: /\bignore\s+(all\s+|any\s+|the\s+)?(previous|prior|above|earlier)\s+instructions?\b|\bdisregard\s+(all\s+|any\s+|the\s+)?(previous|prior|above)\s+instructions?\b/i, desc: 'explicit instruction-hijack phrase - never innocent in a tool description' },
   { id: 'A17', weight: 3, atr: [], test: /\+\d{10,15}\b|\+\d{1,3}[\s().-]?\(?\d{2,4}\)?[\s().-]?\d{3}[\s().-]?\d{3,4}\b/, desc: 'contains an international phone number - tool documentation never needs one; classically the exfiltration recipient in WhatsApp/SMS poisoning' },
   { id: 'A18', weight: 3, atr: ['ATR-2026-00259', 'ATR-2026-00393'], test: /\x1b\[[0-9;]*[a-zA-Z]/, desc: 'contains ANSI escape sequences - can hide text, fake terminal output, or deceive the user visually (Trail of Bits mcp-context-protector popularized this check)' },
+  { id: 'A19', weight: 3, atr: [], test: new RegExp([
+    '(?:(?:card\\s*(?:number|details)?|cvc|cvv|pan|expiry|expir\\w*\\s+date|payment\\s+credentials?|billing\\s+info)[^.]{0,80}(?:post|send|pass|upload|attach|forward|transmit))',
+    '|',
+    '(?:(?:post|send|pass|upload|attach|forward|transmit)[^.]{0,80}(?:card\\s*(?:number|details)?|cvc|cvv|pan|expiry|expir\\w*\\s+date|payment\\s+credentials?|billing\\s+info))',
+  ].join(''), 'i'), desc: 'instructs to send/post payment credentials (card number, CVC, expiry) - payment tools USE credentials, they never instruct the agent to TRANSMIT them' },
 ];
 
 // Schema-level signal: an OPTIONAL parameter whose name is a classic exfiltration
