@@ -107,7 +107,10 @@ export function discoverSkills(cwd = process.cwd(), home = os.homedir()) {
       files = walkSkillDir(base, 0);
     }
     for (const file of files) {
-      const resolved = path.resolve(file);
+      // realpath, not path.resolve: home and cwd may reach the same file via a
+      // symlink (macOS /var -> /private/var), which path.resolve won't collapse
+      let resolved;
+      try { resolved = fs.realpathSync(file); } catch { resolved = path.resolve(file); }
       if (seen.has(resolved)) continue; // same file found via multiple patterns
       seen.add(resolved);
       found.push({
