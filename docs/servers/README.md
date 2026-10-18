@@ -7,7 +7,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | server | installs/week | window | findings | verified | graded with | page |
 |---|---|---|---|---|---|---|
 | @azure-devops/mcp (Microsoft) | 120k | 2.5.0 -> 2.10.0 | 110 | 2026-10-13 | 1.3.0 | [azure-devops.md](azure-devops.md) |
-| chrome-devtools-mcp (Chrome team) | 1.73M | 1.8.0 -> 1.10.1 | 30: 27 notation + 1 formal tightening (wait_for) + 1 NEW + 1 cosmetic | 2026-10-13 | 1.3.0 | [chrome-devtools.md](chrome-devtools.md) |
+| chrome-devtools-mcp (Chrome team) | 1.73M | 1.8.0 -> 1.10.1 | 30: 24 NOTATION ($schema dialect) + 5 BREAKING by the letter (zod ±2^53 integer-bounds artifacts, annotated as SDK artifacts) + 1 NEW | 2026-10-18 | 1.4.3 | [chrome-devtools.md](chrome-devtools.md) |
 | @netlify/mcp (Netlify) | 43k | 1.6.0 -> 1.19.0 | 13: 100% tool turnover (3 GONE + 10 NEW, 3->10 tools); earlier window 1.14.0->1.18.0 = 58 | 2026-10-18 | 1.4.3 | [netlify.md](netlify.md) |
 | mongodb-mcp-server (MongoDB) | 98k | 2.1.2 -> 3.0.5 | 20 in 3.0.0 (5 BREAKING + 15 notation on 1.3.0) | 2026-10-13 | 1.3.0 | [mongodb.md](mongodb.md) |
 | @sentry/mcp-server (Sentry) | 100k | 0.38.0 -> 0.42.0 | 3 | 2026-10-13 | 1.3.0 | [sentry.md](sentry.md) |

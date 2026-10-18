@@ -128,6 +128,7 @@ function parseArgs(argv) {
     else if (a === '--to') flags.to = argv[++i];
     else if (a === '--stub-env') flags.stubEnv = true;
     else if (a === '--prune') flags.prune = true;
+    else if (a === '--openapi') flags.openapi = argv[++i];
     else if (a === '--server-args') flags.serverArgs = argv[++i];
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
@@ -594,6 +595,27 @@ async function cmdDiff(flags) {
       // (and for HTTP, a second full handshake)
       const { tools, prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
+      // R36: OpenAPI crosscheck - if the vendor publishes a spec, tighten
+      // changes that existed in the spec are regraded to MIRRORED
+      if (flags.openapi) {
+        const { OpenAPICrosscheck, applyMirrored } = await import('./mirrored.js');
+        const crosscheck = new OpenAPICrosscheck(flags.openapi);
+        try {
+          await crosscheck.load();
+          for (const v of allVerdicts) {
+            if (v.status === 'DRIFT' && Array.isArray(v.schemaChanges)) {
+              v.schemaChanges = applyMirrored(v.schemaChanges, crosscheck, v.tool);
+              // regrade if all tightens became mirrored
+              if (v.schemaChanges.every((c) => c.direction !== 'tighten')) {
+                const { gradeSchemaDrift: regrade } = await import('./pins.js');
+                v.driftType = regrade(v.schemaChanges, v.notationChanges ?? []);
+              }
+            }
+          }
+        } catch (e) {
+          console.error(`  (openapi crosscheck unavailable: ${e.message})`);
+        }
+      }
       // PIN-SPEC v1.1: identity drift - every tool hash intact but the
       // surface is served by a different build/path than approved (supabase
       // moved its stdio entry with contracts unchanged). Only when tools are

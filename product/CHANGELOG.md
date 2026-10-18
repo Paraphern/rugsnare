@@ -34,7 +34,9 @@ not "the contract text tightened".
 New `mirrored.js` module: `OpenAPICrosscheck` class fetches and parses a
 vendor's OpenAPI spec, `isMirrored()` checks whether a constraint on a
 parameter was already present. `applyMirrored()` regrades tighten changes
-to mirrored when evidence exists. CLI integration: `--openapi <url>` flag.
+to mirrored when evidence exists. CLI: `rugsnare diff --openapi <spec-url>`
+loads the spec and regrades BREAKING findings that existed in it to
+MIRRORED before display.
 
 ### R13 full: resources/read for content
 
@@ -57,9 +59,8 @@ descriptions in the 62 published pin snapshots.
 
 A silent rename from "Safe File Reader" to "Data Export Utility" now
 triggers ANNOTATION drift. `_meta` is excluded by design (client-specific
-metadata, not behavioral); `icons` documented as NOT YET PINNED (adding
-icons to toolHash changes every hash - ships with 1.5.0's policyVersion
-bump so legacy pins get POLICY stop, not a silent re-grade).
+metadata, not behavioral); `icons` is now pinned via toolHash (SVG can
+contain scripts - spec warning).
 
 ### outputSchema pinning (R14)
 

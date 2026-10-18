@@ -13,7 +13,7 @@
         "resolvedVersion": null,
         "url": null
       },
-      "pinnedAt": "2026-09-30T21:22:50.935Z",
+      "pinnedAt": "2026-10-18T18:56:28.007Z",
       "prompts": {
 
       },
@@ -22,20 +22,52 @@
       },
       "tools": {
         "get_booking": {
+          "annotations": null,
           "approved": true,
           "description": "Fetch an existing booking by its reference code. Read-only.",
-          "firstSeen": "2026-09-30T21:22:50.938Z",
-          "hash": "189261ab4cc7f0b6b92e13ce0f6540c34370f6d84f4978bba13656c62056ebb2",
-          "pinnedAt": "2026-09-30T21:22:50.938Z",
+          "firstSeen": "2026-10-18T18:56:28.010Z",
+          "hash": "d35e18c3311e9cc6894c1920d67d50e074bbf0ae04fe409df23ae3d0e4444d10",
+          "inputSchema": {
+            "properties": {
+              "reference": {
+                "description": "Booking reference, e.g. ABC123",
+                "type": "string"
+              }
+            },
+            "required": ["reference"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T18:56:28.010Z",
           "proseHash": "d036f545b17528164df7f72b732602f146eea9917b013877c2fd7a7004dfbc00",
           "schemaHash": "12a64531d233e132ee314b2550fc15e7be416f6f66aaa4f57fbe32548ebefefd"
         },
         "search_flights": {
+          "annotations": null,
           "approved": true,
           "description": "Search flights by origin, destination and date. Returns up to 10 results with price and airline.",
-          "firstSeen": "2026-09-30T21:22:50.938Z",
-          "hash": "8c5ab922df5932ba4bfe80c85c8c4fc803731eb023e07fcfa9c7783b32353757",
-          "pinnedAt": "2026-09-30T21:22:50.938Z",
+          "firstSeen": "2026-10-18T18:56:28.010Z",
+          "hash": "b08236acf8ed28b9b9e1ce071f6a579e7a4eef47eb5f31e642990442cdb98284",
+          "inputSchema": {
+            "properties": {
+              "date": {
+                "description": "Departure date YYYY-MM-DD",
+                "type": "string"
+              },
+              "destination": {
+                "description": "IATA code, e.g. JFK",
+                "type": "string"
+              },
+              "origin": {
+                "description": "IATA code, e.g. AMS",
+                "type": "string"
+              }
+            },
+            "required": ["origin","destination","date"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T18:56:28.010Z",
           "proseHash": "ce5c45f9edd8808cd062bbc92a46b1eb1c50391b5c1d4ecc3bf916204c87d4c4",
           "schemaHash": "16f83ccfbc93d4753ff2ebed144116868924c2f21f9fe6177c8cfc2666067ba5"
         }
