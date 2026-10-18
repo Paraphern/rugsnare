@@ -1,6 +1,6 @@
 # @modelcontextprotocol/server-everything (Anthropic reference)
 
-npm 156,226 installs/week. The official SDK test server: if its contract drifts, every client conformance suite built on it drifts too. Verified window 0.1.0 -> 2026.8.31 (40 findings). Graded with rugsnare 1.4.3, 2026-10-18.
+npm 156,226 installs/week. The official SDK test server: if its contract drifts, every client conformance suite built on it drifts too. Verified window 0.1.0 -> 1.0.0, the latest-tagged release (40 findings; identical at the interim 2026.8.31 calver snapshot). Graded with rugsnare 1.4.3, 2026-10-18.
 
 Tools 5 -> 13 (the 17 in early union snapshots was a measurement artifact - `rugsnare scan` merges tools into an existing store and never deletes dead ones; clean-stand pin confirms 13); plus prompts and resources churned wholesale.
 
@@ -12,7 +12,7 @@ Tools 5 -> 13 (the 17 in early union snapshots was a measurement artifact - `rug
 
 **2 GONE prompts + 10 GONE resources** - `simple_prompt`, `complex_prompt`, Resource 1-10: the prompt/resource demo surfaces were replaced entirely.
 
-Version note: npm `latest` tag stays `1.0.0`; the calver 2026.x line is published untagged.
+Version note: `1.0.0` (2026-10-11) is the newest release and carries the `latest` tag; the untagged calver snapshots (2026.x) are semver-higher but published earlier, and the diff at both endpoints is identical.
 
 **Repro**
 
@@ -21,7 +21,7 @@ mkdir ev && cd ev && npm init -y
 # mcp.json: {"mcpServers":{"everything":{"command":"node","args":["node_modules/@modelcontextprotocol/server-everything/dist/index.js"]}}}
 npm i @modelcontextprotocol/server-everything@0.1.0 && npx rugsnare scan --config mcp.json
 rm -rf node_modules package-lock.json
-npm i @modelcontextprotocol/server-everything@2026.8.31 && npx rugsnare diff --config mcp.json   # 40 findings, exit 1
+npm i @modelcontextprotocol/server-everything@1.0.0 && npx rugsnare diff --config mcp.json   # 40 findings, exit 1
 ```
 
 Last verified 2026-10-18 (rugsnare 1.4.3).

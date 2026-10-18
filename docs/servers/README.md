@@ -30,8 +30,8 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | @heroku/mcp-server (Heroku/Salesforce) | 11k | 1.2.5 -> 1.2.11 | 0 (control) | 2026-10-13 | 1.3.0 | [heroku.md](heroku.md) |
 | obra/superpowers (skills collection) | 298k★ | 6.4.2 -> 7.0.0 | 6 (1 DANGEROUS) | 2026-10-12 | 1.3.0 | [superpowers.md](superpowers.md) |
 | vercel-labs/skills (skills collection) | - | baseline 13e4063 (2026-10-12) | 226 files pinned, watching | 2026-10-12 | 1.3.0 | [vercel-skills.md](vercel-skills.md) |
-| @modelcontextprotocol/server-filesystem (Anthropic reference) | 456k | 0.2.0 -> 2026.8.31 | 14: 8 BREAKING + 5 NEW + 1 NOTATION (most-installed server we scanned) | 2026-10-18 | 1.4.3 | [filesystem.md](filesystem.md) |
-| @modelcontextprotocol/server-everything (Anthropic reference) | 156k | 0.1.0 -> 2026.8.31 | 40: 23 NEW + 4 GONE tools + echo LOOSENED + prompts/resources churn | 2026-10-18 | 1.4.3 | [everything.md](everything.md) |
+| @modelcontextprotocol/server-filesystem (Anthropic reference) | 456k | 0.2.0 -> 1.0.0 | 14: 8 BREAKING + 5 NEW + 1 NOTATION (most-installed server we scanned) | 2026-10-18 | 1.4.3 | [filesystem.md](filesystem.md) |
+| @modelcontextprotocol/server-everything (Anthropic reference) | 156k | 0.1.0 -> 1.0.0 | 40: 23 NEW + 4 GONE tools + echo LOOSENED + prompts/resources churn | 2026-10-18 | 1.4.3 | [everything.md](everything.md) |
 | @transcend-io/mcp-server-dsr (Transcend) | 84 versions | 0.2.0 -> 2.0.13 | 15: 7 BREAKING + 4 GONE (privacy/DSR surface) | 2026-10-18 | 1.4.3 | [dsr.md](dsr.md) |
 | @iterable/mcp (Iterable) | 1.1k | 1.0.0 -> 1.9.0 | 4 BREAKING inside 1.x (semver violation) + experiments suite NEW | 2026-10-18 | 1.4.3 | [iterable.md](iterable.md) |
 | @browserbasehq/mcp-server-browserbase | 1.6k | 2.0.0 -> 2.4.3 | 19: multi_* surface GONE (10) + stagehand_agent NEW + LOOSENED | 2026-10-18 | 1.4.3 | [browserbase.md](browserbase.md) |

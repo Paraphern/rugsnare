@@ -1,6 +1,6 @@
 # @modelcontextprotocol/server-filesystem (Anthropic reference)
 
-npm 456,670 installs/week - the most-installed MCP server we have scanned. Verified window 0.2.0 -> 2026.8.31 (14 findings; 8 BREAKING). Graded with rugsnare 1.4.3, 2026-10-18.
+npm 456,670 installs/week - the most-installed MCP server we have scanned. Verified window 0.2.0 -> 1.0.0, the latest-tagged release (14 findings; 8 BREAKING; identical at the interim 2026.8.31 calver snapshot). Graded with rugsnare 1.4.3, 2026-10-18.
 
 Tools 9 -> 14. Every original file tool changed its contract; none of it was announced, because the reference servers have no changelog per tool.
 
@@ -19,7 +19,7 @@ mkdir fs && cd fs && npm init -y
 # mcp.json: {"mcpServers":{"filesystem":{"command":"node","args":["node_modules/@modelcontextprotocol/server-filesystem/dist/index.js","<an-allowed-dir>"]}}}
 npm i @modelcontextprotocol/server-filesystem@0.2.0 zod-to-json-schema && npx rugsnare scan --config mcp.json
 rm -rf node_modules package-lock.json
-npm i @modelcontextprotocol/server-filesystem@2026.8.31 && npx rugsnare diff --config mcp.json   # 14 findings, exit 1
+npm i @modelcontextprotocol/server-filesystem@1.0.0 && npx rugsnare diff --config mcp.json   # 14 findings, exit 1
 ```
 
 Last verified 2026-10-18 (rugsnare 1.4.3).

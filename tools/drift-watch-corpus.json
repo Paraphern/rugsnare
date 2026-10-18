@@ -292,24 +292,24 @@
       "name": "everything",
       "package": "@modelcontextprotocol/server-everything",
       "pinned": "0.1.0",
-      "lastSeen": "2026.8.31",
+      "lastSeen": "1.0.0",
       "lastFindings": 40,
       "entry": "node_modules/@modelcontextprotocol/server-everything/dist/index.js",
       "env": {},
-      "note": "Anthropic reference server; calver 2026.x untagged, latest tag stays 1.0.0"
+      "note": "Anthropic reference server; calver 2026.x untagged, latest tag stays 1.0.0; 1.0.0 (2026-10-11, latest tag) is the true endpoint - calver 2026.8.31 is semver-higher but older, diff identical"
     },
     {
       "name": "filesystem",
       "package": "@modelcontextprotocol/server-filesystem",
       "pinned": "0.2.0",
-      "lastSeen": "2026.8.31",
+      "lastSeen": "1.0.0",
       "lastFindings": 14,
       "entry": "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
       "args": [
         "C:/tmp/new5/fs-root"
       ],
       "env": {},
-      "note": "0.2.0 tarball misses zod-to-json-schema dep - install fixup; 9 BREAKING in 0.2.0->2026.8.31"
+      "note": "0.2.0 tarball misses zod-to-json-schema dep - install fixup; 9 BREAKING in 0.2.0->2026.8.31; 1.0.0 (2026-10-11, latest tag) is the true endpoint - calver 2026.8.31 is semver-higher but older, diff identical"
     },
     {
       "name": "dsr",
