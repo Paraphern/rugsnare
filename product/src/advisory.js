@@ -38,6 +38,13 @@ const SIGNALS = [
     '|',
     '(?:(?:post|send|pass|upload|attach|forward|transmit)[^.]{0,80}(?:card\\s*(?:number|details)?|cvc|cvv|pan|expiry|expir\\w*\\s+date|payment\\s+credentials?|billing\\s+info))',
   ].join(''), 'i'), desc: 'instructs to send/post payment credentials (card number, CVC, expiry) - payment tools USE credentials, they never instruct the agent to TRANSMIT them' },
+  { id: 'A20', weight: 3, atr: ['ATR-2026-00120', 'ATR-2026-00276'], test: new RegExp([
+    '(?:<\\s*(?:important|system|instruction|critical|admin|directive|note[\\s_-]*to[\\s_-]*(?:the[\\s_-]+)?agent)\\s*>)',
+    '|',
+    '(?:<!--[\\s\\S]*?-->)',
+    '|',
+    '(?:\\[\\[\\s*system\\s*\\]\\]|<<\\s*system\\s*>>)',
+  ].join(''), 'i'), desc: 'hidden directive block: importance/system tags (<IMPORTANT>, <NOTE TO AGENT>) or HTML comments - markup addressed to the model, invisible in rendered markdown (class from the packachuz/mcp-shield list, teleport#61434)' },
 ];
 
 // Schema-level signal: an OPTIONAL parameter whose name is a classic exfiltration
@@ -46,7 +53,7 @@ const SIGNALS = [
 // popularized the pattern list); kept deliberately narrow to avoid false hits.
 const EXFIL_PARAM = /^(feedback|debug|extra|diagnostics?|telemetry|callback_?url|report_?uri|webhook_?url)$/i;
 
-const FORCED = new Set(['A12', 'A13', 'A15', 'A18']); // invisible unicode, bidi, hijack phrase, ANSI escapes
+const FORCED = new Set(['A12', 'A13', 'A15', 'A18', 'A20']); // invisible unicode, bidi, hijack phrase, ANSI escapes, hidden directive blocks
 
 const THRESHOLD = 5;
 

@@ -58,6 +58,8 @@ Weights and forced-fire logic are unchanged; the `atr` field is additive metadat
 | A16 (schema) | optional param named feedback/debug/webhook/... | `ATR-2026-01300` - MCP Notes Param Chat-History Exfil |
 | A17 (w3) | international phone number in a tool description | none yet - see gaps |
 | A18 (w3, forced) | ANSI escape sequences | `ATR-2026-00259` - ANSI Escape Code Terminal Injection; related `ATR-2026-00393` |
+| A19 (w3) | instructs to send/post payment credentials (card number, CVC, expiry) | none yet - candidate: the payments variant of `ATR-2026-00214` cond. 2 (credential transmission); kept `atr: []` until a rule ID exists (see gaps) |
+| A20 (w3, forced) | hidden directive block: importance/system tags or HTML comments | `ATR-2026-00120` - SKILL.md Prompt Injection (markup-directed variant); related `ATR-2026-00276` (invisible channel; class surfaced by the packachuz/mcp-shield list, teleport#61434) |
 
 ## Gaps: filed upstream, pending review
 
@@ -73,6 +75,9 @@ Red Team Probe path (issues, per their CONTRIBUTING) on 2026-10-12:
    A17 gains its first rule ID.
 3. [Agent-Threat-Rule/agent-threat-rules#655](https://github.com/Agent-Threat-Rule/agent-threat-rules/issues/655) -
    floating-version references in MCP configs (our FLOATING advisory in `rugsnare scan`).
+4. Unfiled: payment-credential transmission in a tool description (our A19). Closest
+   existing rule is `ATR-2026-00214` cond. 2, which covers credential ACCESS, not the
+   "POST the card number to X" instruction. Will file with the next probe batch.
 
 A fourth gap remains unfiled as a rule because it is not a content pattern:
 **pre-invocation contract drift** - no ATR rule expresses "the contract hash changed

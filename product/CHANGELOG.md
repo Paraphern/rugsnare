@@ -55,6 +55,26 @@ Weight 3, fires on the combination of payment terms with exfiltration verbs
 details to gateways). Verified zero false positives across all 1,152 tool
 descriptions in the 62 published pin snapshots.
 
+### A20: hidden directive blocks (FORCED)
+
+The class our table was missing until the packachuz/mcp-shield list surfaced
+it (gravitational/teleport#61434): markup addressed to the model, not the
+human. Three carriers, one signal, weight 3, FORCED (always surfaces the
+advisory even below the score threshold, like A12/A13/A15/A18):
+
+- importance/system tag blocks: `<IMPORTANT>`, `<SYSTEM>`, `<INSTRUCTION>`,
+  `<CRITICAL>`, `<ADMIN>`, `<DIRECTIVE>`, `<NOTE TO AGENT>` (case-insensitive,
+  space/dash/underscore variants in the note-to-agent form - a literal
+  `note_to_agent` pattern would miss the spaced form);
+- HTML comments `<!-- ... -->` - invisible in rendered markdown, the classic
+  hidden-instruction container;
+- faux-system blocks `[[SYSTEM]]` / `<<SYSTEM>>`.
+
+A06 stays verbal-only ("internal", "maintainer note") - markup was never its
+territory. Verified zero false positives on the same 1,152-description corpus
+(plain words "critical"/"admin" and formatting tags like `<b>`/`<i>` do not
+fire; only directive markup does). Mapped to ATR-2026-00120 + ATR-2026-00276.
+
 ### annotations.title compared (social-engineering vector)
 
 A silent rename from "Safe File Reader" to "Data Export Utility" now
