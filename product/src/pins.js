@@ -230,6 +230,11 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     && existing.schemaHash === computeSchemaHash(tool)
     && existing.proseHash === computeProseHash(tool)
     && existing.approved === true
+    // P1 (preverification): outputHash must be in the skip-guard too -
+    // toolHash does NOT include outputSchema, so an output-only change
+    // keeps toolHash identical and the guard silently preserves the old
+    // outputHash (found by the 1.5.0 preverification P1)
+    && (existing.outputHash ?? null) === computeOutputHash(tool)
     // canonical compare: the stored annotations come from the file with
     // SORTED keys (stableStringify), the live object has wire order - a raw
     // JSON.stringify compare fails on every multi-key annotation set
@@ -627,8 +632,18 @@ export function gradeSchemaDrift(paramChanges, notationChanges) {
   // keyword swap) by the 1.3.0 release re-run.
   const real = paramChanges.filter((c) => !c.notationOnly);
   const hasTighten = real.some((c) => c.direction === 'tighten');
+  const hasMirrored = real.some((c) => c.direction === 'mirrored');
   const hasExpand = real.some((c) => c.direction === 'expand');
   const hasLoosen = real.some((c) => c.direction === 'loosen');
+  // R35: if ALL tighten-or-mirrored changes are mirrored (direction='mirrored',
+  // meaning they existed in the backend/OpenAPI before the schema documented
+  // them), the operational definition of BREAKING ("a previously-successful
+  // call starts failing") is not met - grade MIRRORED instead
+  const tightenOrMirrored = real.filter((c) => c.direction === 'tighten' || c.direction === 'mirrored');
+  if (tightenOrMirrored.length > 0 && !hasExpand) {
+    const nonMirrored = tightenOrMirrored.filter((c) => c.direction === 'tighten');
+    if (nonMirrored.length === 0) return 'MIRRORED';
+  }
   if (hasTighten) return 'BREAKING';
   if (hasExpand) return hasLoosen ? 'BREAKING' : 'EXPANDED';
   if (hasLoosen) return 'LOOSENED';
@@ -720,7 +735,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
   for (const tool of liveTools) {
     const pin = serverPin.tools[tool.name];
     const hash = toolHashFn(tool);
-    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash });
+    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash, description: tool.description ?? '' });
     else if (pin.hash !== hash) {
       const liveSchemaHash = computeSchemaHash(tool);
       const liveProseHash = computeProseHash(tool);

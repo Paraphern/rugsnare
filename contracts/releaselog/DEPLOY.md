@@ -175,6 +175,27 @@ Decoded input from the transaction:
 | npm | rugsnare@1.2.0, gitHead `3cd65718` |
 | Проверка | `npx rugsnare verify rugsnare-1.2.0.tgz --version 1.2.0 --chain base` -> VERIFIED (23:47 local) |
 
+## Пин 1.5.0 (2026-10-19) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0xc3c917a98cad43979493fc2be214f4cc22759246958f485b51b1cc9e17e35bc0` (block 52802100) |
+| Event check | topics[1]=versionKey `0x092b988c...` ✓, data=artifactHash `0x821d8fbb...` + "1.5.0" ✓ (Basescan Write Contract; логи сняты через publicnode RPC - mainnet.base.org молча отдал 0 и затем зарейтлимитил) |
+| artifact sha256 | `821d8fbbf8e161cdfa85848a46c5ac641003a7070796f10a91f731e2305953ef` (коммит 003ad067 = тег v1.5.0; гейт: 43 файла, mimosa/ключи не протекли) |
+| versionKey | keccak256("1.5.0") = `0x092b988ce2731e93f05b9357ef9bbe13b77e6cc24a98a2ca37e296923b58704d` |
+| npm | rugsnare@1.5.0 published 2026-10-19; registry dist.shasum `20a5751d14e12e89a0af9e64fe04291143fd194a`, integrity `sha512-0FB1yG36...G30xIw==` (обе = прогнозу упаковки); CDN ~7 мин; CDN-тарболл = артефакту байт-в-байт; npx smoke ok |
+| Проверка | `node product/src/cli.js verify <CDN-tarball> --version 1.5.0 --chain base` -> **VERIFIED** (pinned at 2026-10-19T07:05:47Z) |
+
+Состав релиза: R14 outputHash, R13-full resources/read, annotations.title + icons в
+toolHash (policyVersion bump rugsnare-1.5.0, все свои пины пересканированы и
+переподписаны), R35 MIRRORED + R36 --openapi crosscheck (autoclav-79 фикс пустого
+schemaChanges), R37 --prune, A19 (платёжные креды) + A20 (скрытые директивные блоки,
+FORCED; autoclav-81: comment-рука сужена до директивного словаря - маркеры сборки и
+линтер-прагмы чисты; закрыты обходы атрибуты/дефисы/ChatML/markdown-ref/незакрытый),
+CI badge + GitHub Action + PR-рендерер + Smithery .mcpb, P1/P2 preverification фиксы,
+восстановлены pins.sig (root + corpus/01, утраченные в v1.4.3). JS 384/384.
+Релизный конфликт gh resolve на awesome-mcp-servers (второй remote) - обойдён -R.
+
 ## Пин 1.4.3 (2026-10-17) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |

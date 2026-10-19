@@ -3,11 +3,9 @@
 <img src="docs/logo.png" alt="RugSnare logo" width="96" height="96" align="left" style="margin-right:16px;border-radius:20px">
 
 [![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
-[![rugsnare](https://rugsnare.com/badge/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare#trust-model)
+[![rugsnare](https://rugsnare.com/badge/Paraphern/rugsnare.svg)](https://rugsnare.com/#badge)
 [![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
 [![Dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
 [![Node: >=18](https://img.shields.io/badge/node-%3E%3D18-green.svg)](#)
 [![GitHub stars](https://img.shields.io/github/stars/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare/stargazers)
@@ -45,7 +43,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.4.3): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.5.0): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -54,7 +52,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.4.3):**
+**npm (latest: rugsnare@1.5.0):**
 
 ```bash
 npx rugsnare init
@@ -97,7 +95,7 @@ That's it. The action installs rugsnare, runs `diff`, and fails the build when a
 - uses: Paraphern/rugsnare/.github/actions/diff@v1
   with:
     config: .mcp.json           # path to your MCP config (default: .mcp.json)
-    version: '1.4.3'            # pin the rugsnare version (default: 1.4.3)
+    version: '1.5.0'            # pin the rugsnare version (default: 1.5.0)
     schema-only: 'true'         # fail only on BREAKING/EXPANDED (skip prose edits)
     sarif: 'true'               # also emit a SARIF report for code scanning
 ```
@@ -105,10 +103,16 @@ That's it. The action installs rugsnare, runs `diff`, and fails the build when a
 Badge for your README:
 
 ```markdown
-![rugsnare](https://rugsnare.com/badge/YOUR_USERNAME/YOUR_REPO.svg)
+[![rugsnare](https://rugsnare.com/badge/YOUR_USERNAME/YOUR_REPO.svg)](https://rugsnare.com/#badge)
 ```
 
-Shows `N tools · N skills` in green when pinned, gray when not.
+The badge is a trust signal, not just a counter. Green `signed · N tools · M skills ...`
+means the badge worker just **verified the Ed25519 signature** of your committed
+`pins.json` against your committed `pins.pub.pem` (run `rugsnare receipts sign` to get
+one). Yellow `unsigned · ...` means pinned but no signature; red `SIG BROKEN · ...`
+means `pins.json` does not match its own signature - the CI-attacker scenario, caught
+in the open. Gray is not pinned. Counts cover tools, skills, prompts and resources.
+[What the states mean →](https://rugsnare.com/#badge)
 
 ### Live proxy (optional, v0.2+)
 
@@ -255,6 +259,7 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **v1.4.1** | ✅ shipped | Skills pin `path` is now relative (PIN-SPEC §2): the 1.4.0 writer emitted machine-absolute paths, breaking §7 byte-stability across machines and leaking local layout in published catalog snapshots. Fixed in both the JS CLI and the Go native launcher; pre-v1.4.1 pins read via a legacy fallback · [on-chain pin](https://basescan.org/tx/0x2e4909417f8c735b66854d4df8ce7515855fc833c4c01a1370df431fb1302a2d) |
 | **v1.4.2** | ✅ shipped | §7 byte-stability for all pin branches: skills `pinnedAt` and prompts/resources `firstSeen` no longer churn on re-scan of unchanged content - the same skip-guard pattern now covers tools, skills, and prompts/resources in both the JS CLI and the Go native launcher · [on-chain pin](https://basescan.org/tx/0x9befe1218ccdf400264287f1917c9f7bee7400a8cf623b333adfb580d86f464f) |
 | **v1.4.3** | ✅ shipped | POLICY stop-rule (PIN-SPEC §3.1): when the pin store's policyVersion differs from the running binary, diff emits the POLICY finding and STOPS - exactly one finding, no tool-level classes follow. Each re-graded class would look like ordinary drift to anyone who scrolled past the POLICY line; the spec says "stops for that pin", and now the code does too · [on-chain pin](https://basescan.org/tx/0x04354ca5de51e67a5b977d88720b03d76a074d5ab7f11c80036bd3f940e095e8) |
-| **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans · R35 MIRRORED class + R36 openapi-crosscheck · R37 scan `--prune` (see `docs/PIN-SPEC.md`) (see `docs/future.md`) |
+| **v1.5.0** | ✅ shipped | **outputSchema pinning** (R14: a third hash `outputHash`, absent = null - output contracts drift-detected like inputs) · **resource content pinning** (R13-full: `resources/read` on up to 20 envelope-only resources, text body hashed - prompt-injection payloads hidden in resource text now caught) · `annotations.title` pinned (a silent rename from "Safe File Reader" to "Data Export Utility" is ANNOTATION drift; `_meta` excluded, `icons` hashed into toolHash) · **MIRRORED class + OpenAPI crosscheck** (R35/R36: tighten changes the vendor's published spec already promised are regraded BREAKING → MIRRORED via `diff --openapi <spec>`; BREAKING now means "a previously-successful call starts failing", not "the contract text tightened") · `scan --prune` (R37: drop departed servers/tools/skills/prompts from the pin store on purpose) · **A19 payment-credential advisory** (descriptions asking the agent to POST card numbers/CVC/expiry - bidirectional match, zero false positives on 1152 benign descriptions) · **A20 hidden-directive-block advisory, FORCED** (`<IMPORTANT>`/`<SYSTEM>`/`<NOTE TO AGENT>` tag blocks with attribute and hyphenated variants (`<system-reminder>`), ChatML `<|system|>` markers, `[//]: #` markdown-reference stubs, HTML comments carrying directive text, `[[SYSTEM]]` faux blocks - markup addressed to the model, invisible in rendered markdown; benign build markers and linter pragmas stay clean by the directive-vocab requirement; class from the packachuz/mcp-shield list via teleport#61434) · **CI badge** (`https://rugsnare.com/badge/:owner/:repo.svg`) · **GitHub composite Action** (`.github/actions/diff`) and a richer PR-comment renderer (advisory scoring, drift grouping, prompts/resources sections) · Smithery `.mcpb` bundle · preverification fixes P1/P2 (outputHash in the skip-guard, contentHash preserved by approve) · [on-chain pin](https://basescan.org/tx/0xc3c917a98cad43979493fc2be214f4cc22759246958f485b51b1cc9e17e35bc0) |
+| **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans (see `docs/future.md`) |
 
-*359 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*384 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

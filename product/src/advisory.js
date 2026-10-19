@@ -33,6 +33,34 @@ const SIGNALS = [
   { id: 'A15', weight: 3, atr: ['ATR-2026-00120', 'ATR-2026-00095'], test: /\bignore\s+(all\s+|any\s+|the\s+)?(previous|prior|above|earlier)\s+instructions?\b|\bdisregard\s+(all\s+|any\s+|the\s+)?(previous|prior|above)\s+instructions?\b/i, desc: 'explicit instruction-hijack phrase - never innocent in a tool description' },
   { id: 'A17', weight: 3, atr: [], test: /\+\d{10,15}\b|\+\d{1,3}[\s().-]?\(?\d{2,4}\)?[\s().-]?\d{3}[\s().-]?\d{3,4}\b/, desc: 'contains an international phone number - tool documentation never needs one; classically the exfiltration recipient in WhatsApp/SMS poisoning' },
   { id: 'A18', weight: 3, atr: ['ATR-2026-00259', 'ATR-2026-00393'], test: /\x1b\[[0-9;]*[a-zA-Z]/, desc: 'contains ANSI escape sequences - can hide text, fake terminal output, or deceive the user visually (Trail of Bits mcp-context-protector popularized this check)' },
+  { id: 'A19', weight: 3, atr: [], test: new RegExp([
+    '(?:(?:card\\s*(?:number|details)?|cvc|cvv|pan|expiry|expir\\w*\\s+date|payment\\s+credentials?|billing\\s+info)[^.]{0,80}(?:post|send|pass|upload|attach|forward|transmit))',
+    '|',
+    '(?:(?:post|send|pass|upload|attach|forward|transmit)[^.]{0,80}(?:card\\s*(?:number|details)?|cvc|cvv|pan|expiry|expir\\w*\\s+date|payment\\s+credentials?|billing\\s+info))',
+  ].join(''), 'i'), desc: 'instructs to send/post payment credentials (card number, CVC, expiry) - payment tools USE credentials, they never instruct the agent to TRANSMIT them' },
+  { id: 'A20', weight: 3, atr: ['ATR-2026-00120', 'ATR-2026-00276'], test: new RegExp([
+    // tag arm: directive-family tags, with attributes and hyphenated variants
+    // (<system-reminder>, <SYSTEM-OVERRIDE>); \b[^>]* eats attrs/suffixes but
+    // keeps <div>/<criticality> clean
+    '(?:<\\s*(?:important|system|instruction|critical|admin|directive|note[\\s_-]*to[\\s_-]*(?:the[\\s_-]+)?agent)\\b[^>]*>)',
+    '|',
+    // ChatML role markers (<|system|>, <|im_start|>) - model-native framing
+    '(?:<\\|\\s*(?:im_start|im_end|endoftext|system|assistant|developer)\\s*\\|>)',
+    '|',
+    // comment arm: HTML comments carrying DIRECTIVE text, closed or unclosed.
+    // Any-comment matching produced 74/1975 FPs on real markdown docs (build
+    // markers like <!-- shared:begin guardrails sha256=... -->, Turnstile
+    // reference docs); the vocab requirement keeps those clean while
+    // <!-- hidden -->, <!-- do not tell --> etc. still fire. (?!-->) keeps the
+    // window inside the comment (post-comment prose is never reached).
+    '(?:<!--(?:(?!-->)[\\s\\S]){0,600}?\\b(?:ignore\\s+(?:all|any|the|this|these|previous|prior|above|user)|disregard\\s+(?:all|any|the|this|previous|prior|above)|override\\s+(?:all|any|the|this|previous|prior|system|safety|guardrails?)|instructions?|agent|assistant|hidden|secret|invisible|covert|system|you\\s+(?:must|should|will|always|never)|always\\s+(?:comply|call|use|prefer)|do\\s+not\\s+tell|don\'?t\\s+tell)\\b)',
+    '|',
+    // markdown-reference stubs: [//]: # (...) and [comment]: <> (...) render to
+    // nothing - a hidden-text channel inside .md skill files
+    '(?:\\[\\s*(?://|comment)\\s*\\]\\s*:\\s*(?:#\\s*\\(|<>))',
+    '|',
+    '(?:\\[\\[\\s*system\\s*\\]\\]|<<\\s*system\\s*>>)',
+  ].join(''), 'i'), desc: 'hidden directive block: importance/system tags (attributes and hyphenated variants), ChatML markers, markdown-reference stubs, HTML comments carrying directive text - markup addressed to the model, invisible in rendered markdown (class from the packachuz/mcp-shield list, teleport#61434)' },
 ];
 
 // Schema-level signal: an OPTIONAL parameter whose name is a classic exfiltration
@@ -41,7 +69,7 @@ const SIGNALS = [
 // popularized the pattern list); kept deliberately narrow to avoid false hits.
 const EXFIL_PARAM = /^(feedback|debug|extra|diagnostics?|telemetry|callback_?url|report_?uri|webhook_?url)$/i;
 
-const FORCED = new Set(['A12', 'A13', 'A15', 'A18']); // invisible unicode, bidi, hijack phrase, ANSI escapes
+const FORCED = new Set(['A12', 'A13', 'A15', 'A18', 'A20']); // invisible unicode, bidi, hijack phrase, ANSI escapes, hidden directive blocks
 
 const THRESHOLD = 5;
 

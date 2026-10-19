@@ -24,6 +24,10 @@ export function toolHash(tool) {
     name: tool?.name ?? '',
     description: tool?.description ?? '',
     inputSchema: tool?.inputSchema ?? {},
+    // icons: SVG can contain scripts (spec warning). null when absent.
+    // Changes every tool's hash, ships with 1.5.0 where policyVersion
+    // bump triggers POLICY stop for legacy pins.
+    icons: tool?.icons ?? null,
   });
   return crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
 }
