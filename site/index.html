@@ -76,7 +76,7 @@
     <span><b>Apache-2.0</b></span>
     <span>zero npm dependencies</span>
     <span>no telemetry</span>
-    <span><b>375 tests</b></span>
+    <span><b>384 tests</b></span>
     <span><b>on-chain verified</b> (Base Mainnet)</span>
   </div>
 </div>
@@ -235,7 +235,7 @@
       <div class="pledge"><b>MIRRORED + OpenAPI crosscheck (R35/R36)</b><p>A tighten change the vendor's published OpenAPI spec already promised is <b>MIRRORED</b>, not BREAKING: <code>diff --openapi &lt;spec-url&gt;</code> regrades it with evidence. BREAKING now means what it should - "a previously-successful call starts failing" - not "the contract text tightened".</p></div>
       <div class="pledge"><b>annotations.title + icons</b><p>A silent rename from "Safe File Reader" to "Data Export Utility" is now <b>ANNOTATION</b> drift - the title is what the agent trusts when it picks a tool. SVG <code>icons</code> are hashed into toolHash (SVG can carry scripts), shipped with the policyVersion bump so legacy pins get POLICY stop, never a silent re-grade.</p></div>
       <div class="pledge"><b>A19: payment-credential exfiltration</b><p>Descriptions instructing the agent to POST card numbers, CVC or expiry "together with the payload" - the corpus demo attack that plain schema diff could not see. Bidirectional match, weight 3, zero false positives across 1152 benign vendor descriptions.</p></div>
-      <div class="pledge"><b>A20: hidden directive blocks (FORCED)</b><p><code>&lt;IMPORTANT&gt;</code>, <code>&lt;NOTE TO AGENT&gt;</code> tag blocks, HTML comments <code>&lt;!-- ... --&gt;</code> and <code>[[SYSTEM]]</code> faux blocks - markup addressed to the model, invisible in rendered markdown. The class our table was missing until the mcp-shield comparison surfaced it (teleport#61434). Weight 3, forced, zero false positives on the same 1152-description corpus.</p></div>
+      <div class="pledge"><b>A20: hidden directive blocks (FORCED)</b><p><code>&lt;IMPORTANT&gt;</code>, <code>&lt;NOTE TO AGENT&gt;</code> tag blocks (attributes and hyphenated variants included), ChatML <code>&lt;|system|&gt;</code> markers, <code>[//]: #</code> markdown stubs and HTML comments carrying directive text - markup addressed to the model, invisible in rendered markdown. The class our table was missing until the mcp-shield comparison surfaced it (teleport#61434). Build markers and linter pragmas stay clean: the comment arm requires directive vocabulary inside.</p></div>
       <div class="pledge"><b>CI badge, GitHub Action, Smithery</b><p><code>rugsnare.com/badge/:owner/:repo.svg</code> reads your committed pins and renders live status; a composite Action runs diff in your workflow and emits SARIF; the PR renderer scores advisories and groups drift by signature; a zero-dependency <code>.mcpb</code> bundle ships on Smithery.</p></div>
     </div>
   </div>

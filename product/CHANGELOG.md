@@ -59,21 +59,32 @@ descriptions in the 62 published pin snapshots.
 
 The class our table was missing until the packachuz/mcp-shield list surfaced
 it (gravitational/teleport#61434): markup addressed to the model, not the
-human. Three carriers, one signal, weight 3, FORCED (always surfaces the
-advisory even below the score threshold, like A12/A13/A15/A18):
+human. One signal, weight 3, FORCED (always surfaces the advisory even below
+the score threshold, like A12/A13/A15/A18). Five carriers:
 
 - importance/system tag blocks: `<IMPORTANT>`, `<SYSTEM>`, `<INSTRUCTION>`,
   `<CRITICAL>`, `<ADMIN>`, `<DIRECTIVE>`, `<NOTE TO AGENT>` (case-insensitive,
   space/dash/underscore variants in the note-to-agent form - a literal
-  `note_to_agent` pattern would miss the spaced form);
-- HTML comments `<!-- ... -->` - invisible in rendered markdown, the classic
-  hidden-instruction container;
+  `note_to_agent` pattern would miss the spaced form), including attributes
+  (`<IMPORTANT class="x">`) and hyphenated variants (`<system-reminder>`,
+  `<SYSTEM-OVERRIDE>`); a word boundary keeps `<div>`/`<criticality>` clean;
+- ChatML role markers `<|system|>`, `<|im_start|>`, `<|endoftext|>`;
+- markdown-reference stubs `[//]: # (...)` and `[comment]: <> (...)` - they
+  render to nothing, a hidden-text channel inside .md skill files;
+- HTML comments carrying DIRECTIVE text, closed or unclosed;
 - faux-system blocks `[[SYSTEM]]` / `<<SYSTEM>>`.
 
-A06 stays verbal-only ("internal", "maintainer note") - markup was never its
-territory. Verified zero false positives on the same 1,152-description corpus
-(plain words "critical"/"admin" and formatting tags like `<b>`/`<i>` do not
-fire; only directive markup does). Mapped to ATR-2026-00120 + ATR-2026-00276.
+The comment arm requires directive vocabulary inside the comment (hijack
+verbs with an object, agent-addressed words, "hidden/secret", second-person
+imperatives), and the match window cannot cross the comment end. Matching
+ANY comment - the first cut - produced 74/1975 false positives on real
+markdown docs: build markers (`<!-- shared:begin guardrails sha256=... -->`)
+and linter pragmas (`prettier-ignore`, `eslint-disable`) are service markup,
+not instructions. With the vocab requirement the same markers stay clean.
+Verified zero false positives on the 1,152-description corpus (which
+contains no comments at all - hence the marker set above is the real
+control) and on the marker battery. A06 stays verbal-only ("internal",
+"maintainer note"). Mapped to ATR-2026-00120 + ATR-2026-00276.
 
 ### annotations.title compared (social-engineering vector)
 

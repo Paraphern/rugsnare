@@ -59,7 +59,7 @@ Weights and forced-fire logic are unchanged; the `atr` field is additive metadat
 | A17 (w3) | international phone number in a tool description | none yet - see gaps |
 | A18 (w3, forced) | ANSI escape sequences | `ATR-2026-00259` - ANSI Escape Code Terminal Injection; related `ATR-2026-00393` |
 | A19 (w3) | instructs to send/post payment credentials (card number, CVC, expiry) | none yet - candidate: the payments variant of `ATR-2026-00214` cond. 2 (credential transmission); kept `atr: []` until a rule ID exists (see gaps) |
-| A20 (w3, forced) | hidden directive block: importance/system tags or HTML comments | `ATR-2026-00120` - SKILL.md Prompt Injection (markup-directed variant); related `ATR-2026-00276` (invisible channel; class surfaced by the packachuz/mcp-shield list, teleport#61434) |
+| A20 (w3, forced) | hidden directive block: importance/system tags (attrs + hyphenated variants), ChatML markers, markdown-reference stubs, HTML comments with directive text | `ATR-2026-00120` - SKILL.md Prompt Injection (markup-directed variant); related `ATR-2026-00276` (invisible channel; class surfaced by the packachuz/mcp-shield list, teleport#61434) |
 
 ## Gaps: filed upstream, pending review
 
