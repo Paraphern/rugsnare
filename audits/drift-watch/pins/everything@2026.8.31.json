@@ -1,0 +1,464 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "everything": {
+      "cmd": {
+        "args": ["node_modules/@modelcontextprotocol/server-everything/dist/index.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/index.js",
+        "identityHash": "sha256:0d4d68dbbcaf2bc9e520293cd657f1fc4182c6870554f4f33e911109816f32a6",
+        "package": "@modelcontextprotocol/server-everything",
+        "resolvedVersion": "2026.8.31",
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T15:44:15.252Z",
+      "prompts": {
+        "args-prompt": {
+          "description": "A prompt with two arguments, one required and one optional",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "55ede49d9079e4fe38e6e0d22432194dd4aca8380a1ebdc2360d44232c75db6b"
+        },
+        "completable-prompt": {
+          "description": "First argument choice narrows values for second argument.",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "cb5275973d39cb526b34290cd3d5b3c3d6e1419fa0868d07d4a77e3dfac1966b"
+        },
+        "resource-prompt": {
+          "description": "A prompt that includes an embedded resource reference",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "f12d0e2427f3c67f7d04efefd3547708d1f3164c9ba962bdcb2085deb898750a"
+        },
+        "simple-prompt": {
+          "description": "A prompt with no arguments",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "cf7ff079d9c0929b7da9e2f0acc04020adf0c27626c3c48568ae5c22621a5c3d"
+        }
+      },
+      "resources": {
+        "architecture.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: architecture.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "2c20d670559c5f8e5c1fdc5083748904ff777a50f5923037e69f796b988e1285"
+        },
+        "extension.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: extension.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "47ef1bd632531fe13787c5932c560955438255e453704f6323c39409df651b6a"
+        },
+        "features.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: features.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "a08e8c87acd23077793275612cade06c10232b5fd1bf002d64c9799653d45ce8"
+        },
+        "how-it-works.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: how-it-works.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "ce967617e2adb7bb0d791e555900c0a2b75a3dfda0530b01457f72f5ccd733f0"
+        },
+        "instructions.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: instructions.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "1c195708b086444f539cda90255b565d69cf06149598e32b8c924a67baad654f"
+        },
+        "startup.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: startup.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "224e8dc0f1250a1c218d51d4ace93b5fb4ef08c06f9b7bec4eef23a166455039"
+        },
+        "structure.md": {
+          "contentHash": null,
+          "description": "Static document file exposed from /docs: structure.md",
+          "firstSeen": "2026-10-18T15:44:15.259Z",
+          "hash": "85cf6cdfbb158db69d51a7a9af2b3611828145416ddaadf9dffe2a96d2d7868f"
+        }
+      },
+      "scannedAgainst": "@modelcontextprotocol/server-everything@2026.8.31",
+      "tools": {
+        "echo": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Echoes back the input string",
+          "firstSeen": "2026-10-18T15:44:15.256Z",
+          "hash": "87a6b5c343ddeeed1922f71fdce50c470e5f572d675ad848b1e3781e01463abe",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "message": {
+                "description": "Message to echo",
+                "type": "string"
+              }
+            },
+            "required": ["message"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.256Z",
+          "proseHash": "4d00e170dfb2475b38d7c595d6b83ddc873f4119814d8c3e96321a53aaf18fca",
+          "schemaHash": "5dbbd91b9bf026a4e72ab8f7b03a9c499eb50aaf77b033401a70797cfea7c755"
+        },
+        "get-annotated-message": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Demonstrates how annotations can be used to provide metadata about content.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "e2dc5dd6b859e8246fb25583d4fbce6bfc210ae8afaef6701e3d0a7f251b93e8",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "includeImage": {
+                "default": false,
+                "description": "Whether to include an example image",
+                "type": "boolean"
+              },
+              "messageType": {
+                "description": "Type of message to demonstrate different annotation patterns",
+                "enum": ["error","success","debug"],
+                "type": "string"
+              }
+            },
+            "required": ["messageType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "6050c40378a145a00c1912f5904b37edb1266ce1c43fa430b6655a6f302d5222",
+          "schemaHash": "c30bd1be684732c7ed09df1f2dab66346003f74e6cb5898c083f46045d081c5d"
+        },
+        "get-env": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "95de105e967bcf1fd5060892121192d6725149d42be8031464799e186bc3d6a5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "41cecdc4e2e1e3ab2be769fefe6cb155289da5ade9c381a1578bda7948111c26",
+          "schemaHash": "e9856fd5b84285260762540febf5471c37f9ae703f4bc8ff3a23b85ad94e9846"
+        },
+        "get-resource-links": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns up to ten resource links that reference different types of resources",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "f9febf0e0f7ef468c08bfcaab44108f8d0ecedd2248f0dc6b7b282e70157f6c8",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "count": {
+                "default": 3,
+                "description": "Number of resource links to return (1-10)",
+                "maximum": 10,
+                "minimum": 1,
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "0574c9e3571c77380de27d3927dbac8133e68c558150b8f0b95d2e884403613c",
+          "schemaHash": "58d0bc4517a22089b8b4f561407582781fc74841b1fbfba500b9d714e89a9074"
+        },
+        "get-resource-reference": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns a resource reference that can be used by MCP clients",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "5e3b65b8d495e8350f7e52b3cd82b622d4d8e1ea82479eef15741d296d1d2345",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "resourceId": {
+                "default": 1,
+                "description": "ID of the text resource to fetch",
+                "type": "number"
+              },
+              "resourceType": {
+                "default": "Text",
+                "enum": ["Text","Blob"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "f65488ea8977f68a7680a0ba04efa98d742a3007664649c9e00899f43f1d89de",
+          "schemaHash": "969a4053eb93bae1e8bcf6c50661ce79da5a19d14af6ca7cead8023727a2dfc1"
+        },
+        "get-structured-content": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns structured content along with an output schema for client data validation",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "24fd310fc318335d22160e7652f6061a5bd25789133bce62e0f07eb858e85b13",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "location": {
+                "description": "Choose city",
+                "enum": ["New York","Chicago","Los Angeles"],
+                "type": "string"
+              }
+            },
+            "required": ["location"],
+            "type": "object"
+          },
+          "outputHash": "c2b0083215a57373f29510b3ef2b41bf44c11505693062311190519759aba475",
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "276d76ef534072c914d17df7855f06d6c44a8c5be3ee2b8eb686afdeb357d88c",
+          "schemaHash": "b748c1abca732d096a75348c93a7953425c0d471248e8f38f4d34ee4549a67bb"
+        },
+        "get-sum": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns the sum of two numbers",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "090e34d8f6e1cb4c079f4d9cc62e4c105d67fa629dc3af18c2aba2bba5891489",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "a": {
+                "description": "First number",
+                "type": "number"
+              },
+              "b": {
+                "description": "Second number",
+                "type": "number"
+              }
+            },
+            "required": ["a","b"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "98b4e89d761c05f63a8acce7100a3950f49ca67537dea3716c0ba2a9431316f9",
+          "schemaHash": "f222ff8a28adbfa01fd09bab57cf4e8b23effc86c749f9fcea1a34ab1cc1051d"
+        },
+        "get-tiny-image": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns a tiny MCP logo image.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "945e15749abef23ba3a1cbf4f22caddfaed882a65a6fd109f2bd9ae40beeb945",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "7eba2275ba1ae93a58102c84bcd8f1fb29126fb998d3cbd2947457cdbe685bde",
+          "schemaHash": "c868ebeb6b2e01a02f5802bdfde246ae9efc7779af477d8ebbbdadbf4feba240"
+        },
+        "gzip-file-as-resource": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "ecf41b3e2d4f69333bf6f1f3c26387923005722e50fc53abd0274d2f3b34a1b9",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "data": {
+                "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+                "description": "URL or data URI of the file content to compress",
+                "format": "uri",
+                "type": "string"
+              },
+              "name": {
+                "default": "README.md.gz",
+                "description": "Name of the output file",
+                "type": "string"
+              },
+              "outputType": {
+                "default": "resourceLink",
+                "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+                "enum": ["resourceLink","resource"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "e74512860ba0e5a1d47699b6bc8099970a510674295e14a861287882ed715243",
+          "schemaHash": "f362c7ad6bf900bc3310fd58ebdbcdd98be5dc9edc1e8e39c65018d69630cbdc"
+        },
+        "simulate-research-query": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "048a7f704c1efd20baa40df316ec000e3e6830435fce117db553172f89d39b7a",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "ambiguous": {
+                "default": false,
+                "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)",
+                "type": "boolean"
+              },
+              "topic": {
+                "description": "The research topic to investigate",
+                "type": "string"
+              }
+            },
+            "required": ["topic"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "f5f7e777245aa22952c650a222f0ee442c52bf6fc697e1577fe29a1588d78d58",
+          "schemaHash": "9d02fa7f11c778f21f0798b9768422b8402a559dbeaa7148e8e07a9e3c4d1806"
+        },
+        "toggle-simulated-logging": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Toggles simulated, random-leveled logging on or off.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "cbe3245cd4d770b26c9643f2ef726bff083802c1f3b619d6a0bf1dcdaed6fff0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "4ece88d0dc82c58f375c0df4229b4fad8a4ee98398486f5d3e64f8b5d1f2219d",
+          "schemaHash": "cd30a1c26caa0371dd94f58e22af111fbe8c17f8b7b77c1b21dd97eab0fa3270"
+        },
+        "toggle-subscriber-updates": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Toggles simulated resource subscription updates on or off.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "d383d176f3fe178244980d05e402f6e3750cf91177f444155cf89661a63c6de3",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "8d2608e7a48902396a0c7b08e56cfdcf93667ecd09de825d71a6c47b207f22c8",
+          "schemaHash": "941c37159ed364507d683a6fbc59f3c44fcc343109271bda7931af1cdeeb1ee9"
+        },
+        "trigger-long-running-operation": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Demonstrates a long running operation with progress updates.",
+          "firstSeen": "2026-10-18T15:44:15.257Z",
+          "hash": "7efbac46cf0b694fa8e4d07440e16b14900fd884527a065317edd85b8625162b",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "duration": {
+                "default": 10,
+                "description": "Duration of the operation in seconds",
+                "type": "number"
+              },
+              "steps": {
+                "default": 5,
+                "description": "Number of steps in the operation",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:44:15.257Z",
+          "proseHash": "d047c3fcbcb25a9255d0bd7584d019509a8aa5a181ce7e3c6109d76ea820d125",
+          "schemaHash": "d96aae33ebcef41d5a34c4a11386cfb2c571ea59af5d7c635f405b0ef32666e2"
+        }
+      }
+    }
+  },
+  "version": 1
+}

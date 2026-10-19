@@ -1,0 +1,106 @@
+name: 'RugSnare Diff'
+description: 'Gate your CI against silent MCP tool contract drift. Pin contracts with `rugsnare scan`, commit .rugsnare/pins.json, and this action fails the build when anything changes after approval.'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  config:
+    description: 'Path to the MCP config file (relative to repo root)'
+    required: false
+    default: '.mcp.json'
+  version:
+    description: 'RugSnare npm version to use (pin it! floating = the exact rug-pull vector rugsnare flags)'
+    required: false
+    default: '1.5.0'
+  node-version:
+    description: 'Node.js version for the runner'
+    required: false
+    default: '22'
+  schema-only:
+    description: 'Fail only on BREAKING/EXPANDED schema drift (skip cosmetic prose edits)'
+    required: false
+    default: 'false'
+  prose-only:
+    description: 'Fail only on COSMETIC prose drift (description edits)'
+    required: false
+    default: 'false'
+  sarif:
+    description: 'Also emit a SARIF report for GitHub code scanning (uploads as artifact)'
+    required: false
+    default: 'false'
+
+outputs:
+  verdict:
+    description: 'clean | drift | error'
+    value: ${{ steps.diff.outputs.verdict }}
+  findings:
+    description: 'Number of findings (0 = clean)'
+    value: ${{ steps.diff.outputs.findings }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Check pins exist
+      shell: bash
+      run: |
+        if [ ! -f .rugsnare/pins.json ]; then
+          echo "::error::No .rugsnare/pins.json found. Run 'npx rugsnare scan --config ${{ inputs.config }}' locally, then commit .rugsnare/pins.json to your repo."
+          echo "verdict=error" >> $GITHUB_OUTPUT
+          exit 2
+        fi
+        echo "Pins found: $(node -e "const p=require('./.rugsnare/pins.json'); let t=0,s=0; for(const [k,v] of Object.entries(p.servers??{})) t+=Object.keys(v.tools??{}).length; s=Object.keys(p.skills??{}).length; console.log(t+' tools, '+s+' skills')")"
+
+    - name: Run rugsnare diff
+      id: diff
+      shell: bash
+      run: |
+        set +e
+        FLAGS=""
+        if [ "${{ inputs.schema-only }}" = "true" ]; then FLAGS="$FLAGS --schema-only"; fi
+        if [ "${{ inputs.prose-only }}" = "true" ]; then FLAGS="$FLAGS --prose-only"; fi
+
+        OUTPUT=$(npx --yes rugsnare@${{ inputs.version }} diff --config ${{ inputs.config }} $FLAGS 2>&1)
+        CODE=$?
+        set -e
+
+        echo "$OUTPUT"
+
+        FINDINGS=$(echo "$OUTPUT" | grep -oP '\d+ finding\(s\)' | grep -oP '\d+' || echo "0")
+        echo "findings=$FINDINGS" >> $GITHUB_OUTPUT
+
+        if [ $CODE -eq 0 ]; then
+          echo "verdict=clean" >> $GITHUB_OUTPUT
+          echo "::notice::Contracts clean ($FINDINGS findings)"
+        elif [ $CODE -eq 1 ]; then
+          echo "verdict=drift" >> $GITHUB_OUTPUT
+          echo "::error::DRIFT DETECTED: $FINDINGS finding(s). A tool contract changed after approval. Review the diff above, then run 'npx rugsnare approve <server>' locally to re-pin."
+        elif [ $CODE -eq 2 ]; then
+          echo "verdict=error" >> $GITHUB_OUTPUT
+          echo "::error::Config error (exit 2). Check that ${{ inputs.config }} exists and .rugsnare/pins.json is valid."
+        else
+          echo "verdict=error" >> $GITHUB_OUTPUT
+          echo "::error::Infrastructure error (exit $CODE). The MCP server may be unreachable."
+        fi
+
+        exit $CODE
+
+    - name: Emit SARIF (optional)
+      if: inputs.sarif == 'true' && steps.diff.outputs.verdict == 'drift'
+      shell: bash
+      run: |
+        npx --yes rugsnare@${{ inputs.version }} diff --config ${{ inputs.config }} --sarif > rugsnare.sarif
+        echo "SARIF report written to rugsnare.sarif"
+
+    - name: Upload SARIF artifact
+      if: inputs.sarif == 'true' && steps.diff.outputs.verdict == 'drift'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rugsnare-sarif
+        path: rugsnare.sarif
+        retention-days: 7

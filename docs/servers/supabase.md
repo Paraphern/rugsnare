@@ -12,11 +12,11 @@ Supabase database/platform server. Package: [@supabase/mcp-server-supabase](http
 
 Findings:
 
-1. **New tool:** `query_logs` appeared in 0.13.0 (absent in 0.8.3). Per the community correction in [#464](https://github.com/supabase/mcp/issues/464): `get_logs` is still present in both versions with identical hashes; its visibility is host-dependent (hidden when the host supplies a `queryLogs` implementation). This is a host-conditional addition, not a removal.
+1. **New tool:** `query_logs` appeared in 0.13.0 (absent in 0.8.3). Per [#464](https://github.com/supabase/mcp/issues/464) and our corrected pin: `get_logs` is NOT served in 0.13.0 (earlier reading was an artifact of stale node_modules; fresh install confirms `query_logs` only). The community report of host-dependent visibility applies to `query_logs`, not `get_logs`.
 2. **Description edits:** `execute_sql` and `apply_migration` gained safety language (COSMETIC in our grading).
 3. **Launch-config break (outside the tool contract):** the stdio entry point **moved** from `dist/transports/stdio.js` to `dist/cli.js`. A pinned mcp.json with the old path fails to boot the server at all ("Cannot find module"). Hash-pinning tools does not catch this - it is a packaging-level drift, which is why the drift watch records entry paths per version too.
 
-Clean pin data: 0.8.3 = 29 tools, 0.13.0 = 30 tools, 27 unchanged, 2 COSMETIC, 1 NEW, 0 GONE. Verified against the per-version pin snapshots ([0.8.3](../../audits/drift-watch/pins/supabase@0.8.3.json) | [0.13.0](../../audits/drift-watch/pins/supabase@0.13.0.json)).
+Clean pin data: 0.8.3 = 29 tools, 0.13.0 = 29 tools (query_logs replaced get_logs), 27 unchanged, 2 COSMETIC, 1 NEW, 1 RENAMED-equivalent (get_logs -> query_logs, different hash). Pin corrected 2026-10-18 after fresh-install verification. Verified against the per-version pin snapshots ([0.8.3](../../audits/drift-watch/pins/supabase@0.8.3.json) | [0.13.0](../../audits/drift-watch/pins/supabase@0.13.0.json)).
 
 **Repro** (boot requires `SUPABASE_ACCESS_TOKEN`; dummy value is enough):
 

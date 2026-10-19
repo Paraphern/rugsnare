@@ -43,6 +43,8 @@ Usage:
   rugsnare diff [--config <mcp.json>] [--server <name>] [--json] [--sarif] [--schema-only] [--prose-only]
                 [--expect-tool <t>]... [--forbid-tool <t>]...   contract assertions (forbid catches shadow injection)
                 [--allow-unsigned-pins]   skip the pins.sig check when no signature exists (bootstrap)
+                [--openapi <url-or-file>]   crosscheck vendor spec: tightens the spec already
+                                                         promised are regraded BREAKING -> MIRRORED (R36)
                                                          signed pins: an edited pins.json (CI attacker) fails with exit 2
   rugsnare diff --server <name> --url <https://remote/mcp>    compare pins against THIS endpoint (overrides config)
   rugsnare approve <server> [--config <mcp.json>]
@@ -127,6 +129,8 @@ function parseArgs(argv) {
     else if (a === '--from') flags.from = argv[++i];
     else if (a === '--to') flags.to = argv[++i];
     else if (a === '--stub-env') flags.stubEnv = true;
+    else if (a === '--prune') flags.prune = true;
+    else if (a === '--openapi') flags.openapi = argv[++i];
     else if (a === '--server-args') flags.serverArgs = argv[++i];
     else if (a === '--schema-only') flags.schemaOnly = true;
     else if (a === '--prose-only') flags.proseOnly = true;
@@ -349,12 +353,16 @@ async function cmdScan(flags) {
       }
       if (!serverPin.resources) serverPin.resources = {};
       for (const r of resources ?? []) {
-        const { resourceHash } = await import('./prompts.js');
+        const { resourceHash, resourceContentHash } = await import('./prompts.js');
         const key = r.name ?? r.uri ?? '(unnamed)';
         const h = resourceHash(r);
         const existing = serverPin.resources[key];
-        if (existing && existing.hash === h) continue; // unchanged: skip
-        serverPin.resources[key] = { hash: h, description: r.description ?? '', firstSeen: existing?.firstSeen ?? new Date().toISOString() };
+        // R13: hash the content body too when available (hostinger case:
+        // SKILL.md resources silently rewritten with same URI)
+        const ch = resourceContentHash(r);
+        const chChanged = existing && (existing.contentHash ?? null) !== (ch ?? null);
+        if (existing && existing.hash === h && !chChanged) continue; // unchanged: skip
+        serverPin.resources[key] = { hash: h, description: r.description ?? '', contentHash: ch, firstSeen: existing?.firstSeen ?? new Date().toISOString() };
       }
 
       // advisory signals: catch suspicious descriptions even on first contact
@@ -589,6 +597,29 @@ async function cmdDiff(flags) {
       // (and for HTTP, a second full handshake)
       const { tools, prompts: livePrompts = [], resources: liveResources = [] } = await connect();
       const allVerdicts = compareTools(sp, tools, toolHash);
+      // R36: OpenAPI crosscheck - if the vendor publishes a spec, tighten
+      // changes that existed in the spec are regraded to MIRRORED
+      if (flags.openapi) {
+        const { OpenAPICrosscheck, applyMirrored } = await import('./mirrored.js');
+        const crosscheck = new OpenAPICrosscheck(flags.openapi);
+        try {
+          await crosscheck.load();
+          for (const v of allVerdicts) {
+            if (v.status === 'DRIFT' && Array.isArray(v.schemaChanges) && v.schemaChanges.length > 0) {
+              v.schemaChanges = applyMirrored(v.schemaChanges, crosscheck, v.tool);
+              // regrade if all tightens became mirrored (guard: empty array
+              // .every() is vacuously true and would regrade prose-only COSMETIC
+              // to NOTATION — the preverification round-79 defect)
+              if (v.schemaChanges.length > 0 && v.schemaChanges.every((c) => c.direction !== 'tighten')) {
+                const { gradeSchemaDrift: regrade } = await import('./pins.js');
+                v.driftType = regrade(v.schemaChanges, v.notationChanges ?? []);
+              }
+            }
+          }
+        } catch (e) {
+          console.error(`  (openapi crosscheck unavailable: ${e.message})`);
+        }
+      }
       // PIN-SPEC v1.1: identity drift - every tool hash intact but the
       // surface is served by a different build/path than approved (supabase
       // moved its stdio entry with contracts unchanged). Only when tools are
@@ -725,7 +756,12 @@ async function cmdApprove(flags, serverName) {
   const nextResources = {};
   for (const r of resources) {
     const key = r.name ?? r.uri ?? '(unnamed)';
-    nextResources[key] = { hash: resourceHash(r), description: r.description ?? '', firstSeen: prevResources[key]?.firstSeen ?? now };
+    // P2 (preverification): preserve contentHash across approve - without
+    // this, approve nulls contentHash and the next diff gives a false
+    // resource-DRIFT on unchanged text
+    const { resourceContentHash } = await import('./prompts.js');
+    const contentHash = resourceContentHash(r) ?? prevResources[key]?.contentHash ?? null;
+    nextResources[key] = { hash: resourceHash(r), description: r.description ?? '', contentHash, firstSeen: prevResources[key]?.firstSeen ?? now };
   }
   serverPin.resources = nextResources;
 
@@ -1197,10 +1233,17 @@ async function cmdSkills(flags) {
   if (sub === 'scan') {
     // respect HOME override for isolation (tests set HOME to tmp dir)
     const home = process.env.RUGSNARE_TEST_HOME ?? os.homedir?.() ?? process.env.HOME ?? process.env.USERPROFILE ?? '';
-    const { pinned } = pinAllSkills(pins, cwd, home);
+    const { pinned, deadSouls, pruned } = pinAllSkills(pins, cwd, home, { prune: Boolean(flags.prune) });
     savePins(pins);
     (await import('./receipts.js')).signPinsFile();
     console.log(`Pinned ${pinned} skill file(s).`);
+    if (pruned > 0) {
+      console.log(`Pruned ${pruned} dead soul(s) - pinned entries whose file no longer exists:`);
+      for (const key of deadSouls.slice(0, 5)) console.log(`  [-] ${key}`);
+      if (deadSouls.length > 5) console.log(`  ... +${deadSouls.length - 5} more`);
+    } else if (deadSouls.length > 0) {
+      console.log(`Warning: ${deadSouls.length} pinned skill(s) no longer exist on disk (will ghost as REMOVED on every diff). Run with --prune to clean them up.`);
+    }
     console.log(`Run \`rugsnare skills diff\` to check for changes, or \`rugsnare skills report\` for a visual report.`);
     // cold-start audit: pinning blesses whatever is on disk - also say what
     // ALREADY looks suspicious before the baseline existed

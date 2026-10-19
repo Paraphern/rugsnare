@@ -1,5 +1,5 @@
 name: 'RugSnare PR diff'
-description: 'Post a human-readable diff of MCP tool contracts (descriptions & schemas) on pull requests — reviewers see the changed words, not hashes.'
+description: 'Post a human-readable diff of MCP tool contracts (tools, prompts, resources) on pull requests: reviewers see the changed words, not hashes.'
 branding:
   icon: 'shield'
   color: 'orange'
@@ -13,9 +13,9 @@ inputs:
     required: false
     default: '.'
   rugsnare-ref:
-    description: 'Which rugsnare version to run (used when use-workspace is false)'
+    description: 'Which rugsnare version to run (used when use-workspace is false); pinned to a release tag, bump deliberately'
     required: false
-    default: 'main'
+    default: 'v1.5.0'
   use-workspace:
     description: 'Use the rugsnare copy already present in the calling repository (for the rugsnare repo itself); default false = self-checkout'
     required: false

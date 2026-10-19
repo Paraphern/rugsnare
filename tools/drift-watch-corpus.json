@@ -4,29 +4,358 @@
   "tool": "npx rugsnare@1.3.0",
   "reports": "audits/drift-watch/YYYY-MM-DD.md",
   "servers": [
-    { "name": "chrome-devtools", "package": "chrome-devtools-mcp", "pinned": "1.8.0", "lastSeen": "1.10.1", "lastFindings": 30, "entry": "node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js", "env": {} },
-    { "name": "azure-devops", "package": "@azure-devops/mcp", "pinned": "2.5.0", "lastSeen": "2.10.0", "lastFindings": 110, "entry": "node_modules/@azure-devops/mcp/dist/index.js", "args": ["dummy-org", "--authentication", "envvar"], "env": { "AZURE_DEVOPS_EXT_PAT": "dummy_for_scan" }, "note": "keytar native dep; if rebuild fails, note and skip" },
-    { "name": "currents", "package": "@currents/mcp", "pinned": "2.3.3", "lastSeen": "2.6.1", "lastFindings": 45, "entry": "node_modules/@currents/mcp/dist/index.mjs", "env": { "CURRENTS_API_KEY": "dummy_for_scan", "CURRENTS_PROJECT_ID": "dummy" } },
-    { "name": "hostinger", "package": "hostinger-api-mcp", "pinned": "2.4.0", "lastSeen": "2.11.0", "lastFindings": 6, "entry": "node_modules/hostinger-api-mcp/src/servers/all.js", "env": { "HOSTINGER_API_KEY": "dummy_for_scan" } },
-    { "name": "notion", "package": "@notionhq/notion-mcp-server", "pinned": "2.4.1", "lastSeen": "2.5.2", "lastFindings": 0, "entry": "node_modules/@notionhq/notion-mcp-server/bin/cli.mjs", "env": { "NOTION_TOKEN": "dummy_for_scan", "OPEN_API_MCP_MODE": "1" }, "note": "control group, expect 0" },
-    { "name": "heroku", "package": "@heroku/mcp-server", "pinned": "1.2.5", "lastSeen": "1.2.11", "lastFindings": 0, "entry": "node_modules/@heroku/mcp-server/bin/heroku-mcp-server.mjs", "env": { "HEROKU_API_KEY": "dummy_for_scan" }, "note": "control group, expect 0" },
-    { "name": "context7", "package": "@upstash/context7-mcp", "pinned": "4.0.4", "lastSeen": "4.3.0", "lastFindings": 1, "entry": "node_modules/@upstash/context7-mcp/dist/index.js", "env": {} },
-    { "name": "sentry", "package": "@sentry/mcp-server", "pinned": "0.38.0", "lastSeen": "0.42.0", "lastFindings": 3, "entry": "node_modules/@sentry/mcp-server/dist/index.js", "args": ["--access-token=dummy_for_scan"], "env": {}, "note": "repo moved to getsentry/toolkit; toolkit #1374 splits search_events into dataset tools - when it ships as 0.43+ every search_events caller breaks" },
-    { "name": "launchdarkly", "package": "@launchdarkly/mcp-server", "pinned": "0.5.0", "lastSeen": "0.7.0", "lastFindings": 1, "entry": "node_modules/@launchdarkly/mcp-server/bin/mcp-server.js", "args": ["start", "--transport", "stdio", "--api-key", "dummy_for_scan"], "env": {}, "note": "Speakeasy-generated; tools appear unannounced (get-audit-log-entries in 0.6.2)" },
-    { "name": "netlify", "package": "@netlify/mcp", "pinned": "1.14.0", "lastSeen": "1.18.0", "lastFindings": 58, "entry": "node_modules/@netlify/mcp/dist/netlify-mcp.js", "env": {}, "note": "vendor thread #75 open" },
-    { "name": "mongodb", "package": "mongodb-mcp-server", "pinned": "2.1.2", "lastSeen": "3.0.5", "lastFindings": 20, "entry": "node_modules/mongodb-mcp-server/dist/esm/index.js", "args": ["--readOnly"], "env": { "MDB_MCP_CONNECTION_STRING": "mongodb://x:27017" }, "note": "R32: floating zod range can rewrite contract without server release; record resolved zod version per capture" },
-    { "name": "bybit", "package": "trading-mcp", "pinned": "2.1.20", "lastSeen": "2.1.23", "lastFindings": 9, "entry": "n/a", "env": {}, "note": "BOOT-GATED: server exits at boot (remote manifest kill-switch). Never scan/diff; only npm view version + rugsnare history. Vendor thread open" },
-    { "name": "browserstack", "package": "@browserstack/mcp-server", "pinned": "1.4.1", "lastSeen": "2.2.1", "lastFindings": 22, "entry": "auto", "env": { "BROWSERSTACK_USERNAME": "dummy_for_scan", "BROWSERSTACK_ACCESS_KEY": "dummy_for_scan" }, "note": "0.18.0-correction n/a; npm latest 2.2.2 released after window - next cron run diffs it; server exits 0 without credentials" },
-    { "name": "apify", "package": "@apify/actors-mcp-server", "pinned": "0.16.0", "lastSeen": "0.17.4", "lastFindings": 1, "entry": "auto", "env": { "APIFY_TOKEN": "dummy_for_scan" }, "note": "package name corrected 2026-10-13 (@apify/mcp-server does not exist on npm); page numbers are from this package" },
-    { "name": "transcend", "package": "@transcend-io/mcp-server-assessment", "pinned": "2.1.2", "lastSeen": "2.1.13", "lastFindings": 2, "entry": "node_modules/@transcend-io/mcp-server-assessment/dist/cli.mjs", "env": { "TRANSCEND_API_KEY": "dummy_for_scan" }, "note": "83 versions / 3 months - most active releaser on npm; baseline 2026-10-12: 2 BREAKING (templateId removed, assessmentGroupId required)" },
-    { "name": "sap-fiori", "package": "@sap-ux/fiori-mcp-server", "pinned": "1.13.0", "lastSeen": "1.15.9", "lastFindings": 4, "entry": "node_modules/@sap-ux/fiori-mcp-server/dist/index.js", "env": {}, "note": "103k installs/week; baseline 2026-10-12: 2 BREAKING (project.enableTypeScript became required on both generators)" },
-    { "name": "hubspot", "package": "@hubspot/mcp-server", "pinned": "0.2.0", "lastSeen": "0.4.0", "lastFindings": 6, "entry": "node_modules/@hubspot/mcp-server/dist/index.js", "env": { "PRIVATE_APP_ACCESS_TOKEN": "dummy_for_scan" }, "note": "npm alive, GitHub repo dead - channel divergence case; baseline 2026-10-12: GONE hubspot-create-association + 3 NEW; R33: search-objects graded BREAKING but ops are [expand]-only, under review" },
-    { "name": "ui5", "package": "@ui5/mcp-server", "pinned": "0.2.12", "lastSeen": "0.3.2", "lastFindings": 0, "entry": "node_modules/@ui5/mcp-server/bin/ui5mcp.js", "env": {}, "note": "control group #3; 96k installs/week; 0 findings across minor" },
-    { "name": "shopify", "package": "@shopify/dev-mcp", "pinned": "1.14.4", "lastSeen": "1.16.0", "lastFindings": 6, "entry": "node_modules/@shopify/dev-mcp/dist/index.js", "env": {}, "note": "consolidation case: 2 validators GONE -> generic validate NEW; baseline 2026-10-12" },
-    { "name": "supabase", "package": "@supabase/mcp-server-supabase", "pinned": "0.8.3", "lastSeen": "0.13.0", "lastFindings": 4, "entry": "node_modules/@supabase/mcp-server-supabase/dist/cli.js", "env": { "SUPABASE_ACCESS_TOKEN": "dummy_for_scan" }, "note": "0.8.3 entry dist/transports/stdio.js REMOVED in newer versions (moved to dist/cli.js) - packaging-level drift recorded on page; GONE get_logs -> NEW query_logs; baseline 2026-10-12" },
-    { "name": "figma", "package": "figma-developer-mcp", "pinned": "0.7.0", "lastSeen": "0.13.2", "lastFindings": 2, "entry": "node_modules/figma-developer-mcp/dist/bin.js", "args": ["--stdio"], "env": { "FIGMA_API_KEY": "dummy_for_scan" }, "note": "91k installs/week; 17 releases = notation only; baseline 2026-10-12" },
-    { "name": "firebase", "package": "firebase-mcp", "pinned": "0.2.0", "lastSeen": "0.4.4", "lastFindings": 0, "entry": "node_modules/firebase-mcp/dist/cli/index.js", "env": { "FIREBASE_TOKEN": "dummy_for_scan" }, "note": "control group #4; first boot writes config skeleton to AppData and may fail once - rescan; low npm traction (official channel elsewhere); baseline 2026-10-12" },
-    { "name": "superpowers", "kind": "skills", "package": "obra/superpowers", "pinned": "6.4.2", "lastSeen": "7.0.0", "lastFindings": 6, "note": "skills corpus; follow repro in docs/servers/superpowers.md (git clone, skills scan)" },
-    { "name": "vercel-skills", "kind": "skills", "package": "vercel-labs/skills", "pinned": "13e4063", "lastSeen": "13e4063", "lastFindings": 0, "note": "skills corpus; we are in their #2359; baseline 2026-10-12: 226 files pinned, 3 skills (find-skills + 2 factory workflow-embedded)" }
+    {
+      "name": "chrome-devtools",
+      "package": "chrome-devtools-mcp",
+      "pinned": "1.8.0",
+      "lastSeen": "1.10.1",
+      "lastFindings": 30,
+      "entry": "node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js",
+      "env": {}
+    },
+    {
+      "name": "azure-devops",
+      "package": "@azure-devops/mcp",
+      "pinned": "2.5.0",
+      "lastSeen": "2.10.0",
+      "lastFindings": 110,
+      "entry": "node_modules/@azure-devops/mcp/dist/index.js",
+      "args": [
+        "dummy-org",
+        "--authentication",
+        "envvar"
+      ],
+      "env": {
+        "AZURE_DEVOPS_EXT_PAT": "dummy_for_scan"
+      },
+      "note": "keytar native dep; if rebuild fails, note and skip"
+    },
+    {
+      "name": "currents",
+      "package": "@currents/mcp",
+      "pinned": "2.3.3",
+      "lastSeen": "2.6.1",
+      "lastFindings": 45,
+      "entry": "node_modules/@currents/mcp/dist/index.mjs",
+      "env": {
+        "CURRENTS_API_KEY": "dummy_for_scan",
+        "CURRENTS_PROJECT_ID": "dummy"
+      }
+    },
+    {
+      "name": "hostinger",
+      "package": "hostinger-api-mcp",
+      "pinned": "2.4.0",
+      "lastSeen": "2.11.0",
+      "lastFindings": 6,
+      "entry": "node_modules/hostinger-api-mcp/src/servers/all.js",
+      "env": {
+        "HOSTINGER_API_KEY": "dummy_for_scan"
+      }
+    },
+    {
+      "name": "notion",
+      "package": "@notionhq/notion-mcp-server",
+      "pinned": "2.4.1",
+      "lastSeen": "2.5.2",
+      "lastFindings": 0,
+      "entry": "node_modules/@notionhq/notion-mcp-server/bin/cli.mjs",
+      "env": {
+        "NOTION_TOKEN": "dummy_for_scan",
+        "OPEN_API_MCP_MODE": "1"
+      },
+      "note": "control group, expect 0"
+    },
+    {
+      "name": "heroku",
+      "package": "@heroku/mcp-server",
+      "pinned": "1.2.5",
+      "lastSeen": "1.2.11",
+      "lastFindings": 0,
+      "entry": "node_modules/@heroku/mcp-server/bin/heroku-mcp-server.mjs",
+      "env": {
+        "HEROKU_API_KEY": "dummy_for_scan"
+      },
+      "note": "control group, expect 0"
+    },
+    {
+      "name": "context7",
+      "package": "@upstash/context7-mcp",
+      "pinned": "4.0.4",
+      "lastSeen": "4.3.0",
+      "lastFindings": 1,
+      "entry": "node_modules/@upstash/context7-mcp/dist/index.js",
+      "env": {}
+    },
+    {
+      "name": "sentry",
+      "package": "@sentry/mcp-server",
+      "pinned": "0.38.0",
+      "lastSeen": "0.42.0",
+      "lastFindings": 3,
+      "entry": "node_modules/@sentry/mcp-server/dist/index.js",
+      "args": [
+        "--access-token=dummy_for_scan"
+      ],
+      "env": {},
+      "note": "repo moved to getsentry/toolkit; toolkit #1374 splits search_events into dataset tools - when it ships as 0.43+ every search_events caller breaks"
+    },
+    {
+      "name": "launchdarkly",
+      "package": "@launchdarkly/mcp-server",
+      "pinned": "0.5.0",
+      "lastSeen": "0.7.0",
+      "lastFindings": 1,
+      "entry": "node_modules/@launchdarkly/mcp-server/bin/mcp-server.js",
+      "args": [
+        "start",
+        "--transport",
+        "stdio",
+        "--api-key",
+        "dummy_for_scan"
+      ],
+      "env": {},
+      "note": "Speakeasy-generated; tools appear unannounced (get-audit-log-entries in 0.6.2)"
+    },
+    {
+      "name": "netlify",
+      "package": "@netlify/mcp",
+      "pinned": "1.14.0",
+      "lastSeen": "1.18.0",
+      "lastFindings": 58,
+      "entry": "node_modules/@netlify/mcp/dist/netlify-mcp.js",
+      "env": {},
+      "note": "vendor thread #75 open"
+    },
+    {
+      "name": "mongodb",
+      "package": "mongodb-mcp-server",
+      "pinned": "2.1.2",
+      "lastSeen": "3.0.5",
+      "lastFindings": 20,
+      "entry": "node_modules/mongodb-mcp-server/dist/esm/index.js",
+      "args": [
+        "--readOnly"
+      ],
+      "env": {
+        "MDB_MCP_CONNECTION_STRING": "mongodb://x:27017"
+      },
+      "note": "R32: floating zod range can rewrite contract without server release; record resolved zod version per capture"
+    },
+    {
+      "name": "bybit",
+      "package": "trading-mcp",
+      "pinned": "2.1.20",
+      "lastSeen": "2.1.23",
+      "lastFindings": 9,
+      "entry": "n/a",
+      "env": {},
+      "note": "BOOT-GATED: server exits at boot (remote manifest kill-switch). Never scan/diff; only npm view version + rugsnare history. Vendor thread open"
+    },
+    {
+      "name": "browserstack",
+      "package": "@browserstack/mcp-server",
+      "pinned": "1.4.1",
+      "lastSeen": "2.2.1",
+      "lastFindings": 22,
+      "entry": "auto",
+      "env": {
+        "BROWSERSTACK_USERNAME": "dummy_for_scan",
+        "BROWSERSTACK_ACCESS_KEY": "dummy_for_scan"
+      },
+      "note": "0.18.0-correction n/a; npm latest 2.2.2 released after window - next cron run diffs it; server exits 0 without credentials"
+    },
+    {
+      "name": "apify",
+      "package": "@apify/actors-mcp-server",
+      "pinned": "0.16.0",
+      "lastSeen": "0.17.4",
+      "lastFindings": 1,
+      "entry": "auto",
+      "env": {
+        "APIFY_TOKEN": "dummy_for_scan"
+      },
+      "note": "package name corrected 2026-10-13 (@apify/mcp-server does not exist on npm); page numbers are from this package"
+    },
+    {
+      "name": "transcend",
+      "package": "@transcend-io/mcp-server-assessment",
+      "pinned": "2.1.2",
+      "lastSeen": "2.1.13",
+      "lastFindings": 2,
+      "entry": "node_modules/@transcend-io/mcp-server-assessment/dist/cli.mjs",
+      "env": {
+        "TRANSCEND_API_KEY": "dummy_for_scan"
+      },
+      "note": "83 versions / 3 months - most active releaser on npm; baseline 2026-10-12: 2 BREAKING (templateId removed, assessmentGroupId required)"
+    },
+    {
+      "name": "sap-fiori",
+      "package": "@sap-ux/fiori-mcp-server",
+      "pinned": "1.13.0",
+      "lastSeen": "1.15.9",
+      "lastFindings": 4,
+      "entry": "node_modules/@sap-ux/fiori-mcp-server/dist/index.js",
+      "env": {},
+      "note": "103k installs/week; baseline 2026-10-12: 2 BREAKING (project.enableTypeScript became required on both generators)"
+    },
+    {
+      "name": "hubspot",
+      "package": "@hubspot/mcp-server",
+      "pinned": "0.2.0",
+      "lastSeen": "0.4.0",
+      "lastFindings": 6,
+      "entry": "node_modules/@hubspot/mcp-server/dist/index.js",
+      "env": {
+        "PRIVATE_APP_ACCESS_TOKEN": "dummy_for_scan"
+      },
+      "note": "npm alive, GitHub repo dead - channel divergence case; baseline 2026-10-12: GONE hubspot-create-association + 3 NEW; R33: search-objects graded BREAKING but ops are [expand]-only, under review"
+    },
+    {
+      "name": "ui5",
+      "package": "@ui5/mcp-server",
+      "pinned": "0.2.12",
+      "lastSeen": "0.3.2",
+      "lastFindings": 0,
+      "entry": "node_modules/@ui5/mcp-server/bin/ui5mcp.js",
+      "env": {},
+      "note": "control group #3; 96k installs/week; 0 findings across minor"
+    },
+    {
+      "name": "shopify",
+      "package": "@shopify/dev-mcp",
+      "pinned": "1.14.4",
+      "lastSeen": "1.16.0",
+      "lastFindings": 6,
+      "entry": "node_modules/@shopify/dev-mcp/dist/index.js",
+      "env": {},
+      "note": "consolidation case: 2 validators GONE -> generic validate NEW; baseline 2026-10-12"
+    },
+    {
+      "name": "supabase",
+      "package": "@supabase/mcp-server-supabase",
+      "pinned": "0.8.3",
+      "lastSeen": "0.13.0",
+      "lastFindings": 4,
+      "entry": "node_modules/@supabase/mcp-server-supabase/dist/cli.js",
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "dummy_for_scan"
+      },
+      "note": "0.8.3 entry dist/transports/stdio.js REMOVED in newer versions (moved to dist/cli.js) - packaging-level drift recorded on page; GONE get_logs -> NEW query_logs; baseline 2026-10-12"
+    },
+    {
+      "name": "figma",
+      "package": "figma-developer-mcp",
+      "pinned": "0.7.0",
+      "lastSeen": "0.13.2",
+      "lastFindings": 2,
+      "entry": "node_modules/figma-developer-mcp/dist/bin.js",
+      "args": [
+        "--stdio"
+      ],
+      "env": {
+        "FIGMA_API_KEY": "dummy_for_scan"
+      },
+      "note": "91k installs/week; 17 releases = notation only; baseline 2026-10-12"
+    },
+    {
+      "name": "firebase",
+      "package": "firebase-mcp",
+      "pinned": "0.2.0",
+      "lastSeen": "0.4.4",
+      "lastFindings": 0,
+      "entry": "node_modules/firebase-mcp/dist/cli/index.js",
+      "env": {
+        "FIREBASE_TOKEN": "dummy_for_scan"
+      },
+      "note": "control group #4; first boot writes config skeleton to AppData and may fail once - rescan; low npm traction (official channel elsewhere); baseline 2026-10-12"
+    },
+    {
+      "name": "superpowers",
+      "kind": "skills",
+      "package": "obra/superpowers",
+      "pinned": "6.4.2",
+      "lastSeen": "7.0.0",
+      "lastFindings": 6,
+      "note": "skills corpus; follow repro in docs/servers/superpowers.md (git clone, skills scan)"
+    },
+    {
+      "name": "vercel-skills",
+      "kind": "skills",
+      "package": "vercel-labs/skills",
+      "pinned": "13e4063",
+      "lastSeen": "13e4063",
+      "lastFindings": 0,
+      "note": "skills corpus; we are in their #2359; baseline 2026-10-12: 226 files pinned, 3 skills (find-skills + 2 factory workflow-embedded)"
+    },
+    {
+      "name": "everything",
+      "package": "@modelcontextprotocol/server-everything",
+      "pinned": "0.1.0",
+      "lastSeen": "1.0.0",
+      "lastFindings": 40,
+      "entry": "node_modules/@modelcontextprotocol/server-everything/dist/index.js",
+      "env": {},
+      "note": "Anthropic reference server; calver 2026.x untagged, latest tag stays 1.0.0; 1.0.0 (2026-10-11, latest tag) is the true endpoint - calver 2026.8.31 is semver-higher but older, diff identical"
+    },
+    {
+      "name": "filesystem",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "pinned": "0.2.0",
+      "lastSeen": "1.0.0",
+      "lastFindings": 14,
+      "entry": "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+      "args": [
+        "C:/tmp/new5/fs-root"
+      ],
+      "env": {},
+      "note": "0.2.0 tarball misses zod-to-json-schema dep - install fixup; 9 BREAKING in 0.2.0->2026.8.31; 1.0.0 (2026-10-11, latest tag) is the true endpoint - calver 2026.8.31 is semver-higher but older, diff identical"
+    },
+    {
+      "name": "dsr",
+      "package": "@transcend-io/mcp-server-dsr",
+      "pinned": "0.2.0",
+      "lastSeen": "2.0.13",
+      "lastFindings": 15,
+      "entry": "node_modules/@transcend-io/mcp-server-dsr/dist/cli.mjs",
+      "env": {
+        "TRANSCEND_API_KEY": "dummy_for_scan"
+      },
+      "note": "0.1.0 pnpm catalog: broken on npm - first installable is 0.2.0"
+    },
+    {
+      "name": "iterable",
+      "package": "@iterable/mcp",
+      "pinned": "1.0.0",
+      "lastSeen": "1.9.0",
+      "lastFindings": 62,
+      "entry": "node_modules/@iterable/mcp/dist/index.js",
+      "env": {
+        "ITERABLE_API_KEY": "dummy_for_scan"
+      },
+      "note": "BREAKING inside 1.x range (semver violation)"
+    },
+    {
+      "name": "browserbase",
+      "package": "@browserbasehq/mcp-server-browserbase",
+      "pinned": "2.0.0",
+      "lastSeen": "2.4.3",
+      "lastFindings": 19,
+      "entry": "node_modules/@browserbasehq/mcp-server-browserbase/cli.js",
+      "env": {
+        "BROWSERBASE_API_KEY": "dummy",
+        "BROWSERBASE_PROJECT_SECRET": "dummy"
+      }
+    },
+    {
+      "name": "exec-playwright",
+      "package": "@executeautomation/playwright-mcp-server",
+      "pinned": "1.0.3",
+      "lastSeen": "1.0.12",
+      "lastFindings": 10,
+      "entry": "node_modules/@executeautomation/playwright-mcp-server/dist/index.js",
+      "env": {},
+      "note": "5.7k-star repo executeautomation/mcp-playwright; 5 EXPANDED on HTTP tools + 4 NEW + 1 LOOSENED, all inside 1.0.x patches"
+    }
   ]
 }

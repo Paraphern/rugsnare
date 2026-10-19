@@ -1,0 +1,107 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "netlify": {
+      "cmd": {
+        "args": ["node_modules/@netlify/mcp/./dist/netlify-mcp.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "./dist/netlify-mcp.js",
+        "identityHash": "sha256:db2a37b5055778a9958a3c5859f4344af51771a1d760a40d7a4184b64d926d7d",
+        "package": "@netlify/mcp",
+        "resolvedVersion": "1.6.0",
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T15:18:34.977Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@netlify/mcp@1.6.0",
+      "tools": {
+        "call-netlify-apis": {
+          "annotations": null,
+          "approved": true,
+          "description": "\nCall a Netlify API endpoint using the operation ID and parameters. You must use the following structure:\n{\n  \"_v\":\"1.4\",\n  \"type\": \"<type>\",\n  \"operationId\": \"<operationId>\",\n  \"params\": <params>\n}\n",
+          "firstSeen": "2026-10-18T15:18:34.982Z",
+          "hash": "8ccbe7e249f43fca4058c8f7d07cbe021972bf32173787dea4cd7223d8ccc16f",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "operationId": {
+                "type": "string"
+              },
+              "params": {
+                "additionalProperties": {
+
+                },
+                "type": "object"
+              },
+              "type": {
+                "enum": ["API","CLI"],
+                "type": "string"
+              }
+            },
+            "required": ["type","operationId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:18:34.982Z",
+          "proseHash": "97f59ed9f1d774f60109057edc7534dcd17e91f55d038d67a91f1f42f2c18234",
+          "schemaHash": "66faf43596dbd2b824c3d48bdbe418bdd903bf5bc09b0c1cad1333de18b05c57"
+        },
+        "get-netlify-api-context": {
+          "annotations": null,
+          "approved": true,
+          "description": "required step before calling 'call-netlify-apis' tool. Use to identify the correct command to run and the parameters that are required.",
+          "firstSeen": "2026-10-18T15:18:34.982Z",
+          "hash": "be859465ebf1b71543cbb52910f1519671de70041ce0bd55ae1a69d37a1531ff",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "operationId": {
+                "enum": ["get-site-id","environment-var-creation","deploy-site","list-extensions","install-extension","full-extension-details","revokeAccessToken","getAccountBuildStatus","listMembersForAccount","addMemberToAccount","listSitesForAccount","createSiteInTeam","listAccountsForUser","createAccount","getAccount","updateAccount","cancelAccount","listAccountAuditEvents","enableAnalytics","disableAnalytics","listPaymentMethodsForUser","listSiteBuildHooks","createSiteBuildHook","getSiteBuildHook","updateSiteBuildHook","getSiteBuild","listSiteBuilds","createSiteBuild","updateSiteBuildLog","notifyBuildStart","listDeployKeys","createDeployKey","getDeployKey","listSiteDeploys","createSiteDeploy","getDeploy","getSiteDeploy","updateSiteDeploy","restoreSiteDeploy","lockDeploy","unlockDeploy","cancelSiteDeploy","getSimplePublicDeploy","getEnvVars","createEnvVars","getSiteEnvVars","getEnvVar","updateEnvVar","setEnvVarValue","deleteEnvVar","deleteEnvVarValue","listSiteFiles or listDeployFiles","getSiteFileByPathName","listSiteForms","getSiteForm","deleteSiteForm","listHooksBySiteId","createHookBySiteId","getHook","updateHook","deleteHook","listHookTypes","enableHook","getSiteMetadata","updateSiteMetadata","listOrganizationsForUser","getOrganization","listSites","createSite","getSite","updateSite","listSiteDeployedBranches","rollbackSiteDeploy","unlinkSiteRepo","listSiteSnippets","createSiteSnippet","getSiteSnippet","deleteSiteSnippet","updateSiteSnippet","listFormSubmissions","listSiteSubmissions","listFormSubmission","deleteSubmission","getCurrentUser"],
+                "type": "string"
+              }
+            },
+            "required": ["operationId"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:18:34.982Z",
+          "proseHash": "f45cd63f9f9c5fa937a8c8bdc01e593a9534debdeb5ee803756415342a696433",
+          "schemaHash": "47b12a0b68b9e6d14be5400096639ac67328739707159de3c362b8c49eb8919b"
+        },
+        "get-netlify-coding-context": {
+          "annotations": null,
+          "approved": true,
+          "description": "ALWAYS call when writing serverless or Netlify code. required step before creating or editing any type of functions, Netlify sdk/library  usage, etc.",
+          "firstSeen": "2026-10-18T15:18:34.982Z",
+          "hash": "eb8bfae67405947f20883952ba90d089d059b8cf0f9c28e394832821c9927007",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "creationType": {
+                "enum": ["serverless","edge-functions","blobs","image-cdn","forms","db"],
+                "type": "string"
+              }
+            },
+            "required": ["creationType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-18T15:18:34.982Z",
+          "proseHash": "6f112101df9b12e783ea759ceac5fd17c604224c73a678e6c4e87c11fd4e36d5",
+          "schemaHash": "80c1b86d402b9ed8ad1161c18c6636adde4426bba512c44749916f04c69bd7bc"
+        }
+      }
+    }
+  },
+  "version": 1
+}

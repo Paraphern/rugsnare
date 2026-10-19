@@ -160,10 +160,13 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 
 | Hash | Canonical input | Changes classified as |
 |---|---|---|
-| `hash` | `{ description, inputSchema, name }` - text + schema (the gate) | any text/schema drift |
+| `hash` | `{ description, inputSchema, name }` - text + input schema (the gate) | any text/schema drift |
 | `schemaHash` | `inputSchema` only | BREAKING, LOOSENED, EXPANDED, or NOTATION |
 | `proseHash` | `description` only | COSMETIC |
+| `outputHash` | `outputSchema` only; `null` when the tool declares no output schema | NOTATION (schema appeared, SDK wave), LOOSENED (schema removed — response shape no longer declared), or BREAKING (declared schema narrowed) |
 | — (no hash) | `annotations`, compared via effective-value equality (§4) | ANNOTATION |
+
+**`outputHash`** covers the response half of the contract. A tool that declares no `outputSchema` pins `null`; a schema appearing later (where none was declared) grades NOTATION (SDK serialization wave); a declared schema **removed** grades LOOSENED (the response shape is no longer declared — consumers who parsed it lose the contract, but nothing is rejected); a declared schema narrowing grades BREAKING (output shape changed for consumers who parse it). Reference case: GitHub's official MCP server changed 123 of 131 tool definitions in a single release, all outputSchema additions from a Go SDK migration.
 
 **Canonicalization rules** (identical bytes → identical hash, across
 implementations):
@@ -465,3 +468,12 @@ Requirements for the composition to be sound:
   block, identity is the file path + content hash. All three fields exist in
   every rugsnare-written pin since 1.0; this revision documents what the
   implementation has always done.
+- v1.1 same-day revision 9 (outputHash gap found during pre-bbv audit):
+  §3 hash table gains `outputHash` (sha256 over canonicalized `outputSchema`,
+  null when absent). Grading: NOTATION when outputSchema appears/disappears
+  (SDK serialization wave), BREAKING when a declared schema narrows. Reference:
+  GitHub 123/131 outputSchema-only changes in one release. The field exists
+  in the rugsnare 1.4.x writer since R14; this revision documents it.
+- v1.5.0 spec sync: outputHash grading gains LOOSENED for removed outputSchema
+  (was only NOTATION/BREAKING; CHANGELOG 1.5.0 already implemented it — this
+  aligns §3 with the shipped grader).

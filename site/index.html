@@ -76,7 +76,7 @@
     <span><b>Apache-2.0</b></span>
     <span>zero npm dependencies</span>
     <span>no telemetry</span>
-    <span><b>359 tests</b></span>
+    <span><b>384 tests</b></span>
     <span><b>on-chain verified</b> (Base Mainnet)</span>
   </div>
 </div>
@@ -105,7 +105,7 @@
         <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
-          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.4.3 diff --config .mcp.json</span>
+          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.5.0 diff --config .mcp.json</span>
 <span class="l f">github  (npx -y @modelcontextprotocol/server-github)</span>
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
@@ -226,7 +226,25 @@
 <section id="new">
   <div class="shell">
     <div class="sec-head">
-      <h2>What's new in 1.4</h2>
+      <h2>What's new in 1.5</h2>
+      <p>Output contracts, resource bodies, and the vendor's own published spec - all in the blast radius now.</p>
+    </div>
+    <div class="pledges">
+      <div class="pledge"><b>outputSchema pinning (R14)</b><p>A third hash, <code>outputHash</code>, pins what tools <i>return</i>, not just what they accept. A server that quietly widens its response shape - new fields the agent will trust - is drift, same as an input change. Absent outputSchema hashes as null; no false noise on servers without one.</p></div>
+      <div class="pledge"><b>Resource content pinning (R13)</b><p><code>resources/list</code> only showed the envelope; the prompt-injection payload lived in the body. RugSnare now calls <code>resources/read</code> (up to 20 envelope-only resources) and hashes the text - the hidden "ignore previous instructions" edit in a resource body is a finding, not a surprise.</p></div>
+      <div class="pledge"><b>MIRRORED + OpenAPI crosscheck (R35/R36)</b><p>A tighten change the vendor's published OpenAPI spec already promised is <b>MIRRORED</b>, not BREAKING: <code>diff --openapi &lt;spec-url&gt;</code> regrades it with evidence. BREAKING now means what it should - "a previously-successful call starts failing" - not "the contract text tightened".</p></div>
+      <div class="pledge"><b>annotations.title + icons</b><p>A silent rename from "Safe File Reader" to "Data Export Utility" is now <b>ANNOTATION</b> drift - the title is what the agent trusts when it picks a tool. SVG <code>icons</code> are hashed into toolHash (SVG can carry scripts), shipped with the policyVersion bump so legacy pins get POLICY stop, never a silent re-grade.</p></div>
+      <div class="pledge"><b>A19: payment-credential exfiltration</b><p>Descriptions instructing the agent to POST card numbers, CVC or expiry "together with the payload" - the corpus demo attack that plain schema diff could not see. Bidirectional match, weight 3, zero false positives across 1152 benign vendor descriptions.</p></div>
+      <div class="pledge"><b>A20: hidden directive blocks (FORCED)</b><p><code>&lt;IMPORTANT&gt;</code>, <code>&lt;NOTE TO AGENT&gt;</code> tag blocks (attributes and hyphenated variants included), ChatML <code>&lt;|system|&gt;</code> markers, <code>[//]: #</code> markdown stubs and HTML comments carrying directive text - markup addressed to the model, invisible in rendered markdown. The class our table was missing until the mcp-shield comparison surfaced it (teleport#61434). Build markers and linter pragmas stay clean: the comment arm requires directive vocabulary inside.</p></div>
+      <div class="pledge" id="badge"><b>CI badge, GitHub Action, Smithery</b><p><code>rugsnare.com/badge/:owner/:repo.svg</code> is a trust signal, not just a counter: green <code>signed &#183; N tools &#183; M skills</code> means the worker just <b>verified the Ed25519 signature</b> of your committed pins.json against your committed pins.pub.pem; yellow <code>unsigned</code> means pinned without a signature; red <code>SIG BROKEN</code> means pins.json does not match its own signature - the CI-attacker scenario, caught in the open. Counts cover tools, skills, prompts and resources. A composite Action runs diff in your workflow and emits SARIF; the PR renderer scores advisories and groups drift by signature; a zero-dependency <code>.mcpb</code> bundle ships on Smithery.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="new14">
+  <div class="shell">
+    <div class="sec-head">
+      <h2>What was new in 1.4</h2>
       <p>PIN-SPEC v1.1: pins know WHAT they pinned, and the file is byte-stable for third-party verification.</p>
     </div>
     <div class="pledges">
@@ -271,16 +289,17 @@
       <div class="foot-brand">RugSnare</div>
       <div>Apache-2.0 &#183; zero dependencies &#183; no telemetry</div>
     </div>
-    <div style="display:flex;gap:18px;font-size:13.5px">
+    <div style="display:flex;gap:18px;font-size:13.5px;flex-wrap:wrap;align-items:center">
       <a href="https://github.com/Paraphern/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">GitHub</a>
       <a href="https://www.npmjs.com/package/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">npm</a>
       <a href="https://glama.ai/mcp/servers/Paraphern/rugsnare" target="_blank" rel="noopener" style="color:var(--ink-2)">Glama</a>
       <a href="https://x.com/SergeyDruzhba" target="_blank" rel="noopener" style="color:var(--ink-2)">X</a>
+      <a href="mailto:releases@rugsnare.com" style="color:var(--ink-2)">releases@rugsnare.com</a>
       <a href="https://basescan.org/address/0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e" target="_blank" rel="noopener" style="color:var(--ink-2)">On-chain</a>
       <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener" style="color:var(--ink-2)">Releases</a>
     </div>
   </div>
-  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.4.3 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
+  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.5.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
 </footer>
 
 <script>

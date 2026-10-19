@@ -45,6 +45,20 @@ export function resourceHash(resource) {
 }
 
 /**
+ * R13: hash the CONTENT of a resource (the text body). The envelope hash
+ * above catches URI/description/mimeType changes, but the hostinger case
+ * showed a vendor silently rewriting SKILL.md text while keeping the same
+ * URI - the envelope pin doesn't move. This hash covers the body. Null
+ * when no text is available (resources/list may not include content).
+ */
+export function resourceContentHash(resource) {
+  if (typeof resource?.text === 'string' && resource.text.length > 0) {
+    return crypto.createHash('sha256').update(resource.text, 'utf8').digest('hex');
+  }
+  return null;
+}
+
+/**
  * Compare live prompts/resources against pinned versions.
  * Same semantics as compareTools: DRIFT / NEW / REMOVED / UNCHANGED.
  */
@@ -54,8 +68,13 @@ export function comparePinned(kind, pinStore, liveItems, hashFn) {
     const key = item.name ?? item.uri ?? '(unnamed)';
     const pin = pinStore[key];
     const hash = hashFn(item);
+    // R13: for resources, also compare contentHash (the body text)
+    const liveContent = kind === 'resource' ? resourceContentHash(item) : undefined;
+    const pinContent = kind === 'resource' ? (pin?.contentHash ?? null) : undefined;
+    const contentChanged = kind === 'resource' && pin && pinContent !== (liveContent ?? null);
     if (!pin) result.push({ item: key, status: 'NEW', hash, kind });
     else if (pin.hash !== hash) result.push({ item: key, status: 'DRIFT', oldHash: pin.hash, hash, kind, oldDescription: pin.description ?? '', newDescription: (item.description ?? item.template ?? '') });
+    else if (contentChanged) result.push({ item: key, status: 'DRIFT', oldHash: pin.hash, hash, kind, contentChanged: true, detail: 'resource body text changed while envelope is identical (hostinger class)' });
     else result.push({ item: key, status: 'UNCHANGED', hash, kind });
   }
   const liveKeys = new Set(liveItems.map((i) => i.name ?? i.uri ?? '(unnamed)'));

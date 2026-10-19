@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rugsnare": {
+      "command": "node",
+      "args": ["product/src/mcp-server.js"]
+    }
+  }
+}

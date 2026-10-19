@@ -1,0 +1,940 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "exec-playwright": {
+      "cmd": {
+        "args": ["node_modules/@executeautomation/playwright-mcp-server/dist/index.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/index.js",
+        "identityHash": "sha256:aa8be76da3585ee81103908779545172fc844d146b9915b9675ec1a471bd0d36",
+        "package": "@executeautomation/playwright-mcp-server",
+        "resolvedVersion": "1.0.12",
+        "url": null
+      },
+      "pinnedAt": "2026-10-18T14:35:45.297Z",
+      "prompts": {
+
+      },
+      "resources": {
+        "Browser console logs": {
+          "description": "",
+          "firstSeen": "2026-10-18T14:35:45.304Z",
+          "hash": "6c6e4d56f7479d70733ac1975e50f6587364d2200e4b617b3d9084ad394df26d"
+        }
+      },
+      "scannedAgainst": "@executeautomation/playwright-mcp-server@1.0.12",
+      "tools": {
+        "clear_codegen_session": {
+          "annotations": null,
+          "approved": true,
+          "description": "Clear a code generation session without generating a test",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "490591de9c8bad94544f071b7ccf9ba5c286b6ec5a8ab403370de61490928f5f",
+          "inputSchema": {
+            "properties": {
+              "sessionId": {
+                "description": "ID of the session to clear",
+                "type": "string"
+              }
+            },
+            "required": ["sessionId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "925e73e4f0ebaa99b08bf1ad5feb9e3979bb5f610f4dc00a3e1b903a6df1d15d",
+          "schemaHash": "32a107ebc03ffab08d1bd7010193d4373fdd3cc4f7526a07df0fa1485a74e9e6"
+        },
+        "end_codegen_session": {
+          "annotations": null,
+          "approved": true,
+          "description": "End a code generation session and generate the test file",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "134f1b8fec1ff38342c6e35bcd028937143ef69286662c07e62a36b89f61590c",
+          "inputSchema": {
+            "properties": {
+              "sessionId": {
+                "description": "ID of the session to end",
+                "type": "string"
+              }
+            },
+            "required": ["sessionId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "2ac856bcd65b94a01eadc346496bec56dc5ee079ac7223d8469e7a09c5e108b0",
+          "schemaHash": "460d2382cc71b12a40a307094ada723fa47c7d68eb21ceac41fc7d2f43f38111"
+        },
+        "get_codegen_session": {
+          "annotations": null,
+          "approved": true,
+          "description": "Get information about a code generation session",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "f61fedb86bdeed6fb4ed6ce8883f710a95e0db08531fc3b3fb79dcad1f44704d",
+          "inputSchema": {
+            "properties": {
+              "sessionId": {
+                "description": "ID of the session to retrieve",
+                "type": "string"
+              }
+            },
+            "required": ["sessionId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "6d0327de1c05451a26f9fcd2930f80ffe23c71a4cb2fc2593eba7258ef5d97c4",
+          "schemaHash": "dc8822fedc30451c79aacc799263ffc9a286791aa86be7f12d49117807cc73c9"
+        },
+        "playwright_assert_response": {
+          "annotations": null,
+          "approved": true,
+          "description": "Wait for and validate a previously initiated HTTP response wait operation.",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "501c5fa87a114e1ce1b1ab5da1d3e73146060556b9eb7a4ddfb8b9490a4afbb1",
+          "inputSchema": {
+            "properties": {
+              "id": {
+                "description": "Identifier of the HTTP response initially expected using `Playwright_expect_response`.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Data to expect in the body of the HTTP response. If provided, the assertion will fail if this value is not found in the response body.",
+                "type": "string"
+              }
+            },
+            "required": ["id"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "85359fec6ecea639815ee36c9554c2fc09ca4d8fe9d96e0aca995150aca482bb",
+          "schemaHash": "2e329846d8209339d06620ba5f334412dea939ae88667c688d88046f7b13a2b3"
+        },
+        "playwright_click": {
+          "annotations": null,
+          "approved": true,
+          "description": "Click an element on the page",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "fc06001ee0028f07c9bd28bf63f13ad6f96efaf929b2c2719409e41b519d8646",
+          "inputSchema": {
+            "properties": {
+              "selector": {
+                "description": "CSS selector for the element to click",
+                "type": "string"
+              }
+            },
+            "required": ["selector"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "0f5e4e9a2e49b9860eacc68a7dc5312c71ab2f83be1734dcddbc8ce31fc7d82b",
+          "schemaHash": "32eb133d2ee819199e83820dfb601eac76b1436e03acb270dc3c1ee17ea84be9"
+        },
+        "playwright_click_and_switch_tab": {
+          "annotations": null,
+          "approved": true,
+          "description": "Click a link and switch to the newly opened tab",
+          "firstSeen": "2026-10-18T14:43:39.845Z",
+          "hash": "e01598764f5c379d9f56abc7c22603fe21c10214a7ff0f5662813b20594277c6",
+          "inputSchema": {
+            "properties": {
+              "selector": {
+                "description": "CSS selector for the link to click",
+                "type": "string"
+              }
+            },
+            "required": ["selector"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.845Z",
+          "proseHash": "46f0a930779fc365dd53b5c455a5320bd14dba346dda8ef85785293120961205",
+          "schemaHash": "bd7ac6e7d8c1bffd15f1734e7d571ecc43664542c45bbc73194741101be4f2ee"
+        },
+        "playwright_close": {
+          "annotations": null,
+          "approved": true,
+          "description": "Close the browser and release all resources",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "583b4973721edb1aa73c5fe5c7045e98d7a3935db6e37c0faa21c681b01bb3e1",
+          "inputSchema": {
+            "properties": {
+
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "b1ad60376e7445224ee4ba161dedbbd5f749bdfb04a25421ec6b365bd9735735",
+          "schemaHash": "dfa48e8c7c69dbf747d61e3de94dcf4f20e6935790d15600e5a7e1ca0428e9a3"
+        },
+        "playwright_console_logs": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieve console logs from the browser with filtering options",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "a218c3735e2a60e334ed862b13d02f188d0bab93c2b0bd6a62023badcd63d0a2",
+          "inputSchema": {
+            "properties": {
+              "clear": {
+                "description": "Whether to clear logs after retrieval (default: false)",
+                "type": "boolean"
+              },
+              "limit": {
+                "description": "Maximum number of logs to return",
+                "type": "number"
+              },
+              "search": {
+                "description": "Text to search for in logs (handles text with square brackets)",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of logs to retrieve (all, error, warning, log, info, debug, exception)",
+                "enum": ["all","error","warning","log","info","debug","exception"],
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "c0cf537bf592a22c2f70a66287d787fc59086c029ea573951e68e427e42d7396",
+          "schemaHash": "26fb3b570bb15e78fa78391c4dd4826afd5abcb40e8af04efa831ed73a76c865"
+        },
+        "playwright_custom_user_agent": {
+          "annotations": null,
+          "approved": true,
+          "description": "Set a custom User Agent for the browser",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "1abc08dbddf2621c9e8cc58fde27d06e1e438358bea34fd2927d2a9bad33bc82",
+          "inputSchema": {
+            "properties": {
+              "userAgent": {
+                "description": "Custom User Agent for the Playwright browser instance",
+                "type": "string"
+              }
+            },
+            "required": ["userAgent"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "bf0468f986ee3997a54de66697b5341296295411e575cfed2a92937ee3009450",
+          "schemaHash": "52a9d6e2ca4e266a8a73053cba878288220f3b80f009423b0c92d0d0b9027b02"
+        },
+        "playwright_delete": {
+          "annotations": null,
+          "approved": true,
+          "description": "Perform an HTTP DELETE request",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "60fd01f2b382b94fade52475fa3379e101a478e0d6ac39980ee37f117cdddad1",
+          "inputSchema": {
+            "properties": {
+              "headers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Additional headers to include in the request",
+                "type": "object"
+              },
+              "token": {
+                "description": "Bearer token for authorization",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL to perform DELETE operation",
+                "type": "string"
+              }
+            },
+            "required": ["url"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "86aa74fddbcfe390a0561116e750a732b6eb12dd03b98d8ed7abb57bbdca6ef4",
+          "schemaHash": "5354c29bf2c29e4e9d10f4b4c6f084effa82538f5fdc9a0f9be69e348d26ae6c"
+        },
+        "playwright_drag": {
+          "annotations": null,
+          "approved": true,
+          "description": "Drag an element to a target location",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "2e52287884136113801a961649c0744f4a2aa79525d6ae2e464dd2a3805475c7",
+          "inputSchema": {
+            "properties": {
+              "sourceSelector": {
+                "description": "CSS selector for the element to drag",
+                "type": "string"
+              },
+              "targetSelector": {
+                "description": "CSS selector for the target location",
+                "type": "string"
+              }
+            },
+            "required": ["sourceSelector","targetSelector"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "069e71312cdc49db55c98ad2ac479fb4982384f3e220c85c9a4a361b64375f05",
+          "schemaHash": "175aedf0b9de65b1f6abb04287f6765ed3f33660f90b8ffad1c1b474aec66cd3"
+        },
+        "playwright_evaluate": {
+          "annotations": null,
+          "approved": true,
+          "description": "Execute JavaScript in the browser console",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "43ad5a971ec8829772eaf117c54573044328194dc0792e9ee1f0d5a7d0408c23",
+          "inputSchema": {
+            "properties": {
+              "script": {
+                "description": "JavaScript code to execute",
+                "type": "string"
+              }
+            },
+            "required": ["script"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "0d3a0f5f637a3ca339c8c9bef048bb7db6e97e99b3e930af4f90036cf0ae0eac",
+          "schemaHash": "c020141fc040a2a2e026a1af5604d619bd659eeb0f278cf51ef8515046bce2d2"
+        },
+        "playwright_expect_response": {
+          "annotations": null,
+          "approved": true,
+          "description": "Ask Playwright to start waiting for a HTTP response. This tool initiates the wait operation but does not wait for its completion.",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "c3174acbaa465778a522154a852b7a4194110359d021fb6ab76bf6a1d7d31485",
+          "inputSchema": {
+            "properties": {
+              "id": {
+                "description": "Unique & arbitrary identifier to be used for retrieving this response later with `Playwright_assert_response`.",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL pattern to match in the response.",
+                "type": "string"
+              }
+            },
+            "required": ["id","url"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "e72abb16f76a4f89c03454965afd8114d7eb76c39adcc1372a085ffe3063d64d",
+          "schemaHash": "1f14da5d33f4ff60772094909769872d5aa321e5267e0baf2eea653ff311f9fb"
+        },
+        "playwright_fill": {
+          "annotations": null,
+          "approved": true,
+          "description": "fill out an input field",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "49328379f4e809489cabbee82917dd4c02c8037477fd99a42f650c28111c227e",
+          "inputSchema": {
+            "properties": {
+              "selector": {
+                "description": "CSS selector for input field",
+                "type": "string"
+              },
+              "value": {
+                "description": "Value to fill",
+                "type": "string"
+              }
+            },
+            "required": ["selector","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "57cb2ca29d1d60bdae849e561b03e55ba11d8b58252801fa726e54ea4887efc0",
+          "schemaHash": "44294a8b1c8f9f364b3fc9bd7058d8eebaffb1740d49a0dbe1a38dabce10b1e3"
+        },
+        "playwright_get": {
+          "annotations": null,
+          "approved": true,
+          "description": "Perform an HTTP GET request",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "53385976a1b247348cbaae8f1cd8e499eec28ea572307982e57d8f6cb7427e57",
+          "inputSchema": {
+            "properties": {
+              "headers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Additional headers to include in the request",
+                "type": "object"
+              },
+              "token": {
+                "description": "Bearer token for authorization",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL to perform GET operation",
+                "type": "string"
+              }
+            },
+            "required": ["url"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "21b6f9beb2726bf491cf367b00350454ec80480cf151171ee581939005f3fd85",
+          "schemaHash": "d21baac85e19ff3d5203efafd21a0aa50e9b40f0ea21091aedeb004267b33fab"
+        },
+        "playwright_get_visible_html": {
+          "annotations": null,
+          "approved": true,
+          "description": "Get the HTML content of the current page. By default, all <script> tags are removed from the output unless removeScripts is explicitly set to false.",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "0e8c6da1a4377d73cf9016747960c196c36c759ad25f3fa2ca5164d2272b0f9d",
+          "inputSchema": {
+            "properties": {
+              "cleanHtml": {
+                "description": "Perform comprehensive HTML cleaning (default: false)",
+                "type": "boolean"
+              },
+              "maxLength": {
+                "description": "Maximum number of characters to return (default: 20000)",
+                "type": "number"
+              },
+              "minify": {
+                "description": "Minify the HTML output (default: false)",
+                "type": "boolean"
+              },
+              "removeComments": {
+                "description": "Remove all HTML comments (default: false)",
+                "type": "boolean"
+              },
+              "removeMeta": {
+                "description": "Remove all meta tags from the HTML (default: false)",
+                "type": "boolean"
+              },
+              "removeScripts": {
+                "description": "Remove all script tags from the HTML (default: true)",
+                "type": "boolean"
+              },
+              "removeStyles": {
+                "description": "Remove all style tags from the HTML (default: false)",
+                "type": "boolean"
+              },
+              "selector": {
+                "description": "CSS selector to limit the HTML to a specific container",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.845Z",
+          "proseHash": "71bfa401783b8414a710d1d84a43a54eb7c114bea593f89568dee1913b1f9442",
+          "schemaHash": "3d4f97f9a92794f153dc9a8b3455f9d4371a3623ef9c90f8742010c1262f9760"
+        },
+        "playwright_get_visible_text": {
+          "annotations": null,
+          "approved": true,
+          "description": "Get the visible text content of the current page",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "17aa71b574a138eccc347c4399c5b95e2f2ee00039a056d2d590e56191fde745",
+          "inputSchema": {
+            "properties": {
+
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "37c8a9dcaeaa9e51459a7a145b2dbb1f7307ab68a90f7e0b729227421f7a2b0e",
+          "schemaHash": "ebc7ed4cf71b8da599e26185dc67a6c0f544428921fa35a95abfc248c933ea02"
+        },
+        "playwright_go_back": {
+          "annotations": null,
+          "approved": true,
+          "description": "Navigate back in browser history",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "11060fa340ece4612cf2669071ac4f85fc423c6aa02ee83f7bf9eaa665378403",
+          "inputSchema": {
+            "properties": {
+
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "50355e24b0f1923d5560662b25582009ac3450a00192d3c3fa1e10fb8cd1b955",
+          "schemaHash": "2f3731c35d671a995f4a724ff28e3d23bc9a19d93ea257c223ff420d6a69d39c"
+        },
+        "playwright_go_forward": {
+          "annotations": null,
+          "approved": true,
+          "description": "Navigate forward in browser history",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "61c4980d9cfc6aad94bd39a69738fbff30c8ba5d50f1bfc5174516e4c092aed4",
+          "inputSchema": {
+            "properties": {
+
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "43371fb39a408fdefd8545b4741acfc8de3298e90e40c785af6e124a4470f91e",
+          "schemaHash": "053287ae02c602e0794c2dd5aa29e8b6adff416d2d89f3e00322d9ef6065bc2f"
+        },
+        "playwright_hover": {
+          "annotations": null,
+          "approved": true,
+          "description": "Hover an element on the page",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "3be41188ccf80c9a8a8e05ea780a70ad294ba66fae7bd9e797a141350b664b01",
+          "inputSchema": {
+            "properties": {
+              "selector": {
+                "description": "CSS selector for element to hover",
+                "type": "string"
+              }
+            },
+            "required": ["selector"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "58de35517381df9045ef0d0832c14fc5c49a226cb49e41b9064ce7a6648b73b5",
+          "schemaHash": "888d0e2906f3fd4b8559de0aca82c4cf0ebcbe7f653e7595650be2877115d44a"
+        },
+        "playwright_iframe_click": {
+          "annotations": null,
+          "approved": true,
+          "description": "Click an element in an iframe on the page",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "7b08802c4b1a8be5378aab098b5129a271d069fe6a4e6498fde726c4bf8a7e0b",
+          "inputSchema": {
+            "properties": {
+              "iframeSelector": {
+                "description": "CSS selector for the iframe containing the element to click",
+                "type": "string"
+              },
+              "selector": {
+                "description": "CSS selector for the element to click",
+                "type": "string"
+              }
+            },
+            "required": ["iframeSelector","selector"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "aab45fd998cd82a3608b9df21b93d43bedbcdf1a713f936c76142ef11f146566",
+          "schemaHash": "d3bf5c97b94b8bf1053817b3149f83da099d5eb23c4ed2e2f981ff2e3ddd2463"
+        },
+        "playwright_iframe_fill": {
+          "annotations": null,
+          "approved": true,
+          "description": "Fill an element in an iframe on the page",
+          "firstSeen": "2026-10-18T14:43:39.844Z",
+          "hash": "968ed3ceb8e9e4987456535712bcfa39c809a989dc7f8479e36d9c011c90a559",
+          "inputSchema": {
+            "properties": {
+              "iframeSelector": {
+                "description": "CSS selector for the iframe containing the element to fill",
+                "type": "string"
+              },
+              "selector": {
+                "description": "CSS selector for the element to fill",
+                "type": "string"
+              },
+              "value": {
+                "description": "Value to fill",
+                "type": "string"
+              }
+            },
+            "required": ["iframeSelector","selector","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "9f855487eecb6a7028183f11d0ce91c1f3e9ba3fb7300fb4c0e4c8c8a4b358d2",
+          "schemaHash": "6aba1f29951f926032187857110f05326c85b51fe5a50726c394c14eab31380b"
+        },
+        "playwright_navigate": {
+          "annotations": null,
+          "approved": true,
+          "description": "Navigate to a URL",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "233848e26cbda4816e871156d4aea06337d6bfe7c939596c9a7bd66024160f5c",
+          "inputSchema": {
+            "properties": {
+              "browserType": {
+                "description": "Browser type to use (chromium, firefox, webkit). Defaults to chromium",
+                "enum": ["chromium","firefox","webkit"],
+                "type": "string"
+              },
+              "headless": {
+                "description": "Run browser in headless mode (default: false)",
+                "type": "boolean"
+              },
+              "height": {
+                "description": "Viewport height in pixels (default: 720)",
+                "type": "number"
+              },
+              "timeout": {
+                "description": "Navigation timeout in milliseconds",
+                "type": "number"
+              },
+              "url": {
+                "description": "URL to navigate to the website specified",
+                "type": "string"
+              },
+              "waitUntil": {
+                "description": "Navigation wait condition",
+                "type": "string"
+              },
+              "width": {
+                "description": "Viewport width in pixels (default: 1280)",
+                "type": "number"
+              }
+            },
+            "required": ["url"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "5e517ac29796df4781d6e8f8b3be061cc694f0c8e027f40e42ce0739e887b1d5",
+          "schemaHash": "0a947036afb1bcddc72d9afec5116057edabc08060ef283ae60ec6f49952188c"
+        },
+        "playwright_patch": {
+          "annotations": null,
+          "approved": true,
+          "description": "Perform an HTTP PATCH request",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "6916a51feb614db41001c121704e121773eb75d3023a1468236dcb92d926bb0b",
+          "inputSchema": {
+            "properties": {
+              "headers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Additional headers to include in the request",
+                "type": "object"
+              },
+              "token": {
+                "description": "Bearer token for authorization",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL to perform PATCH operation",
+                "type": "string"
+              },
+              "value": {
+                "description": "Data to PATCH in the body",
+                "type": "string"
+              }
+            },
+            "required": ["url","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "9de49b0de062f2d0792036e2a55ef2240e48e8ed18fa2b00e025980545d1b7a0",
+          "schemaHash": "3394bf80faea0440146c972b08627264f4871780f4ec41e210cf48f2a3b11b45"
+        },
+        "playwright_post": {
+          "annotations": null,
+          "approved": true,
+          "description": "Perform an HTTP POST request",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "efa28bacef6540927830961bf6f83eb3663dd53661ec365c4ce4e8b50f0be42d",
+          "inputSchema": {
+            "properties": {
+              "headers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Additional headers to include in the request",
+                "type": "object"
+              },
+              "token": {
+                "description": "Bearer token for authorization",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL to perform POST operation",
+                "type": "string"
+              },
+              "value": {
+                "description": "Data to post in the body",
+                "type": "string"
+              }
+            },
+            "required": ["url","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "d80acddac3dabb7bf58d984a6bd26f0f70bc4e4f3b327f15ea162d6c5c8bd41c",
+          "schemaHash": "8f0924a02f4c7af17b64e6b6f40d5e47363cc5bc1f6bcb9c4fcf8beff02df62a"
+        },
+        "playwright_press_key": {
+          "annotations": null,
+          "approved": true,
+          "description": "Press a keyboard key",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "3e657f316a87200858276bb7d04f274529a30e83a37b4a4a882d7000474253dc",
+          "inputSchema": {
+            "properties": {
+              "key": {
+                "description": "Key to press (e.g. 'Enter', 'ArrowDown', 'a')",
+                "type": "string"
+              },
+              "selector": {
+                "description": "Optional CSS selector to focus before pressing key",
+                "type": "string"
+              }
+            },
+            "required": ["key"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "47bd3ac3b8894f4cd8c637f29faccb29b17a47e57a32b5e8542625d6a8ed0408",
+          "schemaHash": "1739a95fc6ed39ae53070e9719105b0e296c6688156ff4de69ed0882480a5d7e"
+        },
+        "playwright_put": {
+          "annotations": null,
+          "approved": true,
+          "description": "Perform an HTTP PUT request",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "ab2de4583abe70eb0bd0438383ea8f983ae3454ff2e739779504c71bff2f3e42",
+          "inputSchema": {
+            "properties": {
+              "headers": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Additional headers to include in the request",
+                "type": "object"
+              },
+              "token": {
+                "description": "Bearer token for authorization",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL to perform PUT operation",
+                "type": "string"
+              },
+              "value": {
+                "description": "Data to PUT in the body",
+                "type": "string"
+              }
+            },
+            "required": ["url","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "212414c08fae6e37da35930b7ef422ff36e9c24e26ba0800ffd8b3fcbd1cf75a",
+          "schemaHash": "c2ecfd7405c130bbcda11db68bb1d522abf1052da2a6c265ba8cd6a4b1a8fd4e"
+        },
+        "playwright_resize": {
+          "annotations": null,
+          "approved": true,
+          "description": "Resize the browser viewport using manual dimensions or device presets. Supports 143+ device presets including iPhone, iPad, Android devices, and desktop browsers with proper user-agent and touch emulation.",
+          "firstSeen": "2026-10-18T14:43:39.844Z",
+          "hash": "bb4fb260cf73c5e343d0d67dff8039ebe4bf9ee4c334283029980f29ffb1b902",
+          "inputSchema": {
+            "properties": {
+              "device": {
+                "description": "Device preset name (e.g., 'iPhone 13', 'iPad Pro 11', 'Pixel 7', 'Galaxy S24', 'Desktop Chrome'). Automatically configures viewport, user-agent, and device capabilities. Use playwright.devices to see all available devices.",
+                "type": "string"
+              },
+              "height": {
+                "description": "Viewport height in pixels (for manual resize without device preset)",
+                "type": "number"
+              },
+              "orientation": {
+                "description": "Device orientation: 'portrait' or 'landscape' (only applies when using device preset)",
+                "enum": ["portrait","landscape"],
+                "type": "string"
+              },
+              "width": {
+                "description": "Viewport width in pixels (for manual resize without device preset)",
+                "type": "number"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "4a003ab650aafdbb02817b0d9cde7be54e699f2508f9448f308ed25022227659",
+          "schemaHash": "96f069b773f081e83641f5b43bde3f33778d9ea0ebeda9b443cf9051d1fbed47"
+        },
+        "playwright_save_as_pdf": {
+          "annotations": null,
+          "approved": true,
+          "description": "Save the current page as a PDF file",
+          "firstSeen": "2026-10-18T14:35:45.302Z",
+          "hash": "ac255ab088c586513b38f6e65280fc289c3827f43d43354b414ac5740cbed2c4",
+          "inputSchema": {
+            "properties": {
+              "filename": {
+                "description": "Name of the PDF file (default: page.pdf)",
+                "type": "string"
+              },
+              "format": {
+                "description": "Page format (e.g. 'A4', 'Letter')",
+                "type": "string"
+              },
+              "margin": {
+                "description": "Page margins",
+                "properties": {
+                  "bottom": {
+                    "type": "string"
+                  },
+                  "left": {
+                    "type": "string"
+                  },
+                  "right": {
+                    "type": "string"
+                  },
+                  "top": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "outputPath": {
+                "description": "Directory path where PDF will be saved",
+                "type": "string"
+              },
+              "printBackground": {
+                "description": "Whether to print background graphics",
+                "type": "boolean"
+              }
+            },
+            "required": ["outputPath"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.302Z",
+          "proseHash": "de5a0c52b29c3053b8769935970857fa9248bc408c15dff4c34fe47b3237447a",
+          "schemaHash": "311827e2ec305a91e93938f8ef0a29c04aad4b275e6830cc3bf123ba11ffdc24"
+        },
+        "playwright_screenshot": {
+          "annotations": null,
+          "approved": true,
+          "description": "Take a screenshot of the current page or a specific element",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "8078c6f78b92850866c1a78e759b1608a46f46c2a770a61ee782aa81b4ec3e0c",
+          "inputSchema": {
+            "properties": {
+              "downloadsDir": {
+                "description": "Custom downloads directory path (default: user's Downloads folder)",
+                "type": "string"
+              },
+              "fullPage": {
+                "description": "Store screenshot of the entire page (default: false)",
+                "type": "boolean"
+              },
+              "height": {
+                "description": "Height in pixels (default: 600)",
+                "type": "number"
+              },
+              "name": {
+                "description": "Name for the screenshot",
+                "type": "string"
+              },
+              "savePng": {
+                "description": "Save screenshot as PNG file (default: false)",
+                "type": "boolean"
+              },
+              "selector": {
+                "description": "CSS selector for element to screenshot",
+                "type": "string"
+              },
+              "storeBase64": {
+                "description": "Store screenshot in base64 format (default: true)",
+                "type": "boolean"
+              },
+              "width": {
+                "description": "Width in pixels (default: 800)",
+                "type": "number"
+              }
+            },
+            "required": ["name"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "5e3558916850d55baa3a9b5dfaec0755a8c16f6bcd03be7a78aadbc65745da85",
+          "schemaHash": "88c885508abd2679c380d29577bdd1ef15b2ee55ccaa7fda3b1adcd933578de5"
+        },
+        "playwright_select": {
+          "annotations": null,
+          "approved": true,
+          "description": "Select an element on the page with Select tag",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "2e39583a7c251a9ff7f205fb527bd6f7b694087dd716603fe45396b6e5a41dec",
+          "inputSchema": {
+            "properties": {
+              "selector": {
+                "description": "CSS selector for element to select",
+                "type": "string"
+              },
+              "value": {
+                "description": "Value to select",
+                "type": "string"
+              }
+            },
+            "required": ["selector","value"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "4a26e4d4478c05860dd9dced30243f53e5a2604322d35860db67315b46275213",
+          "schemaHash": "a8d10a4a4b1f6ac4d85cc2a8bcfadb267a963d6d4c716f2a439b835a5f74495b"
+        },
+        "playwright_upload_file": {
+          "annotations": null,
+          "approved": true,
+          "description": "Upload a file to an input[type='file'] element on the page",
+          "firstSeen": "2026-10-18T14:43:39.844Z",
+          "hash": "e839320f60633c249a5c8b5738fb36f0be56bcd238bb65ef17c1ed3ded0673d7",
+          "inputSchema": {
+            "properties": {
+              "filePath": {
+                "description": "Absolute path to the file to upload",
+                "type": "string"
+              },
+              "selector": {
+                "description": "CSS selector for the file input element",
+                "type": "string"
+              }
+            },
+            "required": ["selector","filePath"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:43:39.844Z",
+          "proseHash": "cb523bf59b6db615a703cff48a46173d6649d1bcd21d41e6c8425954803561e2",
+          "schemaHash": "71e944a8cf6231da7def526925701294731b1337f8852ea74841f5e93e48e270"
+        },
+        "start_codegen_session": {
+          "annotations": null,
+          "approved": true,
+          "description": "Start a new code generation session to record Playwright actions",
+          "firstSeen": "2026-10-18T14:35:45.301Z",
+          "hash": "e1a2b37fe61d1120e29d4947850779ff0bf9bff52c6b412d1e30ae7a9d888132",
+          "inputSchema": {
+            "properties": {
+              "options": {
+                "description": "Code generation options",
+                "properties": {
+                  "includeComments": {
+                    "description": "Whether to include descriptive comments in generated tests",
+                    "type": "boolean"
+                  },
+                  "outputPath": {
+                    "description": "Directory path where generated tests will be saved (use absolute path)",
+                    "type": "string"
+                  },
+                  "testNamePrefix": {
+                    "description": "Prefix to use for generated test names (default: 'GeneratedTest')",
+                    "type": "string"
+                  }
+                },
+                "required": ["outputPath"],
+                "type": "object"
+              }
+            },
+            "required": ["options"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-18T14:35:45.301Z",
+          "proseHash": "e95c4ab07592ba50f55f592b673f7ae66113672339ca6f637da281a0c11f0664",
+          "schemaHash": "5e589e8fa430e70c31759748672c9ef2bc223c9569163aa8556434480e065f91"
+        }
+      }
+    }
+  },
+  "version": 1
+}

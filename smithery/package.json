@@ -1,0 +1,8 @@
+{
+  "name": "rugsnare-mcpb",
+  "version": "1.4.3",
+  "description": "RugSnare MCP server (MCPB bundle): read-only drift-feed status + pin store report",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "server/index.js"
+}
