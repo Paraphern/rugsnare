@@ -3,11 +3,9 @@
 <img src="docs/logo.png" alt="RugSnare logo" width="96" height="96" align="left" style="margin-right:16px;border-radius:20px">
 
 [![npm version](https://img.shields.io/npm/v/rugsnare.svg)](https://www.npmjs.com/package/rugsnare)
-[![rugsnare](https://rugsnare.com/badge/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare#trust-model)
+[![rugsnare](https://rugsnare.com/badge/Paraphern/rugsnare.svg)](https://rugsnare.com/#badge)
 [![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/Paraphern/rugsnare/actions/workflows/ci.yml/badge.svg)](https://github.com/Paraphern/rugsnare/actions)
 [![Dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
 [![Node: >=18](https://img.shields.io/badge/node-%3E%3D18-green.svg)](#)
 [![GitHub stars](https://img.shields.io/github/stars/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare/stargazers)
@@ -105,10 +103,16 @@ That's it. The action installs rugsnare, runs `diff`, and fails the build when a
 Badge for your README:
 
 ```markdown
-![rugsnare](https://rugsnare.com/badge/YOUR_USERNAME/YOUR_REPO.svg)
+[![rugsnare](https://rugsnare.com/badge/YOUR_USERNAME/YOUR_REPO.svg)](https://rugsnare.com/#badge)
 ```
 
-Shows `N tools · N skills` in green when pinned, gray when not.
+The badge is a trust signal, not just a counter. Green `signed · N tools · M skills ...`
+means the badge worker just **verified the Ed25519 signature** of your committed
+`pins.json` against your committed `pins.pub.pem` (run `rugsnare receipts sign` to get
+one). Yellow `unsigned · ...` means pinned but no signature; red `SIG BROKEN · ...`
+means `pins.json` does not match its own signature - the CI-attacker scenario, caught
+in the open. Gray is not pinned. Counts cover tools, skills, prompts and resources.
+[What the states mean →](https://rugsnare.com/#badge)
 
 ### Live proxy (optional, v0.2+)
 
