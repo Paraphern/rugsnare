@@ -20,7 +20,7 @@ RugSnare は、ユーザーが承認したすべての MCP サーバーについ
 
 設定ファイルを管理しているプロジェクト内で、次を実行します。
 
-    npm install --save-dev rugsnare@1.4.3
+    npm install --save-dev rugsnare@1.5.0
 
 バージョンは正確に固定してください。RugSnare 自体のアップグレードは意図的に判断して行います。これは、RugSnare が MCP サーバーに適用する規律と同じです。
 
@@ -68,7 +68,7 @@ RugSnare は、ユーザーが承認したすべての MCP サーバーについ
 
 RugSnare は読み取り専用の MCP サーバーとして動作します（ツール：`drift_feed_status` - 人気の MCP サーバーに関する公開ドリフトデータ、`pins_report` - ローカルの固定記録）。ユーザーから依頼された場合に限り、ユーザーの設定に追加してください。
 
-    { "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.4.3", "mcp"] } } }
+    { "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.5.0", "mcp"] } } }
 
 ## ユーザーへの報告
 

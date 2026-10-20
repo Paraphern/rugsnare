@@ -20,7 +20,7 @@ RugSnare 会固定用户已批准的每个 MCP 服务器的工具契约（名称
 
 在包含该配置文件的项目中运行：
 
-    npm install --save-dev rugsnare@1.4.3
+    npm install --save-dev rugsnare@1.5.0
 
 固定使用确切版本。升级 RugSnare 本身必须是经过明确决定的操作；它遵循自己对 MCP 服务器所执行的同样纪律。
 
@@ -68,7 +68,7 @@ RugSnare 会固定用户已批准的每个 MCP 服务器的工具契约（名称
 
 RugSnare 可以作为只读 MCP 服务器运行（工具：`drift_feed_status` - 热门 MCP 服务器的公开漂移数据；`pins_report` - 本地固定记录存储）。只有在用户提出要求时，才将其添加到用户的配置中：
 
-    { "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.4.3", "mcp"] } } }
+    { "mcpServers": { "rugsnare": { "command": "npx", "args": ["rugsnare@1.5.0", "mcp"] } } }
 
 ## 向用户汇报
 
