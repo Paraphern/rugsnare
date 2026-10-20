@@ -68,6 +68,11 @@ node src/cli.js init
 
 Zero dependencies, no `npm install` needed - just Node.js ≥ 18.
 
+## Installation guide translations
+
+- [简体中文（Chinese）](llms-install.zh.md)
+- [日本語（Japanese）](llms-install.ja.md)
+
 ## Quick start
 
 After install (use `node src/cli.js` instead of `rugsnare` if installing from GitHub):
