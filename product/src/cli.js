@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { toolHash, short } from './hash.js';
+import { toolHash, surfaceHash, short } from './hash.js';
 import { discoverConfigs, discoverZCodePlugins, serverCommand } from './discovery.js';
 import { fetchTools } from './rpc.js';
 import {
@@ -338,6 +338,10 @@ async function cmdScan(flags) {
 
       const serverPin = ensureServer(pins, name, serverCmd);
       for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true });
+      // PIN-SPEC §3.2: interop hash over the whole captured surface
+      // (three-field Dominion set, sorted by name - deterministic across
+      // machines regardless of tools/list response order)
+      serverPin.surfaceHash = surfaceHash(tools);
 
       // pin prompts and resources too (if the server exposes them).
       // §7 byte-stability: entries with unchanged hashes are left untouched
@@ -739,6 +743,8 @@ async function cmdApprove(flags, serverName) {
   // approve is the deliberate approval act (autoclav-67): first-sight proxy
   // entries with an unchanged contract must flip approved:false -> true here
   for (const tool of tools) pinTool(serverPin, tool, toolHash(tool), { approved: true, reason: 'approve' });
+  // PIN-SPEC §3.2: approve re-baselines the interop surface hash too
+  serverPin.surfaceHash = surfaceHash(tools);
 
   // Approve re-baselines prompts and resources wholesale: the human reviewed
   // the NEW state, so entries the server dropped must not ghost as REMOVED on

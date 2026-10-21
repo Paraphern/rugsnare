@@ -8,7 +8,7 @@ Tools 5 -> 16 (the 17 in early union snapshots was a measurement artifact - `rug
 
 **4 GONE tools** - `add`, `longRunningOperation`, `sampleLLM`, `getTinyImage`: the original demo surface, retired. `add` (integer addition) was there from the first public MCP demo.
 
-**12 NEW tools** - including `get-annotated-message`, `get-resource-links`, `get-resource-reference`, `get-structured-content`, `gzip-file-as-resource`, `toggle-simulated-logging`, `toggle-subscriber-updates`, `trigger-long-running-operation`, `simulate-research-query`, `get-env` - plus 4 NEW prompts (`simple-prompt`, `args-prompt`, `completable-prompt`, `resource-prompt`) and 7 NEW resources (`architecture.md`, `features.md`, `instructions.md` and the rest of a docs pack).
+**15 new tools** through 2.0.0 (12 through 1.0.0 plus 3 added by the 2026-10-19 2.0.0 release) - including `get-annotated-message`, `get-resource-links`, `get-resource-reference`, `get-structured-content`, `gzip-file-as-resource`, `toggle-simulated-logging`, `toggle-subscriber-updates`, `trigger-long-running-operation`, `simulate-research-query`, `get-env` - plus 4 NEW prompts (`simple-prompt`, `args-prompt`, `completable-prompt`, `resource-prompt`) and 7 NEW resources (`architecture.md`, `features.md`, `instructions.md` and the rest of a docs pack).
 
 **2 GONE prompts + 10 GONE resources** - `simple_prompt`, `complex_prompt`, Resource 1-10: the prompt/resource demo surfaces were replaced entirely.
 
