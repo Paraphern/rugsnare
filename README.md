@@ -173,6 +173,10 @@ Two read-only tools: `drift_feed_status` (what the public drift-feed currently s
 
 Every advisory hit and SARIF rule carries the ID of the [ATR](https://github.com/Agent-Threat-Rule/agent-threat-rules) rule covering the same technique (e.g. a zero-width Unicode hit references `ATR-2026-00129`, contract drift references `ATR-2026-00581`, the post-approval rug-pull rule), so RugSnare pre-invocation findings and ATR runtime findings correlate in one pipeline. CLI output shows the IDs inline; `--json` returns them as an `atr` array; the SARIF export carries them in `properties.atrRuleIds`. Full table, plus three gap-proposals already filed upstream for review: [`docs/ATR-MAPPING.md`](docs/ATR-MAPPING.md).
 
+### OWASP-mapped (Agentic Top 10, AI Testing Guide, AISVS)
+
+Findings also speak OWASP's vocabulary: every RugSnare capability is mapped to the [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/resources/) risks it operationalizes (contract drift = ASI04 supply chain, shadow tools = ASI02 misuse, IDENTITY = ASI03, guard-parameter stripping = C9.2 irreversibility controls...), to the [AI Testing Guide](https://github.com/OWASP/www-project-ai-testing-guide) tests it serves as a tool for (AITG-INF-01 supply chain tampering above all), and to [AISVS 0x10-C09](https://github.com/OWASP/AISVS) verification requirements - with gaps stated honestly. Full table: [`docs/OWASP-ASI-MAPPING.md`](docs/OWASP-ASI-MAPPING.md).
+
 ## Trust model
 
 We take our own medicine:
