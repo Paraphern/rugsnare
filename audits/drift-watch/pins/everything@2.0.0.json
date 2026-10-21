@@ -1,0 +1,547 @@
+{
+  "policyVersion": "rugsnare-1.5.0",
+  "servers": {
+    "s": {
+      "cmd": {
+        "args": ["node_modules/@modelcontextprotocol/server-everything/dist/index.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/index.js",
+        "identityHash": "sha256:a9de7c8a6c81bbecaa5da1be36148a220e35bb551d85f6d43077329e4c38d37b",
+        "package": "@modelcontextprotocol/server-everything",
+        "resolvedVersion": "2.0.0",
+        "url": null
+      },
+      "pinnedAt": "2026-10-20T18:34:01.283Z",
+      "prompts": {
+        "args-prompt": {
+          "description": "A prompt with two arguments, one required and one optional",
+          "firstSeen": "2026-10-20T18:34:01.289Z",
+          "hash": "4a0019371928adefdf51bf1012939c96d66418530005b035452c5cac0628ab28"
+        },
+        "completable-prompt": {
+          "description": "First argument choice narrows values for second argument.",
+          "firstSeen": "2026-10-20T18:34:01.289Z",
+          "hash": "cb5275973d39cb526b34290cd3d5b3c3d6e1419fa0868d07d4a77e3dfac1966b"
+        },
+        "resource-prompt": {
+          "description": "A prompt that includes an embedded resource reference",
+          "firstSeen": "2026-10-20T18:34:01.289Z",
+          "hash": "f12d0e2427f3c67f7d04efefd3547708d1f3164c9ba962bdcb2085deb898750a"
+        },
+        "simple-prompt": {
+          "description": "A prompt with no arguments",
+          "firstSeen": "2026-10-20T18:34:01.289Z",
+          "hash": "cf7ff079d9c0929b7da9e2f0acc04020adf0c27626c3c48568ae5c22621a5c3d"
+        }
+      },
+      "resources": {
+        "architecture.md": {
+          "contentHash": "d19771fe929c8cdb51fb604b052690201274ce4246625853595944d07a065f91",
+          "description": "Static document file exposed from /docs: architecture.md",
+          "firstSeen": "2026-10-20T18:34:01.289Z",
+          "hash": "2c20d670559c5f8e5c1fdc5083748904ff777a50f5923037e69f796b988e1285"
+        },
+        "extension.md": {
+          "contentHash": "b75fb391470943ec3ec4f663f871888cdd446f04fefb285d8a8222a0ba05428f",
+          "description": "Static document file exposed from /docs: extension.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "47ef1bd632531fe13787c5932c560955438255e453704f6323c39409df651b6a"
+        },
+        "features.md": {
+          "contentHash": "2adb3547170a5e0010abf93cbb6dd06af5f0a99e93a79bfc93c72b14026b3e77",
+          "description": "Static document file exposed from /docs: features.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "a08e8c87acd23077793275612cade06c10232b5fd1bf002d64c9799653d45ce8"
+        },
+        "how-it-works.md": {
+          "contentHash": "16c7a42ede9b72363d6faed534110374f34dc02856c6d096971eaee80c339653",
+          "description": "Static document file exposed from /docs: how-it-works.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "ce967617e2adb7bb0d791e555900c0a2b75a3dfda0530b01457f72f5ccd733f0"
+        },
+        "instructions.md": {
+          "contentHash": "1a66d8ed8da4faa3fb9eaea03978d20578aeafe3742840a471d5e07e6339e5f5",
+          "description": "Static document file exposed from /docs: instructions.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "1c195708b086444f539cda90255b565d69cf06149598e32b8c924a67baad654f"
+        },
+        "startup.md": {
+          "contentHash": "250f567f476a4a983bb7a0c0624b82093ef40c7521c8a6f06e1b06ee19c2a480",
+          "description": "Static document file exposed from /docs: startup.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "224e8dc0f1250a1c218d51d4ace93b5fb4ef08c06f9b7bec4eef23a166455039"
+        },
+        "structure.md": {
+          "contentHash": "905bd616e9d6405bec9e49ded54a94f8befa8d141535739d7abba62e046a0b9f",
+          "description": "Static document file exposed from /docs: structure.md",
+          "firstSeen": "2026-10-20T18:34:01.290Z",
+          "hash": "85cf6cdfbb158db69d51a7a9af2b3611828145416ddaadf9dffe2a96d2d7868f"
+        }
+      },
+      "scannedAgainst": "@modelcontextprotocol/server-everything@2.0.0",
+      "tools": {
+        "echo": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Echoes back the input string",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "717ad4cdba610bf0b85adb9f53ae09cd20e3baa23c24938673c849599323b5b8",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "message": {
+                "description": "Message to echo",
+                "type": "string"
+              }
+            },
+            "required": ["message"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "4d00e170dfb2475b38d7c595d6b83ddc873f4119814d8c3e96321a53aaf18fca",
+          "schemaHash": "fc63065fb459640fa0219c7418f4b9f5a111d2b8152bc1e7c3666af726219fcc"
+        },
+        "get-annotated-message": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Demonstrates how annotations can be used to provide metadata about content.",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "62d74c882d8bc36470690d8187b38f98810e186ccc25b621065163cada482dba",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "includeImage": {
+                "default": false,
+                "description": "Whether to include an example image",
+                "type": "boolean"
+              },
+              "messageType": {
+                "description": "Type of message to demonstrate different annotation patterns",
+                "enum": ["error","success","debug"],
+                "type": "string"
+              }
+            },
+            "required": ["messageType"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "6050c40378a145a00c1912f5904b37edb1266ce1c43fa430b6655a6f302d5222",
+          "schemaHash": "2094862b151d1eed79f49041ac2955dd59e0eea5b926bfc5784d5e58a4ddc1bf"
+        },
+        "get-env": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "4a12c3402c7e458772189344f0f1c372e401fb48e6d7e443a84f854fa15b4d45",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "41cecdc4e2e1e3ab2be769fefe6cb155289da5ade9c381a1578bda7948111c26",
+          "schemaHash": "6603158fea45603cd15562f1bbcea7752389cb509fe38097013fcee8fc72041a"
+        },
+        "get-header-params": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns its region argument and the Mcp-Param-Region HTTP header it arrived in. Demonstrates x-mcp-header (a 2026-07-28 Streamable HTTP client mirrors the argument into the header) and JSON Schema 2020-12 input and output schemas.",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "e6451e2a1a13a7814611996b7e60fd5a54939729819ab9617b73f4e9cddfc10c",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": false,
+            "properties": {
+              "region": {
+                "description": "A region name, e.g. eu-west. Mirrored into the Mcp-Param-Region HTTP header.",
+                "type": "string",
+                "x-mcp-header": "Region"
+              },
+              "repeat": {
+                "default": 1,
+                "description": "How many times to repeat the region in the result (1-3)",
+                "maximum": 3,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": ["region"],
+            "type": "object"
+          },
+          "outputHash": "d26be5e0124e62b8aefd7246561c07fdf92649f7e29bcdd619a6a2f2d4983d49",
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "99454fc6cf95f4321874021de7bb74db0830a9073ee1f71698bf0f892ffa1768",
+          "schemaHash": "70403c82d55db7747fab9bc2aab2bc9b873bc865abd70764215b608e2c177a42"
+        },
+        "get-resource-links": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns up to ten resource links that reference different types of resources",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "9fd98ff61b6152599e02dcc900f10fceec09b97e14702fa1566d0c68db395d6c",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "count": {
+                "default": 3,
+                "description": "Number of resource links to return (1-10)",
+                "maximum": 10,
+                "minimum": 1,
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "0574c9e3571c77380de27d3927dbac8133e68c558150b8f0b95d2e884403613c",
+          "schemaHash": "1069ff766d254d8eb446b1d0f9daa131c68cccdabfb38e7dd3ef384a53fd0c3c"
+        },
+        "get-resource-reference": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns a resource reference that can be used by MCP clients",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "40d5c4d645a88501af5f76f89181b1ca8b04ba142c852bdce619420903439430",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "resourceId": {
+                "default": 1,
+                "description": "ID of the text resource to fetch",
+                "type": "number"
+              },
+              "resourceType": {
+                "default": "Text",
+                "enum": ["Text","Blob"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "f65488ea8977f68a7680a0ba04efa98d742a3007664649c9e00899f43f1d89de",
+          "schemaHash": "a65697615d1df60f201b93f46ad172af711cbb6448b51ebad73e23accb6cf109"
+        },
+        "get-structured-content": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns structured content along with an output schema for client data validation",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "ee1b73a92526a156bd867696e3d45c912c07036377c234f8821b601fc14bcde9",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "location": {
+                "description": "Choose city",
+                "enum": ["New York","Chicago","Los Angeles"],
+                "type": "string"
+              }
+            },
+            "required": ["location"],
+            "type": "object"
+          },
+          "outputHash": "65e8a81af7f95488637f7a31409703582e26bb58b81475ed28e6422a5898aed0",
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "276d76ef534072c914d17df7855f06d6c44a8c5be3ee2b8eb686afdeb357d88c",
+          "schemaHash": "7aad8cb22109fb0b2e8a8ffd8b81dca2a6e25983db65c477aebbe6fd3f8937ef"
+        },
+        "get-sum": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns the sum of two numbers",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "bedcfee056db90a8391c37fefc58bbcb891ad9e7b34317cc5330c77fbb0a232f",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "a": {
+                "description": "First number",
+                "type": "number"
+              },
+              "b": {
+                "description": "Second number",
+                "type": "number"
+              }
+            },
+            "required": ["a","b"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "98b4e89d761c05f63a8acce7100a3950f49ca67537dea3716c0ba2a9431316f9",
+          "schemaHash": "1a4bb79c2878d3bfc32b600dff1f633b7242272bb27b9dee92ce00a7a85bc402"
+        },
+        "get-tiny-image": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns a tiny MCP logo image.",
+          "firstSeen": "2026-10-20T18:34:01.287Z",
+          "hash": "e1b1ffc3c0a0599aa3b5c98ce2ce1af7bb80c6f5d8ddc1b23396c5f8844df2fb",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.287Z",
+          "proseHash": "7eba2275ba1ae93a58102c84bcd8f1fb29126fb998d3cbd2947457cdbe685bde",
+          "schemaHash": "3e4ec1efc8cf75e76e510d8877e67fcc128861302acf090c522813ed1def60ec"
+        },
+        "gzip-file-as-resource": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request: during the current session for a 2025-era client, or for ten minutes at a minted URI on protocol version 2026-07-28.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "3a32b347b8564994d47cccc70cd21c985327ef5f6628ce7c55da64a69d5002a7",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "data": {
+                "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+                "description": "URL or data URI of the file content to compress",
+                "format": "uri",
+                "type": "string"
+              },
+              "name": {
+                "default": "README.md.gz",
+                "description": "Name of the output file (at most 255 characters)",
+                "maxLength": 255,
+                "type": "string"
+              },
+              "outputType": {
+                "default": "resourceLink",
+                "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+                "enum": ["resourceLink","resource"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "d85af6e05a3e61510e67b34e1b265ffb06b142a33b1b3db49d5a9f1328519c70",
+          "schemaHash": "54266da69dccb12dd43cee7e705646b898e31cf7a4217f1e3daa3d024f90755a"
+        },
+        "toggle-simulated-logging": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Toggles simulated, random-leveled logging on or off. Deprecated: 2025-era clients only, since protocol version 2026-07-28 removes logging/setLevel; use trigger-log-messages with a per-request log level instead.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "fc3d444cc6f1f199de3743118a3c01a6311a813ae7199ad5c23b480eec7b2728",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "a045b23f4caccaabc684257fd3153bd5180b4ef41ebdb1d9cfaf961a7c30b31e",
+          "schemaHash": "4c44639b529f412fa7706069fb50414f77f55a5df4146ebbfeac9772e44c8efb"
+        },
+        "toggle-subscriber-updates": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Toggles simulated resource subscription updates on or off. Deprecated: 2025-era clients only, since protocol version 2026-07-28 removes resources/subscribe; use trigger-resource-update with a subscriptions/listen stream instead.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "313f8433554c1ddc607742d6c08217cacfcb7f961b28fa310392f13347519a41",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "b90588504eb5fcb83950b82c899eeb52c0275a2bb988ba84b0c9420f5f69f421",
+          "schemaHash": "4d833c5d9654a32dadc10d8faf7f0d3bfc26b31cb69a250433318720ba1c4601"
+        },
+        "trigger-list-changed": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Sends a notifications/<list>/list_changed for the tool, prompt or resource list. On protocol version 2026-07-28 it is delivered on each subscriptions/listen stream that asked for that list; a 2025-era client receives it unsolicited.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "87575cd3825d9f60e7280ff1045fcac7cb36196be944a71f209337fcb996a12b",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "list": {
+                "description": "Which list to announce as changed",
+                "enum": ["tools","prompts","resources"],
+                "type": "string"
+              }
+            },
+            "required": ["list"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "dff60ff65fd1736c88f5f33a4e11873a941c2a981387f0153d76f878231b7034",
+          "schemaHash": "6152d8c6072633fc2df70a5a188d676caecda6424fe7433ff4fa3594015a0d13"
+        },
+        "trigger-log-messages": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Sends one log message at each logging level during the call. On protocol version 2026-07-28 only the messages at or above the level the request names in _meta (io.modelcontextprotocol/logLevel) are sent, and none if it names no level; a 2025-era client gets those at or above the level it set with logging/setLevel. Deprecated: logging is deprecated as of protocol version 2026-07-28.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "b58263b8f36b69e980659054ce9ff1a89b298d86e7715bcd96a899b5ab41f9d6",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "74a348e35250bdd377fed89ac9e2bca2d5cb7aae02186037c378a47b6695bcb4",
+          "schemaHash": "7f0467e90ba1c55287e2bddd47db3dd61fda4186f81efb4461d8bf17f6110098"
+        },
+        "trigger-long-running-operation": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Demonstrates a long running operation with progress updates.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "e0d7e0bb855e23173ddbf3ef0ba6db9a04a7442e9d52b56e556ac633ce704638",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "duration": {
+                "default": 10,
+                "description": "Duration of the operation in seconds",
+                "type": "number"
+              },
+              "steps": {
+                "default": 5,
+                "description": "Number of steps in the operation",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "d047c3fcbcb25a9255d0bd7584d019509a8aa5a181ce7e3c6109d76ea820d125",
+          "schemaHash": "51db4bac3f52c733e07f708c272de8bea8ab1d473469fa64bf529df7716f1286"
+        },
+        "trigger-resource-update": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Sends a notifications/resources/updated for a resource URI. On protocol version 2026-07-28 it is delivered on each subscriptions/listen stream whose resourceSubscriptions name the URI; a 2025-era client receives it once it has called resources/subscribe for the URI.",
+          "firstSeen": "2026-10-20T18:34:01.288Z",
+          "hash": "48d076a6dc1064250ce8b875524e25c8b9cc11653607e640e80087798ded23f8",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "uri": {
+                "description": "The URI of the resource to announce as updated, e.g. demo://resource/dynamic/text/1",
+                "type": "string"
+              }
+            },
+            "required": ["uri"],
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-20T18:34:01.288Z",
+          "proseHash": "a06bc3a856dd6ad7f9a06c1dd1136a0f6a74e2170be36330e90f6f485cb753f8",
+          "schemaHash": "7db78f117e8e74fa42e52387597c808dfbabf8d3f1db0acbdaa8c2e7926f34b9"
+        }
+      }
+    }
+  },
+  "version": 1
+}

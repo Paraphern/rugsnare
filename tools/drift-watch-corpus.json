@@ -292,7 +292,7 @@
       "name": "everything",
       "package": "@modelcontextprotocol/server-everything",
       "pinned": "0.1.0",
-      "lastSeen": "1.0.0",
+      "lastSeen": "2.0.0",
       "lastFindings": 40,
       "entry": "node_modules/@modelcontextprotocol/server-everything/dist/index.js",
       "env": {},
@@ -302,7 +302,7 @@
       "name": "filesystem",
       "package": "@modelcontextprotocol/server-filesystem",
       "pinned": "0.2.0",
-      "lastSeen": "1.0.0",
+      "lastSeen": "2.0.0",
       "lastFindings": 14,
       "entry": "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
       "args": [

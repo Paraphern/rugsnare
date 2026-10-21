@@ -180,7 +180,7 @@ We take our own medicine:
 - **Zero dependencies** - a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, nothing leaves your machine.
 - **Signed releases** (Ed25519 OpenPGP, fingerprint in [SECURITY.md](SECURITY.md), published in three independent places).
-- **On-chain `ReleaseLog`** - release hashes pinned append-only on Base (testnet live now); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
+- **On-chain `ReleaseLog`** - release hashes pinned append-only on Base mainnet (live since v1.0.0); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
 - **Apache-2.0.** If we ever go rogue - fork us. That's the license working as intended.
 
 Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) - 7 short questions, findings published. Author: [@SergeyDruzhba on X](https://x.com/SergeyDruzhba).

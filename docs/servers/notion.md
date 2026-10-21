@@ -23,7 +23,7 @@ mkdir nt && cd nt && npm init -y
 # mcp.json: {"mcpServers":{"notion":{"command":"node","args":["node_modules/@notionhq/notion-mcp-server/bin/cli.mjs"],"env":{"OPENAPI_MCP_HEADERS":"{\"Authorization\":\"Bearer dummy\",\"Notion-Version\":\"2022-06-28\"}"}}}}
 npm i @notionhq/notion-mcp-server@2.4.1 && npx rugsnare scan --config mcp.json
 rm -rf node_modules package-lock.json
-npm i @notionhq/notion-mcp-server@2.5.2 && npx rugsnare diff --config mcp.json   # clean, exit 0
+npm i @notionhq/notion-mcp-server@2.5.2 && npx rugsnare diff --config mcp.json
 ```
 
-Last verified 2026-10-18 (rugsnare 1.4.3).
+Last verified 2026-10-20 (rugsnare 1.5.0): all 24 tool contracts unchanged; the single finding is (identity) - the version bump itself (PIN-SPEC identity block; rugsnare 1.5.0 pins server identity). Zero contract findings; exit 1 on identity only, by design - an upgrade IS an identity change.
