@@ -1,0 +1,9 @@
+name = "rugsnare-mcp"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+account_id = "e9dd9279d84218bdf09e6be43f42d25d"
+workers_dev = true
+
+# Hosted instance of rugsnare's own MCP server (product/src/mcp-server.js),
+# exposed as a public HTTPS endpoint for the Dominion Observatory join pair
+# (Paraphern/rugsnare#6). Same tool surface, same protocol version, read-only.
