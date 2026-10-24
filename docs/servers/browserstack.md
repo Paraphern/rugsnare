@@ -16,3 +16,8 @@ npm i @browserstack/mcp-server@2.2.1 && npx rugsnare@1.3.0 diff --config mcp.jso
 ```
 
 Last verified 2026-10-13 (re-graded on rugsnare 1.3.0; issue #476 open, no vendor response; npm already shows 2.2.2 - next drift-watch window).
+
+
+## 2026-10-24 window
+
+1.4.1 -> 2.2.7: 30 findings (graded, rugsnare 1.4.3; pins at audits/drift-watch/pins/browserstack@2.2.7.json). Cumulative corpus total: 351 across the 22 servers. See audits/drift-watch/2026-10-24.md.

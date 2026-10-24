@@ -13,7 +13,7 @@
         "resolvedVersion": "1.14.0",
         "url": null
       },
-      "pinnedAt": "2026-10-17T02:55:41.522Z",
+      "pinnedAt": "2026-10-24T17:30:18.308Z",
       "prompts": {
 
       },
@@ -28,23 +28,23 @@
           },
           "approved": true,
           "description": "ALWAYS call when writing serverless or Netlify code. required step before creating or editing any type of functions, Netlify sdk/library  usage, etc.",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
-          "hash": "4e82cb8d122bdce3d2d67899e7f679538a2df357414ae29fcdb9fb1746141de7",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
+          "hash": "1d68199c7423702b38df207ce7c00b5b7ede37bec71c4512c002200d629eae36",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "additionalProperties": false,
             "properties": {
               "creationType": {
-                "enum": ["serverless","edge-functions","blobs","image-cdn","forms","db"],
+                "enum": [],
                 "type": "string"
               }
             },
             "required": ["creationType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.311Z",
           "proseHash": "6f112101df9b12e783ea759ceac5fd17c604224c73a678e6c4e87c11fd4e36d5",
-          "schemaHash": "1493396ce863ae47b1c46cf4804e7fe94c9ba63ee8949839655cbfc0b0c4f4ab"
+          "schemaHash": "8f6fd7f38c41fae033153bd5c4bcb6c221ed9b81f02a6852971db4f4e6debfc3"
         },
         "netlify-deploy-services-reader": {
           "annotations": {
@@ -52,7 +52,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-deploy, get-deploy-for-site",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
           "hash": "f02b228bc8e26afc1228dd91164b8b109832027e12e0b5047a243253d8f663f0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -120,7 +120,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.311Z",
           "proseHash": "fde8f5792a92eb337634d8ab160550509bbab51f20ee69207eca2ef3c70dbbc0",
           "schemaHash": "969b061d9eda9d621548a865063d0381acd19fbd41cb735aa0c62bb0cf0e66d5"
         },
@@ -130,7 +130,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations deploy-site",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "70f3b372841943fec8c36d9b780aa7343ba95143e543b434c8db321d5ea2ce85",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -172,7 +172,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "f4ddf5e02e6e4f122fa433c283bf0fc10902556e1e298636a16e5c7438749a62",
           "schemaHash": "44f16083304ef7174601891467c7e66d7b95ccc317c4bb63e160d6cd7573953e"
         },
@@ -182,7 +182,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-extensions, get-full-extension-details",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "326b8275724e77868df49503aef2a11cf18224c30d5d78dc90e7527734fb8182",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -248,7 +248,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.527Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "656873cc07c79e775f82fdd39a9161f3cd06fc8f4dc675e42ce4c7b4c4c0ada5",
           "schemaHash": "08400d9f7071b3b4dbbc5a1b12b65060a9409a505041209411d8c2d3f31ad2cc"
         },
@@ -258,7 +258,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations change-extension-installation, initialize-database",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "20af4ece914d87b99dd53c5dae9452fadcdb009aa86ff39729cf609f37e77482",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -331,7 +331,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.527Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "61cc1c01b1fe6430b98baf2b7b399bd99ff258df8bd8621f4cbe9753468b62da",
           "schemaHash": "63540974ac558de7154d2798be9fcc31df6c131cda98425dbf6d4c02e2eaf207"
         },
@@ -341,7 +341,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-project, get-projects, get-forms-for-project",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "de9857f95825f639d205c1f41e01f6f3460146c3beeeb04ea969b72ee6072d64",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -438,7 +438,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "77193680d09a69e694b93924a82f441a4a991790b85a9210878888e8ea2f7ea7",
           "schemaHash": "eb40b43811ee25d8fdeac2d5f333518609c93146eff9e13721caa360935ec067"
         },
@@ -448,7 +448,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations update-visitor-access-controls, update-forms, manage-form-submissions, update-project-name, manage-env-vars, create-new-project",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "24406c9148333858017e744e6c4b675d459446e1090cadc4bad30efc1a2c5ecc",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -693,7 +693,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.527Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "5e67997e139073d71ac012e26bd1ca17b00610841e8f66d1fe35b721069a6a57",
           "schemaHash": "4f451c6499b11c49fc2d3c3885aec20e284252be62dbcd5f164648a8e4884c37"
         },
@@ -703,7 +703,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-teams, get-team",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
           "hash": "300b2d598680a4b5bdab9049605fa987819b7562bdb526c37e3bd3772c8d0afc",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -765,7 +765,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.312Z",
           "proseHash": "c512a64b769a1805b3792e82e3479522b6ec64fcfca95175431aa59b2cd6df19",
           "schemaHash": "54089f7069d894f8f760c156483ca4c05112fbc32a91b1a784bd7f37972485d5"
         },
@@ -775,7 +775,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-user",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
           "hash": "39955fd2079d7dc7c1f251526d99b0a742be75e9c6ce2ff2120fa365c680bef7",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -809,7 +809,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-24T17:30:18.311Z",
           "proseHash": "bfde3e02cf3d7992cc217cd91bc299a15685341bb8948f9926dc656da653f626",
           "schemaHash": "dc26293014793651ac6cc89e02752b14e4c182faee7904aac615baf91f0ea67e"
         }

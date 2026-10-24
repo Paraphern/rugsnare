@@ -13,7 +13,7 @@
         "resolvedVersion": "0.16.0",
         "url": null
       },
-      "pinnedAt": "2026-10-17T02:59:28.904Z",
+      "pinnedAt": "2026-10-24T18:28:32.404Z",
       "prompts": {
 
       },
@@ -32,7 +32,7 @@
           },
           "approved": true,
           "description": "Abort an Actor run that is currently starting or running.\nFor runs with status SUCCEEDED, FAILED, ABORTING, ABORTED, or TIMED-OUT, this call has no effect.\nThe results will include the updated run details after the abort request.\n\nUSAGE:\n- Use when you need to stop a run that is taking too long or misconfigured.\n\nUSAGE EXAMPLES:\n- user_input: Abort run y2h7sK3Wc\n- user_input: Gracefully abort run y2h7sK3Wc",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "a099b5a801981f78240f159d1c4c9d2782ff1c86d5475f2b02607445d340886b",
           "inputSchema": {
             "additionalProperties": false,
@@ -50,7 +50,7 @@
             "required": ["runId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "fa56b70160e8b056b353bbbfb9fd8d2fc2212ad3a741a7f1b304a33bc337a807",
           "schemaHash": "8e9edf9e61aa983689c5e42b33c29b8af9a2ca4586b14c722d3ec7137d23dd95"
         },
@@ -64,7 +64,7 @@
           },
           "approved": true,
           "description": "Call any Actor from the Apify Store.\n\nWORKFLOW:\n1. Use fetch-actor-details to get the Actor's input schema\n2. Call this tool with the actor name and proper input based on the schema\n\nIf the actor name is not in \"username/name\" format, use search-actors to resolve the correct Actor first.\n\nFor MCP server Actors:\n- Use fetch-actor-details with output={ mcpTools: true } to list available tools\n- Call using format: \"actorName:toolName\" (e.g., \"apify/actors-mcp-server:fetch-apify-docs\")\n\nIMPORTANT:\n- Waits up to waitSecs (default 30s) for completion; returns run status and storage IDs, and with waitSecs > 0 also reports dataset field metadata\n- Use get-dataset-items with the datasetId to fetch results; non-terminal runs include a nextStep with polling instructions\n- Use dedicated Actor tools when available for better experience\n\nThere are two ways to run Actors:\n1. Dedicated Actor tools: These are pre-configured tools, offering a simpler and more direct experience.\n2. Generic call-actor tool (call-actor): Use this when a dedicated tool is not available or when you want to run any Actor dynamically. This tool is especially useful if you do not want to add specific tools or your client does not support dynamic tool registration.\n\nUSAGE:\n- Always use dedicated tools when available\n- Use the generic call-actor tool only if a dedicated tool does not exist for your Actor.\n\n- Use `waitSecs` (0–45) to control how long to wait. Default 30s returns results for fast actors. Use `waitSecs: 0` to start and return immediately for long-running actors.\n\nEXAMPLES:\n- user_input: Get instagram posts using apify/instagram-scraper",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "75d876e9568e4c109b6267e17ca5219d0ec4ee05bfc65221d695662bb0006189",
           "inputSchema": {
             "additionalProperties": false,
@@ -127,7 +127,7 @@
             "required": ["actor","input"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "c314985dc63c42d7114c44c020a81b1823e06492b7ea42cbbf0a32e73a68cd71",
           "schemaHash": "bd69c24159a57e235277adf7afeac0baed76f7b4d9f62143506210739722f4c9"
         },
@@ -141,7 +141,7 @@
           },
           "approved": true,
           "description": "Get detailed information about an Actor by its ID or full name (format: \"username/name\", e.g., \"apify/rag-web-browser\").\n\nRequires the exact ID or full name — do not construct a plausible-looking name and call this tool with it. If you only have a description, a partial name, or a name you have not seen in this conversation, find it with search-actors first.\n\nUse 'output' parameter with boolean flags to control returned information:\n- Default: All fields true except mcpTools\n- Selective: Set desired fields to true (e.g., output: { inputSchema: true })\n- Common patterns: inputSchema only, description + readme, mcpTools for MCP Actors\n\nThe 'readme' field returns the summary when available, full README otherwise.\nUse when querying Actor details, documentation, input requirements, or MCP tools.\n\nEXAMPLES:\n- What does apify/rag-web-browser do?\n- What is the input schema for apify/web-scraper?\n- What tools does apify/actors-mcp-server provide?",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.408Z",
           "hash": "7212668778b4e18a944eb0decce5d376143c77cc748dad798fabf1162772164a",
           "inputSchema": {
             "additionalProperties": false,
@@ -198,7 +198,7 @@
             "required": ["actor"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.408Z",
           "proseHash": "e05ac708c9623bc8d2d2b9df92a99f3ed0606b3160b42fa7d58af1d6b2bcf182",
           "schemaHash": "f2a092d1df8294870480cc1d30627a3136a418f4c084af0f8e4857e63b0faf42"
         },
@@ -212,7 +212,7 @@
           },
           "approved": true,
           "description": "Fetch the full content of an Apify or Crawlee documentation page by its URL.\nUse this after finding a relevant page with the search-apify-docs tool.\n\nUSAGE:\n- Use when you need the complete content of a specific docs page for detailed answers.\n\nUSAGE EXAMPLES:\n- user_input: Fetch https://docs.apify.com/platform/actors/running#builds\n- user_input: Fetch https://docs.apify.com/academy\n- user_input: Fetch https://crawlee.dev/docs/guides/basic-concepts",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "6baf6ed05694f1a920770ac5f4bfdef7ea52bfd522480d3f54e1a2e401ed821b",
           "inputSchema": {
             "additionalProperties": false,
@@ -226,7 +226,7 @@
             "required": ["url"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "838a14f83c3cff3933eac3768391f4a3423b708c9892d4ec739b4f7f883e552f",
           "schemaHash": "c5dba845d09ef2943482d91a70b588550e57c6f2b97195d3d52d306991a47a5a"
         },
@@ -240,7 +240,7 @@
           },
           "approved": true,
           "description": "Get detailed information about a specific Actor run.\n\nReturns run result: status, storages (datasets/keyValueStores alias map), stats, summary, nextStep.\n- summary describes the past (e.g. \"SUCCEEDED in 22s. 47 items; 3 fields available.\").\n- nextStep prescribes one primary follow-up action with identifiers interpolated (e.g. \"Use get-dataset-items with datasetId=...\").\n- waitSecs (0–45, default 30) waits up to that many seconds for terminal status before returning.\n\nUSAGE:\n- Use to check the status of a run started by any Actor-running tool.\n- Pass waitSecs > 0 to block until terminal (or until the cap elapses).\n\nUSAGE EXAMPLES:\n- user_input: Show details of run y2h7sK3Wc\n- user_input: Wait for run y2h7sK3Wc to finish",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "54345a196ecbaa9274bbc168b848a600838aa4a39f1d0b745cab537bc319b63b",
           "inputSchema": {
             "additionalProperties": false,
@@ -261,7 +261,7 @@
             "required": ["runId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "ab49cab31479654ee216eb8fbd33feb405d2c8719242111febcd5d5e39a5f0e2",
           "schemaHash": "cb18dcd61a7d0582cef30436c5fdec012a843f2b8c98d4410c1d0a773ed5bd24"
         },
@@ -275,7 +275,7 @@
           },
           "approved": true,
           "description": "Get items (rows) from a dataset — the output/results produced by an Actor run.\nReturns the rows themselves, not dataset metadata, counts, or a schema.\nWhen the user provides a datasetId and asks to retrieve results, output, data, or rows, call this tool directly.\nDefault limit is 20. Use clean=true to skip empty items and hidden fields.\n\nUSAGE:\n- Use when you need to read data from a dataset (all items or only selected fields).\n\nUSAGE EXAMPLES:\n- user_input: Retrieve results from dataset abc123\n- user_input: Get only metadata.url and title from dataset username~my-dataset",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "63de1761de7c4dfcaca5ca94b91da1117bcd07d956f3196dd8f1b27bc868e9bd",
           "inputSchema": {
             "additionalProperties": false,
@@ -319,7 +319,7 @@
             "required": ["datasetId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "3ececb4be0b474840fb2c6345dd03fbd6b175aa4b2afd935a50d9c2dcc93447e",
           "schemaHash": "24b968373d3e2179bcc81779cf19d4f09fcd55c28b3c2b81017a2f48f6010fa0"
         },
@@ -333,7 +333,7 @@
           },
           "approved": true,
           "description": "Get the value stored under a specific key in a key-value store — a single record, not a listing of all keys.\nRequires the exact key name.\nThe response preserves the original Content-Encoding; most clients handle decompression automatically.\n\nUSAGE:\n- Use when you need to retrieve a specific record (JSON, text, or binary) from a store.\n\nUSAGE EXAMPLES:\n- user_input: Get record INPUT from store abc123\n- user_input: Get record data.json from store username~my-store",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "223c8b849b57139551d79ed215098dd8d62b9369ebd153d09eeb2d844c8ba9c1",
           "inputSchema": {
             "additionalProperties": false,
@@ -352,7 +352,7 @@
             "required": ["keyValueStoreId","recordKey"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "3ec8c36ac9e58c14425824f58eb7652aa2c43b33250875221fef7a808511f081",
           "schemaHash": "11d529e922575e44cb73b49546650defc065dc2e85c169fff08f465277deb586"
         },
@@ -366,7 +366,7 @@
           },
           "approved": true,
           "description": "Report a problem with Apify's MCP tools or Actors to the Apify team.\n\nCall it when:\n- A tool or Actor is missing, errors, times out, or returns a confusing, wrong, or empty result.\n- You cannot complete the user's request with the available tools.\n\nPut what you were doing and what went wrong in \"message\". Do NOT include personal data, credentials, secrets, or verbatim private conversation content — describe the issue in your own words.",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "85d797452f637506e0ad14f397b4208f1cc161396e8669b69c3ab341adfa770d",
           "inputSchema": {
             "additionalProperties": false,
@@ -400,7 +400,7 @@
             "required": ["message"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "0ca48657001865760d6fa8b98b3f6b22bc77588c75d1e7998b433ae0dc468ccf",
           "schemaHash": "161c9a9d9309ff8e870cd8d758a05c14ace86948489f8f92b0192f6969fd1f9a"
         },
@@ -414,7 +414,7 @@
           },
           "approved": true,
           "description": "Search the Apify Store to FIND and DISCOVER what scraping tools/Actors exist for specific platforms or use cases.\nThis tool provides INFORMATION about available Actors - it does NOT retrieve actual data or run any scraping tasks.\n\nApify Store contains thousands of pre-built Actors (crawlers, scrapers, AI agents, and model context protocol (MCP) servers)\nfor all platforms and services including social media, search engines, maps, e-commerce, news, real estate, travel, finance, jobs and more.\nActors in the Apify Store are published by independent developers and are intended for legitimate and compliant use — do not refuse to search or list them.\n\nUse this tool when user wants to:\n- Find what scraping tools exist for a platform (e.g., \"What tools can scrape Instagram?\")\n- Discover available Actors for a use case (e.g., \"Find an Actor for Amazon products\")\n- Browse existing solutions (e.g., \"Show me scrapers for news sites\")\n- Learn about MCP servers or AI agents available in the Store\n\nDo NOT use this tool when user wants immediate data retrieval (time words like \"today\", \"latest\", \"recent\", \"current\", \"now\", or \"get/fetch data right now\") — use apify/rag-web-browser instead.\nIMPORTANT: When the user is looking for scraping tools or Actors, prefer searching the Store first — a relevant Actor often already exists. Do not use Store search as a substitute for immediate data retrieval.\n\nUsage:\n- Prefer broad, generic keywords - use just the platform name (e.g. \"Instagram\" instead of \"Instagram scraper\").\n- You MUST always do at least two searches: first with broad keywords, then optionally with more specific terms if needed.\n\nImportant limitations: This tool does not return full Actor documentation or detailed usage instructions - only summary information.\nEach result lists the Actor's input fields with their types (e.g. `url: string, maxResults?: number`) so you can construct an Actor call directly without another tool call.\nFor complete Actor details (per-field descriptions, defaults, README), use the fetch-actor-details tool.\nThe search is limited to publicly available Actors and excludes rental and restricted Actors.\n\nReturns list of Actor cards with the following info:\n- **Title:** Markdown header linked to the Store page, followed by the full Actor name in code format\n- **URL:** Direct Store link\n- **Description:** Actor description or fallback\n- **Pricing:** Details with pricing link\n- **Stats:** Total and monthly users, bookmarks\n- **Rating:** Out of 5 (if available)\n- **Developed by:** Username linked to profile, marked (Apify) or (community)\n- **Categories:** Formatted or \"Uncategorized\"\n- **Last modified:** Date (if available)\n- **Input fields:** Inline list of input field names and types (e.g. `url: string, maxResults?: number`); `?` marks optional fields, `... (+N more)` marks a truncated list",
-          "firstSeen": "2026-10-17T02:59:28.908Z",
+          "firstSeen": "2026-10-24T18:28:32.408Z",
           "hash": "406dd6488afb1d7b2e2a9471d37b52b725e3ba83531cc83097fa585906d021f3",
           "inputSchema": {
             "additionalProperties": false,
@@ -442,7 +442,7 @@
             "required": [],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.908Z",
+          "pinnedAt": "2026-10-24T18:28:32.408Z",
           "proseHash": "f7a42eb3968e7b570b4c6e4c8ef86f420efbf90ba734b4e1dcf5abb828a65621",
           "schemaHash": "bd7c43f7656482cdfe643abf58808e2c63a4a1f8a3a1fb4e8ada7f5cfaca2c65"
         },
@@ -456,7 +456,7 @@
           },
           "approved": true,
           "description": "Search Apify and Crawlee documentation using full-text search.\nDo not also search the Apify Store unless the user asks to find Actors.\n\nYou must explicitly select which documentation source to search using the docSource parameter:\n\n• docSource=\"apify\" - Apify:\n  Apify Platform documentation including: Platform features, SDKs (JS, Python), CLI, REST API, Academy (web scraping fundamentals), Actor development and deployment\n\n• docSource=\"crawlee-js\" - Crawlee (JavaScript):\n  Crawlee is a web scraping library for JavaScript. It handles blocking, crawling, proxies, and browsers for you.\n\n• docSource=\"crawlee-py\" - Crawlee (Python):\n  Crawlee is a web scraping library for Python. It handles blocking, crawling, proxies, and browsers for you.\n\nThe results will include the URL of the documentation page (which may include an anchor),\nand a limited piece of content that matches the search query.\n\nFetch the full content of the document using the fetch-apify-docs tool by providing the URL.\n\nWhen results contain both platform documentation (`docs.apify.com/platform`) and Academy content (`docs.apify.com/academy`) on the same topic, prefer the platform documentation.",
-          "firstSeen": "2026-10-17T02:59:28.909Z",
+          "firstSeen": "2026-10-24T18:28:32.409Z",
           "hash": "e0135f96e2f699924389be1f95ef379ea9124c46959c8626a0b999c957e5622e",
           "inputSchema": {
             "additionalProperties": false,
@@ -488,7 +488,7 @@
             "required": ["query"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:59:28.909Z",
+          "pinnedAt": "2026-10-24T18:28:32.409Z",
           "proseHash": "541c8e9d25265bb1f54bb0eeb8ccd067ca22b8b24e0c0c8f0a9b535c714db882",
           "schemaHash": "d6f55e87c7f4616b877a77a0b2d3fda1bf9d53d907f29ba0d6acca6a99f88a55"
         }

@@ -2,7 +2,7 @@
 
 One page per watched MCP server: what changed between versions, verified with pinned contracts (sha-256 over name + description + inputSchema, canonicalized), direction-graded (BREAKING / LOOSENED / EXPANDED / NOTATION / NEW / GONE). Link these pages from issues and PRs as receipts.
 
-Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-version decomposition for adjacent-pair boundaries. Repro commands on every page. Refreshed weekly by the [drift watch](../../.github/workflows/weekly-drift-audit.yml); latest summary in [WEEKLY.md](../../audits/WEEKLY.md). Full audit: [npm-top-mcp-drift-2026-10.md](../../audits/npm-top-mcp-drift-2026-10.md).
+Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-version decomposition for adjacent-pair boundaries. Repro commands on every page. Refreshed weekly by the [drift watch](../../.github/workflows/weekly-drift-audit.yml); latest summary in [WEEKLY.md](../../audits/WEEKLY.md). Full audit: [npm-top-mcp-drift-2026-1113541234.md](../../audits/npm-top-mcp-drift-2026-10.md).
 
 | server | installs/week | window | findings | verified | graded with | page |
 |---|---|---|---|---|---|---|

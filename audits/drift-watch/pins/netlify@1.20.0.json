@@ -1,0 +1,1158 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "netlify": {
+      "cmd": {
+        "args": ["node_modules/@netlify/mcp/dist/netlify-mcp.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/netlify-mcp.js",
+        "identityHash": "sha256:64e63ad603b405288d46e18319c255c4706acdab7d4bf413d889c0db03307737",
+        "package": "@netlify/mcp",
+        "resolvedVersion": "1.20.0",
+        "url": null
+      },
+      "pinnedAt": "2026-10-24T17:30:18.308Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@netlify/mcp@1.20.0",
+      "tools": {
+        "netlify-coding-rules": {
+          "annotations": {
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "ALWAYS call when writing serverless or Netlify code. required step before creating or editing any type of functions, Netlify sdk/library  usage, etc.",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
+          "hash": "1d68199c7423702b38df207ce7c00b5b7ede37bec71c4512c002200d629eae36",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "creationType": {
+                "enum": [],
+                "type": "string"
+              }
+            },
+            "required": ["creationType"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:30:18.311Z",
+          "proseHash": "6f112101df9b12e783ea759ceac5fd17c604224c73a678e6c4e87c11fd4e36d5",
+          "schemaHash": "8f6fd7f38c41fae033153bd5c4bcb6c221ed9b81f02a6852971db4f4e6debfc3"
+        },
+        "netlify-deploy-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-deploy, get-deploy-for-site",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
+          "hash": "a39156aeee9dd2443d8ef9d43397e9cc8cdd343be638ca1623055a207e500299",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-deploy",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "deployId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["deployId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-deploy-for-site",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "deployId": {
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId","deployId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.420Z",
+          "proseHash": "fde8f5792a92eb337634d8ab160550509bbab51f20ee69207eca2ef3c70dbbc0",
+          "schemaHash": "9213d2f81e49ac5ef46523fe02529193717fcdbb8a0e86dc75f83cd57b950f5b"
+        },
+        "netlify-deploy-services-updater": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify write operations deploy-site",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "e7fb2202830c1b98c8c2c2bd36c615ce4db110c0be54428fa063b217588f9cd5",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "properties": {
+                  "aiAgentName": {
+                    "type": "string"
+                  },
+                  "llmModelName": {
+                    "type": "string"
+                  },
+                  "operation": {
+                    "const": "deploy-site",
+                    "type": "string"
+                  },
+                  "params": {
+                    "properties": {
+                      "deployDirectory": {
+                        "description": "absolute file path to the directory containing the code that should be deployed. Must be the root of the project repo unless specified.",
+                        "type": "string"
+                      },
+                      "siteId": {
+                        "description": "provide the site id of the site of this site. If the agent cannot find the siteId, the user must confirm this is a new site. NEVER assume the user wants a new site. Use 'netlify link' CLI command to link to an existing site and get a site id.",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["deployDirectory"],
+                    "type": "object"
+                  }
+                },
+                "required": ["operation"],
+                "type": "object"
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.420Z",
+          "proseHash": "f4ddf5e02e6e4f122fa433c283bf0fc10902556e1e298636a16e5c7438749a62",
+          "schemaHash": "723b0c572a4c038d156b17015e989266957aea92fe0b264255ca1f2c260d59f2"
+        },
+        "netlify-extension-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-extensions, get-full-extension-details, initialize-database",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "f030f9a55e1809d5596854512730613078349a9ab7e224efb5a62cc33fde2a44",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-extensions",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-full-extension-details",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "extensionSlug": {
+                            "type": "string"
+                          },
+                          "teamId": {
+                            "description": "Team id of the current project team. If unsure, ask what Netlify team",
+                            "type": "string"
+                          }
+                        },
+                        "required": ["extensionSlug","teamId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "initialize-database",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.421Z",
+          "proseHash": "6925b638b77d1ba1a5670ba708e52578fde3b8068026347fd4cddef78da7bf0d",
+          "schemaHash": "f7b9b1b46c3321401730a40b2b32758694b5f33aca6231dc8e0123cb1aea89e8"
+        },
+        "netlify-extension-services-updater": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify write operations change-extension-installation",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "4a8d016fc913752257369730f75eb0991a7f0fb5738d6ecd9c2191d4a118a2b6",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "properties": {
+                  "aiAgentName": {
+                    "type": "string"
+                  },
+                  "llmModelName": {
+                    "type": "string"
+                  },
+                  "operation": {
+                    "const": "change-extension-installation",
+                    "type": "string"
+                  },
+                  "params": {
+                    "properties": {
+                      "extensionSlug": {
+                        "type": "string"
+                      },
+                      "shouldBeInstalled": {
+                        "type": "boolean"
+                      },
+                      "siteId": {
+                        "description": "Site id of the current project site. If unsure, ask what Netlify site",
+                        "type": "string"
+                      },
+                      "teamId": {
+                        "description": "Team id of the current project team. If unsure, ask what Netlify team",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["extensionSlug","shouldBeInstalled","teamId"],
+                    "type": "object"
+                  }
+                },
+                "required": ["operation"],
+                "type": "object"
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.421Z",
+          "proseHash": "d82702a168c4668a4d9291e34274113ea148afb76c5de9098b454d6144b1d205",
+          "schemaHash": "6f49b52774c0a0de17da8ab41acf2248bac4038cd05763e776027e2d49634114"
+        },
+        "netlify-observability-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-counts, get-topk, get-timeseries, get-request-logs, get-request-detail",
+          "firstSeen": "2026-10-24T17:34:26.421Z",
+          "hash": "96950b02f667fb8c4b6eb8cae48d1fc262ec9fc39757252f6351d274966f4f25",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-counts",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "filters": {
+                            "description": "Filters to narrow the requests. Filters on different fields are ANDed; filters on the same field are ORed. Range operators (>, <, >=, <=) only apply to StatusCode. URL, UserAgent, RequestId, ClientAddress, ConnectionAddress and LogText only accept \"=\", and LogText matches text within function log lines. Example: [{\"field\":\"StatusCode\",\"op\":\">=\",\"value\":500}]",
+                            "items": {
+                              "properties": {
+                                "field": {
+                                  "enum": ["StatusCode","URL","Method","UserAgent","UserAgentCategory","ContentType","BlockReason","CacheStatus","EdgeFunctionName","FunctionName","ImageCDNName","AIGatewayName","LogText","RequestId","ClientAddress","ConnectionAddress","Branch"],
+                                  "type": "string"
+                                },
+                                "op": {
+                                  "enum": ["=","!=",">","<",">=","<="],
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "A number for StatusCode, a string for everything else",
+                                  "type": ["string","number"]
+                                }
+                              },
+                              "required": ["field","op","value"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "from_ts": {
+                            "description": "Start timestamp in milliseconds since Unix epoch (not seconds). How far back data goes depends on the team plan (typically 24 hours on free, 7 days on pro and business, 30 days on enterprise). An older start is clamped to that limit, and a window entirely before it fails with \"requested window out of bounds\".",
+                            "type": "number"
+                          },
+                          "query_name": {
+                            "description": "Which dimension to count requests by",
+                            "enum": ["status_codes","content_types","user_agent_categories","methods","block_reasons","cache_status","function_names","edge_function_names"],
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "description": "Netlify site ID",
+                            "type": "string"
+                          },
+                          "to_ts": {
+                            "description": "End timestamp in milliseconds since Unix epoch (not seconds)",
+                            "type": "number"
+                          }
+                        },
+                        "required": ["siteId","from_ts","to_ts","query_name"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-topk",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "filters": {
+                            "description": "Filters to narrow the requests. Filters on different fields are ANDed; filters on the same field are ORed. Range operators (>, <, >=, <=) only apply to StatusCode. URL, UserAgent, RequestId, ClientAddress, ConnectionAddress and LogText only accept \"=\", and LogText matches text within function log lines. Example: [{\"field\":\"StatusCode\",\"op\":\">=\",\"value\":500}]",
+                            "items": {
+                              "properties": {
+                                "field": {
+                                  "enum": ["StatusCode","URL","Method","UserAgent","UserAgentCategory","ContentType","BlockReason","CacheStatus","EdgeFunctionName","FunctionName","ImageCDNName","AIGatewayName","LogText","RequestId","ClientAddress","ConnectionAddress","Branch"],
+                                  "type": "string"
+                                },
+                                "op": {
+                                  "enum": ["=","!=",">","<",">=","<="],
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "A number for StatusCode, a string for everything else",
+                                  "type": ["string","number"]
+                                }
+                              },
+                              "required": ["field","op","value"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "from_ts": {
+                            "description": "Start timestamp in milliseconds since Unix epoch (not seconds). How far back data goes depends on the team plan (typically 24 hours on free, 7 days on pro and business, 30 days on enterprise). An older start is clamped to that limit, and a window entirely before it fails with \"requested window out of bounds\".",
+                            "type": "number"
+                          },
+                          "page": {
+                            "description": "Page number (1-based, default 1)",
+                            "type": "number"
+                          },
+                          "per_page": {
+                            "description": "Items per page (default 10)",
+                            "type": "number"
+                          },
+                          "query_name": {
+                            "description": "Which dimension to rank",
+                            "enum": ["user_agents","user_agent_categories","urls","urls_with_query","status_codes","referrers","functions","edge_functions","content_types","client_address","client_countries","connection_address"],
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "description": "Netlify site ID",
+                            "type": "string"
+                          },
+                          "sort_by": {
+                            "description": "Sort order. Default: [{\"field\":\"Count\",\"order\":\"DESC\"}]",
+                            "items": {
+                              "properties": {
+                                "field": {
+                                  "enum": ["Count","ErrorCount","Bandwidth","FunctionInvocations","EdgeFunctionInvocations","ImageCDNInvocations","P50","P75","P90","P99","Key"],
+                                  "type": "string"
+                                },
+                                "order": {
+                                  "enum": ["ASC","DESC"],
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["field","order"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "to_ts": {
+                            "description": "End timestamp in milliseconds since Unix epoch (not seconds)",
+                            "type": "number"
+                          }
+                        },
+                        "required": ["siteId","from_ts","to_ts","query_name"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-timeseries",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "filters": {
+                            "description": "Filters to narrow the requests. Filters on different fields are ANDed; filters on the same field are ORed. Range operators (>, <, >=, <=) only apply to StatusCode. URL, UserAgent, RequestId, ClientAddress, ConnectionAddress and LogText only accept \"=\", and LogText matches text within function log lines. Example: [{\"field\":\"StatusCode\",\"op\":\">=\",\"value\":500}]",
+                            "items": {
+                              "properties": {
+                                "field": {
+                                  "enum": ["StatusCode","URL","Method","UserAgent","UserAgentCategory","ContentType","BlockReason","CacheStatus","EdgeFunctionName","FunctionName","ImageCDNName","AIGatewayName","LogText","RequestId","ClientAddress","ConnectionAddress","Branch"],
+                                  "type": "string"
+                                },
+                                "op": {
+                                  "enum": ["=","!=",">","<",">=","<="],
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "A number for StatusCode, a string for everything else",
+                                  "type": ["string","number"]
+                                }
+                              },
+                              "required": ["field","op","value"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "from_ts": {
+                            "description": "Start timestamp in milliseconds since Unix epoch (not seconds). How far back data goes depends on the team plan (typically 24 hours on free, 7 days on pro and business, 30 days on enterprise). An older start is clamped to that limit, and a window entirely before it fails with \"requested window out of bounds\".",
+                            "type": "number"
+                          },
+                          "interval": {
+                            "description": "Bucket interval in milliseconds. If not set, the API picks a default based on the time window.",
+                            "type": "number"
+                          },
+                          "query_name": {
+                            "description": "Which metric to chart",
+                            "enum": ["edge_requests_count","edge_requests_duration_percentiles","edge_requests_bandwidth"],
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "description": "Netlify site ID",
+                            "type": "string"
+                          },
+                          "to_ts": {
+                            "description": "End timestamp in milliseconds since Unix epoch (not seconds)",
+                            "type": "number"
+                          }
+                        },
+                        "required": ["siteId","from_ts","to_ts","query_name"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-request-logs",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "filters": {
+                            "description": "Filters to narrow the requests. Filters on different fields are ANDed; filters on the same field are ORed. Range operators (>, <, >=, <=) only apply to StatusCode. URL, UserAgent, RequestId, ClientAddress, ConnectionAddress and LogText only accept \"=\", and LogText matches text within function log lines. Example: [{\"field\":\"StatusCode\",\"op\":\">=\",\"value\":500}]",
+                            "items": {
+                              "properties": {
+                                "field": {
+                                  "enum": ["StatusCode","URL","Method","UserAgent","UserAgentCategory","ContentType","BlockReason","CacheStatus","EdgeFunctionName","FunctionName","ImageCDNName","AIGatewayName","LogText","RequestId","ClientAddress","ConnectionAddress","Branch"],
+                                  "type": "string"
+                                },
+                                "op": {
+                                  "enum": ["=","!=",">","<",">=","<="],
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "A number for StatusCode, a string for everything else",
+                                  "type": ["string","number"]
+                                }
+                              },
+                              "required": ["field","op","value"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "from_ts": {
+                            "description": "Start timestamp in milliseconds since Unix epoch (not seconds). How far back data goes depends on the team plan (typically 24 hours on free, 7 days on pro and business, 30 days on enterprise). An older start is clamped to that limit, and a window entirely before it fails with \"requested window out of bounds\".",
+                            "type": "number"
+                          },
+                          "page": {
+                            "description": "Page number (1-based, default 1)",
+                            "type": "number"
+                          },
+                          "per_page": {
+                            "description": "Items per page (default 20)",
+                            "type": "number"
+                          },
+                          "siteId": {
+                            "description": "Netlify site ID",
+                            "type": "string"
+                          },
+                          "to_ts": {
+                            "description": "End timestamp in milliseconds since Unix epoch (not seconds)",
+                            "type": "number"
+                          }
+                        },
+                        "required": ["siteId","from_ts","to_ts"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-request-detail",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "from_ts": {
+                            "description": "Start timestamp in milliseconds since Unix epoch. Must bracket the request (e.g. a minute before it).",
+                            "type": "number"
+                          },
+                          "request_id": {
+                            "description": "Request ID (ULID format)",
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "description": "Netlify site ID",
+                            "type": "string"
+                          },
+                          "to_ts": {
+                            "description": "End timestamp in milliseconds since Unix epoch. Must bracket the request (e.g. a minute after it).",
+                            "type": "number"
+                          }
+                        },
+                        "required": ["siteId","request_id","from_ts","to_ts"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.421Z",
+          "proseHash": "3ec00328e641e03c1041a4172d83615ff6b50448f5aa90a182c34aa0fe5f2bba",
+          "schemaHash": "33ee2e8932cc74819778d395e1964972a4faf30cdefe4fcfcda93ca1be18cd61"
+        },
+        "netlify-project-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-project, get-projects, get-forms-for-project",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "f4ffef070ff78e8ada36b8f6da5d980928bac0ca696cb1173734ccc7fa1f8d36",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-project",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-projects",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "projectNameSearchValue": {
+                            "description": "Search for a project by partial name match",
+                            "type": "string"
+                          },
+                          "teamSlug": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-forms-for-project",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "formId": {
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.420Z",
+          "proseHash": "77193680d09a69e694b93924a82f441a4a991790b85a9210878888e8ea2f7ea7",
+          "schemaHash": "32d0a2063ee596ca5133e075a3bfbb566f1fb6d197c5df30037edd894ba3001e"
+        },
+        "netlify-project-services-updater": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify write operations update-visitor-access-controls, update-forms, manage-form-submissions, update-project-name, manage-env-vars, create-new-project",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "1032231fe06a036b2ebf51a23348c41e37a02b696354293240d6c27577b0fae7",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "update-visitor-access-controls",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "appliesTo": {
+                            "description": "Which project context this rule applies to",
+                            "enum": ["all-projects","non-production-projects"],
+                            "type": "string"
+                          },
+                          "passwordValue": {
+                            "type": "string"
+                          },
+                          "requirePassword": {
+                            "type": "boolean"
+                          },
+                          "requireSSOTeamLogin": {
+                            "type": "boolean"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId","appliesTo"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "update-forms",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "forms": {
+                            "enum": ["enabled","disabled"],
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "manage-form-submissions",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "action": {
+                            "enum": ["get-submissions","delete-submission"],
+                            "type": "string"
+                          },
+                          "formId": {
+                            "type": "string"
+                          },
+                          "limit": {
+                            "default": 20,
+                            "type": "number"
+                          },
+                          "offset": {
+                            "default": 0,
+                            "type": "number"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          },
+                          "submissionId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["action"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "update-project-name",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "name": {
+                            "description": "Name must be hyphenated alphanumeric such as \"my-site\" or \"my-site-2\"",
+                            "pattern": "^[a-z0-9-]+$",
+                            "type": "string"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["siteId","name"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "manage-env-vars",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "deleteEnvVar": {
+                            "type": "boolean"
+                          },
+                          "envVarIsSecret": {
+                            "type": "boolean"
+                          },
+                          "envVarKey": {
+                            "type": "string"
+                          },
+                          "envVarValue": {
+                            "type": "string"
+                          },
+                          "getAllEnvVars": {
+                            "type": "boolean"
+                          },
+                          "newVarContext": {
+                            "default": "all",
+                            "enum": ["all","dev","branch-deploy","deploy-preview","production","branch"],
+                            "type": "string"
+                          },
+                          "newVarScopes": {
+                            "default": ["all"],
+                            "items": {
+                              "enum": ["all","builds","functions","runtime","post_processing"],
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "siteId": {
+                            "type": "string"
+                          },
+                          "upsertEnvVar": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": ["siteId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "create-new-project",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "name": {
+                            "description": "Name must be hyphenated alphanumeric such as \"my-site\" or \"my-site-2\"",
+                            "pattern": "^[a-z0-9-]+$",
+                            "type": "string"
+                          },
+                          "teamSlug": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.421Z",
+          "proseHash": "5e67997e139073d71ac012e26bd1ca17b00610841e8f66d1fe35b721069a6a57",
+          "schemaHash": "30d196b98b0efba0a33a0e658fed6d5577fb285e13cd01c232f23f73e0c13344"
+        },
+        "netlify-team-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-teams, get-team, get-team-env-vars",
+          "firstSeen": "2026-10-24T17:30:18.312Z",
+          "hash": "0f6268ae65891268dfbc1b7f89132d685ea5b46bf8c72dd333f89c7a557c41d1",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "anyOf": [{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-teams",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-team",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "teamId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["teamId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  },{
+                    "properties": {
+                      "aiAgentName": {
+                        "type": "string"
+                      },
+                      "llmModelName": {
+                        "type": "string"
+                      },
+                      "operation": {
+                        "const": "get-team-env-vars",
+                        "type": "string"
+                      },
+                      "params": {
+                        "properties": {
+                          "envVarKey": {
+                            "type": "string"
+                          },
+                          "teamId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["teamId"],
+                        "type": "object"
+                      }
+                    },
+                    "required": ["operation"],
+                    "type": "object"
+                  }]
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.420Z",
+          "proseHash": "3f25bcff84c4acf505092ae1169468f4d0b999a81845ca820c55a4f2cf043af7",
+          "schemaHash": "3b727fb71e6ea1c260d9bd76063b19415e5018c4fbf3ce5a964cd622898a8b9c"
+        },
+        "netlify-user-services-reader": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Select and run one of the following Netlify read operations (read-only) get-user",
+          "firstSeen": "2026-10-24T17:30:18.311Z",
+          "hash": "ff06d5e9968c5177e082c37a60fb1ed666c088cae15d8ad03b2dca9e714a1a80",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "selectSchema": {
+                "properties": {
+                  "aiAgentName": {
+                    "type": "string"
+                  },
+                  "llmModelName": {
+                    "type": "string"
+                  },
+                  "operation": {
+                    "const": "get-user",
+                    "type": "string"
+                  },
+                  "params": {
+                    "properties": {
+
+                    },
+                    "type": "object"
+                  }
+                },
+                "required": ["operation"],
+                "type": "object"
+              }
+            },
+            "required": ["selectSchema"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-24T17:34:26.419Z",
+          "proseHash": "bfde3e02cf3d7992cc217cd91bc299a15685341bb8948f9926dc656da653f626",
+          "schemaHash": "fe77d562811faa93b3673d7929a0046fbb4cd76f095b7f3969c4cba0dfe49e7a"
+        }
+      }
+    }
+  },
+  "version": 1
+}

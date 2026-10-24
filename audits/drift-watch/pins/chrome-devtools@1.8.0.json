@@ -13,7 +13,7 @@
         "resolvedVersion": "1.8.0",
         "url": null
       },
-      "pinnedAt": "2026-10-17T02:52:38.152Z",
+      "pinnedAt": "2026-10-24T16:08:47.859Z",
       "prompts": {
 
       },
@@ -29,7 +29,7 @@
           },
           "approved": true,
           "description": "Clicks on the provided element",
-          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "firstSeen": "2026-10-24T16:08:47.863Z",
           "hash": "607cfba5721feff9e498be3c13b692fdd1cf40dabcc3205795572b53bf32fcda",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -55,7 +55,7 @@
             "required": ["pageId","uid"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.155Z",
+          "pinnedAt": "2026-10-24T16:08:47.863Z",
           "proseHash": "cf18169fd6e9437eb35b18e573419a0959606fe69716d5156d50a1ef7075fa7b",
           "schemaHash": "89fc77eb78752a76038752f7f2d37222c00ded8e6bb227ee28d127b495dc196e"
         },
@@ -66,7 +66,7 @@
           },
           "approved": true,
           "description": "Closes the page by its index. The last open page cannot be closed.",
-          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "firstSeen": "2026-10-24T16:08:47.863Z",
           "hash": "57aa6d235ddb7d0f76dcaf9f7526792d854ddd85293671596f37076dc7b453ce",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -80,7 +80,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.155Z",
+          "pinnedAt": "2026-10-24T16:08:47.863Z",
           "proseHash": "72772d7dcc4eb8c109af7e2e6c2cf50442643faea5c88b0d15218b78a56f8d28",
           "schemaHash": "c7e91f258f8f4bd6087089c2694f01b6c7113b0c7eca7cd3ac5f2a25eb00ebcd"
         },
@@ -91,7 +91,7 @@
           },
           "approved": true,
           "description": "Drag an element onto another element",
-          "firstSeen": "2026-10-17T02:52:38.155Z",
+          "firstSeen": "2026-10-24T16:08:47.863Z",
           "hash": "57f6b8e417ab6b22e8893b2f9da3540014fd9f8174773a16830248935e9b4f66",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -117,7 +117,7 @@
             "required": ["pageId","from_uid","to_uid"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.155Z",
+          "pinnedAt": "2026-10-24T16:08:47.863Z",
           "proseHash": "6a4f6762db2d98d889f789cd6fa4e52f820151fa1749483d45bd90c937d26929",
           "schemaHash": "cc59ab32aa8a8b1d4be016a9a6e3785490824f2ac5f4f8e869f51de3ae4e418c"
         },
@@ -128,7 +128,7 @@
           },
           "approved": true,
           "description": "Emulates various features on the target page.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.863Z",
           "hash": "c8781dc5cc1d30ce711c107d12f69019d8505d4b37e697b9bd379ce6c73a85b7",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -174,7 +174,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.863Z",
           "proseHash": "3df669ee6c8c3d4632895b066ca5aebaa4edaa168d228f7d76ff9b3079d96441",
           "schemaHash": "3cf728ff2cc442f899c13641a8ea3ef055b845dc1046b3bb80df1134ca159bc2"
         },
@@ -185,7 +185,7 @@
           },
           "approved": true,
           "description": "Evaluate a JavaScript function inside the target page. Returns the response as JSON, so returned values have to be JSON-serializable.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "3161aa4dde4934da50e7c09634bc7a0e1782e0e6d02c906fdd20b0ec86edb9a3",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -223,7 +223,7 @@
             "required": ["pageId","function"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "0f5b277be7c538eb2029596e9c27b3e50b7e1d076b3f488ad3e904b678d21854",
           "schemaHash": "b05900bd9ce7ab7324b86b1953b2d9a67ea2db6b3fa56fd208fc6a41bee06625"
         },
@@ -234,7 +234,7 @@
           },
           "approved": true,
           "description": "Type text into an input, text area or select an option from a <select> element.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "9f344e641c1c8ca5d4d446a037452ee52e7586ea6d06ec91ead2aba19c25a34f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -260,7 +260,7 @@
             "required": ["pageId","uid","value"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "c57b5127ef097052c6f1aa8823bca0661b1d4fe81092c7f7f8e7ba1e57912d00",
           "schemaHash": "a2cef62f3df75b5fee4d3bc3551d2bce130df17e3be51693f10f852badc30529"
         },
@@ -271,7 +271,7 @@
           },
           "approved": true,
           "description": "Fill out multiple form elements (inputs, selects, checkboxes, radios) at once. ALWAYS prefer this tool over multiple individual 'fill' or 'click' calls when interacting with forms. It is significantly faster, more reliable, and reduces turn count. Example: Fill username, password, and check \"Remember Me\" in one call.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "f2ddb65b122a79e3845a1391cc86f47f3c24d1ec8a66e8ea0767afe06f4c2343",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -308,7 +308,7 @@
             "required": ["pageId","elements"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "d4a0f3b9215244006f894f822f790276299181acf3b9a6f38aca6e28972ead13",
           "schemaHash": "37a07de2a54e6c6e96c8e03c6cc1f82779b3e7c182315be8288375c34e136c56"
         },
@@ -319,7 +319,7 @@
           },
           "approved": true,
           "description": "Gets a console message by its ID. You can get all messages by calling list_console_messages.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "85317c236f7ef618242dc247a089e4cb90a2f792565a7f3d2f7fa8704e72474b",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -337,7 +337,7 @@
             "required": ["pageId","msgid"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "f2bc92edb8428d89e4319937dc6da16b8b75ce4f5a8cd211dd0199b18dbbf397",
           "schemaHash": "b60098be44ba8195da3469f0d835cf7d5b7661213434d313c2a06c7d0d2c54cb"
         },
@@ -348,7 +348,7 @@
           },
           "approved": true,
           "description": "Gets a network request by an optional reqid, if omitted returns the currently selected request in the DevTools Network panel.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "4a237243f2f8b76f21154ad809a37ee62befe2bd267c185257029c3dccdb6c7f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -374,7 +374,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "03ea05bf04737c0b92435f576a018814a0b7b57c8df0e3cf3ff38442a2b188ca",
           "schemaHash": "017505e854620562b16e43759a2b71bc1d84da04f3726c682ba1511b9eb0e89e"
         },
@@ -385,7 +385,7 @@
           },
           "approved": true,
           "description": "If a browser dialog was opened, use this command to handle it",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "92edbd8908d2af0f1116577aa3ecebb09e4e8cf510062b5d75e5bbcd1d456028",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -408,7 +408,7 @@
             "required": ["pageId","action"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "0d5fdb4c4e351267cc0a9e0ff049f33c5add9a8e8bd8c0bc2eb9e4a74766e27e",
           "schemaHash": "fa0765469ddefbd19982a154a0eb3220c49ccd182cd4b726ebb0d7ada023b01a"
         },
@@ -419,7 +419,7 @@
           },
           "approved": true,
           "description": "Hover over the provided element",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "83c4498a63264c64c255ca045ad11dcc8a305f3f5cba9f5a11a5d9f282d830a1",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -441,7 +441,7 @@
             "required": ["pageId","uid"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "341bb0352d5e05ca5cc749685c459496c8d19d5f5f78e7309d8c8c6d2b4e6959",
           "schemaHash": "1d3962ecaba363f385327af03f328fd25f162e7b0481c70a1c78063083c57532"
         },
@@ -452,7 +452,7 @@
           },
           "approved": true,
           "description": "Get Lighthouse score and reports for accessibility, SEO, best practices, and agentic browsing. This excludes performance. For performance audits, run performance_start_trace",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "e2e19d2b821a4712c253dd518887fc79e183f0375ebfa755a237e4b1c8dfa65d",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -482,7 +482,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "cb94d3a5ac1176c789f4678256e47e19110a6cc2a18a948e4c384f25ebacb48a",
           "schemaHash": "83a84b01d417528ae6979c43012a345f6e40a76e5a551766f2325a054f283490"
         },
@@ -493,7 +493,7 @@
           },
           "approved": true,
           "description": "List all console messages for the target page since the last navigation.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "fc9871d59b4fc5713581c7d0bd18ffb09a6115d1586e425279a2b9e40a496dd5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -539,7 +539,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "4785fc3de6a1991772ff3175ff445fec9377dca71ddccd7888f6a8bb8e51c5c3",
           "schemaHash": "4a2093b5d02dca9fa780b3b2bfc11dddd7924698479e814f26780090fe489d88"
         },
@@ -550,7 +550,7 @@
           },
           "approved": true,
           "description": "Lists the most recent requests for the target page since the last navigation.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "b78985b04abdefa6e1f840dcd611b039f1e099996e09414f5a4a99391b3d113a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -587,7 +587,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "a2cb174d216a9a44d70e89f6d7d9100d4b001ac4ec683896bf52ccb6d7037d77",
           "schemaHash": "e65d2122b92744303a33348d6418f1d92954fb40474e79ed471538d83ca954d5"
         },
@@ -598,7 +598,7 @@
           },
           "approved": true,
           "description": "Get a list of pages open in the browser.",
-          "firstSeen": "2026-10-17T02:52:38.156Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "1a4d618cf825bea9bd45fe8ccdbd06b9f44d358d4d8a4205e5f3421d8c7eeddb",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -608,7 +608,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.156Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "88ebfb3dff57b13ebe0215467783a0fb17093cdeef62bb270324791736a3b258",
           "schemaHash": "73db663029f9dc9d88f01e5c966e928b46aa8a15c0e4211b5d5dd4387eb5ec32"
         },
@@ -619,7 +619,7 @@
           },
           "approved": true,
           "description": "Go to a URL, or back, forward, or reload. Use project URL if not specified otherwise.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "ce266d351b01ceaee6524ceee6ad78f50371dd283888c44ca9864958b645a731",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -659,7 +659,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "731dae5a078816beb4af6fbe0583cd650dd463f7f2ffff70892d7e48b44c9158",
           "schemaHash": "16451bb278a3a558e3dff488ff6063392a922d0451541ccf4e0018ce8a6b3b95"
         },
@@ -670,7 +670,7 @@
           },
           "approved": true,
           "description": "Open a new tab and load a URL. Use project URL if not specified otherwise.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "24a0480353c4e953c72db4be1c6596d2e603519ad6bf22ba51d74eab50241294",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -696,7 +696,7 @@
             "required": ["url"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "0d37567ebbe2a8a5efa3e7fcd0e54cebc7542db192850be2958a497ea1841f6b",
           "schemaHash": "290d55a5da4e19e2a943d0edabf53bb3937ce2ebac430418373d555e33277d18"
         },
@@ -707,7 +707,7 @@
           },
           "approved": true,
           "description": "Provides more detailed information on a specific Performance Insight of an insight set that was highlighted in the results of a trace recording.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.864Z",
           "hash": "acd13bf9f63e7d547e45b6eadd433e9dbb717ed64222cb40c54770d49ac8c484",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -729,7 +729,7 @@
             "required": ["pageId","insightSetId","insightName"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.864Z",
           "proseHash": "46ccbaf3dbb06abc2d517c55d7ca1e36fbbcdd1dbf00b241dab1b78a9fcf5a94",
           "schemaHash": "bd6fb4a2b707519bd3290d7d159283dfa8f60293baa51fcdd91be5451203a9db"
         },
@@ -740,7 +740,7 @@
           },
           "approved": true,
           "description": "Start a performance trace on the target webpage. Use to find frontend performance issues, Core Web Vitals (LCP, INP, CLS), and improve page load speed.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "2466cb8656a8e3757b5bf6fe005e909f8378133dfbdf72497ae7e882ca18b4b9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -768,7 +768,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "da37cef521df2ddc6d892b1213894d4289a038c9089c2dc4aa7b6a2f353da6b1",
           "schemaHash": "343c44a770418379da7c03b9d97089b1261aca6a58923c3488f9d1825042729b"
         },
@@ -779,7 +779,7 @@
           },
           "approved": true,
           "description": "Stop the active performance trace recording on the target webpage.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "52f2fb14536296ebe59c64448fb1c001bbf08757cdf5310399298564b6e21258",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -797,7 +797,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "53ff49e2ccd2e6a4cc3f9ae52a9db875b3e232a15ddcc0a0897637cad5046f1d",
           "schemaHash": "68d5bdfa991b84e40a844c1984c23fbbcf6d6169d45fc2d3822c67b903aa1355"
         },
@@ -808,7 +808,7 @@
           },
           "approved": true,
           "description": "Press a key or key combination. Use this when other input methods like fill() cannot be used (e.g., keyboard shortcuts, navigation keys, or special key combinations).",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "1a8515f1355a9d2d5bbcfb1250ed6b876d0a94f9517ab0d43ce036ea8d8b2ad1",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -830,7 +830,7 @@
             "required": ["pageId","key"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "c297a1546875c43d45dca2f6ff11b6e1ad61198ff46dd446e8111d2fb6e7c28a",
           "schemaHash": "e9186aa3cb475dc56c589884b6f5e40bc3c1779127b29d812e9b3d3092bdaa67"
         },
@@ -841,7 +841,7 @@
           },
           "approved": true,
           "description": "Resizes the page's window so that the page has specified dimension",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "54e5682aca00dde1d1711e01237c78d80fee174df7231c81347a7c5a89dedb7a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -863,7 +863,7 @@
             "required": ["pageId","width","height"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "1bddb42330b3f364ed647820a6c86b55634ef326a730e1af636c1279747a7371",
           "schemaHash": "9383afe7c5a73a114522865824c59f43f407640f1e5187c890c7ebed4f57c3be"
         },
@@ -874,7 +874,7 @@
           },
           "approved": true,
           "description": "Select a page as a context for future tool calls.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "e2ce29013e72ad6d39bdb564656d4b08f453a6d89edc9fbed7cad83932eda50c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -892,7 +892,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "384cbcb7e759dd4dfdaa5da4f37e9ff1f52ef3618938d2f5c1fedc4697eefb6e",
           "schemaHash": "86a6b95cdc32d1cc869423d03af0521d0b47573311adc1114d9e6cc3d2bef61d"
         },
@@ -903,7 +903,7 @@
           },
           "approved": true,
           "description": "Capture a heap snapshot of the target page. Use to analyze the memory distribution of JavaScript objects and debug memory leaks.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "2b41a586b1bdc1dc04f485a593abb129f57b2d3de684492349bd315b8a583a3c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -921,7 +921,7 @@
             "required": ["pageId","filePath"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "0cb4e6426c39d188d642a40290ed34df07b6eacd3085feda66f09b8ab07a5ccb",
           "schemaHash": "10104328d32e2ff1b1bce49890118dc9b2c5b6e2b36dcee357ee7f6ef0e6bf7d"
         },
@@ -932,7 +932,7 @@
           },
           "approved": true,
           "description": "Take a screenshot of the page or element.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "f4a528dbe9d78655021ab62ebc730468cc6b054e0ee72914e182e85acf2b70d0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -970,7 +970,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "7492e37b99f207cc0ed38e35d80c6044de289385ef99b311111d60718cf0b984",
           "schemaHash": "f51a946a3fb0f33ff6ace2cc9a75c008c088fa46430613269d335d9589174413"
         },
@@ -981,7 +981,7 @@
           },
           "approved": true,
           "description": "Take a text snapshot of the target page based on the a11y tree. The snapshot lists page elements along with a unique\nidentifier (uid). Always use the latest snapshot. Prefer taking a snapshot over taking a screenshot. The snapshot indicates the element selected\nin the DevTools Elements panel (if any).",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "17073110bf99dce5d8d7544d80a8411cec07150c99d8062192c5e58a4073a12a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1003,7 +1003,7 @@
             "required": ["pageId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "e0a8a019ef575affa5bbabc519c7efd33e1d939b6ffb759e89983e96fb8e2035",
           "schemaHash": "6d95653fb3da8dc7defb30bd827065d7cfce40addbe2399b8829089819e647da"
         },
@@ -1014,7 +1014,7 @@
           },
           "approved": true,
           "description": "Type text using keyboard into a previously focused input",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "f0bed0f795608541add9ccd04cd3fffddbaa7a92989cdfaef2a5085efbf54ff1",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1036,7 +1036,7 @@
             "required": ["pageId","text"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "28dd0c117bdc91244e6f2be615f905d0ba4981ff72850f49eefb455d9e7f82c9",
           "schemaHash": "4e8bcf0bded086c29ea46bbd14a52bf27e20de0955565260292df72638c2af9f"
         },
@@ -1047,7 +1047,7 @@
           },
           "approved": true,
           "description": "Upload a file through a provided element.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "c6c364b59bd13507799f44821ada6dd5bc7f065ff2345211103df344a607b780",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1077,7 +1077,7 @@
             "required": ["pageId","uid","filePaths"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "2a953552df50a33c056f8344a8f496a08f5d85a53928a68b282d108b79129fc9",
           "schemaHash": "570cd3c769609133e70050a2629544ee7d0d8276ce75a0ac0ffc5d55db08be98"
         },
@@ -1088,7 +1088,7 @@
           },
           "approved": true,
           "description": "Wait for the specified text to appear on the selected page.",
-          "firstSeen": "2026-10-17T02:52:38.157Z",
+          "firstSeen": "2026-10-24T16:08:47.865Z",
           "hash": "7ab467cafc007d87b76e9ddf752eebc75a79cb05f9d555f054b3f0ee1c60522e",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1114,7 +1114,7 @@
             "required": ["pageId","text"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:52:38.157Z",
+          "pinnedAt": "2026-10-24T16:08:47.865Z",
           "proseHash": "f4ce5ee67541a6aa2efb7ee3dc0bfe152918f15e20bd005b1cea66980ff59583",
           "schemaHash": "b6e9dc07947bbd865cbb08e21e1fc8f6e5c3ebf57d51f7cf1ef07b1c4cbb68eb"
         }

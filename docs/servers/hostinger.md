@@ -26,3 +26,8 @@ npm i hostinger-api-mcp@2.11.0 && npx rugsnare diff --config mcp.json   # 6 NEW 
 ```
 
 Watched weekly (baseline 2.4.0). Last verified 2026-10-12 (2.4.0/2.11.0/2.13.0 rescanned: six SKILL.md confirmed in-window and persistent through 2.13.0; tools clean).
+
+
+## 2026-10-24 window
+
+2.4.0 -> 3.8.1: 40 findings (graded, rugsnare 1.4.3; pins at audits/drift-watch/pins/hostinger@3.8.1.json). Cumulative corpus total: 351 across the 22 servers. See audits/drift-watch/2026-10-24.md.
