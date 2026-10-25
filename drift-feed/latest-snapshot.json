@@ -2,7 +2,7 @@
   "server-filesystem": {
     "server": "server-filesystem",
     "package": "@modelcontextprotocol/server-filesystem",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "tools": [
       {
         "name": "read_file",
@@ -163,7 +163,7 @@
   "server-everything": {
     "server": "server-everything",
     "package": "@modelcontextprotocol/server-everything",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "tools": [
       {
         "name": "echo",
