@@ -60,3 +60,30 @@ GET  https://dominionobservatory.com/api/drift?server=<endpoint-url>
 Our implementation of that computation: `surfaceHash()` in
 [`product/src/hash.js`](../../product/src/hash.js) — field set chosen for exactly this
 interoperability (see the code comment citing issue #6).
+
+## Addendum 2026-10-25: a third profile in the wild (MTL/1, HISTOR)
+
+The registry-scale record published in
+[google/agentmesh#561](https://github.com/google/agentmesh/issues/561) (HISTOR,
+[profile](https://github.com/alexar76/aicom/blob/main/awr/adoption/mcp-trust-label/PROFILE.md))
+uses a third canonicalization for tool-set digests. Same base (RFC 8785 + SHA-256), four real
+deltas against the pair documented above:
+
+| property | PIN-SPEC §3.2 | Dominion capture | MTL/1 (HISTOR) |
+|---|---|---|---|
+| per-tool fields | `{name, description, inputSchema}` | same 3 | 4: adds `outputSchema` |
+| tools sort unit | UTF-8 **bytes** (code-point order) | "sorted by name" (unit unstated; corpus all-ASCII — unexercised) | UTF-16 **code units** |
+| floats in schemas | JCS §3.2.2.3 (specified) | unexercised (none in corpus) | **no digest** — set reported inconclusive |
+| annotations | stored, never hashed; own finding class (ANNOTATION) | not captured | outside the tool-set digest; **separate digest** since 2026-10-22 |
+
+Two notes for anyone joining digests across ecosystems. First, the sort unit only matters for
+names outside ASCII: a supplementary-plane character (surrogate pair) sorts below some
+BMP-range characters in UTF-16 code-unit order but above them in code-point/UTF-8 order — two
+correct implementations disagreeing only on the unit will produce different digests for the
+same tool set, and that reads as "someone changed something" when nothing did. Second, the
+float row now has three honest answers (specified / unexercised / refused) — a spec-level
+profile should mandate *stating* the policy, whichever it is.
+
+Convergence note: the separate annotation digest in MTL/1 is the same design decision as our
+ANNOTATION finding class — two independent implementations arrived at "annotations outside the
+tool-set digest, surfaced as their own change."
