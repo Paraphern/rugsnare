@@ -1,20 +1,20 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-10-19 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-10-26 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
-**Total findings since baselines: 235**
+**Total findings since baselines: 247**
 
 | server | package | pinned -> latest | findings | status |
 |---|---|---|---|---|
-| chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.11.0 | 32 | ok |
-| azure-devops | @azure-devops/mcp | 2.5.0 -> 2.10.0 | 110 | ok |
+| chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.12.0 | 32 | ok |
+| azure-devops | @azure-devops/mcp | 2.5.0 -> 2.11.0 | 119 | ok |
 | currents | @currents/mcp | 2.3.3 -> 2.7.0 | 51 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 3.3.1 | 39 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 3.10.3 | 41 | ok |
 | notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.5.2 | 1 | ok |
 | heroku | @heroku/mcp-server | 1.2.5 -> 1.2.12 | 1 | ok |
 | context7 | @upstash/context7-mcp | 4.0.4 -> 4.4.4 | 1 | ok |
 | sentry | @sentry/mcp-server | 0.42.0 -> 0.42.0 | 0 | clean |
-| launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.0 | 0 | clean |
+| launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.1 | 1 | ok |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
 
@@ -38,18 +38,18 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
 ## azure-devops - drift excerpt
 
 ```
+  [DRIFT] core_list_project_teams (ANNOTATION) 7a520cf0f4d8cdb6 -> 7a520cf0f4d8cdb6
+  [DRIFT] core_list_projects (ANNOTATION) 1b46d421cb4d1998 -> 1b46d421cb4d1998
+  [DRIFT] core_get_identity_ids (ANNOTATION) 946ecb63377c97d7 -> 946ecb63377c97d7
   [NEW ] work 8901a5976504428a
   [NEW ] work_iteration_write 3044855da2bfc590
   [NEW ] work_capacity_write 26a8f4073f925f2a
-  [NEW ] pipelines_build 222e46b1291cb5a5
+  [NEW ] pipelines_build ee28e600be80ff39
   [NEW ] pipelines_build_log 32d892b420e0959d
-  [NEW ] pipelines_definition 092568ed99045bc0
+  [NEW ] pipelines_definition 7243ce37950dc9f1
   [NEW ] pipelines_run fe259e7d1ffefed9
   [NEW ] pipelines_artifact 56988ef13f597c2e
   [NEW ] pipelines_write cf73a0e774264de4
-  [NEW ] repo_repository 8cf8753f7472ea31
-  [NEW ] repo_pull_request f743ada180d51199
-  [NEW ] repo_pull_request_thread 056172340b8b8613
 ```
 
 ## currents - drift excerpt
@@ -102,4 +102,10 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
 
 ```
   [DRIFT] query-docs (EXPANDED) 219df2124ef8c1a3 -> 001cabe9b73dae93
+```
+
+## launchdarkly - drift excerpt
+
+```
+  [DRIFT] (identity) (IDENTITY)
 ```
