@@ -8,217 +8,43 @@
       },
       "identity": {
         "entryPath": "dist/index.mjs",
-        "identityHash": "sha256:026f03e68aa7bb03c7c87db78821fd1b7dd19026dbfc1e89ecc6bbfa19ea30ec",
+        "identityHash": "sha256:9cc2e81a7bf514420b98e113d274b5d0e6c2c1e81a87e0f4286aa710b64b7a5b",
         "package": "@currents/mcp",
-        "resolvedVersion": "2.7.0",
+        "resolvedVersion": "2.3.3",
         "url": null
       },
       "pinnedAt": "2026-10-24T17:22:15.024Z",
       "prompts": {
-        "browser-evidence": {
-          "description": "Experimental: prove a change works in a browser you drove yourself, when there is no test to run. Use when asked to \"reproduce this\", \"show the bug\", \"prove the fix\", \"record a session\", \"capture before and after\", or to demonstrate a change on a ticket that has no automated test. Reproduce a bug, fix it, record each state as a Currents session, and post before/after evidence on a pull request or issue with a link that reads without a Currents login. For evidence from tests that already run in CI, use collect-evidence instead.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "51279ea55540e40f043795e92d03f4b7fd8159f2823072c09a5e48cdade98dee"
-        },
-        "collect-evidence": {
-          "description": "Show that work you implemented actually works, or demo it, from tests that ran in CI via Currents — a trace link whose digest, filmstrip and accessibility snapshots read inside a comment, plus screenshots, attachments and videos. Use when asked to \"collect evidence\", \"prove it works\", \"show me it works\", \"demo the feature\", \"capture a before/after\", or to attach proof of a change to a PR, issue, ticket, or status update. Evidence comes from CI runs retrieved through the Currents MCP tools or REST API, not from a local run.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "8415a2654a5fc520a5963e749189ec44619c379a4148a8b23e8803fc2ee1656d"
-        },
-        "fix-failing-tests": {
-          "description": "Fix tests that failed in CI, using the results Currents recorded — errors, steps, traces, screenshots and console output. Use when CI is red, a pull request check failed, a build broke, someone asks why a test failed, or you are given a Currents run or test link. Works from a developer's machine or from a CI job that runs after the tests failed.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "5947a1bf56c6864ea08edcb5d23eb46d03bb455296126c580c3edc7dee006eb4"
-        }
+
       },
       "resources": {
-        "browser-evidence/SKILL.md": {
-          "description": "Experimental: prove a change works in a browser you drove yourself, when there is no test to run. Use when asked to \"reproduce this\", \"show the bug\", \"prove the fix\", \"record a session\", \"capture before and after\", or to demonstrate a change on a ticket that has no automated test. Reproduce a bug, fix it, record each state as a Currents session, and post before/after evidence on a pull request or issue with a link that reads without a Currents login. For evidence from tests that already run in CI, use collect-evidence instead.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "375f6d0fb3e8b634b9d9b454cea12b3ee38f79feed2714bb8c8cf66ccc716f87"
-        },
-        "collect-evidence/SKILL.md": {
-          "description": "Show that work you implemented actually works, or demo it, from tests that ran in CI via Currents — a trace link whose digest, filmstrip and accessibility snapshots read inside a comment, plus screenshots, attachments and videos. Use when asked to \"collect evidence\", \"prove it works\", \"show me it works\", \"demo the feature\", \"capture a before/after\", or to attach proof of a change to a PR, issue, ticket, or status update. Evidence comes from CI runs retrieved through the Currents MCP tools or REST API, not from a local run.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "2590833bd17ed93fc767dd6a4073448dbdca61808052425378ddae646f620b7e"
-        },
-        "collect-evidence/references/instrumentation.md": {
-          "description": "Supporting reference for the collect-evidence skill.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "b1a6e0fa27eb2808feb89c503bf18bfa1d0a58e80bd021f018a735284059f2ea"
-        },
-        "fix-failing-tests/SKILL.md": {
-          "description": "Fix tests that failed in CI, using the results Currents recorded — errors, steps, traces, screenshots and console output. Use when CI is red, a pull request check failed, a build broke, someone asks why a test failed, or you are given a Currents run or test link. Works from a developer's machine or from a CI job that runs after the tests failed.",
-          "firstSeen": "2026-10-24T17:22:24.405Z",
-          "hash": "f2d6e3f42aff3e2666d2122be41f6271c50a4905b7503184cde94822cff07e95"
-        }
+
       },
-      "scannedAgainst": "@currents/mcp@2.7.0",
+      "scannedAgainst": "@currents/mcp@2.3.3",
       "tools": {
-        "currents-add-attachments": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Add Attachments"
-          },
-          "approved": true,
-          "description": "Add attachments to a session from currents-create-session (send sessionId), or to a CI run (send runId): logs for a spec file, a test, or the run itself. For a CI run, name where they go with instanceId and testId (and attempt) or with spec and testTitle; name none for the run itself, with an optional machineId. A session takes none of those. Send each attachment's exact size in bytes. Returns an upload URL per attachment; PUT the bytes to those, and the response says what to do next. A trace can then be turned into a link that needs no Currents credential with currents-create-evidence-links: for a session, with sessionId and the trace's attachmentId; for a CI test attempt, with instanceId, testId, attemptIndex and the trace's name as artifactName.",
-          "firstSeen": "2026-10-24T17:22:24.403Z",
-          "hash": "3feea46a741f588dd0faf0c2f5b32145dce61c068679040cc05342062277f531",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "attachments": {
-                "description": "The attachments to add, each with its exact size in bytes. Each comes back with a URL to PUT the bytes to.",
-                "items": {
-                  "properties": {
-                    "caption": {
-                      "description": "One line saying what the file shows. Shown next to it.",
-                      "maxLength": 1000,
-                      "type": "string"
-                    },
-                    "contentType": {
-                      "description": "Must match the type: a trace is application/zip, a screenshot image/png, image/jpeg, image/webp or image/gif, a video video/*. An attachment takes any media type.",
-                      "maxLength": 255,
-                      "pattern": "^[\\w.+-]+\\/[\\w.+-]+(?:[ \\t]*;[ \\t]*[\\w.-]+=(?:\"[^\"\\\\\\r\\n]*\"|[\\w.+-]+))*$",
-                      "type": "string"
-                    },
-                    "meta": {
-                      "additionalProperties": {
-                        "maxLength": 256,
-                        "type": "string"
-                      },
-                      "description": "Up to 20 key-value pairs of letters, digits, \"_\" and \"-\" keys, 2 KB in all.",
-                      "propertyNames": {
-                        "pattern": "^[A-Za-z0-9_-]{1,64}$",
-                        "type": "string"
-                      },
-                      "type": "object"
-                    },
-                    "name": {
-                      "description": "How the file is labelled. Name a trace here to pick it out later when the session carries more than one.",
-                      "maxLength": 1024,
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "sizeBytes": {
-                      "description": "The exact size of the file in bytes. The upload URL accepts a body of exactly this size.",
-                      "maximum": 1073741824,
-                      "minimum": 1,
-                      "type": "integer"
-                    },
-                    "type": {
-                      "enum": ["trace","screenshot","video","attachment"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["name","type","contentType","sizeBytes"],
-                  "type": "object"
-                },
-                "maxItems": 50,
-                "minItems": 1,
-                "type": "array"
-              },
-              "attempt": {
-                "description": "CI runs only: the attempt of the test, counted from 0.",
-                "maximum": 1000,
-                "minimum": 0,
-                "type": "integer"
-              },
-              "groupId": {
-                "description": "CI runs only: picks one instance when a spec ran in more than one group.",
-                "maxLength": 255,
-                "minLength": 1,
-                "type": "string"
-              },
-              "instanceId": {
-                "description": "CI runs only: the spec file instance to add to.",
-                "maxLength": 255,
-                "minLength": 1,
-                "type": "string"
-              },
-              "machineId": {
-                "description": "CI runs only, optional, any string you choose. With no spec or test named, the attachments of the run itself are stored with this machine. With a spec named, it chooses between instances of that spec that ran on different machines.",
-                "maxLength": 255,
-                "minLength": 1,
-                "pattern": "^[^\\u0000-\\u001f\\u007f]+$",
-                "type": "string"
-              },
-              "runId": {
-                "description": "The CI run to add to: the ID in a /run/<runId> dashboard link. Send this or sessionId.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "sessionId": {
-                "description": "The session to add to, from currents-create-session. Send this or runId.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "spec": {
-                "description": "CI runs only: the spec file path, instead of instanceId.",
-                "maxLength": 2048,
-                "minLength": 1,
-                "type": "string"
-              },
-              "testId": {
-                "description": "CI runs only: the test to add to. Needs instanceId or spec.",
-                "maxLength": 1024,
-                "minLength": 1,
-                "type": "string"
-              },
-              "testTitle": {
-                "description": "CI runs only: the test title with its describe blocks joined by \" > \", or its last part, instead of testId.",
-                "maxLength": 2048,
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": ["attachments"],
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "e9d42d87efe2bf69fc2fd9b2572242efdcad9bd3bd08cee0df8776e069bf53ef",
-          "schemaHash": "f04209e34bf29c2352e29954a8cf04833ea57679a33ec85e4d10f87459c5612b"
-        },
         "currents-cancel-run": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Cancel Run"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Cancel a run in progress. This will stop the run and mark it as cancelled. Requires runId.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "513b66ef059e8ca64b85da702b8403477156081c7f5e0d35ffe846266bb6e18f",
+          "hash": "564000e83723680bbdb6aa893992f8f1a26115647917cd31c615f3023752b737",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "runId": {
                 "description": "The run ID to cancel.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["runId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "9d18b773269fe5b6ed3a085ec4ff6bfe95f1c2cf9169943de8810597f537d81d",
-          "schemaHash": "a51acfe5a40e14e468fa2f383a1c7da2d7e3899a51cfc118559362cfa8f69232"
+          "schemaHash": "dbccfe5edb5a359a21c4a1098b3168a5fa5dd5a841db7e6e75b70fd874459629"
         },
         "currents-cancel-run-github-ci": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Cancel Run by GitHub Workflow"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Cancel a run by GitHub Actions workflow run ID and attempt number. Optionally scope by projectId or ciBuildId. Requires githubRunId and githubRunAttempt.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
@@ -248,22 +74,16 @@
             "required": ["githubRunId","githubRunAttempt"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "bf0b6120c949f4681e4523537d5819ef10dfd2fe7ed330ecfd2dbf97a981d773",
           "schemaHash": "621020ada6dfb87940cdbda3d68bf968051d754c15e7c7576ea1a87b72790741"
         },
         "currents-create-action": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Create Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Create a new action for a project. Actions define rules that automatically skip, quarantine, or tag tests based on conditions like test title, file path, git branch, etc. Requires projectId, name, action array, and matcher object.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "79ffe4eb3d35e6591389a6d04d56c593d3419821b42737cbeab91868c779f023",
+          "hash": "73a3e64082e11db38c8fcd1d3b94399fa7e3883dde9d08b603ce277056760d4b",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -298,7 +118,6 @@
                                 "type": "string"
                               },
                               "maxItems": 10,
-                              "minItems": 1,
                               "type": "array"
                             }
                           },
@@ -383,89 +202,22 @@
               },
               "projectId": {
                 "description": "The project ID to create the action for.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["projectId","name","action","matcher"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.400Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "b945257110ce93da84513df049d7dc3574dc6a1d8eba9e092d3d7f63eff902f8",
-          "schemaHash": "6d92d2c2a48efc8b100bb2b5f080e032abde8cba0fc5c6a85e470aa5178f6791"
-        },
-        "currents-create-evidence-links": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Create Evidence Links"
-          },
-          "approved": true,
-          "description": "Create a shareable link to a test attempt's evidence, served from its Playwright trace, and the URLs onto it: a markdown digest of what the attempt did and what failed, a filmstrip, an animated screencast, DOM snapshots, network requests and attachments. Use it to read a trace without downloading it, and to put evidence in a pull request comment or an issue — the link reads without a Currents credential and expires. Start from the digest it returns. For a session recorded with currents-create-session, send sessionId and the trace's attachmentId; for a CI test, instanceId and testId. Before posting evidence, read the workflow at skill://currents/browser-evidence/SKILL.md for a session you recorded, or skill://currents/collect-evidence/SKILL.md for a CI run.",
-          "firstSeen": "2026-10-24T17:22:24.403Z",
-          "hash": "8ee001e629fdedc017a7124687203433f14aef093b3cc3de47b4194f9d9570cd",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "properties": {
-              "artifactName": {
-                "description": "Selects one of several traces recorded for the attempt by name. Also matches a trace uploaded as a named attachment.",
-                "maxLength": 1024,
-                "minLength": 1,
-                "type": "string"
-              },
-              "attachmentId": {
-                "description": "The trace attachment of the session, from the response of currents-create-session or currents-add-attachments.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "attemptIndex": {
-                "description": "Which attempt. Defaults to the highest attempt that has a trace, which is the last one that ran.",
-                "maximum": 9007199254740991,
-                "minimum": 0,
-                "type": "integer"
-              },
-              "instanceId": {
-                "description": "CI runs: the spec file instance the test ran in. From currents-get-run-details or currents-get-test-evidence.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "sessionId": {
-                "description": "A session recorded with currents-create-session. Send it with attachmentId instead of instanceId and testId.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "testId": {
-                "description": "CI runs: the test to serve the trace of, as reported on the instance. From currents-get-spec-instance or currents-get-test-evidence.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "ttlSeconds": {
-                "description": "How long the link stays readable. Default 24 hours, max 7 days.",
-                "maximum": 604800,
-                "minimum": 60,
-                "type": "integer"
-              }
-            },
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "23e49fb17d09e7aa82e6945d4fdf3a675bd772c7f3b9a036f0c8f6f53adedc70",
-          "schemaHash": "301dcc96fd306db20721cb1208ac83d26c504bf7b320c62bd2d14502a93d93e2"
+          "schemaHash": "10e3a447c6f96b397a7b776b8b8d9c49ce1f70bd6e7ad4f139a82affa014a07d"
         },
         "currents-create-jira-issue": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Create Jira Issue"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Create a Jira issue from a run test using the organization Jira integration. Requires projectId, runId, testId, jiraInstallationId, jiraProjectId, and jiraIssueType. Optional customFields array.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "387c23aedda2c81d1bdc8e7e71546ddbb6c1037bd3070f92da6dd2c8dfc7e921",
+          "hash": "4f66de0d8dbb78f1a862d513095481601c0098cf1e27439857bda67bea4f2725",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -506,7 +258,6 @@
               },
               "projectId": {
                 "description": "Currents project ID.",
-                "minLength": 1,
                 "type": "string"
               },
               "runId": {
@@ -523,252 +274,16 @@
             "required": ["projectId","runId","testId","jiraInstallationId","jiraProjectId","jiraIssueType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "f31eb019b0f57620777f16c014a393662155399bbaa41391881e02012b57eae2",
-          "schemaHash": "fcb3911a0bb96426cd6305d61904f3f4731c5d49d640d1f354b924adaac20b30"
-        },
-        "currents-create-session": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Record Browser Session"
-          },
-          "approved": true,
-          "description": "Record a browser session you drove as a Currents session, so its evidence can be read and shared. Use it when there is no test to run — a bug reproduced by hand, a fix demonstrated in a browser. Pass commit and pr, read from git when you can run git in the repository, so the session shows up by branch and pull request. Returns the sessionId and an upload URL per attachment you declared; more can be added later with currents-add-attachments; PUT the bytes to those, and the response says what to do next. A trace attached this way can then be turned into a link that needs no Currents credential. Read the workflow at skill://currents/browser-evidence/SKILL.md before the first call. With the `currents` command, that workflow uses `currents session` instead of this tool, and it zips the trace and uploads the files for you; use this tool when you have a shell but not the command. Without a shell nothing can upload the files.",
-          "firstSeen": "2026-10-24T17:22:24.403Z",
-          "hash": "833bd0265c227abb1214c39a5f92500e517fb7ed4fc3002ddba5e2b848028c00",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "attachments": {
-                "description": "One entry per file to attach. Each comes back with a URL to PUT the bytes to. Send sizeBytes with each, so the upload URL accepts exactly that file.",
-                "items": {
-                  "properties": {
-                    "caption": {
-                      "description": "One line saying what the file shows. Shown next to it.",
-                      "maxLength": 1000,
-                      "type": "string"
-                    },
-                    "contentType": {
-                      "description": "Must match the type: a trace is application/zip, a screenshot image/png, image/jpeg, image/webp or image/gif, a video video/*. An attachment takes any media type.",
-                      "maxLength": 255,
-                      "pattern": "^[\\w.+-]+\\/[\\w.+-]+(?:[ \\t]*;[ \\t]*[\\w.-]+=(?:\"[^\"\\\\\\r\\n]*\"|[\\w.+-]+))*$",
-                      "type": "string"
-                    },
-                    "meta": {
-                      "additionalProperties": {
-                        "maxLength": 256,
-                        "type": "string"
-                      },
-                      "description": "Up to 20 key-value pairs of letters, digits, \"_\" and \"-\" keys, 2 KB in all.",
-                      "propertyNames": {
-                        "pattern": "^[A-Za-z0-9_-]{1,64}$",
-                        "type": "string"
-                      },
-                      "type": "object"
-                    },
-                    "name": {
-                      "description": "How the file is labelled. Name a trace here to pick it out later when the session carries more than one.",
-                      "maxLength": 1024,
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "sizeBytes": {
-                      "description": "The exact size of the file in bytes. The upload URL accepts a body of exactly this size.",
-                      "maximum": 1073741824,
-                      "minimum": 1,
-                      "type": "integer"
-                    },
-                    "type": {
-                      "enum": ["trace","screenshot","video","attachment"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["name","type","contentType"],
-                  "type": "object"
-                },
-                "maxItems": 50,
-                "type": "array"
-              },
-              "commit": {
-                "description": "Where the session was recorded, so it shows up by branch and pull request. When you can run git in the repository, read these values from it; do not guess them.",
-                "properties": {
-                  "authorEmail": {
-                    "description": "`git log -1 --format=%ae`",
-                    "maxLength": 1024,
-                    "type": "string"
-                  },
-                  "authorName": {
-                    "description": "`git log -1 --format=%an`",
-                    "maxLength": 1024,
-                    "type": "string"
-                  },
-                  "branch": {
-                    "description": "`git branch --show-current`",
-                    "maxLength": 1024,
-                    "type": "string"
-                  },
-                  "message": {
-                    "description": "The subject of the last commit, `git log -1 --format=%s`.",
-                    "maxLength": 10000,
-                    "type": "string"
-                  },
-                  "remoteOrigin": {
-                    "description": "`git remote get-url origin`",
-                    "maxLength": 1024,
-                    "type": "string"
-                  },
-                  "sha": {
-                    "description": "`git rev-parse HEAD`",
-                    "maxLength": 1024,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              "durationMs": {
-                "description": "How long the session took, in milliseconds.",
-                "maximum": 86400000,
-                "minimum": 0,
-                "type": "integer"
-              },
-              "error": {
-                "description": "What went wrong. Shown as the test error on a failed session.",
-                "maxLength": 10000,
-                "type": "string"
-              },
-              "pr": {
-                "description": "The pull request the session belongs to. A session from a dev box has no CI variables to find it from, so pass it here. Pass nothing when there is none.",
-                "properties": {
-                  "id": {
-                    "description": "The pull request number, when you have no URL. Resolved with commit.remoteOrigin.",
-                    "maxLength": 256,
-                    "type": "string"
-                  },
-                  "link": {
-                    "description": "The pull request URL, when you have it.",
-                    "maxLength": 2048,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              "projectId": {
-                "description": "The project to record the session under.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "status": {
-                "description": "Whether the behaviour the session went looking for held.",
-                "enum": ["passed","failed"],
-                "type": "string"
-              },
-              "tags": {
-                "description": "Tags to file the session under.",
-                "items": {
-                  "maxLength": 255,
-                  "minLength": 1,
-                  "type": "string"
-                },
-                "maxItems": 20,
-                "type": "array"
-              },
-              "title": {
-                "description": "What the session set out to show, as one line. Used as the session title.",
-                "maxLength": 1024,
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": ["projectId","title","status"],
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "6560eae09628ab323b4b07f890a4869388e0956477b235070d2606fe0b4cbe52",
-          "schemaHash": "57e0f4b7d3548ee0e205fcf9b8937fcd8ab6f76ae42d7b9bc158374a53704618"
-        },
-        "currents-create-share-link": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Create Public Share Link"
-          },
-          "approved": true,
-          "description": "Create a public link to test results that anyone can open without signing in, until it expires. purpose \"fix\" is the failure context, for an agent that will fix the tests — the same content as currents-get-context, with flaky tests included and marked flaky. purpose \"report\" lists every test with its attempts and files, for a person; for a session it is the session page: status, error, attachments and trace. Target a run (run_id), a spec file (run_id + instance_id) or a test (instance_id + test_id), or a session recorded with currents-create-session (session_id alone, purpose \"report\" only). Returns url (markdown, for agents) and pageUrl (web page, for people). Create one only when asked to hand results to someone.",
-          "firstSeen": "2026-10-24T17:22:24.403Z",
-          "hash": "283e568877f70f428ac8c90a53c2648eaa6a8cf8327a834b70f897fc3ef64977",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "properties": {
-              "attempt": {
-                "description": "purpose \"fix\" and a single test only: the attempt (0-indexed). Defaults to the last attempt that failed.",
-                "maximum": 9007199254740991,
-                "minimum": 0,
-                "type": "integer"
-              },
-              "expires_in_days": {
-                "anyOf": [{
-                    "const": 1,
-                    "type": "number"
-                  },{
-                    "const": 3,
-                    "type": "number"
-                  },{
-                    "const": 7,
-                    "type": "number"
-                  }],
-                "description": "How long the link works: 1, 3 or 7 days. Defaults to 1 for \"fix\" and 7 for \"report\"."
-              },
-              "instance_id": {
-                "description": "Instance (spec file) identifier. Required for a spec file (with run_id) or a single test (with test_id).",
-                "minLength": 1,
-                "type": "string"
-              },
-              "purpose": {
-                "description": "\"fix\": the failure context — errors, steps and files of the failed and flaky tests — for an agent that will fix them; the same content as currents-get-context. \"report\": every test with its attempts, statuses and file links, for a person; for a session, the session with its attachments and trace.",
-                "enum": ["fix","report"],
-                "type": "string"
-              },
-              "run_id": {
-                "description": "Run identifier. Share a run with run_id alone, or a spec file with run_id + instance_id.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "session_id": {
-                "description": "A session from currents-create-session. Send it alone, with purpose \"report\". The link shows the session as it is when opened.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "test_id": {
-                "description": "Test identifier. Shares a single test; requires instance_id.",
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": ["purpose"],
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "c2afcf4a832dc020e9e91c78fb646a18897aa765ea18e42994f478e7d4b92cab",
-          "schemaHash": "7fd1b003369afa41bf530d92b0efba50d58ee59fba8bf43556d235c6c2d25243"
+          "schemaHash": "60016071ed71a3b4f432c27d22038863199b8a109886b118063f98f0b95e4063"
         },
         "currents-create-webhook": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Create Webhook"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Create a new webhook for a project. Specify the URL to receive POST notifications, optional custom headers (as JSON string), events to trigger on (RUN_FINISH, RUN_START, RUN_TIMEOUT, RUN_CANCELED), and an optional label. Requires projectId and url. The payload Currents sends and how to verify it are documented at https://docs.currents.dev/resources/integrations/http-webhooks.",
+          "description": "Create a new webhook for a project. Specify the URL to receive POST notifications, optional custom headers (as JSON string), events to trigger on (RUN_FINISH, RUN_START, RUN_TIMEOUT, RUN_CANCELED), and an optional label. Requires projectId and url.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "4c5f9abe4a9a415ca5d7f351939090a0f1fa817e1b6dc0a2a0b81aaef7a1791f",
+          "hash": "7163b716e0bba2f03c27330961ca9cba5bd071c99b07bd75d1dee37ca5bdb499",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -801,7 +316,6 @@
               },
               "projectId": {
                 "description": "The project ID to create the webhook for.",
-                "minLength": 1,
                 "type": "string"
               },
               "url": {
@@ -813,167 +327,126 @@
             "required": ["projectId","url"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "52815dfc834a57c34786c6809ce7d1faa95efa85dfb47d39620f5aa3845a66ac",
-          "schemaHash": "71905b173b7280bf7b31f867a3fc52ecce6f89ffb030a354cdf29da5e7179a07"
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
+          "proseHash": "8bb6d7fd5512d30ffb60dc3007f258bb8c349936d813c41adeb0610e73bd737c",
+          "schemaHash": "28f52f8df361cb53c759ebd74bac6badf1a74e073954adb1a38ed4a6d6b46669"
         },
         "currents-delete-action": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Archive Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Delete (archive) an action. This is a soft delete - the action will be marked as archived but not permanently removed. The actionId is globally unique.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "01ce7b9c7721be963efb751a3923b1a99c52828132a66ee21355d9588fbaa191",
+          "hash": "fa2d54456215a15acef98601c08ac28f4ecbf3b594b8d3ba56c4e5172cb25b65",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "actionId": {
                 "description": "The action ID to delete (archive).",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["actionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "a33f3935ade381f2a7f88dd181dd603263d91a8a36c7c2a3dbd9d7d3650a6ae8",
-          "schemaHash": "6de48492bafd67f31d72bcef6720eb5edac91d720198167dbbb2c2b6593e53fa"
+          "schemaHash": "1b49f6d57d57d7cc7df488fa386749e24376cfd03f83c6c32c9c4aff227fea0d"
         },
         "currents-delete-run": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Delete Run"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Delete a run and all associated data. This is a permanent deletion. Requires runId.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "3167ae05e6fc1d16df2689d997f56af522bc70a5e5a4e48d5bc55e96771d0cd0",
+          "hash": "30390d836ed4cf19cbae2951ed2f49591ba210bbe5862443435943080110c2f8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "runId": {
                 "description": "The run ID to delete.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["runId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "726670641ffc30a7ca45e6efc6f361bdbf0a4cd37760cf54a6c9ce5deab81b5c",
-          "schemaHash": "72df0e2f1afaba32507e011622d9e70cbda6c215a3ab6a4c163defa512b60077"
+          "schemaHash": "52c6a78b8c6aa6341abf525b4b1bfadd9e82fad019f4c7c80a6645f35e18d9d7"
         },
         "currents-delete-webhook": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Delete Webhook"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Delete a webhook. This permanently removes the webhook. The hookId is a UUID.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "2a9dbb6134df5fafeb5db2a60aa51e84d21b2b4c490481d1e0beef764014c8dc",
+          "hash": "58d7a6b611fd53a1fa3b293d838c2c85d9b2cb3eddfa53bc6f52b11dd37c9fd0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "hookId": {
                 "description": "The webhook ID (UUID).",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
                 "type": "string"
               }
             },
             "required": ["hookId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.404Z",
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
           "proseHash": "1a33e5f1400f1a8f6f86fb120ac2dc3eee7f9c720238c4a126514c055fa9e32a",
-          "schemaHash": "c376032d8e65fd40a74482f8740dc0a558997d70e09c9685e04360e9c7500dd3"
+          "schemaHash": "f0c93e083a436600f5b95c7f60db358adb56cdb25aad179f294591b9e2c3b457"
         },
         "currents-disable-action": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Disable Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Disable an active action. Changes the action status to disabled, temporarily preventing it from applying to tests. The actionId is globally unique.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "f3cbc4df60dc655da73b8a1593e3c7cc3874502a3defa8e6d09cd2f7ab6f8207",
+          "hash": "d843f6119efc8f8a326904ee25f23d661ff98749896521a6405e250c9bc68d4c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "actionId": {
                 "description": "The action ID to disable.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["actionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "1de6e2c426356dc0264fa00ccf8bb7ea452f1fa0e84d2db01cbd4d490dc57c57",
-          "schemaHash": "3ed765c3acc97d4dca724d8f59b44de126e036eee7b6c72f426b67481d90c235"
+          "schemaHash": "3b03f3151cdc29db2baf6c7e99e8e9bbf99221205443cd278d5b8eb6d99e61bb"
         },
         "currents-enable-action": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Enable Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Enable a disabled action. Changes the action status from disabled to active, making it apply to matching tests again. The actionId is globally unique.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "32d9e36a04d3689763d410de2041c15b2f9298f9bcf324b7380699562e53cace",
+          "hash": "adff2dc16d3980f158eb5b3d366796b74cdfd96565339287b650161c59216e42",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "actionId": {
                 "description": "The action ID to enable.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["actionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "b8bbc222752716855914ba9f6305b899db516a99cfa6eca4df9eaa773e995ab4",
-          "schemaHash": "bd6fa9b2757776e9533c2e60f368e6bf46bc4a85c07998bb1d59a61d80d3bad7"
+          "schemaHash": "c6de5277c1cfc9958146b966c58d42386627ccf7f26eba78ff6c9afc7a33cd76"
         },
         "currents-find-run": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Find Run"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Find a run by query parameters. Returns the most recent completed run matching the criteria. Can search by ciBuildId (exact match) or by branch/tags. Supports pwLastRun flag for Playwright last run info. Requires projectId.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "f8b957237e07fdaea532d006b89295f97801476838b6f38eab5d73b84b81efa5",
+          "hash": "3377a03e361e680e94c3be27c91c0c706b61b65fdf22d8c38973c971a2022e85",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "branch": {
-                "description": "Git branch name. Applies only when ciBuildId is not provided — the API matches on ciBuildId alone when both are given.",
+                "description": "Git branch name. Used when ciBuildId is not provided.",
                 "type": "string"
               },
               "ciBuildId": {
@@ -982,7 +455,6 @@
               },
               "projectId": {
                 "description": "The project ID to search for runs in.",
-                "minLength": 1,
                 "type": "string"
               },
               "pwLastRun": {
@@ -1000,92 +472,30 @@
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "8dd95d1268ff6b275236b5c08a83776849dd5bda391f0dfc4bc30a7fa85be570",
-          "schemaHash": "59828062c5cb33d2ce6b5548750eb7773da4379a30163f427836d4387867f305"
+          "schemaHash": "0e7b79fcd76ec1af051d5cd8534f5c2755a879889ff179eee88981c7c8dec429"
         },
         "currents-get-action": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Get a single action by ID. The actionId is globally unique, so projectId is not required. Returns full action details including matcher conditions and current status.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "76869bbbfea427998956385f152230e3920b532d1782bb2fba179780f5b85bdd",
+          "hash": "304ddc3c389e5dcfeaa4f451b9c0d7d40a65369f41e95b6516df28f157248da6",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "actionId": {
                 "description": "The action ID to fetch.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["actionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.400Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "a025802018b649f29cfef7ff27ec79fc6c19e9f7b15386fe52560a0a3138e61e",
-          "schemaHash": "546765c0f747a158ec177ea262441ac3e707067e9ce21216f2fb7aa22115a3e3"
-        },
-        "currents-get-action-executions": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Executions an Action Applied To"
-          },
-          "approved": true,
-          "description": "Keyed on an action: lists the test executions one rule was applied to, across every test it touched, within a date range. Requires actionId, date_start and date_end; if the actionId is not known, first call 'currents-list-actions'. For the executions of one test, call 'currents-get-affected-test-executions' instead. Uses cursor-based pagination.",
-          "firstSeen": "2026-10-24T17:22:24.401Z",
-          "hash": "a0d28f21842d7f8f9aa8a704e93053d744060cfc4062537722f33bc237a97242",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "properties": {
-              "actionId": {
-                "description": "The action ID to fetch affected test executions for.",
-                "minLength": 1,
-                "type": "string"
-              },
-              "date_end": {
-                "description": "End date in ISO 8601 format (required).",
-                "type": "string"
-              },
-              "date_start": {
-                "description": "Start date in ISO 8601 format (required).",
-                "type": "string"
-              },
-              "ending_before": {
-                "description": "Cursor for pagination. Returns items before this cursor value.",
-                "type": "string"
-              },
-              "limit": {
-                "description": "Maximum number of executions (1-50). Defaults to 25.",
-                "maximum": 50,
-                "minimum": 1,
-                "type": "integer"
-              },
-              "search": {
-                "description": "Search by action name (case-insensitive).",
-                "maxLength": 100,
-                "type": "string"
-              },
-              "starting_after": {
-                "description": "Cursor for pagination. Returns items after this cursor value.",
-                "type": "string"
-              }
-            },
-            "required": ["actionId","date_start","date_end"],
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
-          "proseHash": "709c2e4f4bbc8e54225b3ff0a69b31ac4bfb48795ad60cc0fa923c0aa1cf3a82",
-          "schemaHash": "946a965e3e572f217b1222cb958c1fc84b9a84a9d9227d741e31acef610837a1"
+          "schemaHash": "74c3c90f8ce20244054398295fd4fd5ff69803ca750b1aeed5d871ca3de67dc8"
         },
         "currents-get-affected-executions": {
           "annotations": null,
@@ -1136,17 +546,11 @@
           "schemaHash": "a7a4a9af76f472e78b3d1e4116efe63ef9c01461f006ac8f60f7c8d4701f1e72"
         },
         "currents-get-affected-test-executions": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Executions of an Affected Test"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Keyed on a test: lists the executions of one test that an action applied to, within a date range, with the run, branch and commit of each. Requires projectId, signature, date_start and date_end; if the signature is not known, first call 'currents-get-tests-signatures'. For the executions of one rule across every test it touched, call 'currents-get-action-executions' instead. Uses cursor-based pagination.",
+          "description": "Get execution details for a specific affected test (by signature) within a date range. Returns individual test execution records with action info. Uses cursor-based pagination. Requires projectId, signature, date_start, and date_end.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "1de5b02d99ac7f36e7bfa0ed4ab3fe78d831843806c697b0a774a8f3f142ea69",
+          "hash": "99e6f67443ac1d3574ae227fab3f5dfe3cafbd29bfc6e6b5a899fce803c87b58",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1170,7 +574,6 @@
               },
               "projectId": {
                 "description": "The project ID.",
-                "minLength": 1,
                 "type": "string"
               },
               "search": {
@@ -1180,7 +583,6 @@
               },
               "signature": {
                 "description": "The test signature hash to fetch affected executions for.",
-                "minLength": 1,
                 "type": "string"
               },
               "starting_after": {
@@ -1191,22 +593,16 @@
             "required": ["projectId","signature","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
-          "proseHash": "e8f8bdab14dd3fd9e5196d2cfa9af76836d0bf92e60f77a8e99d03c4afbc27e3",
-          "schemaHash": "43b947613d7271cca997a2d04b7d47f4a37dc542cc96c4ee8c07490fcf6072a5"
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
+          "proseHash": "129ee3e31dd86e91684e9518bb4f9c8c97bb7cdc10ca05e9e6069538bd2f2fdd",
+          "schemaHash": "d55e504ff1540075c292d8475cdd8d7b941bb24fe6beb62a4d88dbe42568e4d0"
         },
         "currents-get-context": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Failure Context to Fix Tests"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Call this first to find out why tests failed in CI, or to fix them: returns the errors, steps and files of the failed tests of a run, a spec file (instance) or one test — the same content as Fix in the Currents dashboard. Takes the IDs from dashboard links: /run/<runId> is run_id, /instance/<instanceId>/test/<testId> (or /i/<instanceId>/test/<testId>) is instance_id and test_id. Flaky tests are left out of a run unless include_flaky is set. The context of a run lists the attachments of the run itself, by CI machine (`runAttachments`). Supports json or md format, detail level, and pagination for failed tests. Target a run (run_id), a spec file (run_id + instance_id) or a test (instance_id + test_id). The steps for fixing them are at skill://currents/fix-failing-tests/SKILL.md.",
+          "description": "Get test failure context for AI debugging at run, instance, or test level. Supports json or md format, detail level, and pagination for failed tests. Requires run_id for run-level, or instance_id with optional test_id.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "5557f91c7ded0faf50d12eaeb2ed4b1c43e1f48559e37829fb76bb44c4ef873a",
+          "hash": "ea4cc2d74e62170756395ed5478cb3545097b89e48ce8ca25f827d578391163c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1225,10 +621,6 @@
                 "description": "Response format. Falls back to Accept header when absent. Defaults to json.",
                 "enum": ["json","md"],
                 "type": "string"
-              },
-              "include_flaky": {
-                "description": "Run-level only. When true, flaky tests are listed after the failed tests, each with the error from its last failed attempt, and limit and page count across both. Defaults to false.",
-                "type": "boolean"
               },
               "instance_id": {
                 "description": "Instance identifier. Required for instance-level and test-level. Omit for run-level (use run_id only).",
@@ -1263,22 +655,16 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "0ed6edbe2973f5f7db6a1b82d98818a687e0597ddd825018c1e6bd6ba2c56874",
-          "schemaHash": "99b2e415417afb7fa6745e3ebe21304f8580d7b0b488278f2a78283354d0a878"
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
+          "proseHash": "4d3ceda2042a6c09a6d1b72941d6ab4fa7017bb57cbddc70e20b6bd9e6a8149f",
+          "schemaHash": "74a68de1e3087d9e1324bf5588c8bdba9c40ef0eb8dab12968b82ab031614f21"
         },
         "currents-get-errors-explorer": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Explore Errors"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Get aggregated error metrics for a project within a date range. Supports filtering by error_target, error_message, error_category, error_action, tags, branches, authors, and groups. Supports grouping by target, action, category, or message. Returns error counts, affected tests and branches, with timeline data. Requires projectId, date_start, and date_end.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "fb43325932fdbd4f9b59b797c56d575fa1bcbb0d9147b40e4f5d75a416a23945",
+          "hash": "0b65f6ca284eace07490520aa0d223c548a322e86954a8b4ee5e93ca48307b54",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1364,7 +750,6 @@
               },
               "projectId": {
                 "description": "The project ID to fetch error metrics from.",
-                "minLength": 1,
                 "type": "string"
               },
               "tags": {
@@ -1389,50 +774,37 @@
             "required": ["projectId","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
           "proseHash": "f8fbcc31121af4a2ddac92135017b6fca5efe60f10812ee1869cb40fd247c409",
-          "schemaHash": "badb1184a7f0e7b66a0847d79b800a8d156ee11a474ab3331a5385358a1b2861"
+          "schemaHash": "0d0e94a1d4141f730242c9a81852b9de330f3b453c0ac295ccedd83dd1247cf4"
         },
         "currents-get-project": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Project"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Get a single project by ID. Returns project details including name, creation date, failFast setting, inactivity timeout, and default branch name.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "954a71e01198e90b6387f6a9ff29a6a7f7e6519078a72a5f069594813b86a4b3",
+          "hash": "bbc93238007ef84569d1423ccf74d56ff0590d603ba6c9e80336ef8aa5093a69",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "projectId": {
                 "description": "The project ID to fetch details for.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "ceea36975a5292fdad8bd2358f20196f037d25bed4c69d7d74b47c2a21de05fb",
-          "schemaHash": "56b6ae500b85eab7ebe8e009f8bc9838edb7dd974dd580a7de878a7dbe2cdf96"
+          "schemaHash": "22f9b7543bb2c265a573155ab4539558b777eb530c1d50771de21ce1813b17c7"
         },
         "currents-get-project-insights": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Project Insights"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Get aggregated run and test metrics for a project within a date range. Returns overall metrics and timeline data with configurable resolution (1h/1d/1w). Supports filtering by tags, branches, groups, and authors. Requires projectId, date_start, and date_end.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "cc09c0c02b13ceacce6d68b53138937cea847bd9cd95628ca8138467c84345bc",
+          "hash": "d5e7bece8e176a1c8c009361a002abea04adb21f09a029055f8136ce7e758811",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1467,7 +839,6 @@
               },
               "projectId": {
                 "description": "The project ID to fetch insights for.",
-                "minLength": 1,
                 "type": "string"
               },
               "resolution": {
@@ -1486,22 +857,16 @@
             "required": ["projectId","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "3280d4aa1f9f459802c91a064446316dbe828dbee5a91dd0a45dcba703f61cb1",
-          "schemaHash": "eb343f64cb2d975c9393e49e0927752840b61b2f9fb5bd805c18ab22d00fef6c"
+          "schemaHash": "b145218f8d4f14307b90cb6ff33926b5a32f6866f528ca32893538ab8871a2d5"
         },
         "currents-get-projects": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Projects"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Retrieves projects available in the Currents platform. Supports cursor-based pagination with limit, starting_after, ending_before parameters, or set fetchAll=true for automatic pagination. This is a prerequisite for using any other tools that require project-specific information.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "f5edb7f5288dd7f4fcd8d29d7ed14450bf1250280be8f3c06c948b8e2dd42687",
+          "hash": "c56389c92a016e27f6efd21fb3741798e5b60a034fbd482cfece768aef3e54ec",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1510,7 +875,7 @@
                 "type": "string"
               },
               "fetchAll": {
-                "description": "If true, walks the pages automatically and returns up to 1000 projects. Starts after starting_after when it is set, so a list that came back marked incomplete can be continued. Ignores limit and ending_before.",
+                "description": "If true, fetches all projects using automatic pagination. Ignores limit, starting_after, and ending_before.",
                 "type": "boolean"
               },
               "limit": {
@@ -1526,50 +891,37 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "ca4f1916ce9b44381eb43b71364ab59c9b03cfa09c66298fc9e723d77fb3df41",
-          "schemaHash": "3b93b08f2ae0ba83f965d8a5f34ea44fe4420f0383a85584ab0d3207ada5df83"
+          "schemaHash": "fd69480dcab55b12cefdb14bf9f6bc87481bc01a11feed544fb8739c8db7bef4"
         },
         "currents-get-run-details": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Run"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Retrieves a run: its status, commit, branch, groups and spec files, each with its instanceId, and how many files the run has by level, type and source (`attachmentCounts`). Requires runId, the ID in a /run/<runId> dashboard link. For why the run's tests failed, and for the files attached to the run itself such as Docker logs, call currents-get-context with run_id instead; for its screenshots, videos and traces, currents-get-test-evidence.",
+          "description": "Retrieves details of a specific test run. Requires a user-provided runId.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "b1f70cce1a18aa440d1a768a1ee1d26a78ff6f0d4619eb1cdc8d1128ebc0f244",
+          "hash": "fe3b236759edc1f9afbaf4492433876fe82a5f9d814509ed757a2315f52840df",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "runId": {
                 "description": "The run ID to fetch details for.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["runId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
-          "proseHash": "2b425963ff8acbee0c1efcbaa260278e2c35888cc16ff1baaf85f000e1ed3ebb",
-          "schemaHash": "81dd9db14d6e9db8ef0516a5f91a1e7d0bad66f7ea1be1c0987d919f7735894a"
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
+          "proseHash": "523ad9bbef169ef3e6e219d0e94eb87bfd90f2f093a1123eeaf68b9ac7989ab8",
+          "schemaHash": "d26bb867f8796d557ef1544234d554a1ccac8cde3c463f7475322d5ec90f8575"
         },
         "currents-get-runs": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Runs"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Retrieves a list of runs for a specific project with optional filtering. Supports filtering by branch, tags (with AND/OR operators), status (PASSED/FAILED/RUNNING/FAILING), completion state, date range, commit author, and free-text search over the run's CI build id, commit message, branch, sha, author, pull request title/number/branches, tags, environments, framework and browser. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
+          "description": "Retrieves a list of runs for a specific project with optional filtering. Supports filtering by branch, tags (with AND/OR operators), status (PASSED/FAILED/RUNNING/FAILING), completion state, date range, commit author, and search by ciBuildId or commit message. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "005789d16f4e1ebd6295f9db9e3fd8e9626cff751743aaff6abab8b5593e8400",
+          "hash": "2bcc6c4e70e4f15e0e0798fcf121f2e9dba0dac79675c5062d7363ae0cc9c852",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1622,11 +974,10 @@
               },
               "projectId": {
                 "description": "The project ID to fetch runs from.",
-                "minLength": 1,
                 "type": "string"
               },
               "search": {
-                "description": "Case-insensitive substring search over a run's CI build id, commit message, branch, sha, author name and email, pull request id/title/source/destination, tags, environments, framework and browser.",
+                "description": "Search runs by ciBuildId or commit message. Case-insensitive.",
                 "maxLength": 200,
                 "type": "string"
               },
@@ -1658,22 +1009,16 @@
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
-          "proseHash": "3753c05d4bfe2152afdb5e18fdb5d701c43e706c8a967653842499d3cc4d866f",
-          "schemaHash": "49b3bf14c7ccb01ba014a8cc97a4a0830333e68e5361623056d4faaf10d48015"
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
+          "proseHash": "2f847675a8825655b692bff940b352a2d36d7eadaa54e5f06e78dfadeb5e556a",
+          "schemaHash": "2f7dfac4f8489f2a28aec92b721c52ad530f5df29bedd236560ba7a7d53c6c70"
         },
         "currents-get-spec-files-performance": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Spec File Performance"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Retrieves spec files performance metrics for a specific project within a date range. Supports ordering by avgDuration, failedExecutions, failureRate, flakeRate, flakyExecutions, fullyReported, overallExecutions, suiteSize, timeoutExecutions, or timeoutRate. Supports filtering by tags, branches, groups, and authors. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "2b472ac1205b5287191ea6e589addf07162c54445ef198963d8093889554dadd",
+          "hash": "6623ef975566bc68c2114d4b58bd7b3b08d6a2ccf35e2d28a2acddd77b55062c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1734,7 +1079,6 @@
               },
               "projectId": {
                 "description": "The project ID to fetch spec files performance metrics from.",
-                "minLength": 1,
                 "type": "string"
               },
               "specNameFilter": {
@@ -1752,110 +1096,37 @@
             "required": ["projectId","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "06d1db9cccdaff99cb529529fe3b290f06d3f8f24ad28d4a96a8e6cc1031a61b",
-          "schemaHash": "5e75ed3fb5ecd71998a8dc7e96f4879da0ec2a5128663566b8ae500d75cd0029"
+          "schemaHash": "5bdfb08fa312dcbee9f23a073758bf2d04fec08dfc33ae951643454972d3b8e8"
         },
         "currents-get-spec-instance": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Spec Execution"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Retrieves the raw result of one spec file execution by instanceId: each test's state and attempts, and the artifact URLs. For why its tests failed, currents-get-context with run_id and instance_id returns the errors, steps and trace links ready to read.",
+          "description": "Retrieves debugging data from a specific execution of a test spec file by instanceId.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "a4de9180cdb542c286e320d59d792558b9314df107e16c89536d13be496e5b46",
+          "hash": "a6c758b2c1c393b9be5376c3fe9aeb4e94bd653a8568384e31cfb73c7f3449ae",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "instanceId": {
                 "description": "The instance ID to fetch debugging data from.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["instanceId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
-          "proseHash": "f02150dda3b57e4b98d86db20ee6d51ccaf4a201b1126aef36e5671fab6c25bc",
-          "schemaHash": "c10c5266fc55764aa45835a3a687c8a345e775474f832225611e0165c74813f4"
-        },
-        "currents-get-test-evidence": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Collect Test Evidence"
-          },
-          "approved": true,
-          "description": "Collect evidence artifacts (screenshots, videos, traces, attachments) produced by tests in a CI run, with signed download URLs grouped per test. Read skill://currents/collect-evidence/SKILL.md before the first call. Use to gather proof or a demo of an implemented feature from CI — e.g. before/after screenshots, text output stored as test attachments, or Playwright videos and traces — instead of running tests locally. Locates the run by runId, or by projectId with ciBuildId or branch (latest run). Supports filtering by spec file, test title, and test status. URLs are signed and time-limited, so download the files promptly.",
-          "firstSeen": "2026-10-24T17:22:24.403Z",
-          "hash": "0c62126810ba9a1583f6dc49702ec6ca316fda918cd9c7fef1a6d922886afe85",
-          "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "properties": {
-              "branch": {
-                "description": "Git branch name. The most recent completed run on this branch is used. Requires projectId.",
-                "type": "string"
-              },
-              "ciBuildId": {
-                "description": "CI build ID for exact run lookup. Requires projectId. Takes precedence over branch.",
-                "type": "string"
-              },
-              "maxInstances": {
-                "description": "Maximum number of spec file instances to fetch artifacts for (default: 10, max: 25). Narrow with the spec filter instead of raising this.",
-                "maximum": 25,
-                "minimum": 1,
-                "type": "integer"
-              },
-              "projectId": {
-                "description": "The project ID. Required unless runId is provided. Used to locate the run by ciBuildId or branch.",
-                "type": "string"
-              },
-              "runId": {
-                "description": "The run ID to collect evidence from. When provided, projectId, ciBuildId, and branch are ignored.",
-                "type": "string"
-              },
-              "spec": {
-                "description": "Filter spec files by substring match on the spec file path (case-insensitive).",
-                "type": "string"
-              },
-              "testStatus": {
-                "description": "Filter tests by status. When omitted, all tests are included.",
-                "items": {
-                  "enum": ["passed","failed","pending","skipped"],
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              "testTitle": {
-                "description": "Filter tests by substring match on the full test title, including describe blocks (case-insensitive).",
-                "type": "string"
-              }
-            },
-            "type": "object"
-          },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "14c2c606d497530de147e91be6e2b33972ccae373006ca25abd5d2e0f0300521",
-          "schemaHash": "4ca1d560c18bd016b92838016b20f056510622bef91b28d400735b8c9ec4bb7f"
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
+          "proseHash": "f84667041481e1bd9f8f1c6fd0d02506aad10634a91df1fcba9c439021af299e",
+          "schemaHash": "86f061720620b25785cb72f6a9d5a10d144d02a8eb06f553d7a73c9e581931e1"
         },
         "currents-get-test-results": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Test History"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Retrieves historical test execution results for a specific test signature. Supports filtering by date range, branch, tags, git author, test status (passed/failed/pending/skipped), run group, flaky status, and annotations. Requires the test signature. If the signature is not known, first call 'currents-get-tests-signatures'.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "55eb8d37b82ceee6b474b62f2444ddc5fadada2a6b1a418d2da96ecd516420ea",
+          "hash": "a356daa2732fc2392c836026784622cd53238da74c04b44644588a53ee9e75cf",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -1908,7 +1179,6 @@
               },
               "signature": {
                 "description": "The test signature.",
-                "minLength": 1,
                 "type": "string"
               },
               "starting_after": {
@@ -1934,22 +1204,16 @@
             "required": ["signature","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
           "proseHash": "d25bb9693bc87b3e7a079b9d0ecc99aa4c3a30ecabb815378b00dbdb9f5dc8ae",
-          "schemaHash": "df101ce7160615b0530064045cf9d90471beb527e86922e9f5891e01ca137f56"
+          "schemaHash": "f44c53c535804cf800e2e05090c0959306a44188b1be4891e584d5c8d7367783"
         },
         "currents-get-tests-performance": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Test Performance"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Retrieves aggregated test metrics for a specific project within a date range. Supports ordering by failures, passes, flakiness, duration, executions, title, and various delta metrics. Supports filtering by spec name, test title, tags, branches, groups, authors, minimum executions, test state, and annotations. Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "7b6e22afa8f85485c378fa4a19d6b6f885d91e95efed5ef68e9a6667d6a5b262",
+          "hash": "5cb5145cb88602374f24c218cb71ee16260e7212b5926486f9944340de7614d2",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2020,7 +1284,6 @@
               },
               "projectId": {
                 "description": "The project ID to fetch test performance metrics from.",
-                "minLength": 1,
                 "type": "string"
               },
               "spec": {
@@ -2050,28 +1313,21 @@
             "required": ["projectId","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "2766758516a80e87c0bbf941fae0d903f51d122230a413f0d9b39661a8ab8284",
-          "schemaHash": "08988f92f6393e50832d996163e5e5d67671a1fd8772908aa2ed5feb11e15625"
+          "schemaHash": "1223a16d8a61e764d613fa9f8a49f31d0dbc6f1712808c36485ac875c8553417"
         },
         "currents-get-tests-signatures": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Test Signature"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Generates a unique test signature based on project, spec file path, and test title. The test title can be a string or array of strings (for nested describe blocks). Requires a projectId. If the projectId is not known, first call 'currents-get-projects' and ask the user to select the project.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "c6f2c2973bc7b0431e60b2fc4b00608b9e785053c048f3ff0545529a8ecd14ac",
+          "hash": "5f7484cc8d5d0f1577b59af298935fa0447a26e62852d56340409e25bd93a028",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "projectId": {
                 "description": "The project ID to generate the test signature for.",
-                "minLength": 1,
                 "type": "string"
               },
               "specFilePath": {
@@ -2094,50 +1350,37 @@
             "required": ["projectId","specFilePath","testTitle"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "41c2113d16726d3bb3fc6b0bee72bd993c640af4abe104b7fab50763b7607288",
-          "schemaHash": "2463163f8ee148bea22ceac4bf1a046cff2160ccfc476c1340c29932c863d4f6"
+          "schemaHash": "3ec2635ffc33ccc655e0ab67d58eaacb43bf2fab5c5899b6820fcbc1b9402ce7"
         },
         "currents-get-webhook": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "Get Webhook"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Get a single webhook by ID. The hookId is a UUID. Returns full webhook details including url, headers, events, label, and timestamps.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "4eb2bc183fb7e07c8b1deb0aadcfffe265899725f4e89cb919cf9089ae9fb041",
+          "hash": "9d3f8810a5244feea01e35e0ae5a8ae9be7c9677eded547382f1921622b0eb14",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "hookId": {
                 "description": "The webhook ID (UUID).",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
                 "type": "string"
               }
             },
             "required": ["hookId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
           "proseHash": "56425bcf91ed7e41a402ff77fb497af80b9dfc5e51047f31554f234e770d2b29",
-          "schemaHash": "418e3f53b0c575234ab7df0bf44b9c14dcb7f889c3112a069796378259db12a8"
+          "schemaHash": "502aef56ddcc1b84f74df53e21d6b90e2b947d2a37d96baf3e30b7e1cdf62b37"
         },
         "currents-link-jira-issue": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Link Jira Issue"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Link an existing Jira issue to a run test using the organization Jira integration. Requires projectId, jiraIssueKey, runId, testId, jiraInstallationId, jiraProjectId, and jiraIssueType. Optional comment and includeContextInComment.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "f30ecabb17b0397edbb85d517f64a06e438238e3aef3c26787e6849422b52269",
+          "hash": "8167a4550db7b166668bd8b7b8098f261f56eff91851405d4282d04ea1dd5a81",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2171,7 +1414,6 @@
               },
               "projectId": {
                 "description": "Currents project ID.",
-                "minLength": 1,
                 "type": "string"
               },
               "runId": {
@@ -2188,28 +1430,21 @@
             "required": ["projectId","jiraIssueKey","runId","testId","jiraInstallationId","jiraProjectId","jiraIssueType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "43db820766f88566eeb198696f21eb11f585126c9adfac544d2366f53a96e893",
-          "schemaHash": "5b03de77ad2fb736ad4545a880b47183ae58ece2992678ee6f3e42a24b326463"
+          "schemaHash": "be2abe089cddfc295d104675e2f9f858f7ba8142ce637d637864dfe9577b8d00"
         },
         "currents-list-actions": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Actions"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List all actions for a project with optional filtering. Actions are rules that automatically modify test behavior (skip, quarantine, tag). Supports filtering by status (active/disabled/archived/expired) and search by name. Requires a projectId.",
           "firstSeen": "2026-10-24T17:22:15.027Z",
-          "hash": "7823934d28dd93043342ffdb44c5f85cd70c0c000a52bb5c68d6fca97cc83ac8",
+          "hash": "03ae8259a2914346acd75d5c8e81b8cbe700b863368f49ed3940ba1015e46fa5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "projectId": {
                 "description": "The project ID to fetch actions from.",
-                "minLength": 1,
                 "type": "string"
               },
               "search": {
@@ -2229,22 +1464,16 @@
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.399Z",
+          "pinnedAt": "2026-10-24T17:22:15.027Z",
           "proseHash": "acaffed1576069e2cc269135ca8565e22d2160e953d976e353e140d47b6b5778",
-          "schemaHash": "0e5108a91ae3921216f51f2218787cee1d3353d65f35bca38b6da6db0a508eab"
+          "schemaHash": "b60dcbd190e52cb9806600b456fc992625f5e365f20bda975f9e14130e909d7c"
         },
         "currents-list-affected-tests": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Tests Affected by Actions"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List tests affected by actions (quarantine, skip, tag) for a project within a date range. Returns aggregated data grouped by test signature. Supports filtering by action types, action ID, status, and search. Requires projectId, date_start, and date_end. Preview endpoint: fields and path may change.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "dd4b2821d7d4bddd6375e8e1a81c2301d4c7836894a78d8ab7169a60bf9a082c",
+          "hash": "3ce992e42e88c0bce99e280f98f4d695e63b63983fa3d6b91019c4ae2869ec34",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2287,7 +1516,6 @@
               },
               "projectId": {
                 "description": "The project ID to fetch affected tests from.",
-                "minLength": 1,
                 "type": "string"
               },
               "search": {
@@ -2307,18 +1535,12 @@
             "required": ["projectId","date_start","date_end"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "7593bf578ede24e276e4aba4e935b838012be065e49db5afc1b543c66926693c",
-          "schemaHash": "4034d19cbf6dd51a9b781ee82b96c64e52ce7d432c4fe9bb1234244acedbf18a"
+          "schemaHash": "724110ec7ba79074f1de6e290e09713a7a5f2bbc34b5c8b411ca40210d713f04"
         },
         "currents-list-jira-issue-types": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": true,
-            "readOnlyHint": true,
-            "title": "List Jira Issue Types"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List Jira issue types and custom fields for a Jira project. Requires jiraProjectId and jira_installation_id.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
@@ -2357,18 +1579,12 @@
             "required": ["jiraProjectId","jira_installation_id"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "66db2d090e22ad79f30d93bf6ea3207a0d49a59a0755158f9bc16d12665d400f",
           "schemaHash": "d961141c6f7779ece09cf02ae04f97785521ccea33ee52b1865291ea57357dd6"
         },
         "currents-list-jira-projects": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": true,
-            "readOnlyHint": true,
-            "title": "List Jira Projects"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List Jira projects available for the organization integration. Use returned project IDs as jiraProjectId when creating issues. Requires jira_installation_id.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
@@ -2401,22 +1617,16 @@
             "required": ["jira_installation_id"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "8b0a199c3104be7abe96a461bf6fadc32d555ff2d731aabf2dcfb153dd5139e8",
           "schemaHash": "f9df71f251a22c8ef16901fa562a55a9a19782e9bfaade3e9848411e77878b7c"
         },
         "currents-list-project-terms": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Project Terms"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List cursor-paginated project terms for one type (tag, branch, authorName, etc.). Supports search, sort direction, and starting_after or ending_before cursors. Requires projectId and termType.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "43b908aac8e6f05c4195700dc0263692141509da3613239a79a36b75fa5b6d34",
+          "hash": "b36e414a4d372019af8ca4872df0c06f4ae86bc91d9e2161fe6e25ba2958f3db",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2437,7 +1647,6 @@
               },
               "projectId": {
                 "description": "The project ID.",
-                "minLength": 1,
                 "type": "string"
               },
               "search": {
@@ -2458,22 +1667,16 @@
             "required": ["projectId","termType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
           "proseHash": "6a248df98555691c234dbfb5f7867a7bf139cd51b93207791ee8a7bc54bc4ac3",
-          "schemaHash": "99adbc6181b1b0c21356ae030dde594d1cc33cfa3123bf93d75bb3be4b43f798"
+          "schemaHash": "7364f7e33a9903627ec386a37e7fcff98676fb42727f118a7f21fe37e1069099"
         },
         "currents-list-pull-requests": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Pull Requests"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "List pull-request cards for a project (runs grouped by meta.pr.id). Run filters (date range, tags, branches, authors, environments, pr_id, search) choose which runs count; status, completion_state and pr_search are checked on each PR's latest run among those runs. Supports order and dir, cursor pagination and the runs_per_pr preview count. Requires projectId.",
+          "description": "List pull-request cards for a project (runs grouped by meta.pr.id). Supports cursor pagination, runs_per_pr preview count, and filters by tags, branches, authors, and latest-run status. Requires projectId.",
           "firstSeen": "2026-10-24T17:22:15.029Z",
-          "hash": "56dad9880dbba17d329932058242f06be216d928c61fdbe0669852c9988d1356",
+          "hash": "cf9497f4dba11d03fb65a49b7618e92c79d9e8c57ad9eddffd6eb51ada00642b",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2491,38 +1694,9 @@
                 },
                 "type": "array"
               },
-              "completion_state": {
-                "description": "Filter PR cards by the completion state of each PR's latest run among the runs the other filters keep (can be specified multiple times). COMPLETE: run finished normally, IN_PROGRESS: run is still executing, CANCELED: run was canceled, TIMEOUT: run timed out.",
-                "items": {
-                  "enum": ["COMPLETE","IN_PROGRESS","CANCELED","TIMEOUT"],
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              "date_end": {
-                "description": "Count only runs created before this date (ISO 8601 date or date-time). Must not be before date_start.",
-                "type": "string"
-              },
-              "date_start": {
-                "description": "Count only runs created on or after this date (ISO 8601 date or date-time). Without date_start and date_end, runs of the whole project history count.",
-                "type": "string"
-              },
-              "dir": {
-                "description": "Sort direction (default: desc). Keep order and dir the same across pages: a cursor returned for another order or dir is rejected.",
-                "enum": ["asc","desc"],
-                "type": "string"
-              },
               "ending_before": {
                 "description": "Cursor for backward pagination.",
                 "type": "string"
-              },
-              "environments": {
-                "description": "Count only runs from these environments (can be specified multiple times). Printable ASCII without spaces.",
-                "items": {
-                  "pattern": "^[!-~]+$",
-                  "type": "string"
-                },
-                "type": "array"
               },
               "limit": {
                 "description": "Maximum number of PR cards per page (default: 10, max: 50).",
@@ -2530,43 +1704,22 @@
                 "minimum": 1,
                 "type": "integer"
               },
-              "order": {
-                "description": "Sort PR cards by last_run (creation time of the latest run, default), first_run (creation time of the oldest run) or run_count (number of runs). Only runs the filters keep count.",
-                "enum": ["last_run","first_run","run_count"],
-                "type": "string"
-              },
-              "pr_id": {
-                "description": "Count only runs of this pull request, by normalized pull request id (meta.pr.id). Printable ASCII only, max 128 characters.",
-                "maxLength": 128,
-                "minLength": 1,
-                "pattern": "^[!-~]+$",
-                "type": "string"
-              },
-              "pr_search": {
-                "description": "Find PRs by title, number or source branch, checked on each PR's latest run among the runs the other filters keep. Matches when the title or source branch contains the text (case-insensitive), or when the text is a PR number (123 or #123). Any characters except control characters; 1-200 characters after trimming.",
-                "type": "string"
-              },
               "projectId": {
                 "description": "The project ID to list pull requests for.",
-                "minLength": 1,
                 "type": "string"
               },
               "runs_per_pr": {
-                "description": "Number of recent runs to include in each card timelinePreview (default: 1, max: 10). 0 returns an empty timelinePreview; recentRuns (up to 10 latest runs per card) are still returned.",
+                "description": "Number of recent runs to preview per PR card (default: 1, max: 10).",
                 "maximum": 10,
-                "minimum": 0,
+                "minimum": 1,
                 "type": "integer"
-              },
-              "search": {
-                "description": "Count only runs whose ciBuildId or commit message contains the text (case-insensitive). Printable ASCII only; 1-200 characters after trimming.",
-                "type": "string"
               },
               "starting_after": {
                 "description": "Cursor for forward pagination.",
                 "type": "string"
               },
               "status": {
-                "description": "Filter PR cards by the status of each PR's latest run among the runs the other filters keep (can be specified multiple times).",
+                "description": "Filter PR cards by latest run status (can be specified multiple times).",
                 "items": {
                   "enum": ["PASSED","FAILED","RUNNING","FAILING"],
                   "type": "string"
@@ -2589,50 +1742,37 @@
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
-          "proseHash": "7a60356ce8b49d7ae4f10e768b104cb4331f8ad0195bd294a3e627c91ff928b2",
-          "schemaHash": "0dc1be8412a0f878a5d46335a0f422e07e435955ba15bb9974304a8ed1eb2d72"
+          "pinnedAt": "2026-10-24T17:22:15.029Z",
+          "proseHash": "b1734fd35e85a4e400fc8152548629b579e49217287fbb59fdd5d98c56b60e28",
+          "schemaHash": "7c1b6bdf63c1a1165926e6205a96e642b380e642657c51021742dbf87230e893"
         },
         "currents-list-webhooks": {
-          "annotations": {
-            "destructiveHint": false,
-            "idempotentHint": true,
-            "openWorldHint": false,
-            "readOnlyHint": true,
-            "title": "List Webhooks"
-          },
+          "annotations": null,
           "approved": true,
           "description": "List all webhooks for a project. Webhooks allow you to receive HTTP POST notifications when certain events occur in your test runs: RUN_FINISH (run completed), RUN_START (run started), RUN_TIMEOUT (run timed out), RUN_CANCELED (run was cancelled). Requires a projectId.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "7a7c3aea8ade60dac62d2b4b47a8e9cb224d093af6773a6b6906205e9d5da41f",
+          "hash": "704120d35c0a8388d0a1f43ab8557bc76c494ccd627af63a59ee57e38b362d47",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
               "projectId": {
                 "description": "The project ID to fetch webhooks from.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["projectId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
           "proseHash": "782fbfed3d7062798f9805aa8e9f6626e7887a97858be8701e599630a70d14c6",
-          "schemaHash": "ad427634cc1c962f421cd92867aad138a0ca754a20f2eea159fce1e45c11451a"
+          "schemaHash": "223c2dcb068a93da03033399242fa8d47a498ea78742efbcc23f613f87b1ac97"
         },
         "currents-reset-run": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": false,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Reset Failed Specs in a Run"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Reset failed spec files in a run to allow re-execution. Requires runId and machineId array (1-63 machine IDs). Optionally supports batched orchestration.",
           "firstSeen": "2026-10-24T17:22:15.030Z",
-          "hash": "6b52ebadb249ee3808c319d6d05a7c390620f13e9a0a9244f205cf718d3ab937",
+          "hash": "65bb2a145f1052c67aa0e59119daa27d3dc5efc8ce12460d6905463773463093",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2643,7 +1783,6 @@
               "machineId": {
                 "description": "Machine ID(s) to reset.",
                 "items": {
-                  "minLength": 1,
                   "type": "string"
                 },
                 "maxItems": 63,
@@ -2652,29 +1791,22 @@
               },
               "runId": {
                 "description": "The run ID to reset.",
-                "minLength": 1,
                 "type": "string"
               }
             },
             "required": ["runId","machineId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.402Z",
+          "pinnedAt": "2026-10-24T17:22:15.030Z",
           "proseHash": "a101c6c57e5ca0a103853c36f58a09b1f2783aad4f8f0a5ae74fc4ec72f32879",
-          "schemaHash": "2702dcdc6eda584e67e587bbed47c76d14498962d8afa7b1bbba641185776078"
+          "schemaHash": "6a26266b422e8a84a1eb3021652a2b717b8241377165ae519b8eb07d82da02e8"
         },
         "currents-update-action": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": false,
-            "openWorldHint": false,
-            "readOnlyHint": false,
-            "title": "Update Action"
-          },
+          "annotations": null,
           "approved": true,
           "description": "Update an existing action. The actionId is globally unique. You can update name, description, action array, matcher, or expiration date. All fields are optional.",
           "firstSeen": "2026-10-24T17:22:15.028Z",
-          "hash": "d6050f2ae3070edbec0e8aa098c34dff86d8da520b66a1c154b41c75fefc3ebb",
+          "hash": "dceaba35a05a2cd136c61fd2cea77f28397e242e803059fdba06e83fdc419361",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2709,7 +1841,6 @@
                                 "type": "string"
                               },
                               "maxItems": 10,
-                              "minItems": 1,
                               "type": "array"
                             }
                           },
@@ -2730,7 +1861,6 @@
               },
               "actionId": {
                 "description": "The action ID to update.",
-                "minLength": 1,
                 "type": "string"
               },
               "description": {
@@ -2801,22 +1931,16 @@
             "required": ["actionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.401Z",
+          "pinnedAt": "2026-10-24T17:22:15.028Z",
           "proseHash": "aa5ef7d4c670d264925421285e9a9b652d22f599ad2449f70cbfd6cddf5aa792",
-          "schemaHash": "be445ded0ac0d552c741d60b583e2e35174d70b9e0068de963ee42794b3f39b3"
+          "schemaHash": "3b43629c95cb1d5f7e0f8b340d95431612892fab03c1a4d11af58a4c1fa67df3"
         },
         "currents-update-webhook": {
-          "annotations": {
-            "destructiveHint": true,
-            "idempotentHint": false,
-            "openWorldHint": true,
-            "readOnlyHint": false,
-            "title": "Update Webhook"
-          },
+          "annotations": null,
           "approved": true,
-          "description": "Update an existing webhook. You can update the url, headers (as JSON string), hookEvents array, or label. All fields are optional. The hookId is a UUID. The payload Currents sends and how to verify it are documented at https://docs.currents.dev/resources/integrations/http-webhooks.",
+          "description": "Update an existing webhook. You can update the url, headers (as JSON string), hookEvents array, or label. All fields are optional. The hookId is a UUID.",
           "firstSeen": "2026-10-24T17:22:15.031Z",
-          "hash": "0bbccaf10fe21d256983ca4734d4c483ca73a49b3abf4cd85b8d47c4dce60e9d",
+          "hash": "447c97e8e8dd07febca00cf69987d4a3ecef9f63d6eee6908b2331e2fdb47782",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "properties": {
@@ -2839,7 +1963,6 @@
               },
               "hookId": {
                 "description": "The webhook ID (UUID).",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
                 "type": "string"
               },
               "label": {
@@ -2861,9 +1984,9 @@
             "required": ["hookId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:22:24.403Z",
-          "proseHash": "91244a500e6e2cbc5d59eb60ec27380b40c114a3ef932a09571541f689541a1a",
-          "schemaHash": "4748a826c98292dc16da5aa86e8c5e05042ddee7fe12c15d9b73ba3a76aeee54"
+          "pinnedAt": "2026-10-24T17:22:15.031Z",
+          "proseHash": "69ee1023e6ec8f1994bb84102375279f155870f51b3b9943c8934dcea9f15cf0",
+          "schemaHash": "d22e37f1b41e0b7e00e269dbc30a52686aa124b3a52ab72d79e9a502c357a1e0"
         }
       }
     }

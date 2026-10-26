@@ -87,3 +87,21 @@ profile should mandate *stating* the policy, whichever it is.
 Convergence note: the separate annotation digest in MTL/1 is the same design decision as our
 ANNOTATION finding class — two independent implementations arrived at "annotations outside the
 tool-set digest, surfaced as their own change."
+
+### Correction 2026-10-26 (from the MTL/1 author, thread [mcp#3431](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3431#issuecomment-6416860082))
+
+Two cells of the MTL/1 column above were too narrow, corrected here verbatim in substance:
+
+- **The separate digest covers more than annotations.** `toolExtrasDigest` covers every member
+  MTL/1 drops from the tool-set digest: `annotations`, `_meta`, `title`, `icons`, `execution`
+  and vendor fields — not annotations alone.
+- **Its algorithm is SHA-256 over sorted-key JSON, not RFC 8785**, because prices in `_meta` are
+  fractions (JCS has no number form for them).
+- The field-level record is `extras_changes`: per tool, every annotation that moved as
+  `[before, after]`, with an escalation when `readOnlyHint: true` disappears or
+  `destructiveHint: true` appears — the closest thing to our ANNOTATION class, plus a
+  destructive-direction escalation we grade on the same axis.
+
+The other three rows (per-tool field set, sort unit, float refusal) match `PROFILE.md` as
+published. The convergence note above survives the correction, stronger: both implementations
+keep "extra" members out of the interop digest AND surface them as their own change record.

@@ -8,11 +8,11 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 |---|---|---|---|---|---|---|
 | @azure-devops/mcp (Microsoft) | 120k | 2.5.0 -> 2.10.0 | 110 | 2026-10-13 | 1.3.0 | [azure-devops.md](azure-devops.md) |
 | chrome-devtools-mcp (Chrome team) | 1.73M | 1.8.0 -> 1.10.1 | 30: 24 NOTATION ($schema dialect) + 5 BREAKING by the letter (zod ±2^53 integer-bounds artifacts, annotated as SDK artifacts) + 1 NEW | 2026-10-18 | 1.4.3 | [chrome-devtools.md](chrome-devtools.md) |
-| @netlify/mcp (Netlify) | 43k | 1.6.0 -> 1.19.0 | 13: 100% tool turnover (3 GONE + 10 NEW, 3->10 tools); earlier window 1.14.0->1.18.0 = 58 | 2026-10-18 | 1.4.3 | [netlify.md](netlify.md) |
+| @netlify/mcp (Netlify) | 43k | 1.6.0 -> 1.20.0 | 13: 100% tool turnover (3 GONE + 10 NEW, 3->10 tools); window 1.14.0->1.20.0 = 10; 1.18/1.20 pins corrected 10-26 | 2026-10-26 | 1.4.3 | [netlify.md](netlify.md) |
 | mongodb-mcp-server (MongoDB) | 98k | 2.1.2 -> 3.0.5 | 20 in 3.0.0 (5 BREAKING + 15 notation on 1.3.0) | 2026-10-13 | 1.3.0 | [mongodb.md](mongodb.md) |
 | @sentry/mcp-server (Sentry) | 100k | 0.38.0 -> 0.42.0 | 3 | 2026-10-13 | 1.3.0 | [sentry.md](sentry.md) |
 | @launchdarkly/mcp-server | 32k | 0.5.0 -> 0.7.0 | 1 NEW tool, unannounced | 2026-10-13 | 1.3.0 | [launchdarkly.md](launchdarkly.md) |
-| @currents/mcp | 103k | 2.3.3 -> 2.6.1 | 45 (32 BREAKING) | 2026-10-13 | 1.3.0 | [currents.md](currents.md) |
+| @currents/mcp | 103k | 2.3.3 -> 2.7.0 | 51 (quiet-BREAKING webhook tightenings on top of the earlier 37-BREAKING wave; 2.6.1/2.7.0 pins corrected 10-26) | 2026-10-26 | 1.4.3 | [currents.md](currents.md) |
 | hostinger-api-mcp | 265k | 2.4.0 -> 2.11.0 | 6 injected resources | 2026-10-13 | 1.3.0 | [hostinger.md](hostinger.md) |
 | @upstash/context7-mcp | 486k | 4.0.4 -> 4.4.1 | 1 (EXPANDED) + live hosted catch (prose-only) | 2026-10-13 | 1.3.0 | [context7.md](context7.md) |
 | bybit trading-mcp | - | 2.1.20 -> 2.1.23 | 9 + remote kill-switch | 2026-10-09 | 1.2.0 | [bybit.md](bybit.md) |
@@ -23,7 +23,7 @@ Method: `rugsnare scan` the old version -> `rugsnare diff` after upgrade; per-ve
 | figma-developer-mcp | 91k | 0.7.0 -> 0.13.2 | 2 NOTATION | 2026-10-12 | 1.3.0 | [figma.md](figma.md) |
 | @supabase/mcp-server-supabase | 67k | 0.8.3 -> 0.13.0 | 3: 2 COSMETIC + 1 NEW (query_logs) + stdio entry moved (corrected 10-17: get_logs NOT removed) | 2026-10-12 | 1.3.0 | [supabase.md](supabase.md) |
 | @hubspot/mcp-server | 31k | 0.2.0 -> 0.4.0 | 6: GONE + 3 NEW + 1 EXPANDED + 1 cosmetic (npm alive, GitHub repo dead) | 2026-10-13 | 1.4.0 | [hubspot.md](hubspot.md) |
-| @shopify/dev-mcp | 31k | 1.14.4 -> 1.16.0 | 6: 2 GONE -> NEW validate (consolidation) + LOOSENED | 2026-10-12 | 1.3.0 | [shopify.md](shopify.md) |
+| @shopify/dev-mcp | 31k | 1.14.4 -> 1.17.0 | 6: 2 GONE -> NEW validate (consolidation) + LOOSENED; 1.16/1.17 pins corrected 10-26 | 2026-10-26 | 1.4.3 | [shopify.md](shopify.md) |
 | @transcend-io/mcp-server-assessment | 11k | 2.1.2 -> 2.1.13 | 2 BREAKING (83 releases / 3 months) | 2026-10-12 | 1.3.0 | [transcend.md](transcend.md) |
 | firebase-mcp (Google) | 74 | 0.2.0 -> 0.4.4 | 0 (control) | 2026-10-12 | 1.3.0 | [firebase.md](firebase.md) |
 | @notionhq/notion-mcp-server (Notion) | 195k | 1.0.0 -> 2.5.2 | 27 (1 BREAKING, 4 LOOSENED, 3 GONE); recent window 2.4.1->2.5.2 = 0 (real control) | 2026-10-18 | 1.4.3 | [notion.md](notion.md) |

@@ -26,3 +26,5 @@ npm i @shopify/dev-mcp@1.16.0 && npx rugsnare@1.3.0 diff --config mcp.json --tim
 ```
 
 Baseline captured 2026-10-12 (rugsnare 1.3.0). Part of the [drift watch](../../audits/drift-watch/2026-10-12.md).
+
+**Corrected 2026-10-26** - the pins-dir snapshots for 1.16.0 and 1.17.0 (automation re-pin of 2026-10-24) carried `validate_component_codeblocks` and `validate_graphql_codeblocks` from the 1.14.4 install: a stale-tool artifact of a dirty stand, caught by the HISTOR field-level cross-check ([modelcontextprotocol#3431](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3431#issuecomment-6416860082)). Both re-pinned from clean stands: 1.16.0 and 1.17.0 each serve exactly **5 tools** (`feedback`, `learn_shopify_api`, `search_docs_chunks`, `validate`, `validate_theme`); the two retired validators are correctly GONE. Clean 1.14.4 -> 1.17.0 diff (rugsnare 1.4.3): **6 findings** - 2 GONE + 2 NEW (`validate`, `feedback`) + 1 LOOSENED (`learn_shopify_api`, `api` enum +app-pricing) + 1 NOTATION (`search_docs_chunks`) - same consolidation pattern as the 1.16.0 window above.

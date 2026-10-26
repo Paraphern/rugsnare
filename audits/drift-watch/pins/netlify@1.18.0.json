@@ -13,7 +13,7 @@
         "resolvedVersion": "1.18.0",
         "url": null
       },
-      "pinnedAt": "2026-10-17T02:55:41.522Z",
+      "pinnedAt": "2026-10-26T15:39:26.932Z",
       "prompts": {
 
       },
@@ -24,27 +24,33 @@
       "tools": {
         "netlify-coding-rules": {
           "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true,
             "readOnlyHint": true
           },
           "approved": true,
           "description": "ALWAYS call when writing serverless or Netlify code. required step before creating or editing any type of functions, Netlify sdk/library  usage, etc.",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
-          "hash": "4e82cb8d122bdce3d2d67899e7f679538a2df357414ae29fcdb9fb1746141de7",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
+          "hash": "f820d03588c9e822a2df524a472de51c9b6249dc8fe54db320a499798947f51d",
           "inputSchema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "properties": {
               "creationType": {
-                "enum": ["serverless","edge-functions","blobs","image-cdn","forms","db"],
+                "enum": ["netlify-access-control","netlify-agent-runner","netlify-ai-gateway","netlify-blobs","netlify-caching","netlify-config","netlify-database","netlify-deploy","netlify-edge-functions","netlify-forms","netlify-frameworks","netlify-functions","netlify-identity","netlify-image-cdn","netlify-mcp-servers","serverless","edge-functions","blobs","image-cdn","forms","db"],
+                "type": "string"
+              },
+              "reference": {
+                "description": "Optional. Path of one of the skill's reference files (for example \"references/migrations.md\"), as listed at the end of the main response for that creationType. Omit to get the main skill guidance.",
                 "type": "string"
               }
             },
             "required": ["creationType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:55:41.526Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "6f112101df9b12e783ea759ceac5fd17c604224c73a678e6c4e87c11fd4e36d5",
-          "schemaHash": "1493396ce863ae47b1c46cf4804e7fe94c9ba63ee8949839655cbfc0b0c4f4ab"
+          "schemaHash": "73a93ec51fe051d1b308500cd6fd0440042c9c01c0d5d02acb6df375e2c59d76"
         },
         "netlify-deploy-services-reader": {
           "annotations": {
@@ -55,7 +61,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-deploy, get-deploy-for-site",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
           "hash": "a39156aeee9dd2443d8ef9d43397e9cc8cdd343be638ca1623055a207e500299",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -118,7 +124,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.077Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "fde8f5792a92eb337634d8ab160550509bbab51f20ee69207eca2ef3c70dbbc0",
           "schemaHash": "9213d2f81e49ac5ef46523fe02529193717fcdbb8a0e86dc75f83cd57b950f5b"
         },
@@ -131,7 +137,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations deploy-site",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
           "hash": "e7fb2202830c1b98c8c2c2bd36c615ce4db110c0be54428fa063b217588f9cd5",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -170,7 +176,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.077Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "f4ddf5e02e6e4f122fa433c283bf0fc10902556e1e298636a16e5c7438749a62",
           "schemaHash": "723b0c572a4c038d156b17015e989266957aea92fe0b264255ca1f2c260d59f2"
         },
@@ -183,7 +189,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-extensions, get-full-extension-details, initialize-database",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-26T15:39:26.937Z",
           "hash": "f030f9a55e1809d5596854512730613078349a9ab7e224efb5a62cc33fde2a44",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -265,7 +271,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.078Z",
+          "pinnedAt": "2026-10-26T15:39:26.937Z",
           "proseHash": "6925b638b77d1ba1a5670ba708e52578fde3b8068026347fd4cddef78da7bf0d",
           "schemaHash": "f7b9b1b46c3321401730a40b2b32758694b5f33aca6231dc8e0123cb1aea89e8"
         },
@@ -278,7 +284,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations change-extension-installation",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-26T15:39:26.937Z",
           "hash": "4a8d016fc913752257369730f75eb0991a7f0fb5738d6ecd9c2191d4a118a2b6",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -323,7 +329,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.078Z",
+          "pinnedAt": "2026-10-26T15:39:26.937Z",
           "proseHash": "d82702a168c4668a4d9291e34274113ea148afb76c5de9098b454d6144b1d205",
           "schemaHash": "6f49b52774c0a0de17da8ab41acf2248bac4038cd05763e776027e2d49634114"
         },
@@ -336,7 +342,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-project, get-projects, get-forms-for-project",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
           "hash": "f4ffef070ff78e8ada36b8f6da5d980928bac0ca696cb1173734ccc7fa1f8d36",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -426,7 +432,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.077Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "77193680d09a69e694b93924a82f441a4a991790b85a9210878888e8ea2f7ea7",
           "schemaHash": "32d0a2063ee596ca5133e075a3bfbb566f1fb6d197c5df30037edd894ba3001e"
         },
@@ -439,7 +445,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify write operations update-visitor-access-controls, update-forms, manage-form-submissions, update-project-name, manage-env-vars, create-new-project",
-          "firstSeen": "2026-10-17T02:55:41.527Z",
+          "firstSeen": "2026-10-26T15:39:26.937Z",
           "hash": "1032231fe06a036b2ebf51a23348c41e37a02b696354293240d6c27577b0fae7",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -671,7 +677,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.078Z",
+          "pinnedAt": "2026-10-26T15:39:26.937Z",
           "proseHash": "5e67997e139073d71ac012e26bd1ca17b00610841e8f66d1fe35b721069a6a57",
           "schemaHash": "30d196b98b0efba0a33a0e658fed6d5577fb285e13cd01c232f23f73e0c13344"
         },
@@ -684,7 +690,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-teams, get-team, get-team-env-vars",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
           "hash": "0f6268ae65891268dfbc1b7f89132d685ea5b46bf8c72dd333f89c7a557c41d1",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -768,7 +774,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.077Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "3f25bcff84c4acf505092ae1169468f4d0b999a81845ca820c55a4f2cf043af7",
           "schemaHash": "3b727fb71e6ea1c260d9bd76063b19415e5018c4fbf3ce5a964cd622898a8b9c"
         },
@@ -781,7 +787,7 @@
           },
           "approved": true,
           "description": "Select and run one of the following Netlify read operations (read-only) get-user",
-          "firstSeen": "2026-10-17T02:55:41.526Z",
+          "firstSeen": "2026-10-26T15:39:26.936Z",
           "hash": "ff06d5e9968c5177e082c37a60fb1ed666c088cae15d8ad03b2dca9e714a1a80",
           "inputSchema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -812,7 +818,7 @@
             "required": ["selectSchema"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:56:14.076Z",
+          "pinnedAt": "2026-10-26T15:39:26.936Z",
           "proseHash": "bfde3e02cf3d7992cc217cd91bc299a15685341bb8948f9926dc656da653f626",
           "schemaHash": "fe77d562811faa93b3673d7929a0046fbb4cd76f095b7f3969c4cba0dfe49e7a"
         }

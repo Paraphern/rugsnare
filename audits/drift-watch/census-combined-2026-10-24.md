@@ -1,5 +1,13 @@
 # Combined rugsnare × StillOS census table — 2026-10-24
 
+> **Erratum 2026-10-26:** the shopify, currents and netlify columns of this table were computed
+> against pin snapshots dirtied by the 2026-10-24 automation re-pin (stale tool entries carried
+> from older installs), caught by the HISTOR field-level cross-check
+> ([modelcontextprotocol#3431](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3431#issuecomment-6416860082)).
+> All six snapshots re-pinned from clean stands the same day; corrected windows on the server
+> pages: shopify 1.14.4->1.17.0 = 6 (composition corrected), currents 2.3.3->2.7.0 = 51
+> (composition corrected), netlify 1.14.0->1.20.0 = 10. The StillOS columns are unaffected.
+
 Combined view of the 22-slug drift-watch corpus: our columns (registry keys, published pin-corpus
 findings) joined with the StillOS census column from
 [stillmarcus24/mcp-census-server PR #3](https://github.com/stillmarcus24/mcp-census-server/pull/3)
