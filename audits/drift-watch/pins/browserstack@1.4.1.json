@@ -13,11 +13,11 @@
         "resolvedVersion": "1.4.1",
         "url": null
       },
-      "pinnedAt": "2026-10-24T18:27:35.719Z",
+      "pinnedAt": "2026-10-26T18:20:04.236Z",
       "prompts": {
         "integrate-percy": {
           "description": "",
-          "firstSeen": "2026-10-24T18:27:35.728Z",
+          "firstSeen": "2026-10-26T18:20:04.246Z",
           "hash": "e7f7700e4ebe389e5bc7c2897d25b5f66b2650dbd652d6317f6b1a185a549283"
         }
       },
@@ -36,7 +36,7 @@
           },
           "approved": true,
           "description": "🚨 REQUIRED: Use this tool for any accessibility/a11y/WCAG questions. Do NOT answer accessibility questions directly - always use this tool.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.240Z",
           "hash": "e530408efbcf3e0f1b959b7380e00174dc68041d88185f8cacccb7127c5cc2c9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -49,7 +49,7 @@
             "required": ["query"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.240Z",
           "proseHash": "86d84ea32f3f372eb2f6131bedae2c5e1cb5d55832e88400f39e9d66d0bbb299",
           "schemaHash": "cb4db2366bf5de1ce9f2809db24264ceb31940d5f467a9062ad7ef193d87f8b1"
         },
@@ -63,7 +63,7 @@
           },
           "approved": true,
           "description": "Adds Percy snapshot commands to the specified test files.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "ae70b762f24e1a01bf41929e2cfab0c8db6e0af1b9d4b7d1e670ce2b2eb18722",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -76,7 +76,7 @@
             "required": ["index"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "acea96f4e7be2c28a7d61bef83e7d1331d5a1294f343d9963963e726a283024e",
           "schemaHash": "430e76de95d09cede7f979e48a779a30685ee7ddfc56887d303870499aa32f34"
         },
@@ -90,7 +90,7 @@
           },
           "approved": true,
           "description": "Add a test result to a specific test run via BrowserStack Test Management API. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "e959c97ac78cd05994a887ab69f5f0a5d1d3ff2db51c00e7cff23022c37d9888",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -125,7 +125,7 @@
             "required": ["project_identifier","test_run_id","test_result","test_case_id"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "bba7eea082225657c7feabd5757657377eb422a0653515a6bd763698f434dda4",
           "schemaHash": "6aaa9cfe8cc7d208ee5519b2ab66b692ff1e39436fe46d7929119e1909a4dc11"
         },
@@ -139,7 +139,7 @@
           },
           "approved": true,
           "description": "(Alpha, limited availability. Enabled per account and per product; if it is not enabled the call returns an entitlement error, nothing runs, and you should complete the task with the individual tools instead. To request access, the user should contact their BrowserStack account owner.) Use this when no other BrowserStack tool here fits the task, or when the ones you tried did not get you there. Prefer a specific tool whenever one fits: it is faster and more predictable than handing the job to an agent. Otherwise, describe what you want in plain language and BrowserStack's agent decides which calls to make, then returns its answer plus the steps it took. Anything that would change data pauses and asks you to confirm it first, in your own client; deletes are refused outright. If your client cannot show you a prompt, the run is read-only and everything it wanted to change comes back in `needs_approval` instead. One task per call.",
-          "firstSeen": "2026-10-24T18:27:35.727Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "c5efdc14a6a58152545698ceef97a9390de04f86e2b62cb0859a96c37bfffca5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -157,7 +157,7 @@
             "required": ["product","query"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.727Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "ee9f29f4583824ef2b42d784e8e6b0829768fd4bac5e3f1b884a6e3a4378ae64",
           "schemaHash": "87058f01255b42ea4470395e07e0cc667e09aed360f92b893f766ebda85670e5"
         },
@@ -171,7 +171,7 @@
           },
           "approved": true,
           "description": "Create an authentication configuration for accessibility scans. Supports both form-based and basic authentication.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.240Z",
           "hash": "1379d13ebc2e22a84877ce220d389ebd28107ccbd79ea27f20424870891f0a0c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -213,7 +213,7 @@
             "required": ["name","type","url"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.240Z",
           "proseHash": "8874700cb4f9e4159cf118144349f890789679a8c3204078ab6da9f8525315d0",
           "schemaHash": "5c708b9fe35937f90a7f75f37142340872b8008383c62499a067b64269f49450"
         },
@@ -227,7 +227,7 @@
           },
           "approved": true,
           "description": "Generate Low Code Automation (LCA) steps for a test case in BrowserStack Test Management using the Low Code Automation Agent. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "0efa87e101845dfd63f0fb01600ae7404ce0b5074bfb083b3e64d3abc71947e1",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -319,7 +319,7 @@
             "required": ["project_identifier","test_case_identifier","base_url","test_name","test_case_details"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "9289053a96ca3eebb8a25f0d7e0a6e6849f6af310491130d859740eaee637729",
           "schemaHash": "dfe8af5a980f8614029ef3e0ac50972d0d132fbb9429c6a507da87eddd1096af"
         },
@@ -333,7 +333,7 @@
           },
           "approved": true,
           "description": "Create a project and/or folder in BrowserStack Test Management. Creating a project needs no identifier. Creating a folder inside an EXISTING project needs that project's identifier (PR-*); no tool here lists projects, so ask askBrowserStackAI with product \"tm\" for it.",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "08a5bfa88b7dd639164d0f03efc0e067e1d28f17edb660ae67bb590f96836c2f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -365,7 +365,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "42bd9467d7740a3c41d16e64b0eb6b210bf927146896d53f802c679b69b2406d",
           "schemaHash": "fdecbc003c18e58a8767325194e77be67e3cabea5627da1720d4899b5b20bc44"
         },
@@ -379,7 +379,7 @@
           },
           "approved": true,
           "description": "Use this tool to create a test case in BrowserStack Test Management. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "c4655d61dcc19688f085489229b72a59b1543eea211fe0bca03ed1a64092fa76",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -502,7 +502,7 @@
             "required": ["project_identifier","folder_id","name","test_case_steps"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "c05c6444f81555733720245b32ce3eb07ae035244bae0a52ca5945ad9837e431",
           "schemaHash": "fc0a997b9bd37b2612252c1435b8b869c09b72b476cc094a955b0d9723479057"
         },
@@ -516,7 +516,7 @@
           },
           "approved": true,
           "description": "Generate test cases from a file in BrowserStack Test Management using the Test Case Generator AI Agent.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "43045e841c81dc405fce105afc3954517ac32fd3f53cd96f86934cedb15ab68d",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -537,7 +537,7 @@
             "required": ["documentId","folderId","projectReferenceId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "0df41168f9e6612d4cafff96da9deb7b5aba5359fe9af65f93f5e340bad4fe33",
           "schemaHash": "eeecefa12440f729f063925eea401e4920826fbcb99e518f5f8973be9007e107"
         },
@@ -551,7 +551,7 @@
           },
           "approved": true,
           "description": "Create a test run in BrowserStack Test Management. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "e14e6cfc4c935fb54704b895bb634be9a7415cf69d2e2f3d8653e9c10cc7953e",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -618,7 +618,7 @@
             "required": ["project_identifier","test_run"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "bc440859a7a428f902edb216b49e32193acf0f6c15b319158f3d9cc3355c0c05",
           "schemaHash": "3ec6b1cd7923abb19a55cdc98c5a81b99f8b38c0bd772bae1ac8ef304304c1d4"
         },
@@ -632,7 +632,7 @@
           },
           "approved": true,
           "description": "Set up or expand Percy visual testing configuration with comprehensive coverage for existing projects that might have Percy integrated. This supports both Percy Web Standalone and Percy Automate. Example prompts: Expand percy coverage for this project {project_name}",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "d9d5f3a0c6420b37071c012e11780d10fc80be4799b152fca3d097ae00dd42ea",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -676,7 +676,7 @@
             "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework","integrationType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "a1b248168b4856dd16bb540f85eddb8c1bd8fa0b2397b0aeffa7a60fe598fa02",
           "schemaHash": "ac0af4c4fbb89a9e98d2672cf0f45a7972608a583356d68c0f97f5d7e1be3953"
         },
@@ -690,7 +690,7 @@
           },
           "approved": true,
           "description": "Fetch accessibility issues from a completed scan with pagination support. Use cursor parameter to get subsequent pages of results. Requires the ids of a completed scan, which are returned by startAccessibilityScan. No tool here lists past scans, so if you do not have the ids, start a new scan rather than guessing.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.240Z",
           "hash": "23b5f903dde3cbe3b3923bb4e62d8fbdff3eea44bbf719f499fdd816381e1237",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -711,7 +711,7 @@
             "required": ["scanId","scanRunId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.240Z",
           "proseHash": "428a931f417656a993a0173492bf90d73c1c4ad16cd231847cede6b8c8f2709d",
           "schemaHash": "9b7c20b27fb73d53be84d0be919dba8b20699540ac71725afee9409d68251049"
         },
@@ -725,7 +725,7 @@
           },
           "approved": true,
           "description": "Fetch screenshots captured during an Automate/App Automate session.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "e82b04c96d7000b7cc65512d693fc3470b49150cada373629f3066401cf7393e",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -743,7 +743,7 @@
             "required": ["sessionId","sessionType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "c788a53654a27664b51c6b8e4677aede243092ba6f635e22d0c92c2f5799e112",
           "schemaHash": "92b4bed5c8e46f82e63c10cfb48e1925249ecec24906089557fed0c3be391039"
         },
@@ -757,7 +757,7 @@
           },
           "approved": true,
           "description": "Fetch build details and quality gate results. Includes hashed_id and session_type for listSessions.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "741ef075c1055b2b5c53e293d3f2bfd8fc99d8069718b748a151d9cd0e9592c6",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -770,7 +770,7 @@
             "required": ["buildId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "990d3a6ac8ece66a2473e9c0669e8c8743b3f38977abe41a5ad7058de533c6b4",
           "schemaHash": "61322ecad16fafbc180ef0e4f0e91de0396fa4c0e7ecbf2d29e9cfe4f8a8c70a"
         },
@@ -784,7 +784,7 @@
           },
           "approved": true,
           "description": "Retrieves and summarizes all visual changes detected by Percy AI between the latest and previous builds, helping quickly review what has changed in your project.",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "52541b7fc22284676a08adddca8ab9304076057377f7fb43e3a1af1343242df0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -797,7 +797,7 @@
             "required": ["project_name"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "295aaebfd2021db931aa635bf2f250d62333cc3400632dba8f6dae645d16e43c",
           "schemaHash": "976164179d472efdbc1abcb1e0fd947bee0ce02b5583386a3f213c554cdbb99a"
         },
@@ -811,7 +811,7 @@
           },
           "approved": true,
           "description": "Fetch AI Root Cause Analysis for the current user's failed BrowserStack Automate/App-Automate tests. Suggests fixes only; never auto-apply, require explicit user approval. Requires test ids. Call listTestIds first if you do not have it.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "9834361f0de7922cbeb814f7c68090ad67c9372dac233e649e47b5c872f64d8f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -830,7 +830,7 @@
             "required": ["testId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "a725d36aaa87f55f94b258395ae9a8c74df7d5466624cdd198c102b6866550a3",
           "schemaHash": "8d0b04c29271a44f41f2eb1ae5d4257b8da893436a7062818957613f5b7b537e"
         },
@@ -844,7 +844,7 @@
           },
           "approved": true,
           "description": "Fetch BrowserStack self-healed selectors plus the test source code for the run. Provide exactly one of `sessionId` (single Automate / App-Automate session) or `buildUuid` (full self-healing report for a build). Pass the returned locator pairs to `prepareSelfHealingPlan` to plan edits. Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "4fa1181d6be70adef92cf141dadcc5fb3c7efc9f48155016ae7802d2e1bc9999",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -865,7 +865,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "61a2a72e4ce55fa5cc24199fc1519fc408c7a50f0bf98e52ec4240f9a9ab4ca9",
           "schemaHash": "ee9e2e293cff9bc46ad0850b244991a120509c01a925866b7cda88f1dcad09fb"
         },
@@ -879,7 +879,7 @@
           },
           "approved": true,
           "description": "Retrieve an existing authentication configuration by ID. Requires the numeric id returned by createAccessibilityAuthConfig. No tool here lists existing configurations, so if you do not have the id, create one rather than guessing.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.240Z",
           "hash": "91a983bfbedf99f00980945e1448530e3a63861ec46b3c6392f83f7f030df7d2",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -892,7 +892,7 @@
             "required": ["configId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.240Z",
           "proseHash": "0b9bff6db4dc2fc0581b0d5270aebecfe91f457478fde1ec01d2a370309d058d",
           "schemaHash": "b882e908d33aebd36266e239bd5f5ae6beb61cdd73d1a4a28c07e8208b14811b"
         },
@@ -906,7 +906,7 @@
           },
           "approved": true,
           "description": "Get the BrowserStack build ID for a given project and build name, scoped to the current user's builds.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "6d385ebf22a5044ff01ca15fb40abc036edb24deb1a7370e551a2f053b01c9ee",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -923,7 +923,7 @@
             "required": ["browserStackProjectName","browserStackBuildName"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "757e62275780108414cbbce87a9ee40b9a9902f6da19be2e625f2e8f613bf742",
           "schemaHash": "1b5339f314f98fcc5e58ad9dd965ad8d573d1e087e424fcee0f62c0b852cca26"
         },
@@ -937,7 +937,7 @@
           },
           "approved": true,
           "description": "Fetch logs, or the session video URL, for an Automate/App Automate session. Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "087a71218f5ddb62ae8fc1a8f374e915b6d6fe7378a4a6515d033c9afe25519e",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -967,7 +967,7 @@
             "required": ["sessionType","sessionId","logTypes"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "7be5e0d3c097f21d33d48558d76e05cd68a7a4285498611eeb37762048cd2ab3",
           "schemaHash": "62d4e5dbafe1015b31400f4c8ac105a922c3d939316256adb3ceb3d7f0809045"
         },
@@ -981,7 +981,7 @@
           },
           "approved": true,
           "description": "Fetch a sub-test-plan (STP-*) under a parent plan (TP-*). Returns metadata and linked test runs. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: call askBrowserStackAI with product \"tm\" and describe what you want. It asks you to confirm before changing anything.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "9483ec10066ffeca9608ab78eddb38a4e375930fe1c9aeb2901a2cc67ecd8efc",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1002,7 +1002,7 @@
             "required": ["project_identifier","parent_test_plan_identifier","sub_test_plan_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "cdb2cbcad3cd7be87aecfc698f15c92437c1a1c310c9733abb317c10b0cd1835",
           "schemaHash": "f2bf267986711aad71ca8f8f1b602e67fb7e16d9c055994478ecebc1500bd62c"
         },
@@ -1016,7 +1016,7 @@
           },
           "approved": true,
           "description": "Fetch a test plan by identifier (TP-*) from BrowserStack Test Management. Returns plan metadata, the full list of linked test runs, total test-case count across runs, and a status summary — suitable for generating test documentation or QA status reports. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: call askBrowserStackAI with product \"tm\" and describe what you want. It asks you to confirm before changing anything.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "b4dc15b83c547beef2dd9d5b2f35af70d0c7197d5230e830c0bbb273f054c8f4",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1033,7 +1033,7 @@
             "required": ["project_identifier","test_plan_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "d5eda1210fb2e28a139d9de0d7c4bbe4202c2df9872d4a60094e13e52405af42",
           "schemaHash": "e64af7c767a8f87986bf2b64cac35c53bf801cdbd1e6e301a46ce9b43b9b98b6"
         },
@@ -1047,7 +1047,7 @@
           },
           "approved": true,
           "description": "Get the latest build ID for a project and build name, across all users (no user filter).",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "44cefb3d29161fe3b87aa35992d0df77aee40ea6382270f3b9c0ab16b4ac1c2f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1064,7 +1064,7 @@
             "required": ["browserStackProjectName","browserStackBuildName"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "f9b64912ae36fd1c94f0941819365e1cd3fd36300ffdb3d93466e22ea4abfaf4",
           "schemaHash": "cb890653ae865765c2698ff72b8988f0e6f8430a7a28b858946c6fb67329f80c"
         },
@@ -1078,7 +1078,7 @@
           },
           "approved": true,
           "description": "List folders in a BrowserStack Test Management project, returning each folder's id and name (plus case counts and sub-folder counts). Pass parent_id to list sub-folders under a specific folder instead of top-level folders. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "90fde85703ac0a58aeec4f7a9fb514567e83891dd9eaaefc3fb4fcbe4df1abc8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1099,7 +1099,7 @@
             "required": ["project_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "482bda659a1c2dfdbea5c219d83c6fa69d74414a5a4b06414e558d96c88a1266",
           "schemaHash": "c0b05bfec086ea69ccd5376d3f7edc408dd53fb79837bdc6888fe9e223c54ade"
         },
@@ -1113,7 +1113,7 @@
           },
           "approved": true,
           "description": "List sessions for a hashed Automate/App Automate build: session IDs, status, OS, browser/device, dashboard URL.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "bcb3104d8116bd3b53b866bb04ecd8c116b21d5d3044b26c3409a61a3a7b834f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1147,7 +1147,7 @@
             "required": ["sessionType","buildId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "2c90a60baa64506e42ef83d6259e171033fffd18a65207044ed8448ba0aa3054",
           "schemaHash": "19c4c8c61f88ca255db24b26a5a22713222a10abf5e85778022d0add9aaa80f8"
         },
@@ -1161,7 +1161,7 @@
           },
           "approved": true,
           "description": "List sub-test-plans under a parent test plan (TP-*) in a Test Management project. Supports pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: call askBrowserStackAI with product \"tm\" and describe what you want. It asks you to confirm before changing anything.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "97e5a6bacadc56a110273f4ca94ef08ce5386f2edf5479b8db3f43a773d7bbb8",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1182,7 +1182,7 @@
             "required": ["project_identifier","parent_test_plan_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "84e6a318e753a7343c327a5a387cfef3366fc55e1f014bae6ff6c5de9f7ea65f",
           "schemaHash": "b57f5fd16a6065c3c70dc1b16ac13ca34941f90e95ec503bbbf781a306922315"
         },
@@ -1196,7 +1196,7 @@
           },
           "approved": true,
           "description": "List test-case templates with their numeric template_id. Use the id with createTestCase to apply a custom template (the 'template' slug only selects system templates).",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "11e7726cfeba4be03972fa7f82268bdaa1e7238da28d916759c7cf0868f69e17",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1208,7 +1208,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "d9afe12c72f18150802100951f7039880636f07ef56ce3f53e0fe7e7037425c8",
           "schemaHash": "15c39bc29408700b3c1531da8eec6548c13f536b5cc1965413d1324a59b1da97"
         },
@@ -1222,7 +1222,7 @@
           },
           "approved": true,
           "description": "List test cases in a project, optionally scoped to a specific folder. Omit folder_id to list all test cases in the project; provide folder_id (discoverable via listFolders) to list only that folder's cases. Supports filters: case_type, priority, pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "1e210aaa35758adbdee4fed7c3150444e5f0485820c7452bb684c05f89fd62c5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1251,7 +1251,7 @@
             "required": ["project_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "ebc41a411d3c43c0f8a58d4a100d0311b06849167c4ddb109c01c583a57d753b",
           "schemaHash": "aab18155d2e8edf70e2a52ba983e000d1fdc6048e9547ca232cc59734e9549f2"
         },
@@ -1265,7 +1265,7 @@
           },
           "approved": true,
           "description": "Lists all test files for a given set of directories.",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "76a5eb2108e8516400b61b70c4b631fb65ab3be971217d31fe9e4fb87e53ddab",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1274,7 +1274,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "fdd10518cde068aa66f46a90fa9bc43d095b70804f6edc83eac2d45153ed02ae",
           "schemaHash": "2e8a0848defb0ec26ee2cb6b8c2a07d27e73261c9817fd843e65fa326f4a64fa"
         },
@@ -1288,7 +1288,7 @@
           },
           "approved": true,
           "description": "List all tests of a BrowserStack build (each with its status and session id); optional status filter. Requires a BrowserStack build id. Call getBuildId or listBuildId first if you do not have it.",
-          "firstSeen": "2026-10-24T18:27:35.727Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "612f1771e264b7d426af5cb1e5d9ca016f637cffe4cefa161c80aacac0782654",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1310,7 +1310,7 @@
             "required": ["buildId","status"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.727Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "6c700428e175b20343b4f47adbfc73eb89b876e7ed7af3e559aaaf0b5548b6ea",
           "schemaHash": "5347c294b43fb26399fef12264d3496bf56c1a9d409c5ae82d39b32cf1e7b501"
         },
@@ -1324,7 +1324,7 @@
           },
           "approved": true,
           "description": "List test plans in a BrowserStack Test Management project. Returns each plan's identifier (TP-*), name, status, description, dates, and active/closed test-run counts. Supports pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: call askBrowserStackAI with product \"tm\" and describe what you want. It asks you to confirm before changing anything.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "20abc84dfb7d3c96744918c9d4b07a8f0a2491a5de94c1b4f57ed4832f805c1a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1341,7 +1341,7 @@
             "required": ["project_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "cea9e932cc80ba745a42cd1564682c3eb30dab4a1a73fc84a1b1a0695cd11a87",
           "schemaHash": "5a15be4e57080306bd13a76d1097c67998bb64b55fa959c9248cf0e2641f80ed"
         },
@@ -1355,7 +1355,7 @@
           },
           "approved": true,
           "description": "List test runs in a project with optional filters (date ranges, assignee, state, etc.) Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "7ba3e098a31896fb401b6b7d7f7be101770019c7ffd05ed8ff169b5e439a40ef",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1372,7 +1372,7 @@
             "required": ["project_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "1f4193dd025e1b84e998f2748c9f5d6016b9d73b7a9a8d508a746a739f212123",
           "schemaHash": "2f4967fc1cea786540707f6a3057a7f0f589c778dcc28264c1e66829d2477bdf"
         },
@@ -1386,7 +1386,7 @@
           },
           "approved": true,
           "description": "Approve or reject a Percy build",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "eea5e85003b3d7487d4c1f03c54f2c5e794a847e58046c0c9486094129463a03",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1404,7 +1404,7 @@
             "required": ["buildId","action"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "20bac6e8c9684e9d738b2b5c11514e270b8bdcb5ea5db5e706951228f6ecafff",
           "schemaHash": "f8964d4f54782c7afb6401c14715021c592707e6f4df9c94d43b9fced6ede740"
         },
@@ -1418,7 +1418,7 @@
           },
           "approved": true,
           "description": "Integrate Percy visual testing into new projects and demonstrate visual change detection through a step-by-step simulation. This tool handles initial Percy integration, setup, and creates a working demonstration for new users. Primary tool for prompts like: \"Integrate percy for this project\", \"Integrate percy in this project {project_name}\"",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "4f809cc2a915c86c5df3ef9d5dd03cb8042ab0f3e5d93a65e93a7b76c318dbb2",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1462,7 +1462,7 @@
             "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework","integrationType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "2ad1accb9c2d44008e681d5ece0eddf40b1c9424e7c38c23dd1a106b8f9245aa",
           "schemaHash": "90fc304712e4fca7d10c2fa5c0547b317c4e582da1a8b57a157a5ca3c872e0d6"
         },
@@ -1476,7 +1476,7 @@
           },
           "approved": true,
           "description": "Build a self-healing edit plan that bundles locator pairs with test source code for the calling LLM to apply with its own editing tools. This tool does NOT modify files — it returns structured context so the LLM can edit only the relevant call sites (avoids blind find/replace across shared ids/classes). `sessions` accepts the canonical shape `[{sessionId, locators: [{original, healed, thought?}]}]`, a single session object, an envelope `{sessions: [...]}`, the raw report `{healing_logs: [...]}` (with `healed_selectors` aliasing `locators`), and snake_case keys (`session_id`, `original_locator`, `healed_locator`, `healing_thought`). Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "84fd54d1ce0de69b2a0e7ffc4d87c5109abce744f3fe7235ac2ac0d9ba51b6d0",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1545,7 +1545,7 @@
             "required": ["sessions"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "fefab2a9ad558308d351462168c03cc6e894f600322448958ecc347e925a6cbb",
           "schemaHash": "391bd1661d1250ed808ae3cb7317951a8ccfbd90559b7d1148b3e40cfdd36434"
         },
@@ -1559,7 +1559,7 @@
           },
           "approved": true,
           "description": "Use this tool when user wants to manually check their app on a particular mobile device using BrowserStack's cloud infrastructure. Can be used to debug crashes, slow performance, etc.",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "477a5f78e225f23cfd2762601d887ec08cda12cb7b400cc971b82a23e7ee83c3",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1585,7 +1585,7 @@
             "required": ["desiredPhone","desiredPlatformVersion","desiredPlatform","appPath"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "ae3d94db08fe1cd4697ec588ee8e5961460bb62a91f7be76313a33f526996895",
           "schemaHash": "85e305fedb295a6ba82020588d6405bebd8fd195f4177810bc7df970f34f5c43"
         },
@@ -1599,7 +1599,7 @@
           },
           "approved": true,
           "description": "Execute pre-built native mobile test suites (Espresso for Android, XCUITest for iOS) by direct upload to BrowserStack. ONLY for compiled .apk/.ipa test files. This is NOT for SDK integration or Appium tests. For Appium-based testing with SDK setup, use 'setupBrowserStackAppAutomateTests' instead.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "5b2b23f8668fb41d3125b374db4ac2ea81f361d59ca72b2d9ecd862fe08c7204",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1651,7 +1651,7 @@
             "required": ["appPath","testSuitePath","detectedAutomationFramework"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "5865129af27a369b5664e1c137ae120834b9d8e4acc26caed5de149f760e67bd",
           "schemaHash": "fa11346f7eefd8207ef46caa8d6c76f0fff3146dde0e437482cf54b0da03a199"
         },
@@ -1665,7 +1665,7 @@
           },
           "approved": true,
           "description": "Launch a BrowserStack Live session (desktop or mobile).",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "5fe9c0526074938e143c3e01a3baec063a7183feab7d4b3a5a28e3c9059a6c0d",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1706,7 +1706,7 @@
             "required": ["platformType","desiredURL","desiredOS","desiredOSVersion","desiredBrowser"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "15d7be2d1e8aadf64d968aa1badd1000879f571e236d3dddb6ed1e5f2bc5e33b",
           "schemaHash": "2d83a2c3de73db95a053acd1d11825429801babbd9cd96862b6310f845372e3b"
         },
@@ -1720,7 +1720,7 @@
           },
           "approved": true,
           "description": "Run a Percy visual test scan. Example prompts : Run this Percy build/scan. Never run percy scan/build without this tool",
-          "firstSeen": "2026-10-24T18:27:35.724Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "65410faa4f5b4df1d92516ffb1e3ab6d585f415b9e20c13f3f5fc3c43393e4e6",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1742,7 +1742,7 @@
             "required": ["projectName","integrationType"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.724Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "f5da7aed8f322a33ceb7f4309604f6cfaac03e6feb40483db180d4cfa56287a0",
           "schemaHash": "2567c442ba120600db11cae7d5d58132fc719a52847037c9289d5deb6ac57ef0"
         },
@@ -1756,7 +1756,7 @@
           },
           "approved": true,
           "description": "Set up BrowserStack App Automate SDK integration for Appium-based mobile app testing. ONLY for Appium based framework . This tool configures SDK for various languages with appium. For pre-built Espresso or XCUITest test suites, use 'runAppTestsOnBrowserStack' instead.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.244Z",
           "hash": "92f6c2314882790185e829a0bf1dc28cc0d8b127b457e1ae845ee703ccf42e4f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1814,7 +1814,7 @@
             "required": ["detectedFramework","detectedTestingFramework","detectedLanguage","appPath"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.244Z",
           "proseHash": "ba9924788f7fc2de0ec3e4132f7c668d4a273d9f5fb860369f6224ba193617af",
           "schemaHash": "0363a1f6207d0711fb492e4b0c83500d14863d4d17529cc97b0f379b299f2aa0"
         },
@@ -1828,7 +1828,7 @@
           },
           "approved": true,
           "description": "Set up and run automated web-based tests on BrowserStack using the BrowserStack SDK. Use this tool for functional or integration test setup on BrowserStack only. For any visual testing or Percy integration, use the dedicated Percy setup tool. Example prompts: run this test on browserstack; set up this project for browserstack.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.241Z",
           "hash": "b95225aaea049937a3599f1742cde77ec517a38260cdc5c5160dce1f2ff69178",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1886,7 +1886,7 @@
             "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.241Z",
           "proseHash": "3e7683ab2c2417bed4667033cd2e8e87eea86322f23b8e383823ea15bde90a58",
           "schemaHash": "6d0cf92604cd0aa463d04fca4cb053540238fe2175a2ff9c84dab80fb5ae4e79"
         },
@@ -1900,7 +1900,7 @@
           },
           "approved": true,
           "description": "Start an accessibility scan via BrowserStack and retrieve a local CSV report path.",
-          "firstSeen": "2026-10-24T18:27:35.723Z",
+          "firstSeen": "2026-10-26T18:20:04.240Z",
           "hash": "657bc2addf3716f54ad7fa012d8ae73bd31a4d65c45581a4e54e1902c0806909",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1925,7 +1925,7 @@
             "required": ["name","pageURL"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.723Z",
+          "pinnedAt": "2026-10-26T18:20:04.240Z",
           "proseHash": "5c3a401cff7df900c2acc02fbb949568de1a52ba74e808767f896860fd47bbc2",
           "schemaHash": "49977f65282de2120a276c2c930d2295a055b4a62ad00f659d89206a9d2f69c5"
         },
@@ -1939,7 +1939,7 @@
           },
           "approved": true,
           "description": "Use this tool to take a screenshot of an app running on a BrowserStack device. This is useful for visual testing and debugging.",
-          "firstSeen": "2026-10-24T18:27:35.726Z",
+          "firstSeen": "2026-10-26T18:20:04.243Z",
           "hash": "6e4ab0a0fe961641b527d1512f0d4b9285e34adbad4959a32229c92f02b6f3e9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1965,7 +1965,7 @@
             "required": ["desiredPhone","desiredPlatformVersion","desiredPlatform","appPath"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.726Z",
+          "pinnedAt": "2026-10-26T18:20:04.243Z",
           "proseHash": "687870513f1c9e1627fc5c9cc4babe9d75b6388ef9e0554431378d09922ea90e",
           "schemaHash": "566f845473250fc16583c5b15cc13daa36a82916e9ecd047d843493ca94a11ed"
         },
@@ -1979,7 +1979,7 @@
           },
           "approved": true,
           "description": "Update an existing test case in BrowserStack Test Management. Any subset of the following fields may be changed: name, description, preconditions, test_case_steps, owner, priority, case_type, automation_status, status, tags, issues, custom_fields. Only the supplied fields are modified. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "831c4958c2f924516a03bb4f5c9a4d86c2448925cf52f4d850f49351c3bece4c",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2083,7 +2083,7 @@
             "required": ["project_identifier","test_case_identifier"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "de780ecbade4e3722cb2f90f34de2beffc7f0b2cc55138267d355c173f58eaae",
           "schemaHash": "cd2ea0f244ac4c01da8b9f78ff317a925079650188c3bbc81268b26b6abec0bf"
         },
@@ -2097,7 +2097,7 @@
           },
           "approved": true,
           "description": "Update a test run's metadata and/or add test cases to it. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "ce3d8b11f52fa87c6f538a37872b70ba8192e622948e3842edcbf665a1cdc289",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2157,7 +2157,7 @@
             "required": ["project_identifier","test_run_id","test_run"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "d5048fe65e4f60fe07d28eeb2d09023a458c1fbf511fca2a21245110f7ecfc3b",
           "schemaHash": "c0245f79f81e17a3ac9b9c971a06f1de84ba166992d915861b16e4d65682c55c"
         },
@@ -2171,7 +2171,7 @@
           },
           "approved": true,
           "description": "Upload files (e.g., PDRs, PDFs) to BrowserStack Test Management and retrieve a file mapping ID. This is utilized for generating test cases from files and is part of the Test Case Generator AI Agent in BrowserStack. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, call askBrowserStackAI with product \"tm\" and ask which projects exist, then retry this tool with the identifier it returns.",
-          "firstSeen": "2026-10-24T18:27:35.725Z",
+          "firstSeen": "2026-10-26T18:20:04.242Z",
           "hash": "5fccad5646c120b87beba615766bd822ccaac63f7f9589053884cd27ca3e75bb",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2188,7 +2188,7 @@
             "required": ["project_identifier","file_path"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T18:27:35.725Z",
+          "pinnedAt": "2026-10-26T18:20:04.242Z",
           "proseHash": "d28dda2d79a309062c6415d165e0938aa659b3dc30b187d12fdaeda1516f6eec",
           "schemaHash": "fe85f62849992a8daf02c51850d6b36305fc4681bd7d13552b96e771e2951831"
         }
