@@ -30,7 +30,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * descriptions since your last review fails the build.
  */
 
-const HELP = `rugsnare - runtime integrity for MCP tool descriptions
+const HELP = `rugsnare - 218 silent contract changes found in the npm MCP top; pin contracts, fail CI on drift
+repo: https://github.com/Paraphern/rugsnare (stars welcome)
 
 Usage:
   rugsnare init

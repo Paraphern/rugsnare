@@ -121,3 +121,15 @@ OpenHands 91k, agno 43k, pydantic-ai 21k, smolagents 30k, adk-python 22k, langgr
 
 ### 23.10 — Дельта-прогон (боль 20-23.10, 500+★)
 Верифицировано по API: carpet-bomb free-scan = Grey Ridge Signals Group LLC (rezearcher; akto-атрибуция дельты неверна). Запощено 3 (zilla#2751, Observal#1950, hermes#142803 — consent-persistence). Очередь: lunar#87/#88, mcpm.sh#475 (после реакции). Ironheights/clawhub#4018 не трогаем (OSS-сосед). Новые репо в списки: openclaw (392.9k★!), clawhub, pollinations, zilla, akto, mcpm.sh, agents-radar, nextdns/metadata, botmux, agentic-qe, rea (372k★).
+
+### 24.10 — Watch-раунд 2: правила из наших проб в проде + registry-эскалация
+- **ATR 4.2.1**: PR#749 (invisible control before directive — из probe #653) MERGED, changelog кредитует @Paraphern поимённо. Phone-rule (#654) ещё не открылся — ждём PR с линком. НОВЫЙ ПРИОРИТЕТ-WATCH: ATR#727 «Cross-validating MCP tool-poisoning detection: labeled-set exchange» (открыт, наша территория).
+- **registry#1720 → #82**: rdimitrov закрыл как DUPLICATE с консолидацией в #82, наше различение (publisher-attested fingerprints vs externally observed change history) сохранено в мастер-треде. #82 = живая спека-точка для участия (дизайн-вопросы: canonicalization, dynamic/auth-dependent tools, annotations, verification).
+- Grade-бот thebigasif закрыл COMPLETED ×4 (repomix/mobile-mcp/arxiv/apify), наш коммент последний — треды исчерпаны.
+- cc-haha#1625: баг жив («还出现»), тишина мейнтейнеров — watch.
+
+### 24.10 — ДРИФТ-ВОТЧ: ПРОГОН ПРЕРВАН (вернуться по команде юзера)
+- Крон перенесён на 21:00/3 дня (был 09:00).
+- Ручной прогон НЕ ЗАВЕРШЁН: фоновый раннер (13 серверов последовательно; npm-реестр медленный, добавлены ретраи+prefer-offline) продолжал работать на момент паузы — к 20:34 дошёл до mongodb. Готово на паузе: chrome-devtools 1.8.0→1.12.0 = 32 findings (снапы обеих версий в pins/); netlify 1.14.0→1.20.0 = 10 findings (BREAKING team-services-reader + 5 LOOSENED; снапы есть); currents — pinned-снап есть, latest падал на сети (ретрай в раннере). Остальные результаты — в логе раннера (call_82a75d2f24ce4b799e450d10-stdout.log) по его завершении.
+- SKILLS-ПРОГОН ПРОВАЛИЛСЯ и ПЕРЕДЕЛАТЬ: superpowers v7.0.1 и vercel-skills a80e4c9 клонированы, но skills scan не отработал (баг команды); пинов нет. Upstream: superpowers v7.0.1 (21.10), vercel-skills a80e4c9 (19.10).
+- Осталось после раннера: собрать результаты → lastSeen/lastFindings в drift-watch-corpus.json → отчёт audits/drift-watch/2026-10-24.md → docs/servers-страницы → REST-коммит (git commit через Bash блокируется Mimosa; прецеденты fadb607/3a976ab/466d529).

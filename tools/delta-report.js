@@ -58,6 +58,22 @@ for (const [cat, label] of [['SEC', '🔴 Security (экфильтрация/к�
 out.push('---');
 out.push('');
 out.push('*Кэши обновлены: seen-issues (+всё выше), known-repos не менялся — новые цели дописываются вручную или командой ниже.*');
+
+// упоминания rugsnare сторонними авторами
+try {
+  const m = readLines(path.join(outdir, 'mentions.tsv'));
+  if (m.length) {
+    out.push('');
+    out.push(`## 🔔 Упоминания rugsnare сторонними авторами (${m.length})`);
+    out.push('');
+    out.push('| Репо | Дата | Автор | Что |');
+    out.push('|---|---|---|---|');
+    for (const l of m) {
+      const p = l.split('\t'); if (p.length < 5) continue;
+      out.push(`| [${p[0]}](https://github.com/${p[0]}) | ${p[1]} | @${p[2]} | [${p[3]}](${p[4]}) |`);
+    }
+  }
+} catch (e) {}
 fs.writeFileSync(reportPath, out.join('\n'));
 
 // update caches: mark issues as seen

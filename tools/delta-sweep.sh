@@ -34,6 +34,12 @@ for q in "${QUERIES[@]}"; do
 done
 cat "$OUT"/q*.tsv 2>/dev/null | grep -v '^$' | sort -u -t$'\t' -k4,4 > "$OUT/raw.tsv"
 
+# монитор упоминаний rugsnare сторонними авторами (наши репо и наш аккаунт исключаем)
+gh search issues "rugsnare" --created=">=$SINCE" --limit 30 \
+  --json repository,title,url,createdAt,author \
+  --jq '.[] | select((.repository.nameWithOwner | startswith("Paraphern/")) | not) | select(.author.login != "Paraphern") | .repository.nameWithOwner + "\t" + .createdAt[0:10] + "\t" + (.author.login // "?") + "\t" + .title[0:80] + "\t" + .url' \
+  > "$OUT/mentions.tsv" 2>/dev/null || true
+
 # stars with cache
 cut -f1 "$OUT/raw.tsv" | sort -u > "$OUT/repos.txt"
 while read -r r; do
