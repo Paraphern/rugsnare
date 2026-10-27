@@ -21,3 +21,8 @@ npm i @azure-devops/mcp@2.10.0 && npx rugsnare diff --config mcp.json   # 110 fi
 **1.3.0 re-run note (2026-10-12).** A credential-free whole-history re-scan of the window (174 versions incl. nightlies, `--stub-env`, 45s timeout) is not possible: every version exits with code 1 at startup - the server validates the Azure PAT before serving `tools/list`, so a presence-only dummy is rejected (correctly reported by the scanner as unreachable, not as clean). The 110-finding record above therefore stands as verified on 2026-10-11 with real credentials; the weekly watch keeps the 2.5.0 baseline alive. R11 rename inference and the R21 recursive grader apply to the recorded findings, but an end-to-end mechanical re-verification of this server requires a PAT and stays outside the public feed by design.
 
 Watched weekly (baseline 2.5.0). Last verified 2026-10-11; re-run attempt 2026-10-12 (credential-gated, no data).
+
+
+## 2026-10-24 window
+
+2.5.0 -> 2.11.0: 119 findings (graded, rugsnare 1.4.3; pins at audits/drift-watch/pins/azure-devops@2.11.0.json). Cumulative corpus total: 351 across the 22 servers. See audits/drift-watch/2026-10-24.md.

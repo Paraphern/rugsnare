@@ -14,3 +14,5 @@ npm i @currents/mcp@2.6.1 && npx rugsnare diff --config mcp.json   # 45 findings
 ```
 
 Watched weekly (baseline 2.3.3). Last verified 2026-10-12 (fresh graded run: 32 BREAKING confirmed).
+
+**Corrected 2026-10-26** - the pins-dir snapshots for 2.6.1 and 2.7.0 (automation re-pin of 2026-10-24) carried `currents-get-affected-executions`, whose 2.3.3-era entry does not occur anywhere in those tarballs: stale-tool artifact of a dirty stand, caught by the HISTOR field-level cross-check ([modelcontextprotocol#3431](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3431#issuecomment-6416860082)). Re-pinned from clean stands: 2.6.1 = **39 tools**, 2.7.0 = **43 tools**, the phantom tool absent from both. Clean 2.3.3 -> 2.7.0 diff (rugsnare 1.4.3): **51 findings**, including a new quiet-BREAKING wave - `minLength=1` on `projectId` (`create-webhook`) and a UUID `pattern` on `hookId` (`get`/`update`/`delete-webhook`) - plus GONE `currents-get-affected-executions`, NEW `currents-create-share-link`, and 3 NEW prompts + 4 NEW skill resources (`browser-evidence`, `collect-evidence`, `fix-failing-tests`).

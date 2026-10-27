@@ -160,7 +160,7 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 
 | Hash | Canonical input | Changes classified as |
 |---|---|---|
-| `hash` | `{ description, inputSchema, name }` - text + input schema (the gate) | any text/schema drift |
+| `hash` | `{ description, inputSchema, name }` plus `icons` (1.5.0+; `null` when absent) - text + input schema + icon markup (the gate). The interop `surfaceHash` (§3.2) deliberately stays three-field | any text/schema drift |
 | `schemaHash` | `inputSchema` only | BREAKING, LOOSENED, EXPANDED, or NOTATION |
 | `proseHash` | `description` only | COSMETIC |
 | `outputHash` | `outputSchema` only; `null` when the tool declares no output schema | NOTATION (schema appeared, SDK wave), LOOSENED (schema removed — response shape no longer declared), or BREAKING (declared schema narrowed) |
@@ -222,6 +222,45 @@ drift:
   the approver never saw. (All 45 snapshots in the initial drift-watch
   catalog are legacy pins — this path is the rule for them, not the
   exception.)
+
+### 3.2 `surfaceHash` (interop, additive; direction accepted 2026-10-21)
+
+Optional **server-level** field: `sha-256` over the canonical JSON **array**
+of per-tool canonical objects `{ description, inputSchema, name }` (one object
+per captured tool, each canonicalized per the §3 rules), **sorted ascending by
+the UTF-8 byte order of `name`**, serialized compactly as one JSON array.
+
+Purpose: byte-agreement with foreign capture systems. The three-field set is
+the Dominion Observatory capture set (issue #6): a RugSnare pin of an endpoint
+and their Ed25519-signed baseline of the same endpoint must carry the same
+`surfaceHash`, making joins trivial without either side exposing an API to
+the other. The verification profile is THIS spec's §3 canonicalization
+(including rule 7, RFC 8785 numbers): foreign implementations conform to it,
+not the other way around.
+
+Rules specific to `surfaceHash`:
+
+1. **Coverage is tools-only and three-fields-only.** `icons`, `annotations`,
+   and `outputSchema` are OUT (they are RugSnare-side concepts with their own
+   hashes; the interop set is the three contract fields above). Prompts and
+   resources are not part of `surfaceHash`; they keep their own per-entry
+   hashes (§2).
+2. **Sorting is a deliberate deviation from §3 rule 2** (array order
+   significant): the array is sorted by `name` so the hash is independent of
+   the order a server happens to return `tools/list` in. Within §3 rule 2's
+   semantics, enum order INSIDE a schema remains significant — the sort
+   applies only to the top-level array of per-tool objects. Duplicate names
+   (a spec-violating server) sort deterministically by their full canonical
+   form.
+3. **Additive and ignorable.** `surfaceHash` changes no existing hash and no
+   drift class. Verifiers written before this section ignore the field
+   entirely; its presence or absence is never a finding. Adding it to an
+   existing pin store does not bump `policyVersion` (§3.1): the canonical
+   inputs of every existing hash are unchanged.
+4. **Recomputed at capture.** `scan` and `approve` write it over the full
+   captured tool list; it is not maintained incrementally. A `surfaceHash`
+   that disagrees with the store's own per-tool hashes indicates a corrupted
+   or hand-edited store (the signed-store check, §7, is the enforcement).
 
 ## 4. Drift classification
 

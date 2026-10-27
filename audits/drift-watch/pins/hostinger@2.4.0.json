@@ -13,39 +13,39 @@
         "resolvedVersion": "2.4.0",
         "url": null
       },
-      "pinnedAt": "2026-10-17T02:53:30.931Z",
+      "pinnedAt": "2026-10-26T18:17:42.674Z",
       "prompts": {
 
       },
       "resources": {
         "hostinger-headless/SKILL.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "a58a5d028a799a8aea4b26d522853785e8aab9135c8a9cbe27dcc036e05002e4"
         },
         "hostinger-headless/references/DATABASE.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "04c89d6cfeef7f1f825c2f1f7c76155d20d442a5b8401254418e76300e456c30"
         },
         "hostinger-headless/references/DEPLOYMENT.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "73e8a1fff7b93dc2aa15d471c2a2b6bbdaf0b97c580b39bf1395cd28ae57e478"
         },
         "hostinger-headless/references/SETUP.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "549fd71369e5b8bce1d32f84eee906b96209f9cd5dbe4f14deb4ac607200de1a"
         },
         "hostinger-headless/references/STORE.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "f6375f610fcc63b6d30381cea6d99bb4c26620fd9ac6ecdae3042ec43d026a7f"
         },
         "hostinger-headless/references/WORDPRESS.md": {
           "description": "",
-          "firstSeen": "2026-10-17T02:53:30.936Z",
+          "firstSeen": "2026-10-26T18:17:42.679Z",
           "hash": "d3960e0e39c48424d2621219df63091d30aaaff6a749cc3c5998ec0e1d57da76"
         }
       },
@@ -59,7 +59,7 @@
           },
           "approved": true,
           "description": "Run one API operation found with search. params is a flat object holding the operation's path, query and body parameters as described by its inputSchema.",
-          "firstSeen": "2026-10-17T02:53:30.934Z",
+          "firstSeen": "2026-10-26T18:17:42.678Z",
           "hash": "013656b55478a00d5144c67f6b8ea0fdeb0bcca271bf36b0c98af548916ea6b3",
           "inputSchema": {
             "properties": {
@@ -75,7 +75,7 @@
             "required": ["operation"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:53:30.934Z",
+          "pinnedAt": "2026-10-26T18:17:42.678Z",
           "proseHash": "f9db1f409b880364a2859646c2340d8943c6d198b120184f01f3c4765881e8f6",
           "schemaHash": "dcc9ddff5b6618dafaed1e533a83630a2c60bf88370750f7aad866d263d31124"
         },
@@ -87,7 +87,7 @@
           },
           "approved": true,
           "description": "Run up to 20 API operations in order, stopping at the first failure. A params value that is exactly \"$steps.<i>.<path>\" is replaced by that value from the result of earlier step <i> (dot-separated keys; numbers index arrays), e.g. \"$steps.0.0.id\".",
-          "firstSeen": "2026-10-17T02:53:30.934Z",
+          "firstSeen": "2026-10-26T18:17:42.678Z",
           "hash": "3619d930f556dd097238ab0ec3119024bc4f01b2de139d68f69b1a3d1d3653a4",
           "inputSchema": {
             "properties": {
@@ -114,7 +114,7 @@
             "required": ["steps"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:53:30.934Z",
+          "pinnedAt": "2026-10-26T18:17:42.678Z",
           "proseHash": "9aa99390cca2be96603aa5e29cd4a4f1190b07e29fa7b04d45ea76be5da8021e",
           "schemaHash": "374c2391b56b0dc7575da37d1cd08737702fa6d7b5271bb93c018f3263b35606"
         },
@@ -126,7 +126,7 @@
           },
           "approved": true,
           "description": "Find API operations by keyword. Returns the best matches, each with its operation name, hints and inputSchema. Pass a result's operation and params matching its inputSchema to execute or multi-execute.",
-          "firstSeen": "2026-10-17T02:53:30.934Z",
+          "firstSeen": "2026-10-26T18:17:42.678Z",
           "hash": "bb7c2d29a097e908a5db13a8fdb131be8cf7484ff39033527067133b1ec9816a",
           "inputSchema": {
             "properties": {
@@ -145,7 +145,7 @@
             "required": ["query"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-17T02:53:30.934Z",
+          "pinnedAt": "2026-10-26T18:17:42.678Z",
           "proseHash": "92c4b870594c1508d5d0e706d79b4c86511d382c2d11f7d8c5581a9302dfe254",
           "schemaHash": "c5d79e8e32654d883296ee01ad4744db8a8ab500cfecf9311cba483801a05b88"
         }

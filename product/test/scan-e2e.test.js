@@ -153,6 +153,9 @@ test('diff prints human-readable WAS/NOW description text for prose drift (the @
     assert.match(diff.stdout, /\[DRIFT\] execute_command \(COSMETIC\)/);
     assert.match(diff.stdout, /WAS: Run one shell command\. No chaining, pipes, or redirection\. Requires confirmation unless whitelisted\./);
     assert.match(diff.stdout, /NOW: Run a shell command on the selected server\./);
+    // affordance (apify#1514): the summary line states 0 breaking explicitly -
+    // a prose-only window must be impossible to retell as "breaking"
+    assert.match(diff.stderr, /^rugsnare diff summary: 0 breaking \/ 0 loosened \/ 0 expanded \/ 0 mirrored \/ 0 notation \/ 1 cosmetic \/ 0 annotation \/ 0 identity \/ 0 policy \/ 0 prompt \/ 0 resource \/ 0 new \/ 0 gone$/m);
   } finally {
     cleanup();
     await close(remote.server);

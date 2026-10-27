@@ -8,7 +8,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import {
   stableStringify, buildIdentity, compareIdentity, policyVersionFor,
-  savePins, loadPins, pinTool, ensureServer,
+  savePins, loadPins, pinTool, ensureServer, summarizeVerdicts,
 } from '../src/pins.js';
 
 /**
@@ -241,6 +241,101 @@ test('v1.1: re-scan of server with prompts/resources = byte-identical pins.json'
     await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
     const after = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
     assert.equal(before, after, 're-scan with unchanged prompts/resources must be byte-identical');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+// ---- §3.2 surfaceHash (interop, Dominion set; issue #6) ----------------------
+
+test('summarizeVerdicts: fixed-order class counts, unknown classes never hidden (apify#1514 affordance)', () => {
+  const report = [
+    { server: 's', verdicts: [
+      { tool: 'a', status: 'UNCHANGED' },
+      { tool: 'b', status: 'DRIFT', driftType: 'COSMETIC' },
+      { tool: 'c', status: 'DRIFT', driftType: 'COSMETIC' },
+      { tool: 'd', status: 'DRIFT', driftType: 'NOTATION' },
+      { tool: 'e', status: 'NEW' },
+      { tool: 'f', status: 'REMOVED' },
+      { item: 'p1', status: 'DRIFT', kind: 'prompt' },
+      { item: 'r1', status: 'DRIFT', kind: 'resource' },
+      { tool: 'g', status: 'DRIFT', driftType: 'FUTURE_CLASS' }, // not yet invented
+    ] },
+  ];
+  const s = summarizeVerdicts(report);
+  assert.equal(s, '0 breaking / 0 loosened / 0 expanded / 0 mirrored / 1 notation / 2 cosmetic / 0 annotation / 0 identity / 0 policy / 1 prompt / 1 resource / 1 new / 1 gone / 1 future_class');
+  // the whole point: a prose-heavy window states 0 breaking out loud
+  assert.match(s, /^0 breaking /);
+  // clean store: all zeros, still emitted (absence is stated, not implied)
+  assert.equal(summarizeVerdicts([{ server: 's', verdicts: [{ tool: 'a', status: 'UNCHANGED' }] }]).startsWith('0 breaking / 0 loosened'), true);
+});
+
+test('v3.2: surfaceHash golden fixture - byte-exact interop value', async () => {
+  const { surfaceHash } = await import('../src/hash.js');
+  // The Dominion cross-impl test vector: one tool, canonical three fields.
+  // Foreign implementations must reproduce this exact sha-256.
+  const tools = [
+    { name: 'echo', description: 'Echo a message.', inputSchema: { type: 'object', properties: { msg: { type: 'string' } }, required: ['msg'] } },
+  ];
+  const h = surfaceHash(tools);
+  assert.match(h, /^[0-9a-f]{64}$/, 'sha-256 hex');
+  // golden: stable() + sort + compact array serialization are deterministic
+  const crypto = await import('node:crypto');
+  const expect = crypto.createHash('sha256')
+    .update(JSON.stringify([{ description: 'Echo a message.', inputSchema: { properties: { msg: { type: 'string' } }, required: ['msg'], type: 'object' }, name: 'echo' }]))
+    .digest('hex');
+  assert.equal(h, expect, 'golden value (regenerate deliberately, never silently)');
+});
+
+test('v3.2: surfaceHash ignores tools/list response order', async () => {
+  const { surfaceHash } = await import('../src/hash.js');
+  const a = [
+    { name: 'bbb', description: 'B tool.', inputSchema: { type: 'object' } },
+    { name: 'aaa', description: 'A tool.', inputSchema: { type: 'object' } },
+  ];
+  const b = [a[1], a[0]]; // same tools, shuffled
+  assert.equal(surfaceHash(a), surfaceHash(b), 'sorted by name: order-independent');
+});
+
+test('v3.2: surfaceHash covers ONLY the three interop fields', async () => {
+  const { surfaceHash, toolHash } = await import('../src/hash.js');
+  const base = [{ name: 't', description: 'd', inputSchema: { type: 'object' } }];
+  const withExtras = [{
+    name: 't', description: 'd', inputSchema: { type: 'object' },
+    icons: { svg: '<svg onload="evil()">' },          // NOT in the interop set
+    annotations: { title: 'Friendly Name' },          // NOT in the interop set
+    outputSchema: { type: 'object' },                 // NOT in the interop set
+  }];
+  assert.equal(surfaceHash(base), surfaceHash(withExtras), 'icons/annotations/outputSchema do not move surfaceHash');
+  assert.notEqual(toolHash(base[0]), toolHash(withExtras[0]), '...but they DO move toolHash (divergence is real and public, issue #6)');
+});
+
+test('v3.2: surfaceHash is sensitive to any of the three fields of any tool', async () => {
+  const { surfaceHash } = await import('../src/hash.js');
+  const base = [
+    { name: 'a', description: 'one', inputSchema: { type: 'object' } },
+    { name: 'b', description: 'two', inputSchema: { type: 'object', properties: { x: { type: 'string' } } } },
+  ];
+  const h = surfaceHash(base);
+  assert.notEqual(surfaceHash([{ ...base[0], description: 'ONE' }, base[1]]), h, 'description change moves it');
+  assert.notEqual(surfaceHash([base[0], { ...base[1], inputSchema: { type: 'object', properties: { x: { type: 'number' } } } }]), h, 'schema change moves it');
+  assert.notEqual(surfaceHash([...base, { name: 'c', description: 'new', inputSchema: {} }]), h, 'new tool moves it');
+  assert.notEqual(surfaceHash([base[1]]), h, 'removed tool moves it');
+});
+
+test('v3.2: scan writes surfaceHash at server level; re-scan is byte-stable', async () => {
+  const FIXTURE = path.join(HERE, 'fixtures', 'prompts-stable.mjs');
+  const dir = tmp();
+  try {
+    const cfg = path.join(dir, 'mcp.json');
+    fs.writeFileSync(cfg, JSON.stringify({ mcpServers: { pr: { command: 'node', args: [FIXTURE] } } }));
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    const p1 = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    const pins = JSON.parse(p1);
+    assert.match(pins.servers.pr.surfaceHash ?? '', /^[0-9a-f]{64}$/, 'server-level surfaceHash present');
+    await run(process.execPath, [CLI, 'scan', '--config', cfg, '--yes'], { cwd: dir, timeout: 60000 });
+    const p2 = fs.readFileSync(path.join(dir, '.rugsnare', 'pins.json'), 'utf8');
+    assert.equal(p1, p2, '§7: re-scan does not change a byte');
   } finally {
     cleanup(dir);
   }

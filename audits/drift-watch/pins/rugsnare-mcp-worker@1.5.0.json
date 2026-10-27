@@ -1,0 +1,65 @@
+{
+  "policyVersion": "rugsnare-1.5.0",
+  "servers": {
+    "rugsnare-hosted": {
+      "cmd": {
+        "url": "https://rugsnare-mcp.rugsnare.workers.dev/mcp"
+      },
+      "identity": {
+        "entryPath": null,
+        "identityHash": "sha256:af90fa2b92e0f7976dd01b1242087a82c150f48586f4013ee625ecbaa4ba3e16",
+        "package": null,
+        "resolvedVersion": null,
+        "url": "https://rugsnare-mcp.rugsnare.workers.dev/mcp"
+      },
+      "pinnedAt": "2026-10-23T18:36:02.619Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "surfaceHash": "a7f60d0b5cc214dada5b2c1ec51ff080e0b0828694a0104733b2cc1d5967fb2e",
+      "tools": {
+        "drift_feed_status": {
+          "annotations": null,
+          "approved": true,
+          "description": "Report the current versions and contract-change events of popular MCP servers, from the public RugSnare drift-feed (daily scans). Optional filter by server name.",
+          "firstSeen": "2026-10-23T18:36:02.623Z",
+          "hash": "5d350bd142ab66af530496b69cb9862cd39bf022651740ad98e7fbf22a46bccf",
+          "inputSchema": {
+            "properties": {
+              "server": {
+                "description": "Server name to filter by (e.g. server-filesystem). Omit for all.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-23T18:36:02.623Z",
+          "proseHash": "212240f4091c05329f46c3d4497fe88f6dacd29145514c7b00b1adf9d8a53185",
+          "schemaHash": "a6cc3ccd5744acb1400c4d7deb0efbdefc037276eb74a1c7593f5a569ada6db4"
+        },
+        "pins_report": {
+          "annotations": null,
+          "approved": true,
+          "description": "Report the RugSnare pin store of this project: which MCP servers are pinned, how many tools are approved, unapproved, or shadowed across servers. Read-only.",
+          "firstSeen": "2026-10-23T18:36:02.623Z",
+          "hash": "d5044fbdb06c57d99a385135423f7f3d72a27a7785d5abfe1a05c31536601cff",
+          "inputSchema": {
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "outputHash": null,
+          "pinnedAt": "2026-10-23T18:36:02.623Z",
+          "proseHash": "a00a981de74b1888e0af06007e7f42a28f92800abfb66656bc62f092cfe91804",
+          "schemaHash": "0151034d53b1998fe109657d2135a2319e1ce41349a579e03fbb0457fbacafb5"
+        }
+      }
+    }
+  },
+  "version": 1
+}

@@ -10,14 +10,15 @@
 [![Node: >=18](https://img.shields.io/badge/node-%3E%3D18-green.svg)](#)
 [![GitHub stars](https://img.shields.io/github/stars/Paraphern/rugsnare.svg)](https://github.com/Paraphern/rugsnare/stargazers)
 
-> **Runtime integrity for MCP tool descriptions.** Scanners check MCP servers *before* you connect them. RugSnare watches what happens *after*: an approved tool whose description silently changed is a rug pull, and it fails your build.
+> **218 silent contract changes found in the npm MCP top (Oct 2026) — not one announced in a changelog.** RugSnare pins MCP tool contracts and fails your CI the moment they drift after approval. Scanners check servers *before* you connect them; RugSnare watches what happens *after* — an approved tool whose description silently changed is a rug pull.
+>
+> ★ Caught a drift? Star the repo — [github.com/Paraphern/rugsnare](https://github.com/Paraphern/rugsnare/stargazers)
 
-```
-flights-search  (node ./server.js)
-  [DRIFT] search_flights 8c5ab922df5932ba -> fcc6d291d8ef4ab2
-  [NEW ] _search_flights_pro 589ef74a38bb8d07
-  [DRIFT] get_booking 189261ab4cc7f0b6 -> 12da36af80ac39e5
-rugsnare diff: DRIFT DETECTED (3 finding(s))   # exit 1 - CI fails
+<img src="docs/demo-drift.gif" alt="rugsnare diff catching a poisoned tool description (animated)" width="736">
+
+```bash
+rugsnare scan --config .mcp.json   # pin the contracts you approved
+rugsnare diff  --config .mcp.json  # exit 1 the moment anything drifts
 ```
 
 ## Field audit: 218 silent contract changes in the npm MCP top (Oct 2026)
@@ -34,6 +35,15 @@ We pinned the most-installed MCP servers on npm, ran the update, and diffed. One
 | @heroku/mcp-server | 11k | **0** |
 
 Full report with verbatim quotes, vendor-announcement status and one-command repros: **[audits/npm-top-mcp-drift-2026-10.md](audits/npm-top-mcp-drift-2026-10.md)**. Automated weekly follow-up: [audits/WEEKLY.md](audits/WEEKLY.md).
+
+## Independent measurements
+
+Our audit is not a lone number. Two third-party datasets — published with method and caveats, neither affiliated with us — land on the same shape from different angles:
+
+- **HISTOR** (alexar76) — [Zenodo DOI 10.5281/zenodo.23512760](https://doi.org/10.5281/zenodo.23512760), CC BY 4.0, monthly snapshots (also `alexar76/histor-mcp-tool-definitions` on Hugging Face). Every new npm/PyPI MCP-server release sandboxed and every registry remote read daily: **1,419 of 21,738 packages (6.5%) changed their `tools/list` in four weeks** (24 Sep – 20 Oct 2026), and 4,926 of 10,929 remote servers (45%) served a different tool list at least once. It also documents 2,719 digit-only description changes — the churn that argues for a readable field-level diff over a single yes/no hash ([discussion: modelcontextprotocol#3431](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3431)). 26 of our 28 watch-corpus packages appear in the log; 8 changed in that window — consistent with our per-server pages.
+- **agent-skills-state-2026** (basitalisandhu) — [repo](https://github.com/basitalisandhu/agent-skills-state-2026). A read-only sample of 2,999 GitHub repos shipping MCP configs: 46.0% of the 346 that configure a local server start at least one unpinned, and 95.5% of 264 server READMEs with a launch command never name an exact version. Its README links our drift-watch corpus as a related dataset.
+
+Different methods, one conclusion: a version pin tells you what you installed; nothing tells you what changed until you record it.
 
 ## Why this exists
 
@@ -67,6 +77,11 @@ node src/cli.js init
 ```
 
 Zero dependencies, no `npm install` needed - just Node.js ≥ 18.
+
+## Installation guide translations
+
+- [简体中文（Chinese）](llms-install.zh.md)
+- [日本語（Japanese）](llms-install.ja.md)
 
 ## Quick start
 
@@ -168,6 +183,10 @@ Two read-only tools: `drift_feed_status` (what the public drift-feed currently s
 
 Every advisory hit and SARIF rule carries the ID of the [ATR](https://github.com/Agent-Threat-Rule/agent-threat-rules) rule covering the same technique (e.g. a zero-width Unicode hit references `ATR-2026-00129`, contract drift references `ATR-2026-00581`, the post-approval rug-pull rule), so RugSnare pre-invocation findings and ATR runtime findings correlate in one pipeline. CLI output shows the IDs inline; `--json` returns them as an `atr` array; the SARIF export carries them in `properties.atrRuleIds`. Full table, plus three gap-proposals already filed upstream for review: [`docs/ATR-MAPPING.md`](docs/ATR-MAPPING.md).
 
+### OWASP-mapped (Agentic Top 10, AI Testing Guide, AISVS)
+
+Findings also speak OWASP's vocabulary: every RugSnare capability is mapped to the [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/resources/) risks it operationalizes (contract drift = ASI04 supply chain, shadow tools = ASI02 misuse, IDENTITY = ASI03, guard-parameter stripping = C9.2 irreversibility controls...), to the [AI Testing Guide](https://github.com/OWASP/www-project-ai-testing-guide) tests it serves as a tool for (AITG-INF-01 supply chain tampering above all), and to [AISVS 0x10-C09](https://github.com/OWASP/AISVS) verification requirements - with gaps stated honestly. Full table: [`docs/OWASP-ASI-MAPPING.md`](docs/OWASP-ASI-MAPPING.md).
+
 ## Trust model
 
 We take our own medicine:
@@ -175,7 +194,7 @@ We take our own medicine:
 - **Zero dependencies** - a supply-chain security tool must not be its own attack surface.
 - **No telemetry.** Local pin store, local JSONL event log, nothing leaves your machine.
 - **Signed releases** (Ed25519 OpenPGP, fingerprint in [SECURITY.md](SECURITY.md), published in three independent places).
-- **On-chain `ReleaseLog`** - release hashes pinned append-only on Base (testnet live now); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
+- **On-chain `ReleaseLog`** - release hashes pinned append-only on Base mainnet (live since v1.0.0); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
 - **Apache-2.0.** If we ever go rogue - fork us. That's the license working as intended.
 
 Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) - 7 short questions, findings published. Author: [@SergeyDruzhba on X](https://x.com/SergeyDruzhba).

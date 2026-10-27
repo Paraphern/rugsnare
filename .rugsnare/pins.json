@@ -20,6 +20,7 @@
       "resources": {
 
       },
+      "surfaceHash": "a7f60d0b5cc214dada5b2c1ec51ff080e0b0828694a0104733b2cc1d5967fb2e",
       "tools": {
         "drift_feed_status": {
           "annotations": null,

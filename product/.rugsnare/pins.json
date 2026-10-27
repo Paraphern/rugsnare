@@ -23,6 +23,7 @@
       "resources": {
 
       },
+      "surfaceHash": "d7d8eb4a473973aaa2bcfaeaad8d6e2ff37a62a307de0de1271ffdd516a69a21",
       "tools": {
         "migrate_pages_to_workers_guide": {
           "annotations": {
@@ -64,8 +65,8 @@
             "required": ["query"],
             "type": "object"
           },
-          "outputHash": "c52a5cec6447b4dd0a303437b0e34911e930e0a49334c7167db60c1037e13c2a",
-          "pinnedAt": "2026-10-18T19:20:46.794Z",
+          "outputHash": "ada291be066eeac1c38e667407442f5dcca58f74ec2233ab673de135adb1c44b",
+          "pinnedAt": "2026-10-21T18:51:21.418Z",
           "proseHash": "a62a944aca09d4b974c1417d3001b74172bd203dee05323a4880729e90aa4660",
           "schemaHash": "f71ae375cd08f20f0988de3e2b722fdfc1cf582c833c9f89a6d8ea003ba1fea5"
         }

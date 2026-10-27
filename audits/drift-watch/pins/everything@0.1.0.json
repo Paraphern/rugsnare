@@ -13,78 +13,68 @@
         "resolvedVersion": "0.1.0",
         "url": null
       },
-      "pinnedAt": "2026-10-18T15:01:03.320Z",
+      "pinnedAt": "2026-10-26T18:21:58.802Z",
       "prompts": {
         "complex_prompt": {
           "description": "A prompt with arguments",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "048121ace90580a1b710e4dba28d030fbd7ec119994a62b94791442a95f498d1"
         },
         "simple_prompt": {
           "description": "A prompt without arguments",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "9ae39dfd33ec22b047f34a308a1a00c38f64921578f7411b32c4389d5f168975"
         }
       },
       "resources": {
         "Resource 1": {
-          "contentHash": "d70a871e53478e830502f9c1d2cce17e14403531c51c12e975f630ab67021d79",
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "ef292559cc2fb8f555d515b0165c88247e976d9d1ab0cec820203dcb527a3949"
         },
         "Resource 10": {
-          "contentHash": null,
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.808Z",
           "hash": "b0ef19f37c18d732ffdea98128be2a4dc48af127145060532d0657543a1048df"
         },
         "Resource 2": {
-          "contentHash": null,
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "1aa55f8843acd9d99d262f8e6dac2c420d22b1a38d1a4c600ec9fa8b4a91546b"
         },
         "Resource 3": {
-          "contentHash": "bd4f74974a44a3e4f962aef0c97e16b8b5595c954f60cd4beffd24854ed2567c",
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "dfe6c874642ad8496fc4edb42e8ae4dfa357ff6e3d87e4c5d85815f9110636e9"
         },
         "Resource 4": {
-          "contentHash": null,
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "018c4e0710d0d587e76e4523412363cbc3fc4923579bc55fefa7b965eb9636e7"
         },
         "Resource 5": {
-          "contentHash": "507270e2eaf491055f3ff5fea1e9a16967a0187cf663288cf3cbd4842181aa9f",
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.807Z",
           "hash": "e0bc6796a96189df47f82914bc66f4c75e4f60be454fdbdd4d3d90a5223850ff"
         },
         "Resource 6": {
-          "contentHash": null,
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.808Z",
           "hash": "5f2710a33db9348fb0ff547706da1d97815a2d76d28509180eb397821465811d"
         },
         "Resource 7": {
-          "contentHash": "1ae39466d874ca8c8d1b507cd67a604de18ee6ccba81c734ecdf508e9b61ad01",
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.808Z",
           "hash": "002c1f17f9005379be30081417b662f9752eafe0a3a25a51a077bb04b0080ee3"
         },
         "Resource 8": {
-          "contentHash": null,
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.808Z",
           "hash": "04535d93669dfacbd71a18abfd99e96b78feb3b843d27f827e6c303a30070ac9"
         },
         "Resource 9": {
-          "contentHash": "56f88ee78d00f5d795a6ea8a07e21fafb227c8b572c16768ed4fd4727ecf10f5",
           "description": "",
-          "firstSeen": "2026-10-18T15:01:03.326Z",
+          "firstSeen": "2026-10-26T18:21:58.808Z",
           "hash": "f5154007e0af4c859005553935fed0a7e057f820cc2852768ae61c3865dfc2b6"
         }
       },
@@ -94,7 +84,7 @@
           "annotations": null,
           "approved": true,
           "description": "Adds two numbers",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
+          "firstSeen": "2026-10-26T18:21:58.806Z",
           "hash": "3bc6ebbd1ad270ccdfa0c28ee35f854eb3cd34318f6488d0642611af6cdb2757",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -112,8 +102,7 @@
             "required": ["a","b"],
             "type": "object"
           },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
+          "pinnedAt": "2026-10-26T18:21:58.806Z",
           "proseHash": "1efcb1f3567517e507fe44f6853681a389c3ac9ec493ea45f8e0da09b2d6aaf8",
           "schemaHash": "b5e7636f67327947cb9cd2e836cd25ad71390b98f05c51b1cef09b6d86c3c0e2"
         },
@@ -121,7 +110,7 @@
           "annotations": null,
           "approved": true,
           "description": "Echoes back the input",
-          "firstSeen": "2026-10-18T15:01:03.323Z",
+          "firstSeen": "2026-10-26T18:21:58.805Z",
           "hash": "666d8b153b2998e0b1bdaee43a6148cf1c73eb3ee878d1f3bee300a9d27d1c35",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -135,8 +124,7 @@
             "required": ["message"],
             "type": "object"
           },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.323Z",
+          "pinnedAt": "2026-10-26T18:21:58.805Z",
           "proseHash": "befddbd2f7f4e08645d4777c5722d61db17d56a0115f5c9bdb19577e865a299b",
           "schemaHash": "c4276db82c4bec8172d1ac16b1a92fa0f17c83bf42e690758f044c51cb3a4e70"
         },
@@ -144,7 +132,7 @@
           "annotations": null,
           "approved": true,
           "description": "Returns the MCP_TINY_IMAGE",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
+          "firstSeen": "2026-10-26T18:21:58.806Z",
           "hash": "a6dd0bade5370c56515cb3731ae4145442522fa915d8664ea888c5098f141c90",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -154,8 +142,7 @@
             },
             "type": "object"
           },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
+          "pinnedAt": "2026-10-26T18:21:58.806Z",
           "proseHash": "e05d66ca9c64728b0a6bb482363447a84c28caffab8df5c51e604876fd30b6fb",
           "schemaHash": "9e853d38bf02a514eb1eb6162a75f0b11f1c4f306f71e88c6b0491383ac80b32"
         },
@@ -163,7 +150,7 @@
           "annotations": null,
           "approved": true,
           "description": "Demonstrates a long running operation with progress updates",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
+          "firstSeen": "2026-10-26T18:21:58.806Z",
           "hash": "d53eca14aecc5ee3410cf5da8b8ec14d2fefa062774ac47096fc75ec55f0d07f",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -182,8 +169,7 @@
             },
             "type": "object"
           },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
+          "pinnedAt": "2026-10-26T18:21:58.806Z",
           "proseHash": "56b51dc5e58071626c7d2658ccc5f1e252cbc9cae02a03d228fbb82ca57d5562",
           "schemaHash": "5cd3b6cf0498f06800396ead1a16ec3b8447b099ac334c6988bd97238b30f667"
         },
@@ -191,7 +177,7 @@
           "annotations": null,
           "approved": true,
           "description": "Samples from an LLM using MCP's sampling feature",
-          "firstSeen": "2026-10-18T15:01:03.324Z",
+          "firstSeen": "2026-10-26T18:21:58.806Z",
           "hash": "505f491c4b696b70a9c49d267e71e04ee000f7090a03971264f3eeb739949463",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -210,8 +196,7 @@
             "required": ["prompt"],
             "type": "object"
           },
-          "outputHash": null,
-          "pinnedAt": "2026-10-18T15:01:03.324Z",
+          "pinnedAt": "2026-10-26T18:21:58.806Z",
           "proseHash": "585d6f5a9315c93685cfc6daa069743de7a0b05e1a055e593cb413d2dd466363",
           "schemaHash": "642e5ca9d3fdcf9148c46a86edd76bc168e40dab730f1af73b7db233640c66cb"
         }
