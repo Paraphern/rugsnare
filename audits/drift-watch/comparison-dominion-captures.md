@@ -105,3 +105,30 @@ Two cells of the MTL/1 column above were too narrow, corrected here verbatim in 
 The other three rows (per-tool field set, sort unit, float refusal) match `PROFILE.md` as
 published. The convergence note above survives the correction, stronger: both implementations
 keep "extra" members out of the interop digest AND surface them as their own change record.
+
+## Addendum 2026-10-27: interop test vectors (Gooo contribution)
+
+kimjooyoon (Gooo saved-definition comparison experiment) contributed four synthetic input pairs
+with exact preimages, expected hashes and a pinned reproduction command under their named
+`gooo/mcp-tool-definition-json/v1` profile
+([gist](https://gist.github.com/kimjooyoon/0ba21ab78065f9cffd1cf1af422c8fec), inputs BSD-3-Clause,
+reusable independently of Gooo; see [issue #6](https://github.com/Paraphern/rugsnare/issues/6)).
+The value of the set: it isolates the **property-key ordering** axis while keeping tool names
+ASCII, so the tool-array sort deviation documented above stays out of the picture entirely.
+
+Our computed result on the nested-Unicode fixture (tool name `lookup`, property keys U+E000 and
+U+10000 inside `inputSchema.properties`):
+
+- our property-key order: **U+10000 first, then U+E000** (our key sort is UTF-16 code-unit, i.e.
+  RFC 8785 §3.2.3 - surrogate pairs sort below U+E000 in code-unit order);
+- `surfaceHash` over the single-tool set (empty description):
+  `7776cc742e8165bbe0f7e6ed610f76dfcf6ea347f4d0bea21afd9ad4a555ca03`;
+- this agrees with the JCS-expected ordering and **diverges from the Gooo Go profile** (their
+  pinned `encoding/json` comparison puts U+E000 first) - exactly the class of named, deliberate
+  divergence this document exists to record.
+
+Sort-order now reads as two separate facts: **tool-array order** (PIN-SPEC: code-point/UTF-8
+bytes - a deliberate, documented deviation; MTL/1: UTF-16 units; Dominion: unit unstated) and
+**property-key order** (PIN-SPEC: JCS/UTF-16 units, as verified by this fixture; any profile
+comparing raw JSON key order must state its unit, or digests will disagree on non-BMP keys while
+agreeing everywhere else).
