@@ -8,7 +8,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import {
   stableStringify, buildIdentity, compareIdentity, policyVersionFor,
-  savePins, loadPins, pinTool, ensureServer,
+  savePins, loadPins, pinTool, ensureServer, summarizeVerdicts,
 } from '../src/pins.js';
 
 /**
@@ -247,6 +247,28 @@ test('v1.1: re-scan of server with prompts/resources = byte-identical pins.json'
 });
 
 // ---- §3.2 surfaceHash (interop, Dominion set; issue #6) ----------------------
+
+test('summarizeVerdicts: fixed-order class counts, unknown classes never hidden (apify#1514 affordance)', () => {
+  const report = [
+    { server: 's', verdicts: [
+      { tool: 'a', status: 'UNCHANGED' },
+      { tool: 'b', status: 'DRIFT', driftType: 'COSMETIC' },
+      { tool: 'c', status: 'DRIFT', driftType: 'COSMETIC' },
+      { tool: 'd', status: 'DRIFT', driftType: 'NOTATION' },
+      { tool: 'e', status: 'NEW' },
+      { tool: 'f', status: 'REMOVED' },
+      { item: 'p1', status: 'DRIFT', kind: 'prompt' },
+      { item: 'r1', status: 'DRIFT', kind: 'resource' },
+      { tool: 'g', status: 'DRIFT', driftType: 'FUTURE_CLASS' }, // not yet invented
+    ] },
+  ];
+  const s = summarizeVerdicts(report);
+  assert.equal(s, '0 breaking / 0 loosened / 0 expanded / 0 mirrored / 1 notation / 2 cosmetic / 0 annotation / 0 identity / 0 policy / 1 prompt / 1 resource / 1 new / 1 gone / 1 future_class');
+  // the whole point: a prose-heavy window states 0 breaking out loud
+  assert.match(s, /^0 breaking /);
+  // clean store: all zeros, still emitted (absence is stated, not implied)
+  assert.equal(summarizeVerdicts([{ server: 's', verdicts: [{ tool: 'a', status: 'UNCHANGED' }] }]).startsWith('0 breaking / 0 loosened'), true);
+});
 
 test('v3.2: surfaceHash golden fixture - byte-exact interop value', async () => {
   const { surfaceHash } = await import('../src/hash.js');

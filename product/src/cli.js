@@ -6,7 +6,7 @@ import { toolHash, surfaceHash, short } from './hash.js';
 import { discoverConfigs, discoverZCodePlugins, serverCommand } from './discovery.js';
 import { fetchTools } from './rpc.js';
 import {
-  loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay, detectShadows,
+  loadPins, savePins, ensureServer, pinTool, compareTools, commandDisplay, detectShadows, summarizeVerdicts,
 } from './pins.js';
 import { loadConfig, saveConfig } from './alerts.js';
 import { logEvent, eventsPath } from './events.js';
@@ -569,6 +569,7 @@ async function cmdDiff(flags) {
     }
     // §3.1: POLICY STOPS here - exit 1, no tool classes follow
     console.error(`rugsnare diff: DRIFT DETECTED (${driftCount} finding(s))`);
+    console.error(`rugsnare diff summary: ${summarizeVerdicts(report)}`);
     const { getVersion } = await import('./version.js');
     console.error(`rugsnare ${getVersion()}`);
     process.exit(1);
@@ -690,6 +691,11 @@ async function cmdDiff(flags) {
   }
   const verdict = driftCount === 0 && assertionFails === 0 ? 'clean' : `DRIFT DETECTED (${driftCount} finding(s)${assertionFails > 0 ? `, ${assertionFails} assertion failure(s)` : ''})`;
   console.error(`rugsnare diff: ${verdict}${infraErrorCount > 0 ? ` (+${infraErrorCount} infra error(s))` : ''}`);
+  // affordance (apify#1514): fixed-order class counts, stderr in every mode
+  // (incl. --json/--sarif: diagnostics never corrupt the data stream) - the
+  // citable "what did the grader actually say" line for campaign rule
+  // "no label without a grader"
+  console.error(`rugsnare diff summary: ${summarizeVerdicts(report)}`);
   // version stamp: when someone pastes output into an issue, we know exactly
   // which rugsnare produced it (prevents "stale binary" debugging sessions)
   const { getVersion } = await import('./version.js');

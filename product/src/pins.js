@@ -66,6 +66,33 @@ export function policyVersionFor() {
   return `rugsnare-${getVersion()}`;
 }
 
+/**
+ * Campaign affordance (the apify#1514 lesson): a fixed-order, one-line count
+ * of every drift class. A prose-only window was once retold in public as
+ * "silent breaking change" by a human skimming per-line output - the grader
+ * was right on both ends, the retelling was not. This line makes the
+ * headline numbers impossible to misread: "0 breaking" is stated, not
+ * implied by absence. Shared by the CLI (stderr, all modes) and the
+ * PR-comment renderer (first content line).
+ */
+export function summarizeVerdicts(report) {
+  const order = ['breaking', 'loosened', 'expanded', 'mirrored', 'notation', 'cosmetic', 'annotation', 'identity', 'policy', 'prompt', 'resource', 'new', 'gone'];
+  const c = Object.fromEntries(order.map((k) => [k, 0]));
+  for (const r of report ?? []) {
+    for (const v of r.verdicts ?? []) {
+      if (v.status === 'NEW') { c.new++; continue; }
+      if (v.status === 'REMOVED') { c.gone++; continue; }
+      if (v.status !== 'DRIFT') continue;
+      if (v.kind === 'prompt') { c.prompt++; continue; }
+      if (v.kind === 'resource') { c.resource++; continue; }
+      const k = String(v.driftType ?? 'drift').toLowerCase();
+      c[k] = (c[k] ?? 0) + 1;
+      if (!order.includes(k)) order.push(k); // unknown future class: counted, never hidden
+    }
+  }
+  return order.map((k) => `${c[k]} ${k}`).join(' / ');
+}
+
 export function savePins(pins, cwd = process.cwd()) {
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
   pins.policyVersion = policyVersionFor();

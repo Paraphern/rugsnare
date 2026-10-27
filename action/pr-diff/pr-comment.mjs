@@ -29,7 +29,7 @@ if (!srcDir || !configFile) {
 }
 
 const mod = (name) => import(pathToFileURL(path.join(srcDir, name)).href);
-const { loadPins, compareTools, policyVersionFor } = await mod('pins.js');
+const { loadPins, compareTools, policyVersionFor, summarizeVerdicts } = await mod('pins.js');
 const { fetchTools } = await mod('rpc.js');
 const { toolHash } = await mod('hash.js');
 const { comparePinned, promptHash, resourceHash } = await mod('prompts.js');
@@ -48,6 +48,9 @@ if ((pins.policyVersion ?? null) !== currentPolicy) {
   const body = [
     '<!-- rugsnare-pr-diff -->',
     '## 🪤 RugSnare - MCP tool contract diff',
+    '',
+    // affordance (apify#1514): the class counts headline, before anything else
+    '**summary:** 0 breaking / 0 loosened / 0 expanded / 0 mirrored / 0 notation / 0 cosmetic / 0 annotation / 0 identity / 1 policy / 0 prompt / 0 resource / 0 new / 0 gone',
     '',
     '### ⛔ POLICY - pins graded under a different verifier policy',
     '',
@@ -126,7 +129,10 @@ function advisoryWarning(description) {
 }
 
 let findings = 0;
-const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare - MCP tool contract diff', ''];
+// affordance (apify#1514): the grader's class counts are the FIRST content
+// line - before any per-tool section, so a prose-only window can never be
+// retold as "breaking" by someone skimming the comment
+const lines = ['<!-- rugsnare-pr-diff -->', '## 🪤 RugSnare - MCP tool contract diff', '', `**summary:** ${summarizeVerdicts(report)}`, ''];
 for (const r of report) {
   const { server, verdicts } = r;
   const bad = verdicts.filter((v) => v.status !== 'UNCHANGED');
