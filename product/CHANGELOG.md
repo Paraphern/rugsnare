@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Failed reads are never treated as absent pin stores (PR #15 class)
+
+kimjooyoon found it in the Go port (`native/pinsfile.go`, merged as #15):
+both read paths treated ANY error as "no store yet", so a transient
+IO/permission failure let the next save overwrite an intact pin document -
+silent loss of every pin. The JS twin had the same shape.
+
+- `loadPins`: ENOENT stays the legitimate empty-store case; every other
+  failure (permission, IO, corrupt JSON, a directory on the path) throws
+  with an actionable message - "restore it from git or move it aside
+  deliberately". Corrupt stores are no longer silently rebuilt: rebuilding
+  also destroyed the pins.sig tamper evidence.
+- `savePins`: only a genuinely missing file may be created; an unreadable
+  existing path aborts the write ("refusing to rewrite unreadable").
+- CI: a `go` job (vet + `-race`) now runs the native/ tests - #15 arrived
+  with 83 lines of them and CI ran nothing.
+- Tests: the three #15 regression cases ported to JS (unreadable path,
+  corrupt JSON hint, missing-store bootstrap intact). 395 -> 398.
+
 ## [1.5.0] - 2026-10-18
 
 ### P1: scan updates outputHash (preverification fix)
