@@ -44,8 +44,13 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
         run: |
-          VERSION="${{ github.event.inputs.version || github.ref_name }}-native"
-          go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" \
+          # explicit input wins as-is; from a tag (v1.5.0) derive 1.5.0-native
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -z "$VERSION" ] && [ "${GITHUB_REF#refs/tags/}" != "$GITHUB_REF" ]; then
+            VERSION="${GITHUB_REF#refs/tags/v}-native"
+          fi
+          echo "building native version: ${VERSION:-dev}"
+          go build -trimpath -ldflags "-s -w -X main.version=${VERSION:-dev}" \
             -o "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}" .
           sha256sum "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}" > "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}.sha256"
       - uses: actions/upload-artifact@v4
