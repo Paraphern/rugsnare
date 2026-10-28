@@ -326,7 +326,7 @@ func cmdCheck(cwd, home string, noBrowser, noUpdateCheck, quiet bool) {
 		if !quiet {
 			fmt.Println("First run: creating your baseline...")
 		}
-		cmdScan(cwd, home, quiet)
+		cmdScan(cwd, home, quiet, false) // cold start never prunes: nothing to prune yet
 		pins, err = LoadSkillPins(cwd)
 		if err != nil || len(pins) == 0 {
 			os.Exit(2)
