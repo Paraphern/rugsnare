@@ -28,7 +28,10 @@ func pinsPath(cwd string) string { return filepath.Join(rugsnareDir(cwd), "pins.
 func LoadSkillPins(cwd string) (SkillPinMap, error) {
 	data, err := os.ReadFile(pinsPath(cwd))
 	if err != nil {
-		return SkillPinMap{}, nil // no store yet - fine
+		if os.IsNotExist(err) {
+			return SkillPinMap{}, nil // no store yet - fine
+		}
+		return nil, fmt.Errorf("reading pins.json: %w", err)
 	}
 	var doc pinsDoc
 	if err := json.Unmarshal(data, &doc); err != nil {
@@ -63,6 +66,8 @@ func SaveSkillPins(cwd string, skills SkillPinMap) error {
 		if err := json.Unmarshal(data, &doc); err != nil {
 			return fmt.Errorf("refusing to rewrite unparsable pins.json: %w", err)
 		}
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("refusing to rewrite unreadable pins.json: %w", err)
 	}
 	if _, ok := doc["version"]; !ok {
 		doc["version"] = json.RawMessage("1")
