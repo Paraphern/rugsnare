@@ -340,3 +340,49 @@ test('v3.2: scan writes surfaceHash at server level; re-scan is byte-stable', as
     cleanup(dir);
   }
 });
+
+// ---- PR #15 class in JS: a failed read is NOT an absent store -----------------
+// kimjooyoon found it in the Go port (native/pinsfile.go): both read paths
+// treated ANY error as "no store yet", so a transient IO/permission failure
+// let the next save overwrite an intact pin document. The JS twin had the
+// same shape in loadPins/savePins. Ports the regression cases; the unreadable
+// fixture uses a directory-on-path (EISDIR) because Windows ACLs make chmod-0
+// unreliable there (the Go test skips in the same situation).
+test('PR15 class: unreadable/corrupt store fails loudly, is never treated as absent', () => {
+  const dir = tmp();
+  try {
+    // directory where pins.json should be: read fails with EISDIR everywhere
+    fs.mkdirSync(path.join(dir, '.rugsnare', 'pins.json'), { recursive: true });
+    assert.throws(() => loadPins(dir), /unreadable or corrupt/, 'loadPins must throw, not return an empty store');
+    assert.throws(() => savePins({ version: 1, servers: {} }, dir), /refusing to rewrite/, 'savePins must refuse to write over an unreadable path');
+    // and nothing was written inside the "file"
+    assert.ok(fs.statSync(path.join(dir, '.rugsnare', 'pins.json')).isDirectory(), 'the directory was not replaced');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('PR15 class: corrupt JSON fails with a restore-from-git hint, not a silent rebuild', () => {
+  const dir = tmp();
+  try {
+    fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.json'), '{"version":1,"servers":{ TRUNCATED');
+    assert.throws(() => loadPins(dir), /unreadable or corrupt.*restore it from git/s, 'corrupt store must throw with the actionable hint');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('PR15 class: a genuinely missing store still bootstraps (no regression)', () => {
+  const dir = tmp();
+  try {
+    const pins = loadPins(dir);
+    assert.deepEqual(pins, { version: 1, servers: {} }, 'ENOENT stays the empty-store case');
+    pins.servers.x = { cmd: null, pinnedAt: 'now', tools: {} };
+    savePins(pins, dir);
+    const back = loadPins(dir);
+    assert.ok(back.servers.x, 'created store round-trips');
+  } finally {
+    cleanup(dir);
+  }
+});

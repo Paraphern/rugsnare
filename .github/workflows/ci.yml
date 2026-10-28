@@ -23,6 +23,21 @@ jobs:
         working-directory: product
         run: npm test
 
+  # The Go port (native/) has tests too - PR #15 arrived with 83 lines of
+  # them and CI ran nothing. Never again: vet + test on every push/PR.
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: native/go.mod
+      - name: go vet + test (native launcher)
+        working-directory: native
+        run: |
+          go vet ./...
+          go test -race ./...
+
   dogfood:
     runs-on: ubuntu-latest
     steps:

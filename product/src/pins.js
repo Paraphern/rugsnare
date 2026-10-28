@@ -27,8 +27,14 @@ export function pinsPath(cwd = process.cwd()) {
 export function loadPins(cwd = process.cwd()) {
   try {
     return readJsonFile(pinsPath(cwd));
-  } catch {
-    return { version: 1, servers: {} };
+  } catch (e) {
+    if (e?.code === 'ENOENT') return { version: 1, servers: {} }; // no store yet - fine
+    // PR #15 class (found in the Go port, kimjooyoon): a failed read is NOT
+    // an absent store. Treating permission/IO/parse failures as "no store"
+    // let the next save overwrite an intact pin document - silent loss of
+    // every pin from a transient error. Fail loudly instead; pins.json is
+    // meant to be committed, so "restore from git" is always actionable.
+    throw new Error(`pins.json unreadable or corrupt (${e.message}) - restore it from git or move it aside deliberately; treating this as absence would overwrite the store`);
   }
 }
 
@@ -102,7 +108,12 @@ export function savePins(pins, cwd = process.cwd()) {
   // file (mtime churn would break third-party JCS-hash watchers too)
   try {
     if (fs.readFileSync(file, 'utf8') === serialized) return;
-  } catch { /* first write */ }
+  } catch (e) {
+    // only a genuinely missing file may be created here; an unreadable one
+    // (permission, transient IO, a directory on the path - PR #15 class)
+    // must abort the write, never be silently replaced
+    if (e?.code !== 'ENOENT') throw new Error(`refusing to rewrite unreadable pins.json (${e.message})`);
+  }
   fs.writeFileSync(file, serialized);
 }
 
