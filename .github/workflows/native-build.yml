@@ -1,0 +1,72 @@
+name: native-build
+
+# Cross-compiles the native skills launcher for all 4 supported platforms
+# (per native/README.md build recipe). Replaces the local-toolchain build:
+# PR #15's data-loss fix and the R37 -prune port must reach the shipped
+# binaries even though no local machine here has Go installed.
+#
+# Triggers: manual (workflow_dispatch, input: version string baked into
+# the build) and tags. Artifacts are attached to a GitHub release when
+# running on a tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'native version string (e.g. 1.5.0-native.1)'
+        required: true
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { goos: windows, goarch: amd64, ext: .exe }
+          - { goos: darwin,  goarch: arm64, ext: '' }
+          - { goos: darwin,  goarch: amd64, ext: '' }
+          - { goos: linux,   goarch: amd64, ext: '' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: native/go.mod
+      - name: Build (trimpath, stripped, version stamp)
+        working-directory: native
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          VERSION="${{ github.event.inputs.version || github.ref_name }}-native"
+          go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" \
+            -o "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}" .
+          sha256sum "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}" > "rugsnare-skills-${GOOS}-${GOARCH}${{ matrix.ext }}.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rugsnare-skills-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: |
+            native/rugsnare-skills-*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Attach binaries to the tag release
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          gh release upload "$TAG" dist/* --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}

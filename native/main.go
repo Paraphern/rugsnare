@@ -24,13 +24,16 @@ import (
 	"path/filepath"
 )
 
-const version = "1.3.0-native.1"
+// var (not const): CI overrides it via -ldflags "-X main.version=..." so
+// shipped binaries never disagree with their release tag
+var version = "1.5.0-native.1"
 
 func usage() {
 	fmt.Fprint(os.Stderr, `RugSnare skills security (native launcher) `+version+`
 
 Usage:
   rugsnare-skills [scan|diff|report|check] [-cwd PATH] [-home PATH] [-no-browser] [-quiet] [-no-update-check]
+  rugsnare-skills scan -prune    drop pinned entries whose file no longer exists
   rugsnare-skills install-schedule | remove-schedule
 
   scan     discover and pin all skill files (creates the baseline)
@@ -63,6 +66,7 @@ func main() {
 	noBrowser := false
 	noUpdateCheck := false
 	quiet := false
+	prune := false
 
 	i := 0
 	for i < len(args) {
@@ -88,6 +92,10 @@ func main() {
 			noUpdateCheck = true
 		case "-quiet":
 			quiet = true
+		case "-prune":
+			// R37: drop pinned entries whose file no longer exists, instead
+			// of letting them ghost as REMOVED on every diff
+			prune = true
 		case "-h", "-help", "--help", "help":
 			usage()
 			return
@@ -109,7 +117,7 @@ func main() {
 
 	switch cmd {
 	case "scan":
-		cmdScan(cwd, home, quiet)
+		cmdScan(cwd, home, quiet, prune)
 	case "diff":
 		os.Exit(cmdDiff(cwd, home))
 	case "report":
@@ -140,7 +148,7 @@ func absPaths(cwd, home *string) error {
 	return nil
 }
 
-func cmdScan(cwd, home string, quiet bool) {
+func cmdScan(cwd, home string, quiet, prune bool) {
 	pins, err := LoadSkillPins(cwd)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
@@ -149,14 +157,32 @@ func cmdScan(cwd, home string, quiet bool) {
 	if pins == nil {
 		pins = SkillPinMap{}
 	}
-	n := PinAllSkills(pins, cwd, home)
+	stats := PinAllSkills(pins, cwd, home, prune)
 	if err := SaveSkillPins(cwd, pins); err != nil {
 		fmt.Fprintln(os.Stderr, "error saving pins:", err)
 		os.Exit(2)
 	}
 	if !quiet {
-		fmt.Printf("Pinned %d skill file(s). Baseline: %s\n", n, pinsPath(cwd))
+		fmt.Printf("Pinned %d skill file(s). Baseline: %s\n", stats.Pinned, pinsPath(cwd))
 		fmt.Println("Run again any time to check for changes (diff), or just double-click this program (check).")
+		// R37: dead souls are reported either way - silently keeping them
+		// would ghost as REMOVED on every future diff
+		if prune && stats.Pruned > 0 {
+			fmt.Printf("\nPruned %d dead pinned entr(y/ies) (file no longer exists):\n", stats.Pruned)
+			for _, k := range stats.DeadSouls {
+				fmt.Printf("  [x] %s\n", k)
+			}
+		} else if !prune && len(stats.DeadSouls) > 0 {
+			fmt.Printf("\n%d pinned entr(y/ies) point to files that no longer exist (they ghost as REMOVED on every diff):\n", len(stats.DeadSouls))
+			for i, k := range stats.DeadSouls {
+				if i >= 10 {
+					fmt.Printf("  ... +%d more\n", len(stats.DeadSouls)-10)
+					break
+				}
+				fmt.Printf("  [!] %s\n", k)
+			}
+			fmt.Println("Re-run with -prune to drop them from the baseline on purpose.")
+		}
 	}
 
 	// cold-start audit: pinning blesses whatever is on disk - also tell the

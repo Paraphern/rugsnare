@@ -14,6 +14,7 @@ import (
 	"encoding/hex"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -264,11 +265,22 @@ func SkillKey(s Skill) string {
 // PinAllSkills pins every discovered skill, preserving firstSeen/approved
 // from an existing pin for the same key (same as pinAllSkills in JS).
 // Returns the number of pinned files.
-func PinAllSkills(pins SkillPinMap, cwd, home string) int {
+// PinStats mirrors the JS pinAllSkills return: what was pinned, which pinned
+// entries no longer exist on disk (dead souls), how many were dropped when
+// prune is set (R37).
+type PinStats struct {
+	Pinned    int
+	DeadSouls []string
+	Pruned    int
+}
+
+func PinAllSkills(pins SkillPinMap, cwd, home string, prune bool) PinStats {
 	skills := DiscoverSkills(cwd, home)
-	count := 0
+	discovered := make(map[string]bool, len(skills))
+	var stats PinStats
 	for _, skill := range skills {
 		key := SkillKey(skill)
+		discovered[key] = true
 		entry, err := PinSkill(skill)
 		if err != nil {
 			continue // unreadable file: skip, same spirit as JS walk guards
@@ -278,14 +290,29 @@ func PinAllSkills(pins SkillPinMap, cwd, home string) int {
 			// skills-branch twin of the JS pinTool skip-guard; without this,
 			// pinnedAt churns on every re-scan and pins.json bytes change)
 			if existing.Hash == entry.Hash {
-				count++
+				stats.Pinned++
 				continue
 			}
 			entry.FirstSeen = existing.FirstSeen // preserve across changes
 			entry.Approved = existing.Approved   // preserve approval state
 		}
 		pins[key] = *entry
-		count++
+		stats.Pinned++
 	}
-	return count
+	// R37: prune dead souls - pinned entries whose file no longer exists.
+	// Without prune they linger forever and ghost as REMOVED on every diff
+	// (union semantics). With prune they are dropped from the pin store.
+	for key := range pins {
+		if !discovered[key] {
+			stats.DeadSouls = append(stats.DeadSouls, key)
+			if prune {
+				delete(pins, key)
+			}
+		}
+	}
+	sort.Strings(stats.DeadSouls) // deterministic output across runs
+	if prune {
+		stats.Pruned = len(stats.DeadSouls)
+	}
+	return stats
 }

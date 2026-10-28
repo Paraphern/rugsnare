@@ -168,7 +168,7 @@ func TestPinAllPreservesFirstSeenAndApproved(t *testing.T) {
 	write(t, filepath.Join(home, ".claude", "skills", "review", "SKILL.md"), benignSkill)
 
 	pins := SkillPinMap{}
-	PinAllSkills(pins, cwd, home)
+	PinAllSkills(pins, cwd, home, false)
 	// simulate an approved baseline
 	for k := range pins {
 		v := pins[k]
@@ -177,7 +177,7 @@ func TestPinAllPreservesFirstSeenAndApproved(t *testing.T) {
 		pins[k] = v
 	}
 	// re-pin: firstSeen/approved must survive
-	PinAllSkills(pins, cwd, home)
+	PinAllSkills(pins, cwd, home, false)
 	for k, v := range pins {
 		if !v.Approved || v.FirstSeen != "2020-01-01T00:00:00.000Z" {
 			t.Fatalf("key %s lost approved/firstSeen: %+v", k, v)
@@ -201,7 +201,7 @@ func TestDangerousDriftOnPoisonedSkill(t *testing.T) {
 	write(t, p, benignSkill)
 
 	pins := SkillPinMap{}
-	PinAllSkills(pins, cwd, home)
+	PinAllSkills(pins, cwd, home, false)
 
 	write(t, p, poisonSkill(benignSkill))
 	results := DiffSkills(pins, cwd, home)
@@ -227,7 +227,7 @@ func TestTypoFixIsReview(t *testing.T) {
 	write(t, p, benignSkill)
 
 	pins := SkillPinMap{}
-	PinAllSkills(pins, cwd, home)
+	PinAllSkills(pins, cwd, home, false)
 
 	write(t, p, strings.Replace(benignSkill, "readability", "readbilty", 1))
 	results := DiffSkills(pins, cwd, home)
@@ -243,7 +243,7 @@ func TestNewAndRemoved(t *testing.T) {
 	write(t, a, benignSkill)
 
 	pins := SkillPinMap{}
-	PinAllSkills(pins, cwd, home)
+	PinAllSkills(pins, cwd, home, false)
 
 	// remove a, add b
 	os.Remove(a)
