@@ -2,7 +2,7 @@
   "server-filesystem": {
     "server": "server-filesystem",
     "package": "@modelcontextprotocol/server-filesystem",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "tools": [
       {
         "name": "read_file",
@@ -78,8 +78,8 @@
       },
       {
         "name": "get_file_info",
-        "hash": "34ee10015e8896c7c4032f4e3359ad2b7a3d605355b074708fd1c154642a1fc0",
-        "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+        "hash": "3c5609ae1a113fa312da476d8cb5473f4ba5c6fa77291c81101780b35df23835",
+        "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, type and hard-link count. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
         "advisory": false
       },
       {
@@ -95,7 +95,7 @@
   "server-memory": {
     "server": "server-memory",
     "package": "@modelcontextprotocol/server-memory",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "tools": [
       {
         "name": "create_entities",
@@ -163,7 +163,7 @@
   "server-everything": {
     "server": "server-everything",
     "package": "@modelcontextprotocol/server-everything",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "tools": [
       {
         "name": "echo",
@@ -179,8 +179,8 @@
       },
       {
         "name": "get-env",
-        "hash": "4a12c3402c7e458772189344f0f1c372e401fb48e6d7e443a84f854fa15b4d45",
-        "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+        "hash": "664968c5a5d2403cf9d66f3667515f79d3316824bad66fc80c85725bc044a12a",
+        "description": "Returns all environment variables, helpful for debugging MCP server configuration. Values of credential-like names (a KEY, TOKEN, SECRET, PASSWORD, PASSWD, CREDENTIAL, AUTH or COOKIE name segment) are masked as \"<redacted>\" unless GET_ENV_INCLUDE_SECRETS is set to 1 or true in the server's environment.",
         "advisory": false
       },
       {

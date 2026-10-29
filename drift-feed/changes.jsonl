@@ -81,3 +81,8 @@
 {"ts":"2026-10-19T11:20:06.769Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"read_wiki_structure","oldHash":"8b2c61f30b7ccf6f","newHash":"056c8b05f637c216"}
 {"ts":"2026-10-25T10:13:10.611Z","server":"server-filesystem","type":"VERSION","detail":"2.0.0 → 2.0.1"}
 {"ts":"2026-10-25T10:13:15.315Z","server":"server-everything","type":"VERSION","detail":"2.0.0 → 2.0.1"}
+{"ts":"2026-10-29T11:50:06.212Z","server":"server-filesystem","type":"VERSION","detail":"2.0.1 → 2.1.0"}
+{"ts":"2026-10-29T11:50:06.212Z","server":"server-filesystem","type":"DRIFT","tool":"get_file_info","oldHash":"34ee10015e8896c7","newHash":"3c5609ae1a113fa3"}
+{"ts":"2026-10-29T11:50:08.038Z","server":"server-memory","type":"VERSION","detail":"2.0.0 → 2.0.1"}
+{"ts":"2026-10-29T11:50:11.951Z","server":"server-everything","type":"VERSION","detail":"2.0.1 → 2.1.0"}
+{"ts":"2026-10-29T11:50:11.951Z","server":"server-everything","type":"DRIFT","tool":"get-env","oldHash":"4a12c3402c7e4587","newHash":"664968c5a5d2403c"}
