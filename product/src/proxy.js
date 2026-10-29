@@ -1,6 +1,6 @@
 import readline from 'node:readline';
 import crypto from 'node:crypto';
-import { toolHash, schemaHash as computeSchemaHash, short, stable } from './hash.js';
+import {toolHash, schemaHash as computeSchemaHash, short, canonicalJson} from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows, annotationsEqual } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
@@ -123,7 +123,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         // loop/stuck signal: same tool + same arguments, repeatedly, nothing else between
         if (LOOP_THRESHOLD > 0) {
           const fingerprint = crypto.createHash('sha256')
-            .update(msg.params.name + '|' + JSON.stringify(stable(msg.params.arguments ?? {})))
+            .update(msg.params.name + '|' + canonicalJson(msg.params.arguments ?? {}))
             .digest('hex').slice(0, 16);
           if (fingerprint === loopRun.fingerprint) {
             loopRun.count += 1;

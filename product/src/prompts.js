@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { canonicalJson } from './hash.js';
 
 /**
  * Pin prompts and resources in addition to tools.
@@ -13,35 +14,27 @@ import crypto from 'node:crypto';
  * (indirect prompt injection). All three surfaces deserve integrity pinning.
  */
 
-function stable(value) {
-  if (Array.isArray(value)) return value.map(stable);
-  if (value && typeof value === 'object') {
-    const out = {};
-    for (const key of Object.keys(value).sort()) out[key] = stable(value[key]);
-    return out;
-  }
-  return value;
-}
+// (local stable() removed: it materialized an intermediate object, which
+// re-orders integer-like keys numerically - the kimjooyoon/#6 bug class.
+// All digests go through hash.js canonicalJson, the direct JCS emitter.)
 
 /** Hash a prompt template definition (name, description, arguments, template). */
 export function promptHash(prompt) {
-  const canonical = stable({
+  return crypto.createHash('sha256').update(canonicalJson({
     name: prompt?.name ?? '',
     description: prompt?.description ?? '',
     arguments: prompt?.arguments ?? [],
-  });
-  return crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+  })).digest('hex');
 }
 
 /** Hash a resource definition (uri, name, description, mimeType). */
 export function resourceHash(resource) {
-  const canonical = stable({
+  return crypto.createHash('sha256').update(canonicalJson({
     uri: resource?.uri ?? '',
     name: resource?.name ?? '',
     description: resource?.description ?? '',
     mimeType: resource?.mimeType ?? '',
-  });
-  return crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+  })).digest('hex');
 }
 
 /**

@@ -2,6 +2,36 @@
 
 ## [Unreleased]
 
+### JCS-true canonicalization for integer-like property names (kimjooyoon, issue #6)
+
+`stable()` sorted keys correctly but materialized the result into a plain
+JS object - and the ECMAScript spec enumerates integer-like string keys
+(`"2"`, `"10"`) in ascending NUMERIC order regardless of insertion, silently
+undoing the sort. JCS (RFC 8785 §3.2.3) demands lexicographic: `"10"` < `"2"`.
+Every digest of a schema containing such property names was computed in the
+wrong order; the surfaceHash regression vector flipped from `a40da845...`
+to the JCS reference `79552f1d...`.
+
+- New `canonicalJson()` in hash.js: emits keys straight from the sorted
+  list, no intermediate object (the only correct construction for this key
+  class). All digest sites migrated: toolHash, schemaHash, outputHash,
+  surfaceHash, promptHash, resourceHash, and the live proxies' loop-
+  detector fingerprints. `stableStringify` (pins.json) already emitted
+  directly and was never affected.
+- prompts.js carried a second copy of the buggy local `stable()` - removed;
+  all digests go through the one canonicalizer.
+- Surgical compatibility: digests change ONLY for schemas with integer-like
+  names. A sweep of all 101 pin files in the repo found zero such keys -
+  the entire corpus survives un-repinned, byte-identical (verified by
+  re-scanning our own stores: sha256 unchanged, signatures intact).
+  Ships as a versioned correction: the release's policyVersion stamp triggers
+  POLICY re-pin flow for any external store that IS affected.
+- Regression pair and the JCS reference digest are kimjooyoon's fixtures
+  (third contribution, with #15 and the interop vectors). 398 -> 401 tests.
+- PIN-SPEC §3 rule 1 now spells out the pitfall normatively.
+- Note: the Go port was never affected - `encoding/json` sorts map keys
+  as strings, which is already lexicographic. JS was the outlier.
+
 ### Failed reads are never treated as absent pin stores (PR #15 class)
 
 kimjooyoon found it in the Go port (`native/pinsfile.go`, merged as #15):

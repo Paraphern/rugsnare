@@ -171,7 +171,12 @@ Three hashes per tool, all SHA-256 over the canonical serialization:
 **Canonicalization rules** (identical bytes → identical hash, across
 implementations):
 
-1. Object keys are sorted lexicographically (recursive).
+1. Object keys are sorted lexicographically (recursive). "Lexicographic"
+   means string comparison: `"10"` sorts BEFORE `"2"`. Implementations that
+   materialize an intermediate JavaScript object to establish order are wrong
+   for integer-like keys - the ECMAScript spec enumerates those numerically
+   regardless of insertion (found live by kimjooyoon, issue #6, 2026-10-27):
+   canonical serializers must emit keys directly from the sorted list.
 2. Array order is **significant** and preserved (an enum's order is part of
    its meaning).
 3. Whitespace between tokens: none (compact serialization, no indentation).

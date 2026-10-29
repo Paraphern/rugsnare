@@ -270,6 +270,49 @@ test('summarizeVerdicts: fixed-order class counts, unknown classes never hidden 
   assert.equal(summarizeVerdicts([{ server: 's', verdicts: [{ tool: 'a', status: 'UNCHANGED' }] }]).startsWith('0 breaking / 0 loosened'), true);
 });
 
+// ---- JCS §3.2.3 integer-like keys (kimjooyoon, issue #6, 2026-10-27) ---------
+// stable() materialized an intermediate JS object, and the spec enumerates
+// integer-like string keys ("2","10") in NUMERIC order regardless of
+// insertion - silently undoing the lexicographic sort. JCS demands "10" < "2";
+// every digest of such a schema was computed in the wrong order. Fix:
+// canonicalJson emits keys straight from the sorted list. Regression vector
+// and the JCS reference digest are kimjooyoon's fixtures (gist 0ba21ab7).
+
+test('JCS: integer-like property names hash in LEXICOGRAPHIC order (kimjooyoon vector)', async () => {
+  const { canonicalJson, surfaceHash } = await import('../src/hash.js');
+  // direct emitter: "10" sorts before "2"
+  assert.equal(canonicalJson({ '10': { type: 'string' }, '2': { type: 'integer' } }), '{"10":{"type":"string"},"2":{"type":"integer"}}');
+  assert.equal(canonicalJson({ ab: 1, aa: 2 }), '{"aa":2,"ab":1}', 'alphabetic control');
+  // the surfaceHash regression vector: pre-fix digest a40da845... (numeric
+  // order), JCS reference 79552f1d... (lexicographic) - must be the latter
+  const tool = { name: 'lookup', description: '', inputSchema: { type: 'object',
+    properties: { '10': { type: 'string' }, '2': { type: 'integer' } } } };
+  assert.equal(surfaceHash([tool]), '79552f1dac6cae1d9a3c2bc22c5c3cebfc9d06370a4afaa56d0a37bcdb6cfe3a');
+});
+
+test('JCS: integer-free digests are byte-identical to the pre-fix implementation', async () => {
+  const { toolHash, schemaHash, outputHash, stable } = await import('../src/hash.js');
+  const crypto = await import('node:crypto');
+  const old = (v) => crypto.createHash('sha256').update(JSON.stringify(stable(v))).digest('hex');
+  const tool = { name: 'echo', description: 'Echo a message.',
+    inputSchema: { type: 'object', properties: { msg: { type: 'string' } }, required: ['msg'] },
+    outputSchema: { type: 'object', properties: { reply: { type: 'string' } } } };
+  // no integer-like keys anywhere -> old and new MUST agree, byte for byte
+  // (this is why the whole existing corpus survives the fix un-repinned:
+  // the sweep of all 101 pin files found zero such keys)
+  assert.equal(toolHash(tool), old({ name: tool.name, description: tool.description, inputSchema: tool.inputSchema, icons: null }));
+  assert.equal(schemaHash(tool), old({ name: tool.name, inputSchema: tool.inputSchema }));
+  assert.equal(outputHash(tool), old(tool.outputSchema));
+});
+
+test('JCS: promptHash routes through the same canonicalizer (integer-like argument names)', async () => {
+  const { promptHash } = await import('../src/prompts.js');
+  const a = promptHash({ name: 'p', description: 'd', arguments: [] });
+  assert.match(a, /^[0-9a-f]{64}$/);
+  const b = promptHash({ name: 'p', description: 'd', arguments: [{ name: '10', description: 'x' }, { name: '2', description: 'y' }] });
+  assert.notEqual(a, b, 'arguments are part of the digest');
+});
+
 test('v3.2: surfaceHash golden fixture - byte-exact interop value', async () => {
   const { surfaceHash } = await import('../src/hash.js');
   // The Dominion cross-impl test vector: one tool, canonical three fields.

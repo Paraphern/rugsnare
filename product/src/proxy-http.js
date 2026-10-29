@@ -2,7 +2,7 @@ import http from 'node:http';
 import https from 'node:https';
 import crypto from 'node:crypto';
 import { URL } from 'node:url';
-import { toolHash, stable } from './hash.js';
+import {toolHash, canonicalJson} from './hash.js';
 import { loadPins, savePins, ensureServer, pinTool, compareTools } from './pins.js';
 import { logEvent } from './events.js';
 import { scanResult } from './results.js';
@@ -173,7 +173,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         if (msg.method === 'tools/call' && msg.params) {
           if (LOOP_THRESHOLD > 0) {
             const fingerprint = crypto.createHash('sha256')
-              .update(msg.params.name + '|' + JSON.stringify(stable(msg.params.arguments ?? {})))
+              .update(msg.params.name + '|' + canonicalJson(msg.params.arguments ?? {}))
               .digest('hex').slice(0, 16);
             if (fingerprint === loopRun.fingerprint) {
               loopRun.count += 1;
