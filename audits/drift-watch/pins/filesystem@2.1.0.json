@@ -1,0 +1,428 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "filesystem": {
+      "cmd": {
+        "args": ["node_modules/@modelcontextprotocol/server-filesystem/dist/index.js","C:/tmp/drift-watch/filesystem/fs-root"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/index.js",
+        "identityHash": "sha256:8f2575e4b78e6e660ca4b421869b717cd1230e1ad2d30bb3b37f9e1e50013b53",
+        "package": "@modelcontextprotocol/server-filesystem",
+        "resolvedVersion": "2.1.0",
+        "url": null
+      },
+      "pinnedAt": "2026-10-29T18:12:22.953Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@modelcontextprotocol/server-filesystem@2.1.0",
+      "tools": {
+        "create_directory": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "5ab31286975a25a6789739812e1d06d7247eba92f9d638c5dedb8294f911ed54",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "7e243b9bddbea4a901f0807ae14535972587b896eecde076b03dd4fbd3a9b5bd",
+          "schemaHash": "ae0c4e7de867f9d0036ba54bf434d3e604a96369fe04c461a04704246ec609b2"
+        },
+        "directory_tree": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:32.621Z",
+          "hash": "a929c1452c632dde13f718a1f73d87e96e4c7b3a84ee7efb90ae3bce30d217a2",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "excludePatterns": {
+                "default": [],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "a51dfb91799e4e8ff62aad67e4b3665360cc62a328efe43a541e66e0fb78ff01",
+          "schemaHash": "dfda406918f542b8b91cd63d62fe186798ff753163b654be646675f7e58ae9f7"
+        },
+        "edit_file": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:32.620Z",
+          "hash": "6f70636ab53a0a9b6c54e8bd3751c8e510d54cd0ed9d6668136e136c929b07d0",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "dryRun": {
+                "default": false,
+                "description": "Preview changes using git-style diff format",
+                "type": "boolean"
+              },
+              "edits": {
+                "items": {
+                  "properties": {
+                    "newText": {
+                      "description": "Text to replace with",
+                      "type": "string"
+                    },
+                    "oldText": {
+                      "description": "Text to search for - must match exactly",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["oldText","newText"],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path","edits"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.620Z",
+          "proseHash": "1349a91ad62c6a43363a6af7995e3f29f44bf5e9c5310dadd8c278aec75e3969",
+          "schemaHash": "f1c15c61bb95e38f3153cc2b0f76417a03d2c1323fc2f9cc4deebf4c998bac83"
+        },
+        "get_file_info": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, type and hard-link count. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.957Z",
+          "hash": "0b74ee38d8a8fe079afea83418098d9fb29d571881cd1180e91bc171b5f24afa",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "870f0fb3b01ee1f6ce03683500cb318db2306f947ec913a9d856b7565df185cd",
+          "schemaHash": "5263eaa5052dc2cd62f3e14b8ffa64f0fac51abdaeb04ecc6eb9f435dab22c1b"
+        },
+        "list_allowed_directories": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+          "firstSeen": "2026-10-29T18:12:22.957Z",
+          "hash": "6f355ffa54b847d0f6ec5792b46054380b4a9999b18c308aef37958208198e9a",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "aa4aecbfa97e7b0b2f37e02248d576743e3ba69c5a3a33ef0334ed652e445474",
+          "schemaHash": "35a4e9d8e227a6474efbd0af9d35b2e0b95ac3329a57bdd090f880e1c29402f6"
+        },
+        "list_directory": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "e46666317609f1f2fa3e3a25780160c64f2efacd246ee6f6d3967ccee8310b7e",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "2a89821007a4702b0f7e7cd13107b335d1c49baba8ffc4d38fe8d1cfbe3ac789",
+          "schemaHash": "76cdf98e3f6b5248aaea65012316d612ea97da29e7ca18a18806602c8851548f"
+        },
+        "list_directory_with_sizes": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:32.621Z",
+          "hash": "852c81d97f619e97d1c3c7a64abc1d2120bff045ef6cba7815a22577f33eaf08",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sortBy": {
+                "default": "name",
+                "description": "Sort entries by name or size",
+                "enum": ["name","size"],
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "5f974132fd515ca908bb2dd84e3a7d95426b4b7905e785c6726f2399218a6d6b",
+          "schemaHash": "00dfbd8d34a91c3db6c23d181b14b186a21364bf900acadfd3faf9286f796a87"
+        },
+        "move_file": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "58bf2e2a81b10a40dd637fa2235b2b99fdff8f86e2d389151147fb6289e506ad",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "destination": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              }
+            },
+            "required": ["source","destination"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "0a86f8ce8d46144ec865434db66cd5c5f90f16123206b3334d7196477526b2a1",
+          "schemaHash": "8da0ca75a49441e1ee3e1d3129bbe1d267e02efefca22009aff9512a5d6cf73c"
+        },
+        "read_file": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "bfa6773d445effc6beffe5cda167b767c081a2531e654103ccbc4739faf5cbda",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "head": {
+                "description": "If provided, returns only the first N lines of the file",
+                "type": "number"
+              },
+              "path": {
+                "type": "string"
+              },
+              "tail": {
+                "description": "If provided, returns only the last N lines of the file",
+                "type": "number"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.619Z",
+          "proseHash": "7abf56a4c306cf50c1ad1b4568b4d5f28086f068b4052f81aff20e72c0b92d47",
+          "schemaHash": "65f8537cc8c4c691ba625dbd023c57f66d294b55522c147f51a80301c967f9cc"
+        },
+        "read_media_file": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:32.620Z",
+          "hash": "80b8f1c4d633c50ec38009258bee7934a62003c298eec8096571cfb05b050615",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.620Z",
+          "proseHash": "fa38aac3f24cf15db437e7c88d0106dc9c2ec8aa6e3cf927cb112bc67e787de2",
+          "schemaHash": "de6ca7d174f7bed65000641a9e48460461fcd2b36c8e94f6ec3b81bd04c84b43"
+        },
+        "read_multiple_files": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "ae64a7d8ad4800516c1a0d113e8baaef6df4e38039636bbee1e31021634e2070",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "paths": {
+                "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories.",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": ["paths"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.620Z",
+          "proseHash": "d5a30eac51a3257ccd4b0acf3b70788f2b180fe1b9807c02644fa3389ebcbcb0",
+          "schemaHash": "780f819c81ab41feb13fc757d569d6fcbe0edd698d1e281be6e3829a441648e9"
+        },
+        "read_text_file": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:32.620Z",
+          "hash": "d98fc9eb9d4286c59cae4a99113e487589745093e03b3a3a0446f070eff2a7a3",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "head": {
+                "description": "If provided, returns only the first N lines of the file",
+                "type": "number"
+              },
+              "path": {
+                "type": "string"
+              },
+              "tail": {
+                "description": "If provided, returns only the last N lines of the file",
+                "type": "number"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.620Z",
+          "proseHash": "43033fa70cb5bafe3ded0443fe51f1edd90b4e9d45efac6118e4395d2524011f",
+          "schemaHash": "b8c629d585306af5c8f495c7186c51faf75f8a392aa5308b3fda1e986990d1c4"
+        },
+        "search_files": {
+          "annotations": {
+            "openWorldHint": false,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.957Z",
+          "hash": "f187f8ed89f8ec511e3c63cac91d92fa32bb404efa2d41e878f88c50dd93acf7",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "excludePatterns": {
+                "default": [],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "path": {
+                "type": "string"
+              },
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": ["path","pattern"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.621Z",
+          "proseHash": "7b4e41beb87051cba82183e4a36cbdce4ee542cc6decaa534a3fccf8b38c0a0e",
+          "schemaHash": "9c1cdd0e5f9353368bfaba0fe5b4c40b439adfc73b62bd4cb45f82388782da61"
+        },
+        "write_file": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+          "firstSeen": "2026-10-29T18:12:22.956Z",
+          "hash": "a2402bc2d925d1d0f91d16913cd77d096ab9b536fd67f1c4916b36335274d8a3",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": ["path","content"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:12:32.620Z",
+          "proseHash": "182c8895da7eacc6f301ba5895d779aca5c0a29cf622fa14f34f728657f79688",
+          "schemaHash": "127c20234c882fb7e506931da1dbbf2fe1cb83b18a2636179c1dc2814d69a7ae"
+        }
+      }
+    }
+  },
+  "version": 1
+}

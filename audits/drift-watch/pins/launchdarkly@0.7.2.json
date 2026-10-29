@@ -1,0 +1,2328 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "launchdarkly": {
+      "cmd": {
+        "args": ["node_modules/@launchdarkly/mcp-server/bin/mcp-server.js","start","--transport","stdio","--api-key","dummy_for_scan"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "bin/mcp-server.js",
+        "identityHash": "sha256:5a6126839fca995bf08c0a684334d7a3fb82a48a06e5ae70439bef2d0d034fe4",
+        "package": "@launchdarkly/mcp-server",
+        "resolvedVersion": "0.7.2",
+        "url": null
+      },
+      "pinnedAt": "2026-10-29T18:05:23.053Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@launchdarkly/mcp-server@0.7.2",
+      "tools": {
+        "create-ai-config": {
+          "annotations": null,
+          "approved": true,
+          "description": "Creates a new AI Config within a project. Useful for setting up LLM configurations programmatically.\n",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "f8dd29276c54a75286b3c67599b96f8ac3048c7d6f609cb527e1914c28182fa8",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "AIConfigPost": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "defaultVariation": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "classifiers": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "criteria": {
+
+                                },
+                                "instructions": {
+                                  "type": "string"
+                                },
+                                "key": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "enum": ["bool","float","enum"],
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["key","type","instructions"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "comment": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "instructions": {
+                            "type": "string"
+                          },
+                          "judgeConfiguration": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "judges": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "judgeConfigKey": {
+                                      "type": "string"
+                                    },
+                                    "samplingRate": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": ["judgeConfigKey","samplingRate"],
+                                  "type": "object"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "key": {
+                            "type": "string"
+                          },
+                          "messages": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "content": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["content","role"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "model": {
+                            "additionalProperties": false,
+                            "properties": {
+
+                            },
+                            "type": "object"
+                          },
+                          "modelConfigKey": {
+                            "type": "string"
+                          },
+                          "modelConfigVersion": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "outputFormat": {
+                            "additionalProperties": {
+
+                            },
+                            "type": "object"
+                          },
+                          "skills": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "version": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": ["key","version"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "toolKeys": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "tools": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "version": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": ["key","version"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "required": ["key","name"],
+                        "type": "object"
+                      },
+                      "description": {
+                        "default": "",
+                        "type": "string"
+                      },
+                      "evaluationMetricKey": {
+                        "type": "string"
+                      },
+                      "isInverted": {
+                        "type": "boolean"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "maintainerId": {
+                        "type": "string"
+                      },
+                      "maintainerTeamKey": {
+                        "type": "string"
+                      },
+                      "mode": {
+                        "default": "completion",
+                        "enum": ["agent","completion","judge"],
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "viewKeys": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["key","name"],
+                    "type": "object"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","AIConfigPost"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "7074331c21a9119cdda198b8bd24c2a2577eb0658b42f70d1ada65908cd2bd9d",
+          "schemaHash": "9e4e4b7943d4fba6244b036fad616644dc23e9dec5dfaec349648ce682b63066"
+        },
+        "create-ai-config-variation": {
+          "annotations": null,
+          "approved": true,
+          "description": "Adds a new variation to an AI Config, supporting experimentation or multi-model strategies.\n",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "e2c95dae188692ed1f411ca1c0b9ee4e5deee36814e508f209afada5c7ed65f4",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "AIConfigVariationPost": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "classifiers": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "criteria": {
+
+                            },
+                            "instructions": {
+                              "type": "string"
+                            },
+                            "key": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "enum": ["bool","float","enum"],
+                              "type": "string"
+                            }
+                          },
+                          "required": ["key","type","instructions"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "comment": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "instructions": {
+                        "type": "string"
+                      },
+                      "judgeConfiguration": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "judges": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "judgeConfigKey": {
+                                  "type": "string"
+                                },
+                                "samplingRate": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": ["judgeConfigKey","samplingRate"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "messages": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            },
+                            "role": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["content","role"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "model": {
+                        "additionalProperties": false,
+                        "properties": {
+
+                        },
+                        "type": "object"
+                      },
+                      "modelConfigKey": {
+                        "type": "string"
+                      },
+                      "modelConfigVersion": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "outputFormat": {
+                        "additionalProperties": {
+
+                        },
+                        "type": "object"
+                      },
+                      "skills": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": ["key","version"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "toolKeys": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "tools": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": ["key","version"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["key","name"],
+                    "type": "object"
+                  },
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey","AIConfigVariationPost"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.561Z",
+          "proseHash": "c660aeecebb69069a0385e2a5a960447edadba56ca5c159a57d1eb1edee29c58",
+          "schemaHash": "7510bc8468feefdc91ca05e8307aeb109858aea4cd1a57034f4ed19668ccd571"
+        },
+        "create-experiment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Creates an experiment in a project environment, with an initial iteration that sets the hypothesis, flag, treatments, and metrics.",
+          "firstSeen": "2026-10-29T18:05:41.560Z",
+          "hash": "28db54b2c456e68f6a16329f17edd341fcd437c6414de76f058640a13e86e299",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "ExperimentPost": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "analysisConfig": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "bayesianThreshold": {
+                            "type": "string"
+                          },
+                          "multipleComparisonCorrectionMethod": {
+                            "enum": ["bonferroni","benjamini-hochberg"],
+                            "type": "string"
+                          },
+                          "multipleComparisonCorrectionScope": {
+                            "enum": ["variations","variations-and-metrics","metrics"],
+                            "type": "string"
+                          },
+                          "sequentialTestingEnabled": {
+                            "type": "boolean"
+                          },
+                          "significanceThreshold": {
+                            "type": "string"
+                          },
+                          "testDirection": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "dataSource": {
+                        "enum": ["launchdarkly","snowflake"],
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "holdoutId": {
+                        "type": "string"
+                      },
+                      "iteration": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "attributes": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "canReshuffleTraffic": {
+                            "type": "boolean"
+                          },
+                          "covariateId": {
+                            "type": "string"
+                          },
+                          "flags": {
+                            "additionalProperties": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "flagConfigVersion": {
+                                  "type": "integer"
+                                },
+                                "notInExperimentVariationId": {
+                                  "type": "string"
+                                },
+                                "ruleId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["ruleId","flagConfigVersion"],
+                              "type": "object"
+                            },
+                            "type": "object"
+                          },
+                          "hypothesis": {
+                            "type": "string"
+                          },
+                          "metrics": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "analysisUnit": {
+                                  "type": "string"
+                                },
+                                "isGroup": {
+                                  "type": "boolean"
+                                },
+                                "key": {
+                                  "type": "string"
+                                },
+                                "primary": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": ["key"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "primaryFunnelKey": {
+                            "type": "string"
+                          },
+                          "primarySingleMetricKey": {
+                            "type": "string"
+                          },
+                          "randomizationUnit": {
+                            "type": "string"
+                          },
+                          "reallocationFrequencyMillis": {
+                            "type": "integer"
+                          },
+                          "treatments": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "allocationPercent": {
+                                  "type": "string"
+                                },
+                                "baseline": {
+                                  "type": "boolean"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "parameters": {
+                                  "items": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "flagKey": {
+                                        "type": "string"
+                                      },
+                                      "variationId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": ["flagKey","variationId"],
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                }
+                              },
+                              "required": ["name","baseline","allocationPercent","parameters"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "required": ["hypothesis","metrics","treatments","flags"],
+                        "type": "object"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "maintainerId": {
+                        "type": "string"
+                      },
+                      "methodology": {
+                        "enum": ["bayesian","frequentist","export_only"],
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "type": {
+                        "enum": ["experiment","mab","holdout"],
+                        "type": "string"
+                      }
+                    },
+                    "required": ["name","key","iteration"],
+                    "type": "object"
+                  },
+                  "environmentKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","environmentKey","ExperimentPost"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "4780547cdb0d22eea753560f1510acc7a8eb4f779f7bcb1b542a298fbb99b69c",
+          "schemaHash": "718287eee42c9a55b3811db8321c28befb63a90a08ae69fb595ddf25950172d0"
+        },
+        "create-experiment-iteration": {
+          "annotations": null,
+          "approved": true,
+          "description": "Creates a new iteration of an experiment. Start it afterwards with update-experiment.",
+          "firstSeen": "2026-10-29T18:05:41.560Z",
+          "hash": "1aa8902ee6a74fff5c088c2e327803493370ccb1da3f9742742134da3d5fa455",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "IterationInput": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "attributes": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "canReshuffleTraffic": {
+                        "type": "boolean"
+                      },
+                      "covariateId": {
+                        "type": "string"
+                      },
+                      "flags": {
+                        "additionalProperties": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "flagConfigVersion": {
+                              "type": "integer"
+                            },
+                            "notInExperimentVariationId": {
+                              "type": "string"
+                            },
+                            "ruleId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["ruleId","flagConfigVersion"],
+                          "type": "object"
+                        },
+                        "type": "object"
+                      },
+                      "hypothesis": {
+                        "type": "string"
+                      },
+                      "metrics": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "analysisUnit": {
+                              "type": "string"
+                            },
+                            "isGroup": {
+                              "type": "boolean"
+                            },
+                            "key": {
+                              "type": "string"
+                            },
+                            "primary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": ["key"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "primaryFunnelKey": {
+                        "type": "string"
+                      },
+                      "primarySingleMetricKey": {
+                        "type": "string"
+                      },
+                      "randomizationUnit": {
+                        "type": "string"
+                      },
+                      "reallocationFrequencyMillis": {
+                        "type": "integer"
+                      },
+                      "treatments": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "allocationPercent": {
+                              "type": "string"
+                            },
+                            "baseline": {
+                              "type": "boolean"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "parameters": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "flagKey": {
+                                    "type": "string"
+                                  },
+                                  "variationId": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["flagKey","variationId"],
+                                "type": "object"
+                              },
+                              "type": "array"
+                            }
+                          },
+                          "required": ["name","baseline","allocationPercent","parameters"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["hypothesis","metrics","treatments","flags"],
+                    "type": "object"
+                  },
+                  "environmentKey": {
+                    "type": "string"
+                  },
+                  "experimentKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","environmentKey","experimentKey","IterationInput"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "34b69d331023a30658938ef5f2f9bd11eb145ceb9912698a6002419735bc9b34",
+          "schemaHash": "2698626163b88ccd5455d11599296fa94695c3975d5d8357b6984aac8d02033f"
+        },
+        "create-feature-flag": {
+          "annotations": null,
+          "approved": true,
+          "description": "Creates a new feature flag within a project. AI agents can use this operation to define feature toggles for controlled rollouts, experimentation, or gated features, automating the flag setup process.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "c24a23f2a396ddb9c93da659f3c2e8733d73a7ee1cba926266bbfa4b4851a4c5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "FeatureFlagBody": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "clientSideAvailability": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "usingEnvironmentId": {
+                            "type": "boolean"
+                          },
+                          "usingMobileKey": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": ["usingEnvironmentId","usingMobileKey"],
+                        "type": "object"
+                      },
+                      "customProperties": {
+                        "additionalProperties": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "value": {
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array"
+                            }
+                          },
+                          "required": ["name","value"],
+                          "type": "object"
+                        },
+                        "type": "object"
+                      },
+                      "defaults": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "offVariation": {
+                            "type": "integer"
+                          },
+                          "onVariation": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": ["onVariation","offVariation"],
+                        "type": "object"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "includeInSnippet": {
+                        "type": "boolean"
+                      },
+                      "initialPrerequisites": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "variationId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["key","variationId"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "isFlagOn": {
+                        "type": "boolean"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "maintainerId": {
+                        "type": "string"
+                      },
+                      "maintainerTeamKey": {
+                        "type": "string"
+                      },
+                      "migrationSettings": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "contextKind": {
+                            "type": "string"
+                          },
+                          "stageCount": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": ["stageCount"],
+                        "type": "object"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "purpose": {
+                        "enum": ["migration","holdout"],
+                        "type": "string"
+                      },
+                      "tags": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "temporary": {
+                        "type": "boolean"
+                      },
+                      "variations": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "_id": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "value": {
+
+                            },
+                            "valueHash": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["name","key"],
+                    "type": "object"
+                  },
+                  "clone": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","FeatureFlagBody"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.558Z",
+          "proseHash": "efcd2c1c5e819a8881d79162a2eed2bd5ee339f082851126492b91d74e50a529",
+          "schemaHash": "0c389f89562b96b44de9761cee60d54e00ec9fa2a0def4a18c19b7f3755b47e4"
+        },
+        "create-metric": {
+          "annotations": null,
+          "approved": true,
+          "description": "Creates a metric in a project, for use in experiments and guarded rollouts.",
+          "firstSeen": "2026-10-29T18:05:41.559Z",
+          "hash": "048cd787914fdf90d9a1746b9e08a77052af782809408ef357ec39d5a02f8f32",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "MetricPost": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "analysisType": {
+                        "type": "string"
+                      },
+                      "analysisUnits": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "dataSource": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "_integrationKey": {
+                            "type": "string"
+                          },
+                          "_name": {
+                            "type": "string"
+                          },
+                          "environmentKey": {
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["key"],
+                        "type": "object"
+                      },
+                      "denominator": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "dataSource": {
+                            "$ref": "#/properties/request/properties/MetricPost/properties/dataSource"
+                          },
+                          "eventName": {
+                            "type": "string"
+                          },
+                          "filters": {
+                            "$ref": "#/properties/request/properties/MetricPost/properties/filters"
+                          },
+                          "isNumeric": {
+                            "type": "boolean"
+                          },
+                          "unitAggregationField": {
+                            "type": "string"
+                          },
+                          "unitAggregationType": {
+                            "type": "string"
+                          },
+                          "valueColumn": {
+                            "type": "string"
+                          },
+                          "windowEndOffset": {
+                            "type": "integer"
+                          },
+                          "windowStartOffset": {
+                            "type": "integer"
+                          },
+                          "winsorIncludeImputed": {
+                            "type": "boolean"
+                          },
+                          "winsorLowerPercentile": {
+                            "type": "number"
+                          },
+                          "winsorUpperPercentile": {
+                            "type": "number"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "eventDefault": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "disabled": {
+                            "type": "boolean"
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "eventKey": {
+                        "type": "string"
+                      },
+                      "filters": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "attribute": {
+                            "type": "string"
+                          },
+                          "contextKind": {
+                            "type": "string"
+                          },
+                          "negate": {
+                            "type": "boolean"
+                          },
+                          "op": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "values": {
+                            "type": "array"
+                          }
+                        },
+                        "required": ["type","op","values","negate"],
+                        "type": "object"
+                      },
+                      "isNumeric": {
+                        "type": "boolean"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "enum": ["pageview","click","custom","trace"],
+                        "type": "string"
+                      },
+                      "maintainerId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "percentileValue": {
+                        "type": "integer"
+                      },
+                      "randomizationUnits": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "selector": {
+                        "type": "string"
+                      },
+                      "successCriteria": {
+                        "enum": ["HigherThanBaseline","LowerThanBaseline"],
+                        "type": "string"
+                      },
+                      "tags": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "traceQuery": {
+                        "type": "string"
+                      },
+                      "traceValueLocation": {
+                        "type": "string"
+                      },
+                      "unit": {
+                        "type": "string"
+                      },
+                      "unitAggregationField": {
+                        "type": "string"
+                      },
+                      "unitAggregationType": {
+                        "enum": ["average","sum","count_distinct"],
+                        "type": "string"
+                      },
+                      "urls": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "enum": ["exact","canonical","substring","regex"],
+                              "type": "string"
+                            },
+                            "pattern": {
+                              "type": "string"
+                            },
+                            "substring": {
+                              "type": "string"
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "valueColumn": {
+                        "type": "string"
+                      },
+                      "windowEndOffset": {
+                        "type": "integer"
+                      },
+                      "windowStartOffset": {
+                        "type": "integer"
+                      },
+                      "winsorIncludeImputed": {
+                        "type": "boolean"
+                      },
+                      "winsorLowerPercentile": {
+                        "type": "number"
+                      },
+                      "winsorUpperPercentile": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["key","kind"],
+                    "type": "object"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","MetricPost"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.559Z",
+          "proseHash": "4190079345b75a4d14ff315e1604da38ad9595ea1353f5b331104c575eaf30ab",
+          "schemaHash": "157fe9d6c67fa8fffaa518e942b27a4609e02db23649adbb829172c34f3dd82c"
+        },
+        "delete-ai-config": {
+          "annotations": null,
+          "approved": true,
+          "description": "Deletes an AI Config and its associated variations. Intended for cleanup or deprecation workflows.\n",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "885d308998c6e3bc1ac2fb2592a039b79322ecf30c77837a10b72382509776c9",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
+          "proseHash": "d88c9adf8212ac8f221d7c174fe8d7791a5f8aa5324cc68a70ac566be4f2ced6",
+          "schemaHash": "80f4e86ef82deda795d6293b3d64f1068037440098e8c79daabdf96c623d3e4a"
+        },
+        "delete-ai-config-variation": {
+          "annotations": null,
+          "approved": true,
+          "description": "Deletes an AI Config variation.",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "4ef02e9e61a69b80aee14bf4307c5c5c74e2b7e9b53748c7269b731abf6589ad",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "variationKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey","variationKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
+          "proseHash": "d6f834214842efc7f23c9888ac8875b38f62fd80ae5502caba962712f4b287d5",
+          "schemaHash": "bd726cfa1467ba9c13df2ea29d4ffcd59cb10d81e17ee89f3e07002fd78c4397"
+        },
+        "delete-feature-flag": {
+          "annotations": null,
+          "approved": true,
+          "description": "Removes a feature flag from the project. Used by AI agents to clean up deprecated toggles that are no longer in use, improving system hygiene and maintainability.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "77f52cff0cdba3920421a6e039f71cfd318e1a614c0ae5188d7269916ea8a517",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "featureFlagKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","featureFlagKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "b721f61233a19783163dec0b128418f44ea0b8b0acd757402bb94011e4377e5e",
+          "schemaHash": "236544c8819a55cb22fd61dbb6d0e8af3170f889d79dd77e70dc5a9415970337"
+        },
+        "get-ai-config": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieves details of a specific AI Config, including variations and model settings.",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "55f1ea5fe8e9cd182b63446422672c765324ac79c995c1e0ae62dc0d15956d0d",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
+          "proseHash": "cc18f761e7973a8212314dae5b175bc3ad482f34c75ff2637767c43dc537238a",
+          "schemaHash": "cfc62c73905115089bf3a86dcb617cc470cca1da529e6eb1b5c8b9ad819707b2"
+        },
+        "get-ai-config-targeting": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieves the targeting details of a specific AI Config, including individual targets, rules, and rollouts.",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "db484ae90904b310f72dee8d266ebc22c4a88c23f7458892de96053950fdfb28",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "9c4c24da39bf353ff24eaec3a1235aab9e13d2143e24eecda0b6468d87f67017",
+          "schemaHash": "aee00fcc56f7806dac58ef900fc0d86b631807934bdc1fc934e8bb560008f3f6"
+        },
+        "get-ai-config-variation": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieves an AI configuration variation.",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "abeb61a5a8f890cc368723f83f512b4ebd9fdae59731097bd6e9c0561e1f93df",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "variationKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey","variationKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
+          "proseHash": "402cab768952ad6855f7926d9ee8900a892579931dffa7c763ea7b3a7d6f3f9c",
+          "schemaHash": "86ecf63b60e01d5715af00e198f5d37cfcf0039d7c081554c7b9a8d64a4eaa53"
+        },
+        "get-audit-log-entries": {
+          "annotations": null,
+          "approved": true,
+          "description": "Fetches audit log entries for a LaunchDarkly account. Use the `spec` parameter with format `proj/<projectKey>:env/<envKey>:flag/<flagKey>` to query a specific flag's change history (use `env/*` for all environments). The `before` and `after` parameters accept Unix epoch timestamps in milliseconds for date-range filtering. Returns at most 20 entries per call, ordered newest-first.\n",
+          "firstSeen": "2026-10-29T18:05:41.557Z",
+          "hash": "e7ef0ba704009b17a7d267bf84265c27b2f3e560d6b15e52d9a2b7b05860f3e0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "after": {
+                    "type": "integer"
+                  },
+                  "before": {
+                    "type": "integer"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "member": {
+                    "type": "string"
+                  },
+                  "q": {
+                    "type": "string"
+                  },
+                  "spec": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.557Z",
+          "proseHash": "75964973d28e74917333fec839b785a4d2db58ba4af4f2a07b5ae5ac0a18b6bb",
+          "schemaHash": "4fff9320fd630f5dc44ac069bfb92a5c00c907a4a9d6cc2990446dfcb8d6f433"
+        },
+        "get-code-references": {
+          "annotations": null,
+          "approved": true,
+          "description": "Identifies which repositories have code references to a given flag, helping agents determine if they're operating on the correct repository and understand the scope of cleanup (single vs multi-repo).\n",
+          "firstSeen": "2026-10-29T18:05:23.056Z",
+          "hash": "71a290fc44c536421785adecbc77fe2b3386942befaffd49133342e3fce6a3d5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "flagKey": {
+                    "type": "string"
+                  },
+                  "projKey": {
+                    "type": "string"
+                  },
+                  "withBranches": {
+                    "type": "string"
+                  },
+                  "withReferencesForDefaultBranch": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.056Z",
+          "proseHash": "44127d6c2ab06f6a6f985ed416e062c1b84550afbf97cbf3491be6da5238fb62",
+          "schemaHash": "f22f0666705d1c8e987f4c36d666d4baf68f6540a7463c9d027bea90b671db7d"
+        },
+        "get-environments": {
+          "annotations": null,
+          "approved": true,
+          "description": "Identifies which environments exist in a project and determines which are marked as \"critical\" (production, staging, etc.). Allows agents to programmatically identify critical environments instead of hardcoding assumptions.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "c85d1bc6f1ab03111c494afde2a71a63312a8581d1a18507448daed4893575c7",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "filter": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "sort": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "160dec6815b8d66dd62cb8b3f6fd4a864be4202e680d0ea8c300e29d66731402",
+          "schemaHash": "c1040200b65f9f9257d7258be777bf7b8c9e168876b7b9332ebbdce1f0a08673"
+        },
+        "get-experiment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Fetches one experiment, including its current and past iterations, treatments, and metrics.",
+          "firstSeen": "2026-10-29T18:05:41.560Z",
+          "hash": "1658e7730845f4f6a4cffb5d653b894d751c6c74ca12f0ba8ef1dfb90be6fc1c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "environmentKey": {
+                    "type": "string"
+                  },
+                  "expand": {
+                    "type": "string"
+                  },
+                  "experimentKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","environmentKey","experimentKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "7c19238109d17fa8d355deb3afd2678b270bf2df8704779f7563e94c258d903c",
+          "schemaHash": "3c2bf19cb1b9aea81f378076135385b58fe9726eec7f9ecb1b5bcf354226d308"
+        },
+        "get-feature-flag": {
+          "annotations": null,
+          "approved": true,
+          "description": "Fetches the full configuration for a specific feature flag, including environments, variations, and targeting rules. Useful for agents auditing or managing specific feature toggles in a detailed, contextual manner.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "672ed6f52415a60c82520fe767cb7c5f76fa6c1ca0a96fea5f776157bddcaf27",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "env": {
+                    "type": "string"
+                  },
+                  "expand": {
+                    "type": "string"
+                  },
+                  "featureFlagKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","featureFlagKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "f6ddb3ac46ffd3725c06d2c2740a168b92d62a09eaf49254db066c476ac4b4cb",
+          "schemaHash": "624b15bd60aff10561b22cca903149c9201a9022877d5ffc1601292711568226"
+        },
+        "get-flag-status-across-environments": {
+          "annotations": null,
+          "approved": true,
+          "description": "Returns lifecycle status (new, active, inactive, launched) based on actual usage patterns, evaluation counts, and configuration stability. This is the key intelligence for removal readiness assessment.\n",
+          "firstSeen": "2026-10-29T18:05:23.056Z",
+          "hash": "2b54626c0edaa4f25b3a829c906ce5e77b4ba211d49a328b05a6c127aa8c34c2",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "env": {
+                    "type": "string"
+                  },
+                  "featureFlagKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","featureFlagKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.056Z",
+          "proseHash": "c218d79313509a670364fc530dd1434bce7ded4b874c3a9286a685195aac4bc3",
+          "schemaHash": "87d09c3f94ee9798af29753852a5e13ccd082f8802c2336a44ce6b4949adfd88"
+        },
+        "get-metric": {
+          "annotations": null,
+          "approved": true,
+          "description": "Fetches one metric's configuration.",
+          "firstSeen": "2026-10-29T18:05:41.559Z",
+          "hash": "d2be9e27f38d1083579cb455b70c2a29127c60183ec76c4f8e692c28e508c428",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "expand": {
+                    "type": "string"
+                  },
+                  "metricKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "versionId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","metricKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.559Z",
+          "proseHash": "9e92b2f6aaa1e5f9e0a7459e27cc16cd291fdfd58a56e862d64ab9b88fa7f08c",
+          "schemaHash": "d42c669736927f2f0d9854c4e339422ae3e14f9b9061ea613517e639d4e0d479"
+        },
+        "list-ai-configs": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieves AI configuration settings for a specific project. This endpoint allows agents to access and modify AI-related configurations, ensuring that the AI's behavior aligns with project requirements and user expectations.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "1a6ea0960a6bfc70d2d642da3129d0571fb1b37b951c9750cee0e1add7b9da20",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "filter": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "sort": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "5bb9859ce0b08a5bfb85aa21a4d4bef36abe22218aa0e24bb3b0e4b23c7dde7c",
+          "schemaHash": "4e8ec66847e09d5a2357ab5d28f531931981eaae46d86f0b71f1696f8cfcf55c"
+        },
+        "list-experiments": {
+          "annotations": null,
+          "approved": true,
+          "description": "Lists experiments in a project environment, including their current iteration and status.",
+          "firstSeen": "2026-10-29T18:05:41.559Z",
+          "hash": "3682940bc14a877c4d1859eaa14e33ce6b35b2b5f76f68ea833dd2d1ed761696",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "environmentKey": {
+                    "type": "string"
+                  },
+                  "expand": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "lifecycleState": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","environmentKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.559Z",
+          "proseHash": "d18ad602a1dd474ec9e372e9c151388a3c7d5cdaab8395c82452df9e8685abd2",
+          "schemaHash": "320ac8910768bb688d831ab699857aeb5a776e8d7b9780e4976cc9e2fc0d4692"
+        },
+        "list-experiments-any-environment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Lists experiments in a project across all environments. Use to discover experiments before fetching one by environment.",
+          "firstSeen": "2026-10-29T18:05:41.560Z",
+          "hash": "97aa6b911bb4a718f2e30f38937b32b30e149e47ef243cbbcf0651a71f7cbe0a",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "expand": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "lifecycleState": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "1ad017a704e60f6e27bf3cbe50d9b4e374e236d90dedc5038ecc1ed115baabe0",
+          "schemaHash": "f1b7f0bdda4fe6142b60352bd6ad8d678d5972b67bfec65853ccdd7e42afa891"
+        },
+        "list-feature-flags": {
+          "annotations": null,
+          "approved": true,
+          "description": "Retrieves all feature flags within a project, including metadata and targeting rules. Enables AI agents to enumerate existing flags for inspection, configuration analysis, or generating flag usage reports across environments.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "acb8dd3c9c2951d0bb9abedc229ba608f97185e5237d89ee045f8896e95f69c6",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "archived": {
+                    "type": "boolean"
+                  },
+                  "compare": {
+                    "type": "boolean"
+                  },
+                  "env": {
+                    "type": "string"
+                  },
+                  "expand": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "sort": {
+                    "type": "string"
+                  },
+                  "summary": {
+                    "type": "boolean"
+                  },
+                  "tag": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "98bd30a4c01cdb12200a0fc6ab10cb778b4039ee8a6868164963fc4256c24f65",
+          "schemaHash": "5990d32a56ebc884cdb119005553a64fac6e381cad704fb02284d54bfe6293f6"
+        },
+        "list-metrics": {
+          "annotations": null,
+          "approved": true,
+          "description": "Lists metrics in a project. Use to find metric keys to attach to an experiment.",
+          "firstSeen": "2026-10-29T18:05:41.559Z",
+          "hash": "ac97b561de5d97fb9d33e4e7e8d41200d2f5bd485a9eae0efc8a3a2df2bfbe9c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "expand": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "type": "integer"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "sort": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.559Z",
+          "proseHash": "8e6545ea58cf878a127c21a15139a01e0fc7cd54bd7cf8e34500a898c099700f",
+          "schemaHash": "3f5e4ae699bbfefdda16249261fbaa58d57cedf666170d04cc060cc73f2a604c"
+        },
+        "update-ai-config": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates metadata or configuration of an existing AI Config.",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "9cc2a33cfa2fc0572592b33e4aa84c2cc10dd6571e0e504ff02015f66ef34aa0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "AIConfigPatch": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "defaultVariationKey": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "evaluationMetricKey": {
+                        "type": "string"
+                      },
+                      "isInverted": {
+                        "type": "boolean"
+                      },
+                      "maintainerId": {
+                        "type": "string"
+                      },
+                      "maintainerTeamKey": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.561Z",
+          "proseHash": "d55e8a874e7871144881a92e95c98b71ba3e982cddf800723c36bc731f300018",
+          "schemaHash": "27da77145cb51ff0def537a880f0a7d18c3c0988ecd7205485e691fd75d1255e"
+        },
+        "update-ai-config-targeting": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates the targeting of an existing AI Config.",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "e299d202c632b659d771c91081d5ec60c4d1993e2d74cbf53cbfd55d4b77d07a",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "AIConfigTargetingPatch": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "comment": {
+                        "type": "string"
+                      },
+                      "environmentKey": {
+                        "type": "string"
+                      },
+                      "instructions": {
+                        "items": {
+                          "additionalProperties": {
+
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["environmentKey","instructions"],
+                    "type": "object"
+                  },
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "a627772927b8cfab4cb44d037978f15ae661d25aa648d9a69d28aa7075b82a25",
+          "schemaHash": "e4259b6591e219f74cdec0e8fa862e4f0d5b98567428bcc3b15a8342ecae8460"
+        },
+        "update-ai-config-variation": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates a specific variation within an AI Config. Enables fine-tuned control of model behavior.\n",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
+          "hash": "8e69186c77edfa9d6d459958b27da1e798f1eba0e80da9521f9bdc133c4cc340",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "AIConfigVariationPatch": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "classifiers": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "criteria": {
+
+                            },
+                            "instructions": {
+                              "type": "string"
+                            },
+                            "key": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "enum": ["bool","float","enum"],
+                              "type": "string"
+                            }
+                          },
+                          "required": ["key","type","instructions"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "comment": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "instructions": {
+                        "type": "string"
+                      },
+                      "judgeConfiguration": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "judges": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "judgeConfigKey": {
+                                  "type": "string"
+                                },
+                                "samplingRate": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": ["judgeConfigKey","samplingRate"],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "messages": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            },
+                            "role": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["content","role"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "model": {
+                        "additionalProperties": false,
+                        "properties": {
+
+                        },
+                        "type": "object"
+                      },
+                      "modelConfigKey": {
+                        "type": "string"
+                      },
+                      "modelConfigVersion": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "outputFormat": {
+                        "additionalProperties": {
+
+                        },
+                        "type": "object"
+                      },
+                      "published": {
+                        "type": "boolean"
+                      },
+                      "skills": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": ["key","version"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "state": {
+                        "enum": ["archived","published"],
+                        "type": "string"
+                      },
+                      "toolKeys": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "tools": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": ["key","version"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  },
+                  "variationKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","configKey","variationKey"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.561Z",
+          "proseHash": "60ad69a995f1d48286a6f68f3ef5bc3e5f10346a71c640222c047c47cb1bff32",
+          "schemaHash": "cd8ac39eab16d959a0b740e200cd4075287bf23f4a0dd208ba51dc43be5cd423"
+        },
+        "update-experiment": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates an experiment using semantic patch instructions, such as starting or stopping an iteration, or changing its name or description.",
+          "firstSeen": "2026-10-29T18:05:41.560Z",
+          "hash": "5191075c34b0a7d6c6452428b23a15553c3149b2c22a39be6c8962908346ea40",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "ExperimentPatchInput": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "comment": {
+                        "type": "string"
+                      },
+                      "instructions": {
+                        "items": {
+                          "additionalProperties": {
+
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["instructions"],
+                    "type": "object"
+                  },
+                  "environmentKey": {
+                    "type": "string"
+                  },
+                  "experimentKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","environmentKey","experimentKey","ExperimentPatchInput"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.560Z",
+          "proseHash": "8921c1b413f63bbfb690c3dcaa93fbca8ee90f6f1fb3fa973c17bda11ab3b256",
+          "schemaHash": "15015eef419d84340b99994f3c18f1bdf9d00746f042e5057e58f3add4e2486b"
+        },
+        "update-feature-flag": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates the configuration of an existing feature flag. Enables agents to change targeting rules, modify variations, or adapt rollout strategies dynamically in response to user behavior or experiment results.\n",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
+          "hash": "436c9b4a63db2620bea20747ac00eae865432ded45f39d490a068cd3b39cbc8d",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "PatchWithComment": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "comment": {
+                        "type": "string"
+                      },
+                      "patch": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "op": {
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string"
+                            },
+                            "value": {
+
+                            }
+                          },
+                          "required": ["op","path"],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": ["patch"],
+                    "type": "object"
+                  },
+                  "dryRun": {
+                    "type": "boolean"
+                  },
+                  "featureFlagKey": {
+                    "type": "string"
+                  },
+                  "ignoreConflicts": {
+                    "type": "boolean"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","featureFlagKey","PatchWithComment"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
+          "proseHash": "2bc8e0a9919139e545e4e9f904d70f1476394d605d983511718d19c824b9fe56",
+          "schemaHash": "22f5efa977dacf194cc6562b4aff504f48f68b5ce1e1faa7082a5c06ec91c8f5"
+        },
+        "update-metric": {
+          "annotations": null,
+          "approved": true,
+          "description": "Updates a metric using a JSON patch.",
+          "firstSeen": "2026-10-29T18:05:41.559Z",
+          "hash": "fb68cc6c24fd4461defa57f139f3dd71fe88fac7367cf1e7f325e8f469a14b89",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "RequestBody": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "op": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "value": {
+
+                        }
+                      },
+                      "required": ["op","path"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "metricKey": {
+                    "type": "string"
+                  },
+                  "projectKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["projectKey","metricKey","RequestBody"],
+                "type": "object"
+              }
+            },
+            "required": ["request"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:05:41.559Z",
+          "proseHash": "0baff52cb6f7c71d17305899c4c628e78f755e7b6cbec44783b3825ae449ccd0",
+          "schemaHash": "d44b54d1983f3b7db7cd8574a7ac939d0b77195f599ad3ca548facb6804791e0"
+        }
+      }
+    }
+  },
+  "version": 1
+}

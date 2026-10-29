@@ -19,3 +19,8 @@ npm i @launchdarkly/mcp-server@0.6.2 && npx rugsnare diff --config mcp.json
 ```
 
 Watched weekly (baseline 0.7.0). Last verified 2026-10-12 (0.6.1 -> 0.7.0 graded: exactly 1 NEW tool, 19/19 unchanged; 0.6.2 -> 0.7.0 zero drift).
+
+
+## 2026-10-30 window
+
+0.5.0 -> 0.7.2: 16 findings (the Speakeasy line opened up: get-audit-log-entries, list-metrics, create-metric NEW + EXPANDED create-feature-flag; was 1 at 0.7.1).

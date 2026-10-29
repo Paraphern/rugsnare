@@ -27,3 +27,8 @@ npm i @notionhq/notion-mcp-server@2.5.2 && npx rugsnare diff --config mcp.json
 ```
 
 Last verified 2026-10-20 (rugsnare 1.5.0): all 24 tool contracts unchanged; the single finding is (identity) - the version bump itself (PIN-SPEC identity block; rugsnare 1.5.0 pins server identity). Zero contract findings; exit 1 on identity only, by design - an upgrade IS an identity change.
+
+
+## 2026-10-30 window
+
+2.4.1 -> 2.6.1: 1 finding, identity-class - the control group lost its zero for the first time (see audits/drift-watch/2026-10-30.md).

@@ -21,3 +21,8 @@ Last verified 2026-10-13 (re-graded on rugsnare 1.3.0; issue #476 open, no vendo
 ## 2026-10-24 window
 
 1.4.1 -> 2.2.7: 30 findings (graded, rugsnare 1.4.3; pins at audits/drift-watch/pins/browserstack@2.2.7.json). Cumulative corpus total: 351 across the 22 servers. See audits/drift-watch/2026-10-24.md.
+
+
+## 2026-10-30 window
+
+1.4.1 -> 2.4.1: 33 findings (accessibility suite keeps moving; vendor thread #476 now further behind the corpus).

@@ -1,0 +1,2581 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "browserstack": {
+      "cmd": {
+        "args": ["node_modules/@browserstack/mcp-server/dist/index.js"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/index.js",
+        "identityHash": "sha256:93a4890f85565d422e6cc9d703abff1a8728197388d43ed45a4815f0813a6b39",
+        "package": "@browserstack/mcp-server",
+        "resolvedVersion": "2.4.1",
+        "url": null
+      },
+      "pinnedAt": "2026-10-29T18:07:27.606Z",
+      "prompts": {
+        "integrate-percy": {
+          "description": "",
+          "firstSeen": "2026-10-29T18:07:27.616Z",
+          "hash": "e7f7700e4ebe389e5bc7c2897d25b5f66b2650dbd652d6317f6b1a185a549283"
+        }
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@browserstack/mcp-server@2.4.1",
+      "tools": {
+        "accessibilityExpert": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Accessibility Expert"
+          },
+          "approved": true,
+          "description": "Answer accessibility, a11y, and WCAG questions using BrowserStack's accessibility knowledge base.",
+          "firstSeen": "2026-10-29T18:07:27.610Z",
+          "hash": "f3704d1dd4a4cc2a54fe2771db96b2a3836768092cc32025811bdbd831b96cf8",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "query": {
+                "description": "Any accessibility, a11y, WCAG, or web accessibility question",
+                "type": "string"
+              }
+            },
+            "required": ["query"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.630Z",
+          "proseHash": "f3883aa97308b1163ae02cff364c04319ae0b42eabd89b054fc99c2044c37240",
+          "schemaHash": "cb4db2366bf5de1ce9f2809db24264ceb31940d5f467a9062ad7ef193d87f8b1"
+        },
+        "addPercySnapshotCommands": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Add Percy Snapshot Commands"
+          },
+          "approved": true,
+          "description": "Adds Percy snapshot commands to the specified test files.",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "ae70b762f24e1a01bf41929e2cfab0c8db6e0af1b9d4b7d1e670ce2b2eb18722",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "index": {
+                "description": "Index of the test file to update",
+                "type": "number"
+              }
+            },
+            "required": ["index"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.611Z",
+          "proseHash": "acea96f4e7be2c28a7d61bef83e7d1331d5a1294f343d9963963e726a283024e",
+          "schemaHash": "430e76de95d09cede7f979e48a779a30685ee7ddfc56887d303870499aa32f34"
+        },
+        "addTestResult": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Add Test Result"
+          },
+          "approved": true,
+          "description": "Add a test result to a specific test run via BrowserStack Test Management API. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "1c0d4b48d94654e4c1142593e3bdfd8d947dd543c10b023a994d412ff6abc08c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_identifier": {
+                "description": "Identifier of the project (Starts with 'PR-')",
+                "type": "string"
+              },
+              "test_case_id": {
+                "description": "Identifier of the test case, e.g., 'TC-13'.",
+                "type": "string"
+              },
+              "test_result": {
+                "properties": {
+                  "description": {
+                    "description": "Optional description of the test result.",
+                    "type": "string"
+                  },
+                  "status": {
+                    "description": "Status of the test result, e.g., 'passed', 'failed'.",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "type": "object"
+              },
+              "test_run_id": {
+                "description": "Identifier of the test run (e.g., TR-678)",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","test_run_id","test_result","test_case_id"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "a3e754dc0045ee9fd8d574bc7053dd9e7d54155294c72d7eb8304a2d933c9fce",
+          "schemaHash": "6aaa9cfe8cc7d208ee5519b2ab66b692ff1e39436fe46d7929119e1909a4dc11"
+        },
+        "askBrowserStackAI": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true,
+            "readOnlyHint": false,
+            "title": "Ask BrowserStack AI (Alpha)"
+          },
+          "approved": true,
+          "description": "(Alpha, limited availability. Enabled per account and per product; if it is not enabled the call returns an entitlement error, nothing runs, and you should complete the task with the individual tools instead. To request access, the user should contact their BrowserStack account owner.) Use this when no other BrowserStack tool here fits the task, or when the ones you tried did not get you there. Prefer a specific tool whenever one fits: it is faster and more predictable than handing the job to an agent. Otherwise, describe what you want in plain language and BrowserStack's agent decides which calls to make, then returns its answer plus the steps it took. Anything that would change data pauses and asks you to confirm it first; deletes are refused outright. Put that confirmation to the user and answer with what THEY say — never decide on their behalf. If it cannot be put to anyone, the run is read-only and everything it wanted to change comes back in `needs_approval` instead. One task per call.",
+          "firstSeen": "2026-10-29T18:07:27.615Z",
+          "hash": "d817bbe636259b9d693ae0ff03af8b81019b461bfa8b8a491978c18d0d2535f1",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "decision": {
+                "description": "The user's answer. Never assume allow — ask them.",
+                "enum": ["allow","deny"],
+                "type": "string"
+              },
+              "perm_id": {
+                "description": "`perm_id` from that same result.",
+                "type": "string"
+              },
+              "product": {
+                "description": "Which product to work in: tm (Test Management), a11y (Accessibility), tra (Test Reporting & Analytics).",
+                "enum": ["tm","a11y","tra"],
+                "type": "string"
+              },
+              "query": {
+                "description": "What you want, in plain language. One thing per call.",
+                "type": "string"
+              },
+              "run_id": {
+                "description": "`run_id` from a needs_approval result.",
+                "type": "string"
+              }
+            },
+            "required": ["product"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "0f4c1411ffcd13a7aab1d0c020c2b9f612d1844e03f953534fbd94d2ad139ea4",
+          "schemaHash": "827e1ac4380364343998a22a3bb78e8f750c94d2eba79be00c1cbce285cc84ca"
+        },
+        "createAccessibilityAuthConfig": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create Accessibility Auth Config"
+          },
+          "approved": true,
+          "description": "Create an authentication configuration for accessibility scans. Supports both form-based and basic authentication.",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "1379d13ebc2e22a84877ce220d389ebd28107ccbd79ea27f20424870891f0a0c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "name": {
+                "description": "Name for the auth configuration",
+                "type": "string"
+              },
+              "password": {
+                "description": "Site password; omit to have it requested from the user.",
+                "type": "string"
+              },
+              "passwordSelector": {
+                "description": "CSS selector for password field (required for form auth)",
+                "type": "string"
+              },
+              "submitSelector": {
+                "description": "CSS selector for submit button (required for form auth)",
+                "type": "string"
+              },
+              "type": {
+                "description": "Authentication type: 'form' for form-based auth, 'basic' for HTTP basic auth",
+                "enum": ["form","basic"],
+                "type": "string"
+              },
+              "url": {
+                "description": "URL of the authentication page",
+                "type": "string"
+              },
+              "username": {
+                "description": "Site username; omit to have it requested from the user.",
+                "type": "string"
+              },
+              "usernameSelector": {
+                "description": "CSS selector for username field (required for form auth)",
+                "type": "string"
+              }
+            },
+            "required": ["name","type","url"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.611Z",
+          "proseHash": "8874700cb4f9e4159cf118144349f890789679a8c3204078ab6da9f8525315d0",
+          "schemaHash": "5c708b9fe35937f90a7f75f37142340872b8008383c62499a067b64269f49450"
+        },
+        "createLCASteps": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create LCA Steps"
+          },
+          "approved": true,
+          "description": "Generate Low Code Automation (LCA) steps for a test case in BrowserStack Test Management using the Low Code Automation Agent. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "74bd6e565ae3fe982b2bbbd982bab69f16dcfea8752aefbe88d5610cd0b64a32",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "base_url": {
+                "description": "Base URL for the test (e.g., 'google.com')",
+                "type": "string"
+              },
+              "credentials": {
+                "description": "Login credentials; omit to have them requested from the user.",
+                "properties": {
+                  "password": {
+                    "description": "Password for authentication",
+                    "type": "string"
+                  },
+                  "username": {
+                    "description": "Username for authentication",
+                    "type": "string"
+                  }
+                },
+                "required": ["username","password"],
+                "type": "object"
+              },
+              "local_enabled": {
+                "default": false,
+                "description": "Whether local testing is enabled",
+                "type": "boolean"
+              },
+              "project_identifier": {
+                "description": "ID of the project (Starts with 'PR-')",
+                "type": "string"
+              },
+              "requires_authentication": {
+                "default": false,
+                "description": "Set true if the test case requires login.",
+                "type": "boolean"
+              },
+              "test_case_details": {
+                "description": "Test case details including steps",
+                "properties": {
+                  "description": {
+                    "description": "Description of the test case",
+                    "type": "string"
+                  },
+                  "name": {
+                    "description": "Name of the test case",
+                    "type": "string"
+                  },
+                  "preconditions": {
+                    "description": "Preconditions for the test case",
+                    "type": "string"
+                  },
+                  "test_case_steps": {
+                    "description": "Array of test case steps with expected results",
+                    "items": {
+                      "properties": {
+                        "result": {
+                          "description": "Expected result",
+                          "type": "string"
+                        },
+                        "step": {
+                          "description": "Test step description",
+                          "type": "string"
+                        }
+                      },
+                      "required": ["step","result"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": ["name","description","preconditions","test_case_steps"],
+                "type": "object"
+              },
+              "test_case_identifier": {
+                "description": "Identifier of the test case (e.g., 'TC-12345')",
+                "type": "string"
+              },
+              "test_name": {
+                "description": "Name of the test",
+                "type": "string"
+              },
+              "wait_for_completion": {
+                "default": true,
+                "description": "Whether to wait for LCA build completion (default: true)",
+                "type": "boolean"
+              }
+            },
+            "required": ["project_identifier","test_case_identifier","base_url","test_name","test_case_details"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "6f787d40a657f7d00fbe9c559088a97a6b88d102197fa2ac7c1545474970c00c",
+          "schemaHash": "dfe8af5a980f8614029ef3e0ac50972d0d132fbb9429c6a507da87eddd1096af"
+        },
+        "createProjectOrFolder": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create Project or Folder"
+          },
+          "approved": true,
+          "description": "Create a project and/or folder in BrowserStack Test Management. Creating a project needs no identifier. Creating a folder inside an EXISTING project needs that project's identifier (PR-*); no tool here lists projects, so use the capability functions to look it up.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "66b03fb92e7bb456983240a069452c1a0c1a0bf127d0d6dd32eb180903530b23",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "folder_description": {
+                "description": "Description for the new folder.",
+                "type": "string"
+              },
+              "folder_name": {
+                "description": "Name of the folder to create.",
+                "type": "string"
+              },
+              "parent_id": {
+                "description": "Parent folder ID; if omitted, folder is created at root.",
+                "type": "number"
+              },
+              "project_description": {
+                "description": "Description for the new project.",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "Existing project identifier to use for folder creation.",
+                "type": "string"
+              },
+              "project_name": {
+                "description": "Name of the project to create.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.633Z",
+          "proseHash": "2e712992f83dfd052740cf34777ceb765aa322545f8d581f912759b06407bd24",
+          "schemaHash": "fdecbc003c18e58a8767325194e77be67e3cabea5627da1720d4899b5b20bc44"
+        },
+        "createTestCase": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create Test Case"
+          },
+          "approved": true,
+          "description": "Use this tool to create a test case in BrowserStack Test Management. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "9280b999cdadac9775cce631ffd7c4567f19fbfb0590edc462d04307dc8b26f5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "automation_status": {
+                "description": "Automation status of the test case. Common values include 'not_automated', 'automated', 'automation_not_required'.",
+                "type": "string"
+              },
+              "case_type": {
+                "description": "Test case type display or internal name (per-project). Omit for project default.",
+                "type": "string"
+              },
+              "custom_fields": {
+                "additionalProperties": {
+                  "anyOf": [{
+                      "type": "string"
+                    },{
+                      "type": "number"
+                    },{
+                      "type": "boolean"
+                    },{
+                      "items": {
+                        "type": ["string","number"]
+                      },
+                      "type": "array"
+                    }]
+                },
+                "description": "Map of custom field NAME to value; use an array for multi-select fields.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "description": {
+                "description": "Brief description of the test case.",
+                "type": "string"
+              },
+              "folder_id": {
+                "description": "The ID of the folder within the project where the test case should be created. If not provided, ask the user if they would like to create a new folder using the createProjectOrFolder tool.",
+                "type": "string"
+              },
+              "issue_tracker": {
+                "properties": {
+                  "host": {
+                    "description": "Base URL of the issue tracker.",
+                    "format": "uri",
+                    "type": "string"
+                  },
+                  "name": {
+                    "description": "Issue tracker name,  For example, use jira for Jira, azure for Azure DevOps, or asana for Asana.",
+                    "type": "string"
+                  }
+                },
+                "required": ["name","host"],
+                "type": "object"
+              },
+              "issues": {
+                "description": "List of the linked Jira, Asana or Azure issues ID's. This should be strictly in array format not the string of json.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "Name of the test case.",
+                "type": "string"
+              },
+              "owner": {
+                "description": "Email of the test case owner.",
+                "format": "email",
+                "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+                "type": "string"
+              },
+              "preconditions": {
+                "description": "Any preconditions (HTML allowed).",
+                "type": "string"
+              },
+              "priority": {
+                "description": "Priority of the test case. Accepts either display name (e.g. 'Critical', 'High', 'Medium', 'Low') or internal name (e.g. 'medium'). If omitted, the project default (usually 'Medium') is applied. Valid values are per-project and discoverable via the form-fields endpoint.",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "The ID of the BrowserStack project where the test case should be created. If no project identifier is provided, ask the user if they would like to create a new project using the createProjectOrFolder tool.",
+                "type": "string"
+              },
+              "tags": {
+                "description": "Tags to attach to the test case. This should be strictly in array format not the string of json",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "template": {
+                "description": "System template slug only: 'test_case_steps' or 'test_case_bdd'. For a custom template, use template_id instead.",
+                "type": "string"
+              },
+              "template_id": {
+                "description": "Numeric ID of a custom template (from listTestCaseTemplates); applies that template. Overrides 'template'.",
+                "type": "number"
+              },
+              "test_case_steps": {
+                "description": "List of steps and expected results.",
+                "items": {
+                  "properties": {
+                    "result": {
+                      "description": "Expected result of this step.",
+                      "type": "string"
+                    },
+                    "step": {
+                      "description": "Action to perform in this step.",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["step","result"],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["project_identifier","folder_id","name","test_case_steps"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.633Z",
+          "proseHash": "b89dcb3367b6789328411c51db7934693f3bd696d6427e824be13b33f033239f",
+          "schemaHash": "fc0a997b9bd37b2612252c1435b8b869c09b72b476cc094a955b0d9723479057"
+        },
+        "createTestCasesFromFile": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create Test Cases from File"
+          },
+          "approved": true,
+          "description": "Generate test cases from a file in BrowserStack Test Management using the Test Case Generator AI Agent.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "43045e841c81dc405fce105afc3954517ac32fd3f53cd96f86934cedb15ab68d",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "documentId": {
+                "description": "Internal document identifier",
+                "type": "string"
+              },
+              "folderId": {
+                "description": "BrowserStack folder ID",
+                "type": "string"
+              },
+              "projectReferenceId": {
+                "description": "The BrowserStack project reference ID is a unique identifier found in the project URL within the BrowserStack Test Management Platform. This ID is also returned by the Upload Document tool.",
+                "type": "string"
+              }
+            },
+            "required": ["documentId","folderId","projectReferenceId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.613Z",
+          "proseHash": "0df41168f9e6612d4cafff96da9deb7b5aba5359fe9af65f93f5e340bad4fe33",
+          "schemaHash": "eeecefa12440f729f063925eea401e4920826fbcb99e518f5f8973be9007e107"
+        },
+        "createTestRun": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Create Test Run"
+          },
+          "approved": true,
+          "description": "Create a test run in BrowserStack Test Management. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "de1aff9a28a442edee38737b3cf1f2be9193010f39e62cc77919d0d2205406b5",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_identifier": {
+                "description": "Identifier of the project in which to create the test run.",
+                "type": "string"
+              },
+              "test_run": {
+                "properties": {
+                  "description": {
+                    "description": "Brief information about the test run",
+                    "type": "string"
+                  },
+                  "folder_ids": {
+                    "description": "Folder IDs to include",
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  "issue_tracker": {
+                    "description": "Issue tracker configuration",
+                    "properties": {
+                      "host": {
+                        "format": "uri",
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["name","host"],
+                    "type": "object"
+                  },
+                  "issues": {
+                    "description": "Linked issue IDs",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "name": {
+                    "description": "Name of the test run",
+                    "type": "string"
+                  },
+                  "run_state": {
+                    "description": "State of the test run. One of new_run, in_progress, under_review, rejected, done, closed",
+                    "enum": ["new_run","in_progress","under_review","rejected","done","closed"],
+                    "type": "string"
+                  },
+                  "test_cases": {
+                    "description": "List of test case IDs",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": ["name"],
+                "type": "object"
+              }
+            },
+            "required": ["project_identifier","test_run"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "6ce563757dde00b9c7f59a604c841b8e21bb3096e2edc2d5659e5ff6b5138c15",
+          "schemaHash": "3ec6b1cd7923abb19a55cdc98c5a81b99f8b38c0bd772bae1ac8ef304304c1d4"
+        },
+        "describeCapability": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Describe Capability"
+          },
+          "approved": true,
+          "description": "The full contract for ONE capability you picked from searchCapability: its parameters grouped into path_params / query / body under the spec's own names, what it returns, and its declared response shapes fully expanded. Call this after search and before invokeCapability — search deliberately omits all of it, because it is only needed for the one capability you actually call. Identify it by `name`, exactly as search returned it; only when a result carries no `name` (some products publish none yet) pass `method` and `path` instead. Every parameter lists its type, whether it is required, its allowed values where the set is closed, and any limits the product declares — obey those before calling rather than discovering them from a rejected request.",
+          "firstSeen": "2026-10-29T18:16:49.636Z",
+          "hash": "72a968ba812114518cd1821f1590c2cb69de784b06a3787e30d7895717fa00f2",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "include_responses": {
+                "description": "Which declared responses to expand: 'success' (default, the 2xx shape), 'all' (adds the error shapes — several times larger, and near-identical across endpoints), or 'none'.",
+                "enum": ["success","all","none"],
+                "type": "string"
+              },
+              "method": {
+                "description": "HTTP method — only for capabilities returned without a `name`.",
+                "type": "string"
+              },
+              "name": {
+                "description": "The capability's published name, exactly as searchCapability returned it.",
+                "type": "string"
+              },
+              "path": {
+                "description": "Path with {placeholders} intact — only for capabilities returned without a `name`.",
+                "type": "string"
+              },
+              "product": {
+                "description": "Which product owns it (app_accessibility, devicecontrol, loadtesting, mobiledevicecontrol, tm, tra, web_accessibility). searchCapability returns it on every result; required only when two products share a name or a path.",
+                "enum": ["app_accessibility","devicecontrol","loadtesting","mobiledevicecontrol","tm","tra","web_accessibility"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.636Z",
+          "proseHash": "2e0c79589dd142380c773ac3d15797b04e6e470351e39ced9e59aff338fa37a6",
+          "schemaHash": "226e30c67307bb543e85683de20c4b419dbfc97011352be5387626b21aa3423b"
+        },
+        "describeEntity": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Describe Entity"
+          },
+          "approved": true,
+          "description": "Describe one entity: what it is, what identifies it, what it relates to, and the vocabulary the product uses for it. Read this before filtering or writing, because ids and field values usually have to be resolved first.",
+          "firstSeen": "2026-10-29T18:16:49.635Z",
+          "hash": "0effbdbc20b3d3797f4f0d90a6463eb8679a19cc87ff334f395510a01f7def0c",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "entity": {
+                "description": "Entity name, as listProducts returns it.",
+                "type": "string"
+              },
+              "product": {
+                "description": "Which product the entity belongs to: app_accessibility, devicecontrol, loadtesting, mobiledevicecontrol, tm, tra, web_accessibility.",
+                "enum": ["app_accessibility","devicecontrol","loadtesting","mobiledevicecontrol","tm","tra","web_accessibility"],
+                "type": "string"
+              }
+            },
+            "required": ["product","entity"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "1c10d5da794e984dcb3bc67a5b14cc3def3c5c0e33d2475174a2a7ec5996b1cc",
+          "schemaHash": "5c5227d5e6ce0f559d017108353898fde7dc92ec76727a7a36edeab5e8a05ea9"
+        },
+        "expandPercyVisualTesting": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Expand Percy Visual Testing"
+          },
+          "approved": true,
+          "description": "Set up or expand Percy visual testing configuration with comprehensive coverage for existing projects that might have Percy integrated. This supports both Percy Web Standalone and Percy Automate. Example prompts: Expand percy coverage for this project {project_name}",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "d9d5f3a0c6420b37071c012e11780d10fc80be4799b152fca3d097ae00dd42ea",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "detectedBrowserAutomationFramework": {
+                "enum": ["playwright","selenium","cypress","webdriverio"],
+                "type": "string"
+              },
+              "detectedLanguage": {
+                "enum": ["nodejs","python","java","csharp","ruby"],
+                "type": "string"
+              },
+              "detectedTestingFramework": {
+                "enum": ["jest","codeceptjs","playwright","pytest","robot","behave","cucumber","nightwatch","mocha","junit4","junit5","testng","cypress","nunit","mstest","xunit","specflow","reqnroll","rspec","serenity"],
+                "type": "string"
+              },
+              "filePaths": {
+                "description": "An array of absolute file paths to specific UI test files. Use this when you want to target specific test files rather than entire folders. If not provided, will use folderPaths instead.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "folderPaths": {
+                "description": "An array of absolute folder paths containing UI test files. If not provided, analyze codebase for UI test folders by scanning for test patterns which contain UI test cases as per framework. Return empty array if none found.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "integrationType": {
+                "description": "Specify the Percy integration type: web (Percy Web) or automate (Percy Automate). If not provided, always prompt the user with: 'Please specify the Percy integration type.' Do not proceed without an explicit selection. Never use a default.",
+                "enum": ["web","automate"],
+                "type": "string"
+              },
+              "projectName": {
+                "description": "A unique name for your Percy project.",
+                "type": "string"
+              }
+            },
+            "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework","integrationType"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.611Z",
+          "proseHash": "a1b248168b4856dd16bb540f85eddb8c1bd8fa0b2397b0aeffa7a60fe598fa02",
+          "schemaHash": "ac0af4c4fbb89a9e98d2672cf0f45a7972608a583356d68c0f97f5d7e1be3953"
+        },
+        "fetchAccessibilityIssues": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Accessibility Issues"
+          },
+          "approved": true,
+          "description": "Fetch accessibility issues from one source: scanId+scanRunId, buildId, workflowReportId, appReportId or reportUrl. Ids: a link, startAccessibilityScan, or web_accessibility lists (searchCapability).",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "55bee1d89d8f8e162286cfb00ba8e937b23777f638f413710e58147b3d6fc1a9",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "appReportId": {
+                "description": "Manual App Accessibility report id (a UUID), from its /report/ link or a report listed via searchCapability.",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              "buildId": {
+                "description": "Web or App Accessibility build id: the SDK's testhub id, a link's thBuildId, or one listed via searchCapability.",
+                "pattern": "^[a-z0-9]{40}$",
+                "type": "string"
+              },
+              "compareWith": {
+                "description": "\"previous\", or an older scanRunId of the same scan, or an earlier app build's id or link; lists new and resolved issues.",
+                "type": "string"
+              },
+              "cursor": {
+                "description": "Character offset for pagination (default: 0); with compareWith, how many issues are already listed.",
+                "type": "number"
+              },
+              "exportTaskId": {
+                "description": "Continue a CSV export that an earlier call said is still being generated.",
+                "type": "string"
+              },
+              "pageUrl": {
+                "description": "Only the issues on this page URL, counted as the dashboard's page view counts them.",
+                "type": "string"
+              },
+              "reportUrl": {
+                "description": "A web or app report dashboard link (scan, build, manual report), a scanner share link, or an (App) Automate link.",
+                "type": "string"
+              },
+              "scanId": {
+                "description": "Website Scanner scan id: from startAccessibilityScan or list_website_scanner_scans (searchCapability).",
+                "type": "string"
+              },
+              "scanRunId": {
+                "description": "Website Scanner run id: from startAccessibilityScan, or list_website_scanner_scan_runs (searchCapability).",
+                "type": "string"
+              },
+              "workflowReportId": {
+                "description": "Workflow Analyzer report id: from its link, or list_workflow_analyzer_reports (searchCapability).",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.632Z",
+          "proseHash": "6f189d8312926aacb7e437cbfc7ae16573685e544de742cc34defba672bf94b7",
+          "schemaHash": "0f4db4f88f6b6af0976654c8c7eaa457d92de3d110382984a6e2579e4d1a85d6"
+        },
+        "fetchAutomationScreenshots": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Automation Screenshots"
+          },
+          "approved": true,
+          "description": "Fetch screenshots captured during an Automate/App Automate session.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "e82b04c96d7000b7cc65512d693fc3470b49150cada373629f3066401cf7393e",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "sessionId": {
+                "description": "The BrowserStack session ID to fetch screenshots from",
+                "type": "string"
+              },
+              "sessionType": {
+                "description": "Type of BrowserStack session",
+                "enum": ["automate","app-automate"],
+                "type": "string"
+              }
+            },
+            "required": ["sessionId","sessionType"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "c788a53654a27664b51c6b8e4677aede243092ba6f635e22d0c92c2f5799e112",
+          "schemaHash": "92b4bed5c8e46f82e63c10cfb48e1925249ecec24906089557fed0c3be391039"
+        },
+        "fetchBuildInsights": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Build Insights"
+          },
+          "approved": true,
+          "description": "Fetch build details and quality gate results. Includes hashed_id and session_type for listSessions.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "741ef075c1055b2b5c53e293d3f2bfd8fc99d8069718b748a151d9cd0e9592c6",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "buildId": {
+                "description": "The build UUID of the BrowserStack build",
+                "type": "string"
+              }
+            },
+            "required": ["buildId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "990d3a6ac8ece66a2473e9c0669e8c8743b3f38977abe41a5ad7058de533c6b4",
+          "schemaHash": "61322ecad16fafbc180ef0e4f0e91de0396fa4c0e7ecbf2d29e9cfe4f8a8c70a"
+        },
+        "fetchPercyChanges": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Percy Changes"
+          },
+          "approved": true,
+          "description": "Retrieves and summarizes all visual changes detected by Percy AI between the latest and previous builds, helping quickly review what has changed in your project.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "52541b7fc22284676a08adddca8ab9304076057377f7fb43e3a1af1343242df0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_name": {
+                "description": "The name of the BrowserStack project. If not found, ask user directly.",
+                "type": "string"
+              }
+            },
+            "required": ["project_name"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.612Z",
+          "proseHash": "295aaebfd2021db931aa635bf2f250d62333cc3400632dba8f6dae645d16e43c",
+          "schemaHash": "976164179d472efdbc1abcb1e0fd947bee0ce02b5583386a3f213c554cdbb99a"
+        },
+        "fetchRCA": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Root Cause Analysis"
+          },
+          "approved": true,
+          "description": "Fetch AI Root Cause Analysis for the current user's failed BrowserStack Automate/App-Automate tests. Suggests fixes only; never auto-apply, require explicit user approval. Requires test ids. Call listTestIds first if you do not have it.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "9834361f0de7922cbeb814f7c68090ad67c9372dac233e649e47b5c872f64d8f",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "testId": {
+                "description": "Array of integer test IDs to fetch RCA data for (maximum 3 IDs). These must be numeric test IDs, not session IDs or strings. If not provided, use the listTestIds tool to get all failed testcases. If more than 3 IDs are provided, only the first 3 will be processed.",
+                "items": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "maxItems": 3,
+                "type": "array"
+              }
+            },
+            "required": ["testId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "a725d36aaa87f55f94b258395ae9a8c74df7d5466624cdd198c102b6866550a3",
+          "schemaHash": "8d0b04c29271a44f41f2eb1ae5d4257b8da893436a7062818957613f5b7b537e"
+        },
+        "fetchSelfHealedSelectors": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Fetch Self-Healed Selectors"
+          },
+          "approved": true,
+          "description": "Fetch BrowserStack self-healed selectors plus the test source code for the run. Provide exactly one of `sessionId` (single Automate / App-Automate session) or `buildUuid` (full self-healing report for a build). Pass the returned locator pairs to `prepareSelfHealingPlan` to plan edits. Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "4fa1181d6be70adef92cf141dadcc5fb3c7efc9f48155016ae7802d2e1bc9999",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "buildUuid": {
+                "description": "Build UUID. Fetches the build's self-healing report.",
+                "type": "string"
+              },
+              "sessionId": {
+                "description": "Session ID. Mutually exclusive with buildUuid.",
+                "type": "string"
+              },
+              "sessionType": {
+                "description": "Used with sessionId. Defaults to automate.",
+                "enum": ["automate","app-automate"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "61a2a72e4ce55fa5cc24199fc1519fc408c7a50f0bf98e52ec4240f9a9ab4ca9",
+          "schemaHash": "ee9e2e293cff9bc46ad0850b244991a120509c01a925866b7cda88f1dcad09fb"
+        },
+        "getAccessibilityAuthConfig": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Get Accessibility Auth Config"
+          },
+          "approved": true,
+          "description": "Retrieve an existing authentication configuration by ID. Id: from createAccessibilityAuthConfig, or askBrowserStackAI with product \"a11y\" to find one.",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "b414f8bea4a3619366e34da8f190725681ddd58da7b4cf27c3a84365a70e20b4",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "configId": {
+                "description": "ID of the auth configuration to retrieve",
+                "type": "number"
+              }
+            },
+            "required": ["configId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.631Z",
+          "proseHash": "64fd064b6434d272a5c48ecbb91a41adba22ef0af0967998ed0b0400745afd20",
+          "schemaHash": "b882e908d33aebd36266e239bd5f5ae6beb61cdd73d1a4a28c07e8208b14811b"
+        },
+        "getBuildId": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Get Build ID"
+          },
+          "approved": true,
+          "description": "Get the BrowserStack build ID for a given project and build name, scoped to the current user's builds.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "f0ff3f1bf54917d22f2ada95c9fd02f3535386f3dd836d8cdaf14a9b4d6b3b44",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "browserStackBuildName": {
+                "description": "BrowserStack build name from the test run config (e.g. browserstack.yml). Exact match; no default.",
+                "type": "string"
+              },
+              "browserStackProjectName": {
+                "description": "BrowserStack project name from the test run config (e.g. browserstack.yml). Exact match; no default.",
+                "type": "string"
+              }
+            },
+            "required": ["browserStackProjectName","browserStackBuildName"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "757e62275780108414cbbce87a9ee40b9a9902f6da19be2e625f2e8f613bf742",
+          "schemaHash": "f63955d06fbeb76302caedfaef1beb824d66c7fa472427d48ecc882aae99fbf0"
+        },
+        "getFailureLogs": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Get Failure Logs"
+          },
+          "approved": true,
+          "description": "Fetch logs, or the session video URL, for an Automate/App Automate session. Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "087a71218f5ddb62ae8fc1a8f374e915b6d6fe7378a4a6515d033c9afe25519e",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "buildId": {
+                "description": "App Automate build ID. Optional — resolved from the session if omitted.",
+                "type": "string"
+              },
+              "logTypes": {
+                "description": "The types of logs to fetch.",
+                "items": {
+                  "enum": ["networkLogs","sessionLogs","consoleLogs","deviceLogs","appiumLogs","crashLogs","video"],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "sessionId": {
+                "description": "The BrowserStack session ID. Must be explicitly provided by the user.",
+                "type": "string"
+              },
+              "sessionType": {
+                "description": "Type of BrowserStack session. Must be explicitly provided by the user.",
+                "enum": ["automate","app-automate"],
+                "type": "string"
+              }
+            },
+            "required": ["sessionType","sessionId","logTypes"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "7be5e0d3c097f21d33d48558d76e05cd68a7a4285498611eeb37762048cd2ab3",
+          "schemaHash": "62d4e5dbafe1015b31400f4c8ac105a922c3d939316256adb3ceb3d7f0809045"
+        },
+        "getSubTestPlan": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Get Sub Test Plan"
+          },
+          "approved": true,
+          "description": "Fetch a sub-test-plan (STP-*) under a parent plan (TP-*). Returns metadata and linked test runs. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: use the capability functions, which reach Test Management's own API for these operations. They ask you to confirm before changing anything.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "0aaa8fda393267daecb16a5f578c312b84c3717a7e4fa7b6d866e81c4498bd53",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "parent_test_plan_identifier": {
+                "description": "Parent test plan identifier (TP-*).",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "Project identifier (PR-*).",
+                "type": "string"
+              },
+              "sub_test_plan_identifier": {
+                "description": "Sub-test-plan identifier (STP-*).",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","parent_test_plan_identifier","sub_test_plan_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "9b4b119a545cdb8dfdb813bcda23bd38741a6153b88ca8596fe35540d6aa26cb",
+          "schemaHash": "f2bf267986711aad71ca8f8f1b602e67fb7e16d9c055994478ecebc1500bd62c"
+        },
+        "getTestPlan": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Get Test Plan"
+          },
+          "approved": true,
+          "description": "Fetch a test plan by identifier (TP-*) from BrowserStack Test Management. Returns plan metadata, the full list of linked test runs, total test-case count across runs, and a status summary — suitable for generating test documentation or QA status reports. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: use the capability functions, which reach Test Management's own API for these operations. They ask you to confirm before changing anything.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "0a80362523e21dad28309498c22aabf5eacdf4d26b6a16d52e308c8433506208",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_identifier": {
+                "description": "Identifier of the project (starts with PR- followed by a number).",
+                "type": "string"
+              },
+              "test_plan_identifier": {
+                "description": "Identifier of the test plan (starts with TP- followed by a number).",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","test_plan_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "34d25cf5603a3436d2d9fae414fc15068d4db1d63d6151d977269bb85a215941",
+          "schemaHash": "e64af7c767a8f87986bf2b64cac35c53bf801cdbd1e6e301a46ce9b43b9b98b6"
+        },
+        "invokeCapability": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Invoke Capability"
+          },
+          "approved": true,
+          "description": "Call a capability whose contract you have from describeCapability. Pass `name` exactly as given — that is the handle; only when a result carries no `name` pass `method` and `path` instead. Arguments go in path_params / query / body under the spec's own names. One call makes one request and returns the product's response as sent; `select` narrows it only where the contract carries `narrowable`, and reports what it narrowed. When `completed` is false there is another page, fetched with the capability's own page parameter. If the mode is 'write' you MUST ask the user first, then resend with user_permission='granted' and a change_summary; both are recorded. Capabilities whose mode is 'destructive' are refused outright — archiving, closing and merging are ordinary writes and DO run, so read the mode and intent before confirming with the user.",
+          "firstSeen": "2026-10-29T18:16:49.636Z",
+          "hash": "00c909a2d0054ab1f3f980af0cd30ec907dc24af0835436b19c8fa721303e8b1",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "body": {
+                "additionalProperties": {
+
+                },
+                "description": "Body fields, under the spec's names.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "change_summary": {
+                "description": "What will change. Required for writes.",
+                "type": "string"
+              },
+              "method": {
+                "description": "HTTP method — only for capabilities returned without a `name`.",
+                "type": "string"
+              },
+              "name": {
+                "description": "The capability's published name, exactly as returned (e.g. 'create_test_run_by_integer_id'). Preferred over method/path.",
+                "type": "string"
+              },
+              "path": {
+                "description": "Path with {placeholders} intact — only for capabilities returned without a `name`.",
+                "type": "string"
+              },
+              "path_params": {
+                "additionalProperties": {
+
+                },
+                "description": "Values for the {placeholders}.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "product": {
+                "description": "Which product owns the capability (app_accessibility, devicecontrol, loadtesting, mobiledevicecontrol, tm, tra, web_accessibility). searchCapability returns it on every result; required only when two products share a name or a path.",
+                "enum": ["app_accessibility","devicecontrol","loadtesting","mobiledevicecontrol","tm","tra","web_accessibility"],
+                "type": "string"
+              },
+              "query": {
+                "additionalProperties": {
+
+                },
+                "description": "Query parameters.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "select": {
+                "description": "Only for a capability whose contract carries `narrowable`: narrows the response to those fields and reports what it narrowed.",
+                "properties": {
+                  "distinct": {
+                    "description": "Return one row per distinct combination of these fields and nothing else — the cheapest way to ask what values exist.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "fields": {
+                    "description": "Keep only these fields on each row.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "limit": {
+                    "description": "At most this many rows.",
+                    "type": "number"
+                  },
+                  "where": {
+                    "additionalProperties": {
+
+                    },
+                    "description": "Field -> the value it must take, or an array of accepted values. Strings match case-insensitively.",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "user_permission": {
+                "description": "Set to 'granted' only after the user has confirmed a write.",
+                "enum": ["not_asked","granted","denied"],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.636Z",
+          "proseHash": "2582cc8129493a035cac1e8470a1f7e6e657cf638e655f4bf684855bc14528f5",
+          "schemaHash": "bac22b1555ada3173668737771ede81e299c736be1649ad641722929420284e4"
+        },
+        "listBuildId": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Build IDs"
+          },
+          "approved": true,
+          "description": "Get the latest build ID for a project and build name, across all users (no user filter).",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "707b3dfd043448172c2f5b0bca2dc4791a47a1ccd8da30e3e52042de10a81458",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "browserStackBuildName": {
+                "description": "BrowserStack build name from the test run config (e.g. browserstack.yml). Exact match; no default.",
+                "type": "string"
+              },
+              "browserStackProjectName": {
+                "description": "BrowserStack project name from the test run config (e.g. browserstack.yml). Exact match; no default.",
+                "type": "string"
+              }
+            },
+            "required": ["browserStackProjectName","browserStackBuildName"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "f9b64912ae36fd1c94f0941819365e1cd3fd36300ffdb3d93466e22ea4abfaf4",
+          "schemaHash": "8cd12c18babd300b29bc889858061bad9935044802095deb0d88a595cf7b60a0"
+        },
+        "listFolders": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Folders"
+          },
+          "approved": true,
+          "description": "List folders in a BrowserStack Test Management project, returning each folder's id and name (plus case counts and sub-folder counts). Pass parent_id to list sub-folders under a specific folder instead of top-level folders. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "5fb171e78fb5886d5d2be7c26a57cc902f9dcb7266d00ee04be0e60f5c2c6238",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "p": {
+                "description": "Page number.",
+                "type": "number"
+              },
+              "parent_id": {
+                "description": "If provided, list sub-folders under this parent folder id. If omitted, lists top-level folders.",
+                "type": "number"
+              },
+              "project_identifier": {
+                "description": "Identifier of the project to fetch folders from (starts with PR- followed by a number).",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "d819fb0b04b03d48c1bbb9c67a207e3237da61444a4027265282ceabc7d2c7a0",
+          "schemaHash": "c0b05bfec086ea69ccd5376d3f7edc408dd53fb79837bdc6888fe9e223c54ade"
+        },
+        "listProducts": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Capability Products"
+          },
+          "approved": true,
+          "description": "List the BrowserStack products this surface can reach: what each one does, the entities it models, and a line saying what each entity is. START HERE — searchCapability needs a product, and this is what tells you which one. If two products could both fit the task, ask the user rather than choosing for them. ALWAYS pass the user's request, in their own words, as `query`: the answer then says outright whether the products clash over the words in it. WHEN IT REPORTS A CLASH — two products claiming the same word for different things — ASK THE USER WHICH PRODUCT THEY MEAN AND WAIT FOR THEIR ANSWER BEFORE SEARCHING OR INVOKING ANYTHING. The response carries the question to put to them and what the shared word means in each product. Choosing for them, or searching each product in turn and merging the results, is the failure this call exists to prevent.",
+          "firstSeen": "2026-10-29T18:16:49.635Z",
+          "hash": "9d933e856b97dcb0931dfcbfdb13c926f8fa3e9901670d0a784acdb407631d71",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "query": {
+                "description": "The user's request, in their own words. With it the response carries a `routing` block saying whether the products share the vocabulary this request uses — and, when they do, the question to put to the user before searching either product.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "6e7b18166b4cf750795aeb31d217f9f4f5d647f2981de20ceebd7abbec301af1",
+          "schemaHash": "1d3489a51b9576aced99bcb3918f7f47d024e888b0e36ae785b3ec4ca223d5e6"
+        },
+        "listSessions": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Sessions"
+          },
+          "approved": true,
+          "description": "List sessions for a hashed Automate/App Automate build: session IDs, status, OS, browser/device, dashboard URL.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "bcb3104d8116bd3b53b866bb04ecd8c116b21d5d3044b26c3409a61a3a7b834f",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "buildId": {
+                "description": "Hashed build id from the dashboard, or the observability build id from getBuildId.",
+                "type": "string"
+              },
+              "limit": {
+                "description": "Max sessions to return. Defaults to 10.",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              },
+              "offset": {
+                "description": "Pagination offset for the REST session list.",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "sessionType": {
+                "description": "Type of BrowserStack session",
+                "enum": ["automate","app-automate"],
+                "type": "string"
+              },
+              "status": {
+                "description": "Optional session status filter (e.g. done, running, error). Applied client-side.",
+                "type": "string"
+              }
+            },
+            "required": ["sessionType","buildId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "2c90a60baa64506e42ef83d6259e171033fffd18a65207044ed8448ba0aa3054",
+          "schemaHash": "19c4c8c61f88ca255db24b26a5a22713222a10abf5e85778022d0add9aaa80f8"
+        },
+        "listSubTestPlans": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Sub Test Plans"
+          },
+          "approved": true,
+          "description": "List sub-test-plans under a parent test plan (TP-*) in a Test Management project. Supports pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return. Requires a test plan identifier (TP-*). Call listTestPlans first if you do not have it. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: use the capability functions, which reach Test Management's own API for these operations. They ask you to confirm before changing anything.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "c01e3f30b81bd5ae402a17950768d42dc8f1620abedfc969c748fea8fde90d80",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "p": {
+                "description": "Page number.",
+                "type": "number"
+              },
+              "parent_test_plan_identifier": {
+                "description": "Parent test plan identifier (TP-*).",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "Project identifier (PR-*).",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","parent_test_plan_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "0dc738688fcc50e35c5efe604e9907d2c03fe3600b9992b3f23a0f872b645b16",
+          "schemaHash": "b57f5fd16a6065c3c70dc1b16ac13ca34941f90e95ec503bbbf781a306922315"
+        },
+        "listTestCaseTemplates": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test Case Templates"
+          },
+          "approved": true,
+          "description": "List test-case templates with their numeric template_id. Use the id with createTestCase to apply a custom template (the 'template' slug only selects system templates).",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "11e7726cfeba4be03972fa7f82268bdaa1e7238da28d916759c7cf0868f69e17",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "name": {
+                "description": "Case-insensitive substring filter on template name.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.613Z",
+          "proseHash": "d9afe12c72f18150802100951f7039880636f07ef56ce3f53e0fe7e7037425c8",
+          "schemaHash": "15c39bc29408700b3c1531da8eec6548c13f536b5cc1965413d1324a59b1da97"
+        },
+        "listTestCases": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test Cases"
+          },
+          "approved": true,
+          "description": "List test cases in a project, optionally scoped to a specific folder. Omit folder_id to list all test cases in the project; provide folder_id (discoverable via listFolders) to list only that folder's cases. Supports filters: case_type, priority, pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "e30be6cfc7403e23a78bbfd14e60d42a52ecafdd0a26964028b7a8d24c470722",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "case_type": {
+                "description": "Comma-separated list of case types (e.g. functional,regression).",
+                "type": "string"
+              },
+              "folder_id": {
+                "description": "Optional. If provided, only return test cases in this folder. If omitted, returns all test cases in the project. Folder ids can be discovered via listFolders.",
+                "type": "string"
+              },
+              "p": {
+                "description": "Page number.",
+                "type": "number"
+              },
+              "priority": {
+                "description": "Comma-separated list of priorities (e.g. critical,medium,low).",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "Identifier of the project to fetch test cases from. This id starts with a PR- and is followed by a number.",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "8ee91a851122e35122de403dcadcedb7baa63be2eea5bc51ae9b30aa1a128770",
+          "schemaHash": "aab18155d2e8edf70e2a52ba983e000d1fdc6048e9547ca232cc59734e9549f2"
+        },
+        "listTestFiles": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test Files"
+          },
+          "approved": true,
+          "description": "Lists all test files for a given set of directories.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "76a5eb2108e8516400b61b70c4b631fb65ab3be971217d31fe9e4fb87e53ddab",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.612Z",
+          "proseHash": "fdd10518cde068aa66f46a90fa9bc43d095b70804f6edc83eac2d45153ed02ae",
+          "schemaHash": "2e8a0848defb0ec26ee2cb6b8c2a07d27e73261c9817fd843e65fa326f4a64fa"
+        },
+        "listTestIds": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test IDs"
+          },
+          "approved": true,
+          "description": "List all tests of a BrowserStack build (each with its status and session id); optional status filter. Requires a BrowserStack build id. Call getBuildId or listBuildId first if you do not have it.",
+          "firstSeen": "2026-10-29T18:07:27.615Z",
+          "hash": "612f1771e264b7d426af5cb1e5d9ca016f637cffe4cefa161c80aacac0782654",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "buildId": {
+                "description": "The Browserstack Build ID of the test run. If not known, use the getBuildId tool to fetch it using project and build name",
+                "type": "string"
+              },
+              "includeFailureDetail": {
+                "description": "Add per-test failure signature for clustering. Default false.",
+                "type": "boolean"
+              },
+              "status": {
+                "description": "Filter tests by status. If not provided, all tests are returned. Example for RCA usecase always use failed status",
+                "enum": ["passed","failed","pending","skipped"],
+                "type": "string"
+              }
+            },
+            "required": ["buildId","status"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.615Z",
+          "proseHash": "6c700428e175b20343b4f47adbfc73eb89b876e7ed7af3e559aaaf0b5548b6ea",
+          "schemaHash": "5347c294b43fb26399fef12264d3496bf56c1a9d409c5ae82d39b32cf1e7b501"
+        },
+        "listTestPlans": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test Plans"
+          },
+          "approved": true,
+          "description": "List test plans in a BrowserStack Test Management project. Returns each plan's identifier (TP-*), name, status, description, dates, and active/closed test-run counts. Supports pagination. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return. Creating a test plan or sub-plan, and linking or unlinking test runs on one, are not available as tools here: use the capability functions, which reach Test Management's own API for these operations. They ask you to confirm before changing anything.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "984e6ae037642da009fda6676ba0eb9852a3e20b4dc9fbd76411e983220b4788",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "p": {
+                "description": "Page number.",
+                "type": "number"
+              },
+              "project_identifier": {
+                "description": "Identifier of the project to fetch test plans from (starts with PR- followed by a number).",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "792df7a310d2c0d4886f8bdad13bfc996bcb29f1376719fe7e1f18c11f2f7441",
+          "schemaHash": "5a15be4e57080306bd13a76d1097c67998bb64b55fa959c9248cf0e2641f80ed"
+        },
+        "listTestRuns": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "List Test Runs"
+          },
+          "approved": true,
+          "description": "List test runs in a project with optional filters (date ranges, assignee, state, etc.) Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "35d86f721a4a32888ff52aed7c1a0c9479c580b0b7a2b9d438c077e15093eabe",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_identifier": {
+                "description": "Identifier of the project to fetch test runs from (usually starts with PR-).",
+                "type": "string"
+              },
+              "run_state": {
+                "description": "Return all test runs with this state (comma-separated)",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "b1cd4887bd87588f72241bf4a52ad3d05614ed3a548938659d54f18639c9eb4f",
+          "schemaHash": "2f4967fc1cea786540707f6a3057a7f0f589c778dcc28264c1e66829d2477bdf"
+        },
+        "managePercyBuildApproval": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Manage Percy Build Approval"
+          },
+          "approved": true,
+          "description": "Approve or reject a Percy build",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "eea5e85003b3d7487d4c1f03c54f2c5e794a847e58046c0c9486094129463a03",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "action": {
+                "description": "The action to perform on the Percy build.",
+                "enum": ["approve","unapprove","reject"],
+                "type": "string"
+              },
+              "buildId": {
+                "description": "The ID of the Percy build to approve or reject.",
+                "type": "string"
+              }
+            },
+            "required": ["buildId","action"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.612Z",
+          "proseHash": "20bac6e8c9684e9d738b2b5c11514e270b8bdcb5ea5db5e706951228f6ecafff",
+          "schemaHash": "f8964d4f54782c7afb6401c14715021c592707e6f4df9c94d43b9fced6ede740"
+        },
+        "percyVisualTestIntegrationAgent": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Percy Visual Test Integration Agent"
+          },
+          "approved": true,
+          "description": "Integrate Percy visual testing into new projects and demonstrate visual change detection through a step-by-step simulation. This tool handles initial Percy integration, setup, and creates a working demonstration for new users. Primary tool for prompts like: \"Integrate percy for this project\", \"Integrate percy in this project {project_name}\"",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "4f809cc2a915c86c5df3ef9d5dd03cb8042ab0f3e5d93a65e93a7b76c318dbb2",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "detectedBrowserAutomationFramework": {
+                "enum": ["playwright","selenium","cypress","webdriverio"],
+                "type": "string"
+              },
+              "detectedLanguage": {
+                "enum": ["nodejs","python","java","csharp","ruby"],
+                "type": "string"
+              },
+              "detectedTestingFramework": {
+                "enum": ["jest","codeceptjs","playwright","pytest","robot","behave","cucumber","nightwatch","mocha","junit4","junit5","testng","cypress","nunit","mstest","xunit","specflow","reqnroll","rspec","serenity"],
+                "type": "string"
+              },
+              "filePaths": {
+                "description": "An array of absolute file paths to specific UI test files. Use this when you want to target specific test files rather than entire folders. If not provided, will use folderPaths instead.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "folderPaths": {
+                "description": "An array of absolute folder paths containing UI test files. If not provided, analyze codebase for UI test folders by scanning for test patterns which contain UI test cases as per framework. Return empty array if none found.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "integrationType": {
+                "description": "Specify the Percy integration type: web (Percy Web) or automate (Percy Automate). If not provided, always prompt the user with: 'Please specify the Percy integration type.' Do not proceed without an explicit selection. Never use a default.",
+                "enum": ["web","automate"],
+                "type": "string"
+              },
+              "projectName": {
+                "description": "A unique name for your Percy project.",
+                "type": "string"
+              }
+            },
+            "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework","integrationType"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.611Z",
+          "proseHash": "2ad1accb9c2d44008e681d5ece0eddf40b1c9424e7c38c23dd1a106b8f9245aa",
+          "schemaHash": "90fc304712e4fca7d10c2fa5c0547b317c4e582da1a8b57a157a5ca3c872e0d6"
+        },
+        "prepareSelfHealingPlan": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Prepare Self-Healing Plan"
+          },
+          "approved": true,
+          "description": "Build a self-healing edit plan that bundles locator pairs with test source code for the calling LLM to apply with its own editing tools. This tool does NOT modify files — it returns structured context so the LLM can edit only the relevant call sites (avoids blind find/replace across shared ids/classes). `sessions` accepts the canonical shape `[{sessionId, locators: [{original, healed, thought?}]}]`, a single session object, an envelope `{sessions: [...]}`, the raw report `{healing_logs: [...]}` (with `healed_selectors` aliasing `locators`), and snake_case keys (`session_id`, `original_locator`, `healed_locator`, `healing_thought`). Requires a session id. listSessions lists them for a build; if you do not have the build either, getBuildId or listBuildId resolves one from a project and build name.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "84fd54d1ce0de69b2a0e7ffc4d87c5109abce744f3fe7235ac2ac0d9ba51b6d0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "sessions": {
+                "description": "Sessions to plan edits for. See tool description for accepted shapes.",
+                "items": {
+                  "properties": {
+                    "locators": {
+                      "description": "Healed locator pairs for this session.",
+                      "items": {
+                        "properties": {
+                          "healed": {
+                            "properties": {
+                              "strategy": {
+                                "description": "Locator strategy, e.g. 'css selector', 'xpath'.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "The locator string itself.",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["strategy","value"],
+                            "type": "object"
+                          },
+                          "original": {
+                            "properties": {
+                              "strategy": {
+                                "description": "Locator strategy, e.g. 'css selector', 'xpath'.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "The locator string itself.",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["strategy","value"],
+                            "type": "object"
+                          },
+                          "thought": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["original","healed"],
+                        "type": "object"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "sessionId": {
+                      "description": "BrowserStack session ID.",
+                      "type": "string"
+                    },
+                    "sessionName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["sessionId","locators"],
+                  "type": "object"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": ["sessions"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "fefab2a9ad558308d351462168c03cc6e894f600322448958ecc347e925a6cbb",
+          "schemaHash": "391bd1661d1250ed808ae3cb7317951a8ccfbd90559b7d1148b3e40cfdd36434"
+        },
+        "runAppLiveSession": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Run App Live Session"
+          },
+          "approved": true,
+          "description": "Open a manual App Live session for the user to operate by hand; the agent cannot drive it. To tap, type or read the app yourself, use a mobiledevicecontrol session via invokeCapability.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "92005c8f803fef4017213a9b61d4caf94393893ee5ff3e594e67115a05031f47",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "appPath": {
+                "description": "The path to the .ipa or .apk file to install on the device. Always ask the user for the app path, do not assume it. Must be located inside the directory set in MCP_UPLOAD_BASE_DIR.",
+                "type": "string"
+              },
+              "desiredPhone": {
+                "description": "The full name of the device to run the app on. Example: 'iPhone 12 Pro' or 'Samsung Galaxy S20' or 'Google Pixel 6'. Always ask the user for the device they want to use, do not assume it. ",
+                "type": "string"
+              },
+              "desiredPlatform": {
+                "description": "Which platform to run on, examples: 'android', 'ios'. Set this based on the app path provided.",
+                "enum": ["android","ios"],
+                "type": "string"
+              },
+              "desiredPlatformVersion": {
+                "description": "Specifies the platform version to run the app on. For example, use '12.0' for Android or '16.0' for iOS. If the user says 'latest', 'newest', or similar, normalize it to 'latest'. Likewise, convert terms like 'earliest' or 'oldest' to 'oldest'.",
+                "type": "string"
+              }
+            },
+            "required": ["desiredPhone","desiredPlatformVersion","desiredPlatform","appPath"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.632Z",
+          "proseHash": "dd977db9a1e32dc96cd386ea1121a8507d3195d58906573ab7a2b924c84c5fb1",
+          "schemaHash": "85e305fedb295a6ba82020588d6405bebd8fd195f4177810bc7df970f34f5c43"
+        },
+        "runAppTestsOnBrowserStack": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Run App Tests on BrowserStack"
+          },
+          "approved": true,
+          "description": "Execute pre-built native mobile test suites (Espresso for Android, XCUITest for iOS) by direct upload to BrowserStack. ONLY for compiled .apk/.ipa test files. This is NOT for SDK integration or Appium tests. For Appium-based testing with SDK setup, use 'setupBrowserStackAppAutomateTests' instead.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "274329a8f63aac7add9c8c235c0f5bf4c0f6ef79c3dd98cd771ffcc6679ceeb0",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "accessibility": {
+                "default": false,
+                "description": "App Accessibility checks on screens the tests touch (Android 11+, iOS 14+); suite must be built with BrowserStack's SDK.",
+                "type": "boolean"
+              },
+              "appPath": {
+                "description": "Path to your application file:\nIf in development IDE directory:\n• For Android: 'gradle assembleDebug'\n• For iOS:\n  xcodebuild clean -scheme YOUR_SCHEME && \\\n  xcodebuild archive -scheme YOUR_SCHEME -configuration Release -archivePath build/app.xcarchive && \\\n  xcodebuild -exportArchive -archivePath build/app.xcarchive -exportPath build/ipa -exportOptionsPlist exportOptions.plist\n\nIf in other directory, provide existing app path.\nThe resolved file must be located inside the directory set in MCP_UPLOAD_BASE_DIR.",
+                "type": "string"
+              },
+              "detectedAutomationFramework": {
+                "description": "The automation framework used in the project, such as 'espresso' (Android) or 'xcuitest' (iOS).",
+                "enum": ["espresso","xcuitest"],
+                "type": "string"
+              },
+              "devices": {
+                "default": [],
+                "description": "Tuples describing target mobile devices. Add device only when user asks explicitly for it. Defaults to [] . Example: [['android', 'Samsung Galaxy S24', '14'], ['ios', 'iPhone 15', '17']]",
+                "items": {
+                  "properties": {
+                    "deviceName": {
+                      "description": "Device name, e.g. 'Samsung Galaxy S24', 'Google Pixel 8', 'iPhone 15', 'iPhone 14 Pro'",
+                      "type": "string"
+                    },
+                    "osVersion": {
+                      "description": "OS version, e.g. '14', '16', '17', 'latest'",
+                      "type": "string"
+                    },
+                    "platform": {
+                      "description": "Platform name: 'android' or 'ios'",
+                      "enum": ["android","ios"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["platform","deviceName","osVersion"],
+                  "type": "object"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              "project": {
+                "default": "BStack-AppAutomate-Suite",
+                "description": "Project name for organizing test runs on BrowserStack.",
+                "type": "string"
+              },
+              "testSuitePath": {
+                "description": "Path to your test suite file:\nIf in development IDE directory:\n• For Android: 'gradle assembleAndroidTest'\n• For iOS:\n  xcodebuild test-without-building -scheme YOUR_SCHEME -destination 'generic/platform=iOS' && \\\n  cd ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/ && \\\n  zip -r Tests.zip *.xctestrun *-Runner.app\n\nIf in other directory, provide existing test file path.\nThe resolved file must be located inside the directory set in MCP_UPLOAD_BASE_DIR.",
+                "type": "string"
+              }
+            },
+            "required": ["appPath","testSuitePath","detectedAutomationFramework"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "5865129af27a369b5664e1c137ae120834b9d8e4acc26caed5de149f760e67bd",
+          "schemaHash": "422000badeae625dadab9c3cbafaecf37247dd41a13423499e4dd1eacdebb87d"
+        },
+        "runBrowserLiveSession": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true,
+            "readOnlyHint": false,
+            "title": "Run Browser Live Session"
+          },
+          "approved": true,
+          "description": "Open a manual Live browser session for the user to operate by hand; the agent cannot drive it. To click, type or read the page yourself, use a devicecontrol session via invokeCapability.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "0f2a17e2999c0a11356e478c13ecd51f4d992bb9d1e8c66abc289cb3d8f38d6f",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "desiredBrowser": {
+                "description": "Browser for desktop (Chrome, IE, Firefox, Safari, Edge)",
+                "enum": ["chrome","firefox","safari","edge","ie"],
+                "type": "string"
+              },
+              "desiredBrowserVersion": {
+                "description": "Browser version for desktop (e.g. '133.2', 'latest'). If the user says 'latest', 'newest', or similar, normalize it to 'latest'. Likewise, convert terms like 'earliest' or 'oldest' to 'oldest'.",
+                "type": "string"
+              },
+              "desiredDevice": {
+                "description": "Device name for mobile",
+                "type": "string"
+              },
+              "desiredOS": {
+                "description": "Desktop OS ('Windows' or 'OS X') or mobile OS ('android','ios','winphone')",
+                "enum": ["Windows","OS X","android","ios","winphone"],
+                "type": "string"
+              },
+              "desiredOSVersion": {
+                "description": "The OS version must be specified as a version number (e.g., '10', '14.0') or as a keyword such as 'latest' or 'oldest'. Normalize variations like 'newest' or 'most recent' to 'latest', and terms like 'earliest' or 'first' to 'oldest'. For macOS, version names (e.g., 'Sequoia') must be used instead of numeric versions.",
+                "type": "string"
+              },
+              "desiredURL": {
+                "description": "The URL to test",
+                "format": "uri",
+                "type": "string"
+              },
+              "platformType": {
+                "description": "Must be 'desktop' or 'mobile'",
+                "enum": ["desktop","mobile"],
+                "type": "string"
+              }
+            },
+            "required": ["platformType","desiredURL","desiredOS","desiredOSVersion","desiredBrowser"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.633Z",
+          "proseHash": "e235770d40af4b207249df32673d5045028cf05b4625597e30462178feb3be25",
+          "schemaHash": "2d83a2c3de73db95a053acd1d11825429801babbd9cd96862b6310f845372e3b"
+        },
+        "runPercyScan": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Run Percy Scan"
+          },
+          "approved": true,
+          "description": "Run a Percy visual test scan. Example prompts : Run this Percy build/scan. Never run percy scan/build without this tool",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "65410faa4f5b4df1d92516ffb1e3ab6d585f415b9e20c13f3f5fc3c43393e4e6",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "integrationType": {
+                "description": "Specifies whether to integrate with Percy Web or Percy Automate. If not explicitly provided, prompt the user to select the desired integration type.",
+                "enum": ["web","automate"],
+                "type": "string"
+              },
+              "percyRunCommand": {
+                "description": "The test command to run with Percy. Optional — the LLM should try to infer it first from project context.",
+                "type": "string"
+              },
+              "projectName": {
+                "description": "The name of the project to run Percy on.",
+                "type": "string"
+              }
+            },
+            "required": ["projectName","integrationType"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.612Z",
+          "proseHash": "f5da7aed8f322a33ceb7f4309604f6cfaac03e6feb40483db180d4cfa56287a0",
+          "schemaHash": "2567c442ba120600db11cae7d5d58132fc719a52847037c9289d5deb6ac57ef0"
+        },
+        "searchCapability": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Search Capabilities"
+          },
+          "approved": true,
+          "description": "Find endpoints this surface can call, by plain language, within ONE product. CALL listProducts FIRST, passing the user's request as its `query`: it names the products, says whether they clash over the words in that request, and gives you the question to ask when they do. You need it anyway — `product` here takes a name exactly as listProducts spells it. Where two products use the same word for different things, ask the USER and wait for an answer rather than picking. Search matches the product's OWN words, not synonyms. When your words are not the product's, the response says so: `weak_match: true` with a `suggested_vocabulary` map of the product's entities and their aliases. Results are still returned, but treat them as unconfirmed — pick the closest entity from that map and search again using its vocabulary, or call describeEntity on it for the fuller picture. That one extra round trip is far cheaper than invoking the wrong capability. Narrowing further with `entity` sharpens results. THIS IS A SHORTLIST, NOT A CONTRACT. Each result carries only what you need to CHOOSE: `name` (the handle), `product`, `mode` (whether it writes), `intent` and `guidance` (what it does and what goes wrong), and `method`/`path` for products that publish no name yet. It does NOT carry parameters or response shapes. Once you have picked one, call describeCapability for its full contract, then invokeCapability. Fetching the contract only for the one you chose is the difference between ~1k and ~8.6k tokens a search. Results are ranked and capped. TO SEE EVERYTHING rather than search, pass query='*' — that lists the product (honouring `entity` and `mode`) in a stable order instead of ranking it, which is what you want when the task is 'what can this product do' rather than a lookup. TO PAGE, send `offset`: every response carries `offset` and, when more matched, `next_offset` — resend the SAME query with that value. `next_offset` is absent on the last page, so walk until it stops rather than comparing counts.",
+          "firstSeen": "2026-10-29T18:16:49.635Z",
+          "hash": "6c3021d82ca78665c067c0f574dc27837794e5e76e3f1b84f2e3a3b3af6a1caf",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "entity": {
+                "description": "Restrict to one entity (listProducts names them).",
+                "type": "string"
+              },
+              "limit": {
+                "description": "Max results (default 8).",
+                "type": "number"
+              },
+              "mode": {
+                "description": "Restrict to reads or writes. Omit to let the query decide.",
+                "enum": ["read","write","destructive"],
+                "type": "string"
+              },
+              "offset": {
+                "description": "Skip this many results — send the `next_offset` from the previous response with the SAME query to get the next page. Omit for the first page.",
+                "type": "number"
+              },
+              "product": {
+                "description": "Which product to search, named exactly as listProducts spells it. Call listProducts with the user's request to get the name — and to find out whether the products clash over it, in which case ask the user first.",
+                "type": "string"
+              },
+              "query": {
+                "description": "What you are trying to do, in plain language. Pass '*' (or 'all') to BROWSE instead of search: every capability in the product, in a stable order, paginated — use it when you want to see the surface rather than find one thing.",
+                "type": "string"
+              },
+              "routing_token": {
+                "description": "The `routing_token` from the last listProducts call or product_ambiguous refusal — it carries what that step concluded about the user's request, signed. Always pass the most recent one. When it reports a clash, send the user's answer in `user_words` alongside it; neither works alone.",
+                "type": "string"
+              },
+              "user_words": {
+                "description": "The USER'S OWN words, verbatim, that settle which product this is — either the product's name or a term only one product uses ('quality gate', 'test plan'). Quote them; do not paraphrase, and do not write words the user did not say. When a query could mean either product this is what lifts the refusal, because it is checked against the index rather than taken on trust.",
+                "type": "string"
+              }
+            },
+            "required": ["query","product"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "21634b97091bcb897243b2fd5eb9d2d774afd238a8db18bbf7397604dbfd7c22",
+          "schemaHash": "19c89843509806a4fd03587517ad005806a0833cfac252c9e5de6c7aab7f4262"
+        },
+        "setupBrowserStackAppAutomateTests": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Set Up App Automate Tests"
+          },
+          "approved": true,
+          "description": "Set up BrowserStack App Automate SDK integration for Appium-based mobile app testing. ONLY for Appium based framework . This tool configures SDK for various languages with appium. For pre-built Espresso or XCUITest test suites, use 'runAppTestsOnBrowserStack' instead.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "62de9e16572ad1fcb8e021cc6c8a1a3ef7de2196abaee24c8f7ef978ad1cb6ad",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "accessibility": {
+                "default": false,
+                "description": "Run App Accessibility (WCAG) checks on the screens the tests touch; Android 11+ or iOS 14+.",
+                "type": "boolean"
+              },
+              "appPath": {
+                "description": "Path to the mobile app file (.apk for Android, .ipa for iOS). Can be a local file path or a BrowserStack app URL (bs://)",
+                "type": "string"
+              },
+              "detectedFramework": {
+                "description": "The mobile automation framework configured in the project. Example: 'appium'",
+                "enum": ["appium"],
+                "type": "string"
+              },
+              "detectedLanguage": {
+                "description": "The programming language used in the project. Supports Java and C#. Example: 'java', 'csharp'",
+                "enum": ["java","nodejs","python","ruby","csharp"],
+                "type": "string"
+              },
+              "detectedTestingFramework": {
+                "description": "The testing framework used in the project. Be precise with framework selection Example: 'testng', 'behave', 'pytest', 'robot'",
+                "enum": ["testng","junit5","junit4","selenide","jbehave","serenity","cucumberTestng","cucumberJunit4","cucumberJunit5","webdriverio","nightwatch","jest","mocha","cucumberJs","robot","pytest","behave","lettuce","rspec","cucumberRuby","nunit","mstest","xunit","specflow","reqnroll"],
+                "type": "string"
+              },
+              "devices": {
+                "default": [],
+                "description": "Tuples describing target mobile devices. Add device only when user asks explicitly for it. Defaults to [] . Example: [['android', 'Samsung Galaxy S24', '14'], ['ios', 'iPhone 15', '17']]",
+                "items": {
+                  "properties": {
+                    "deviceName": {
+                      "description": "Device name, e.g. 'Samsung Galaxy S24', 'Google Pixel 8', 'iPhone 15', 'iPhone 14 Pro'",
+                      "type": "string"
+                    },
+                    "osVersion": {
+                      "description": "OS version, e.g. '14', '16', '17', 'latest'",
+                      "type": "string"
+                    },
+                    "platform": {
+                      "description": "Platform name: 'android' or 'ios'",
+                      "enum": ["android","ios"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["platform","deviceName","osVersion"],
+                  "type": "object"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              "project": {
+                "default": "BStack-AppAutomate-Suite",
+                "description": "Project name for organizing test runs on BrowserStack.",
+                "type": "string"
+              }
+            },
+            "required": ["detectedFramework","detectedTestingFramework","detectedLanguage","appPath"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.635Z",
+          "proseHash": "ba9924788f7fc2de0ec3e4132f7c668d4a273d9f5fb860369f6224ba193617af",
+          "schemaHash": "41d62e75c90aaefd9997b37344171bec2df5160a98f3e2982b9db77f554c98a1"
+        },
+        "setupBrowserStackAutomateTests": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "Set Up Automate Tests"
+          },
+          "approved": true,
+          "description": "Set up and run automated web-based tests on BrowserStack using the BrowserStack SDK. Use this tool for functional or integration test setup on BrowserStack only. For any visual testing or Percy integration, use the dedicated Percy setup tool. Example prompts: run this test on browserstack; set up this project for browserstack.",
+          "firstSeen": "2026-10-29T18:07:27.611Z",
+          "hash": "f505cecffcfd0f66928e8684de84c008d457a0dc24ba8a527c61bfd1d94bf6d6",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "accessibility": {
+                "default": false,
+                "description": "Run Accessibility (WCAG) checks during the tests: writes accessibility: true in browserstack.yml.",
+                "type": "boolean"
+              },
+              "detectedBrowserAutomationFramework": {
+                "enum": ["playwright","selenium","cypress","webdriverio"],
+                "type": "string"
+              },
+              "detectedLanguage": {
+                "enum": ["nodejs","python","java","csharp","ruby"],
+                "type": "string"
+              },
+              "detectedTestingFramework": {
+                "enum": ["jest","codeceptjs","playwright","pytest","robot","behave","cucumber","nightwatch","mocha","junit4","junit5","testng","cypress","nunit","mstest","xunit","specflow","reqnroll","rspec","serenity"],
+                "type": "string"
+              },
+              "devices": {
+                "default": [],
+                "description": "Device objects array. Use the object format directly - no transformation needed. Add only when user explicitly requests devices. Examples: [{ platform: 'windows', osVersion: '11', browser: 'chrome', browserVersion: 'latest' }] or [{ platform: 'android', deviceName: 'Samsung Galaxy S24', osVersion: '14', browser: 'chrome' }].",
+                "items": {
+                  "properties": {
+                    "browser": {
+                      "description": "Browser name, e.g. 'chrome', 'safari', 'edge', 'firefox'",
+                      "type": "string"
+                    },
+                    "browserVersion": {
+                      "description": "Browser version for desktop platforms only (windows, macos), e.g. '132', 'latest', 'oldest'. Not used for mobile devices (android, ios).",
+                      "type": "string"
+                    },
+                    "deviceName": {
+                      "description": "Device name for mobile platforms, e.g. 'iPhone 15', 'Samsung Galaxy S24'",
+                      "type": "string"
+                    },
+                    "osVersion": {
+                      "description": "OS version, e.g. '11', 'Sequoia', '14', '17', 'latest'",
+                      "type": "string"
+                    },
+                    "platform": {
+                      "description": "Platform name, e.g. 'windows', 'macos', 'android', 'ios'",
+                      "enum": ["windows","macos","android","ios"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["platform","osVersion"],
+                  "type": "object"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              "projectName": {
+                "description": "A single name for your project to organize all your tests.",
+                "type": "string"
+              }
+            },
+            "required": ["projectName","detectedLanguage","detectedBrowserAutomationFramework","detectedTestingFramework"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.632Z",
+          "proseHash": "3e7683ab2c2417bed4667033cd2e8e87eea86322f23b8e383823ea15bde90a58",
+          "schemaHash": "917ae48bbd810e76c31d74d26cf3d1f0dd4c85b7076184cf1bcbef70515cfb85"
+        },
+        "startAccessibilityScan": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true,
+            "readOnlyHint": false,
+            "title": "Start Accessibility Scan"
+          },
+          "approved": true,
+          "description": "Scan a web page URL for accessibility issues and get a CSV report. For a mobile app, run it on App Automate with accessibility on (setupBrowserStackAppAutomateTests), then fetchAccessibilityIssues.",
+          "firstSeen": "2026-10-29T18:07:27.610Z",
+          "hash": "647e8f0f0b7f2ab77ea4c51877ff13fed884a3adb5658bc181cf02f5a851054f",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "advancedRules": {
+                "description": "Run the advanced accessibility rules (default true).",
+                "type": "boolean"
+              },
+              "authConfigId": {
+                "description": "Optional auth config ID for authenticated scans",
+                "type": "number"
+              },
+              "bestPractices": {
+                "description": "Also report best-practice issues (default false).",
+                "type": "boolean"
+              },
+              "experimentalRules": {
+                "description": "Run the experimental accessibility rules (default true).",
+                "type": "boolean"
+              },
+              "name": {
+                "description": "Name of the accessibility scan",
+                "type": "string"
+              },
+              "needsReview": {
+                "description": "Also report \"needs review\" issues to check by hand (default true).",
+                "type": "boolean"
+              },
+              "pageURL": {
+                "description": "The web page URL to scan for accessibility issues",
+                "type": "string"
+              },
+              "wcagVersion": {
+                "description": "WCAG version and level to check against, e.g. \"wcag22aa\", or \"rgaa41\" for RGAA 4.1 (default \"wcag21aa\").",
+                "enum": ["wcag2a","wcag2aa","wcag2aaa","wcag21a","wcag21aa","wcag21aaa","wcag22a","wcag22aa","wcag22aaa","rgaa41"],
+                "type": "string"
+              }
+            },
+            "required": ["name","pageURL"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.631Z",
+          "proseHash": "7efa02e6921a3d22d4f4b3cebeb16c4c73848eed1a6f31ab54700027ec568ddd",
+          "schemaHash": "664dd0da78964faca0371f5830054d113386083a029d425fc9230ee9da17568a"
+        },
+        "submitFeedback": {
+          "annotations": null,
+          "approved": true,
+          "description": "Report a blocker, tool error, missing capability, or user feedback to BrowserStack. Never include PII or credentials.",
+          "firstSeen": "2026-10-29T18:16:49.636Z",
+          "hash": "c35804ea8f56ccf9f1c1697cdf18008bbefc57047fdf16e741890e9dee5de0bd",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "category": {
+                "description": "Kind of report",
+                "enum": ["missing_capability","tool_error","unclear_response","positive","other"],
+                "type": "string"
+              },
+              "intent": {
+                "description": "What the user was trying to achieve",
+                "maxLength": 300,
+                "type": "string"
+              },
+              "message": {
+                "description": "What you tried, what happened, what you expected",
+                "maxLength": 2000,
+                "minLength": 10,
+                "type": "string"
+              },
+              "toolName": {
+                "description": "Tool the report is about, if any",
+                "maxLength": 100,
+                "type": "string"
+              }
+            },
+            "required": ["message","category"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.636Z",
+          "proseHash": "7260f7bc3d8582719c8c84f1bbb1757891a0eab8ffdcc82d3a0db50539a87650",
+          "schemaHash": "b7791a981d4b1d157a67797252fe6b018bb1ba72127531cee443a66997d6d5bd"
+        },
+        "takeAppScreenshot": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Take App Screenshot"
+          },
+          "approved": true,
+          "description": "Use this tool to take a screenshot of an app running on a BrowserStack device. This is useful for visual testing and debugging.",
+          "firstSeen": "2026-10-29T18:07:27.614Z",
+          "hash": "6e4ab0a0fe961641b527d1512f0d4b9285e34adbad4959a32229c92f02b6f3e9",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "appPath": {
+                "description": "The path to the .apk or .ipa file. Required for app installation. Must be located inside the directory set in MCP_UPLOAD_BASE_DIR.",
+                "type": "string"
+              },
+              "desiredPhone": {
+                "description": "The full name of the device to run the app on. Example: 'iPhone 12 Pro' or 'Samsung Galaxy S20'. Always ask the user for the device they want to use.",
+                "type": "string"
+              },
+              "desiredPlatform": {
+                "description": "Platform to run the app on. Either 'android' or 'ios'.",
+                "enum": ["android","ios"],
+                "type": "string"
+              },
+              "desiredPlatformVersion": {
+                "description": "The platform version to run the app on. Use 'latest' or 'oldest' for dynamic resolution.",
+                "type": "string"
+              }
+            },
+            "required": ["desiredPhone","desiredPlatformVersion","desiredPlatform","appPath"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:07:27.614Z",
+          "proseHash": "687870513f1c9e1627fc5c9cc4babe9d75b6388ef9e0554431378d09922ea90e",
+          "schemaHash": "566f845473250fc16583c5b15cc13daa36a82916e9ecd047d843493ca94a11ed"
+        },
+        "updateTestCase": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Update Test Case"
+          },
+          "approved": true,
+          "description": "Update an existing test case in BrowserStack Test Management. Any subset of the following fields may be changed: name, description, preconditions, test_case_steps, owner, priority, case_type, automation_status, status, tags, issues, custom_fields. Only the supplied fields are modified. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.612Z",
+          "hash": "46de186931fcb9bddf2ada333a1ec432f724bf32c1ac8ef97268d6e2c96dbaeb",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "automation_status": {
+                "description": "Updated automation status. Use internal name such as 'not_automated', 'automated', 'automation_not_required', 'cannot_be_automated', or 'obsolete'.",
+                "type": "string"
+              },
+              "case_type": {
+                "description": "Updated test case type. Accepts either display name (e.g. 'Functional', 'Regression', 'Smoke & Sanity') or internal name (e.g. 'functional', 'smoke_sanity'). Valid values are per-project.",
+                "type": "string"
+              },
+              "custom_fields": {
+                "additionalProperties": {
+                  "anyOf": [{
+                      "type": "string"
+                    },{
+                      "type": "number"
+                    },{
+                      "type": "boolean"
+                    },{
+                      "items": {
+                        "type": ["string","number"]
+                      },
+                      "type": "array"
+                    }]
+                },
+                "description": "Map of custom field NAME to value; use an array for multi-select fields.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "description": {
+                "description": "Updated brief description of the test case.",
+                "type": "string"
+              },
+              "issues": {
+                "description": "Replacement list of linked Jira/Asana/Azure issue IDs for the test case.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "Updated name of the test case.",
+                "type": "string"
+              },
+              "owner": {
+                "description": "Email of the test case owner.",
+                "format": "email",
+                "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+                "type": "string"
+              },
+              "preconditions": {
+                "description": "Updated preconditions for the test case.",
+                "type": "string"
+              },
+              "priority": {
+                "description": "Updated priority. Accepts either display name (e.g. 'Medium', 'Critical', 'High', 'Low') or internal name (e.g. 'medium'). Valid values are per-project and discoverable via the form-fields endpoint.",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "The ID of the BrowserStack project containing the test case to update.",
+                "type": "string"
+              },
+              "status": {
+                "description": "Updated review status of the test case (e.g. 'active', 'draft', 'in_review', 'outdated', 'rejected').",
+                "type": "string"
+              },
+              "tags": {
+                "description": "Replacement list of tags for the test case.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "test_case_identifier": {
+                "description": "The ID of the test case to update. This can be found using the listTestCases tool.",
+                "type": "string"
+              },
+              "test_case_steps": {
+                "description": "Updated list of test case steps with expected results.",
+                "items": {
+                  "properties": {
+                    "result": {
+                      "description": "The expected result of this step.",
+                      "type": "string"
+                    },
+                    "step": {
+                      "description": "The action to perform in this step.",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["step","result"],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["project_identifier","test_case_identifier"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.633Z",
+          "proseHash": "6120917c5601587e0590fff12944259ded2905452dc48e83a05ab552ebd50eb8",
+          "schemaHash": "cd2ea0f244ac4c01da8b9f78ff317a925079650188c3bbc81268b26b6abec0bf"
+        },
+        "updateTestRun": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Update Test Run"
+          },
+          "approved": true,
+          "description": "Update a test run's metadata and/or add test cases to it. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "e13b374ebd3559b90eab018254258a1c3bd0f8f0ce75ef30b5aa46fae6c21288",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "project_identifier": {
+                "description": "Identifier of the project (Starts with 'PR-')",
+                "type": "string"
+              },
+              "test_run": {
+                "properties": {
+                  "add_test_cases": {
+                    "description": "Test cases to add to the run",
+                    "items": {
+                      "properties": {
+                        "configuration_ids": {
+                          "description": "Configuration IDs to apply",
+                          "items": {
+                            "type": "number"
+                          },
+                          "type": "array"
+                        },
+                        "test_case_ids": {
+                          "description": "Test case IDs, e.g. TC-123",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": ["test_case_ids"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "name": {
+                    "description": "New name of the test run",
+                    "type": "string"
+                  },
+                  "preserve_existing_results": {
+                    "description": "Keep existing results when adding cases (default true)",
+                    "type": "boolean"
+                  },
+                  "run_state": {
+                    "description": "Updated state of the test run",
+                    "enum": ["new_run","in_progress","under_review","rejected","done","closed"],
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "test_run_id": {
+                "description": "Test run identifier (e.g., TR-678)",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","test_run_id","test_run"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "ad2d7275bef58154231298d72eed237b4158bec42c58e49958b3b068ae9fe40d",
+          "schemaHash": "c0245f79f81e17a3ac9b9c971a06f1de84ba166992d915861b16e4d65682c55c"
+        },
+        "uploadProductRequirementFile": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "Upload Product Requirement File"
+          },
+          "approved": true,
+          "description": "Upload files (e.g., PDRs, PDFs) to BrowserStack Test Management and retrieve a file mapping ID. This is utilized for generating test cases from files and is part of the Test Case Generator AI Agent in BrowserStack. Requires a project identifier (PR-*). No tool here lists projects, so if you do not have one, use the capability functions to list the Test Management projects, then retry this tool with the identifier they return.",
+          "firstSeen": "2026-10-29T18:07:27.613Z",
+          "hash": "72ce59026064730c888323a81ff673c4297a9b70547aa29c7e5c2c7b53909643",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "file_path": {
+                "description": "Full path to the file that should be uploaded. Must be inside the directory configured via the MCP_UPLOAD_BASE_DIR environment variable.",
+                "type": "string"
+              },
+              "project_identifier": {
+                "description": "ID of the project where the file should be uploaded. Do not assume it, always ask user for it.",
+                "type": "string"
+              }
+            },
+            "required": ["project_identifier","file_path"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:16:49.634Z",
+          "proseHash": "a6df80f780dc6197222341765999626cde2541cc7f0f28923fb34e47f716f2c7",
+          "schemaHash": "fe85f62849992a8daf02c51850d6b36305fc4681bd7d13552b96e771e2951831"
+        }
+      }
+    }
+  },
+  "version": 1
+}

@@ -13,7 +13,7 @@
         "resolvedVersion": "0.5.0",
         "url": null
       },
-      "pinnedAt": "2026-10-24T17:25:14.598Z",
+      "pinnedAt": "2026-10-29T18:05:23.053Z",
       "prompts": {
 
       },
@@ -26,7 +26,7 @@
           "annotations": null,
           "approved": true,
           "description": "Creates a new AI Config within a project. Useful for setting up LLM configurations programmatically.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "9e63c4a72d77398c50ce4da80527682791d2defd0998ba8ebbe765001159f2d9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -178,7 +178,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "7074331c21a9119cdda198b8bd24c2a2577eb0658b42f70d1ada65908cd2bd9d",
           "schemaHash": "4e8c080afef986e044a2f25bbbbf6c8d1b8ac63ee35147ac56f189e0b1f17dbb"
         },
@@ -186,7 +186,7 @@
           "annotations": null,
           "approved": true,
           "description": "Adds a new variation to an AI Config, supporting experimentation or multi-model strategies.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "18de2d2bd33464330265978ddd271be17f4f36731a8ed557774150ee3577d233",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -301,7 +301,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "c660aeecebb69069a0385e2a5a960447edadba56ca5c159a57d1eb1edee29c58",
           "schemaHash": "571ecd283907748b2f26d1bc41aa57658c6396fd0e601a15fbf1e0c32326ef7d"
         },
@@ -309,7 +309,7 @@
           "annotations": null,
           "approved": true,
           "description": "Creates a new feature flag within a project. AI agents can use this operation to define feature toggles for controlled rollouts, experimentation, or gated features, automating the flag setup process.\n",
-          "firstSeen": "2026-10-24T17:25:14.602Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "119fbcb679012d65c7d925a4066791dd4d92c091489b40168d5400c31c49a867",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -468,7 +468,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.602Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "efcd2c1c5e819a8881d79162a2eed2bd5ee339f082851126492b91d74e50a529",
           "schemaHash": "0f616cc461a55d7818fc420ba6c857fb8cb4a114dc0f927a449bff8a7092329b"
         },
@@ -476,7 +476,7 @@
           "annotations": null,
           "approved": true,
           "description": "Deletes an AI Config and its associated variations. Intended for cleanup or deprecation workflows.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "885d308998c6e3bc1ac2fb2592a039b79322ecf30c77837a10b72382509776c9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -499,7 +499,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "d88c9adf8212ac8f221d7c174fe8d7791a5f8aa5324cc68a70ac566be4f2ced6",
           "schemaHash": "80f4e86ef82deda795d6293b3d64f1068037440098e8c79daabdf96c623d3e4a"
         },
@@ -507,7 +507,7 @@
           "annotations": null,
           "approved": true,
           "description": "Deletes an AI Config variation.",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "4ef02e9e61a69b80aee14bf4307c5c5c74e2b7e9b53748c7269b731abf6589ad",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -533,7 +533,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "d6f834214842efc7f23c9888ac8875b38f62fd80ae5502caba962712f4b287d5",
           "schemaHash": "bd726cfa1467ba9c13df2ea29d4ffcd59cb10d81e17ee89f3e07002fd78c4397"
         },
@@ -541,7 +541,7 @@
           "annotations": null,
           "approved": true,
           "description": "Removes a feature flag from the project. Used by AI agents to clean up deprecated toggles that are no longer in use, improving system hygiene and maintainability.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "77f52cff0cdba3920421a6e039f71cfd318e1a614c0ae5188d7269916ea8a517",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -564,7 +564,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "b721f61233a19783163dec0b128418f44ea0b8b0acd757402bb94011e4377e5e",
           "schemaHash": "236544c8819a55cb22fd61dbb6d0e8af3170f889d79dd77e70dc5a9415970337"
         },
@@ -572,7 +572,7 @@
           "annotations": null,
           "approved": true,
           "description": "Retrieves details of a specific AI Config, including variations and model settings.",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "55f1ea5fe8e9cd182b63446422672c765324ac79c995c1e0ae62dc0d15956d0d",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -595,7 +595,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "cc18f761e7973a8212314dae5b175bc3ad482f34c75ff2637767c43dc537238a",
           "schemaHash": "cfc62c73905115089bf3a86dcb617cc470cca1da529e6eb1b5c8b9ad819707b2"
         },
@@ -603,7 +603,7 @@
           "annotations": null,
           "approved": true,
           "description": "Retrieves the targeting details of a specific AI Config, including individual targets, rules, and rollouts.",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "db484ae90904b310f72dee8d266ebc22c4a88c23f7458892de96053950fdfb28",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -626,7 +626,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "9c4c24da39bf353ff24eaec3a1235aab9e13d2143e24eecda0b6468d87f67017",
           "schemaHash": "aee00fcc56f7806dac58ef900fc0d86b631807934bdc1fc934e8bb560008f3f6"
         },
@@ -634,7 +634,7 @@
           "annotations": null,
           "approved": true,
           "description": "Retrieves an AI configuration variation.",
-          "firstSeen": "2026-10-24T17:25:14.604Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "abeb61a5a8f890cc368723f83f512b4ebd9fdae59731097bd6e9c0561e1f93df",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -660,7 +660,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.604Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "402cab768952ad6855f7926d9ee8900a892579931dffa7c763ea7b3a7d6f3f9c",
           "schemaHash": "86ecf63b60e01d5715af00e198f5d37cfcf0039d7c081554c7b9a8d64a4eaa53"
         },
@@ -668,7 +668,7 @@
           "annotations": null,
           "approved": true,
           "description": "Identifies which repositories have code references to a given flag, helping agents determine if they're operating on the correct repository and understand the scope of cleanup (single vs multi-repo).\n",
-          "firstSeen": "2026-10-24T17:25:14.601Z",
+          "firstSeen": "2026-10-29T18:05:23.056Z",
           "hash": "71a290fc44c536421785adecbc77fe2b3386942befaffd49133342e3fce6a3d5",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -696,7 +696,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.601Z",
+          "pinnedAt": "2026-10-29T18:05:23.056Z",
           "proseHash": "44127d6c2ab06f6a6f985ed416e062c1b84550afbf97cbf3491be6da5238fb62",
           "schemaHash": "f22f0666705d1c8e987f4c36d666d4baf68f6540a7463c9d027bea90b671db7d"
         },
@@ -704,7 +704,7 @@
           "annotations": null,
           "approved": true,
           "description": "Identifies which environments exist in a project and determines which are marked as \"critical\" (production, staging, etc.). Allows agents to programmatically identify critical environments instead of hardcoding assumptions.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "c85d1bc6f1ab03111c494afde2a71a63312a8581d1a18507448daed4893575c7",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -736,7 +736,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "160dec6815b8d66dd62cb8b3f6fd4a864be4202e680d0ea8c300e29d66731402",
           "schemaHash": "c1040200b65f9f9257d7258be777bf7b8c9e168876b7b9332ebbdce1f0a08673"
         },
@@ -744,7 +744,7 @@
           "annotations": null,
           "approved": true,
           "description": "Fetches the full configuration for a specific feature flag, including environments, variations, and targeting rules. Useful for agents auditing or managing specific feature toggles in a detailed, contextual manner.\n",
-          "firstSeen": "2026-10-24T17:25:14.602Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "672ed6f52415a60c82520fe767cb7c5f76fa6c1ca0a96fea5f776157bddcaf27",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -773,7 +773,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.602Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "f6ddb3ac46ffd3725c06d2c2740a168b92d62a09eaf49254db066c476ac4b4cb",
           "schemaHash": "624b15bd60aff10561b22cca903149c9201a9022877d5ffc1601292711568226"
         },
@@ -781,7 +781,7 @@
           "annotations": null,
           "approved": true,
           "description": "Returns lifecycle status (new, active, inactive, launched) based on actual usage patterns, evaluation counts, and configuration stability. This is the key intelligence for removal readiness assessment.\n",
-          "firstSeen": "2026-10-24T17:25:14.602Z",
+          "firstSeen": "2026-10-29T18:05:23.056Z",
           "hash": "2b54626c0edaa4f25b3a829c906ce5e77b4ba211d49a328b05a6c127aa8c34c2",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -807,7 +807,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.602Z",
+          "pinnedAt": "2026-10-29T18:05:23.056Z",
           "proseHash": "c218d79313509a670364fc530dd1434bce7ded4b874c3a9286a685195aac4bc3",
           "schemaHash": "87d09c3f94ee9798af29753852a5e13ccd082f8802c2336a44ce6b4949adfd88"
         },
@@ -815,7 +815,7 @@
           "annotations": null,
           "approved": true,
           "description": "Retrieves AI configuration settings for a specific project. This endpoint allows agents to access and modify AI-related configurations, ensuring that the AI's behavior aligns with project requirements and user expectations.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "1a6ea0960a6bfc70d2d642da3129d0571fb1b37b951c9750cee0e1add7b9da20",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -847,7 +847,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "5bb9859ce0b08a5bfb85aa21a4d4bef36abe22218aa0e24bb3b0e4b23c7dde7c",
           "schemaHash": "4e8ec66847e09d5a2357ab5d28f531931981eaae46d86f0b71f1696f8cfcf55c"
         },
@@ -855,7 +855,7 @@
           "annotations": null,
           "approved": true,
           "description": "Retrieves all feature flags within a project, including metadata and targeting rules. Enables AI agents to enumerate existing flags for inspection, configuration analysis, or generating flag usage reports across environments.\n",
-          "firstSeen": "2026-10-24T17:25:14.602Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "acb8dd3c9c2951d0bb9abedc229ba608f97185e5237d89ee045f8896e95f69c6",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -905,7 +905,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.602Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "98bd30a4c01cdb12200a0fc6ab10cb778b4039ee8a6868164963fc4256c24f65",
           "schemaHash": "5990d32a56ebc884cdb119005553a64fac6e381cad704fb02284d54bfe6293f6"
         },
@@ -913,7 +913,7 @@
           "annotations": null,
           "approved": true,
           "description": "Updates metadata or configuration of an existing AI Config.",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "24cc018e552bf190b0b436cf78bcb36c8ae12de84bbf35de23da4e19c0bea4a9",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -966,7 +966,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "d55e8a874e7871144881a92e95c98b71ba3e982cddf800723c36bc731f300018",
           "schemaHash": "7692128560664d920aac0d44c3f3b824193dbe9acfeaf39910bb411469de9a37"
         },
@@ -974,7 +974,7 @@
           "annotations": null,
           "approved": true,
           "description": "Updates the targeting of an existing AI Config.",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "e299d202c632b659d771c91081d5ec60c4d1993e2d74cbf53cbfd55d4b77d07a",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1019,7 +1019,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "a627772927b8cfab4cb44d037978f15ae661d25aa648d9a69d28aa7075b82a25",
           "schemaHash": "e4259b6591e219f74cdec0e8fa862e4f0d5b98567428bcc3b15a8342ecae8460"
         },
@@ -1027,7 +1027,7 @@
           "annotations": null,
           "approved": true,
           "description": "Updates a specific variation within an AI Config. Enables fine-tuned control of model behavior.\n",
-          "firstSeen": "2026-10-24T17:25:14.604Z",
+          "firstSeen": "2026-10-29T18:05:23.058Z",
           "hash": "dc7bb93a6458bb9faaad76118485c9aa624a620274c1cbd97eb69d336c5f0a03",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1147,7 +1147,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.604Z",
+          "pinnedAt": "2026-10-29T18:05:23.058Z",
           "proseHash": "60ad69a995f1d48286a6f68f3ef5bc3e5f10346a71c640222c047c47cb1bff32",
           "schemaHash": "0e40e7c255faae46cd9cecb8c2909f6d51d1ededae59d796ae9c6fa17ae74690"
         },
@@ -1155,7 +1155,7 @@
           "annotations": null,
           "approved": true,
           "description": "Updates the configuration of an existing feature flag. Enables agents to change targeting rules, modify variations, or adapt rollout strategies dynamically in response to user behavior or experiment results.\n",
-          "firstSeen": "2026-10-24T17:25:14.603Z",
+          "firstSeen": "2026-10-29T18:05:23.057Z",
           "hash": "436c9b4a63db2620bea20747ac00eae865432ded45f39d490a068cd3b39cbc8d",
           "inputSchema": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1213,7 +1213,7 @@
             "required": ["request"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-24T17:25:14.603Z",
+          "pinnedAt": "2026-10-29T18:05:23.057Z",
           "proseHash": "2bc8e0a9919139e545e4e9f904d70f1476394d605d983511718d19c824b9fe56",
           "schemaHash": "22f5efa977dacf194cc6562b4aff504f48f68b5ce1e1faa7082a5c06ec91c8f5"
         }

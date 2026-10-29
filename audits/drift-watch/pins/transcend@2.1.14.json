@@ -1,0 +1,827 @@
+{
+  "policyVersion": "rugsnare-1.4.3",
+  "servers": {
+    "transcend": {
+      "cmd": {
+        "args": ["node_modules/@transcend-io/mcp-server-assessment/dist/cli.mjs"],
+        "command": "node"
+      },
+      "identity": {
+        "entryPath": "dist/cli.mjs",
+        "identityHash": "sha256:804ace50b23bde06207504593deb46b70be8ad6624070339d64867bc946fac53",
+        "package": "@transcend-io/mcp-server-assessment",
+        "resolvedVersion": "2.1.14",
+        "url": null
+      },
+      "pinnedAt": "2026-10-29T18:08:55.484Z",
+      "prompts": {
+
+      },
+      "resources": {
+
+      },
+      "scannedAgainst": "@transcend-io/mcp-server-assessment@2.1.14",
+      "tools": {
+        "assessments_add_section": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Add a new section (with optional inline questions) to an existing assessment form template. Useful for building templates incrementally or adding sections to imported templates. Same auto-corrections as assessments_create_template apply to questions.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "509748e6b125f85405121c52da0bd2e33bb7c80ff2865c2b5a5f1c4efdbdbe12",
+          "inputSchema": {
+            "properties": {
+              "questions": {
+                "description": "Array of question objects: [{title, type, subType?, description?, placeholder?, isRequired?, referenceId?, answerOptions?: [{value}], allowSelectOther?, requireRiskEvaluation?}]",
+                "items": {
+                  "additionalProperties": {
+
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "templateId": {
+                "description": "ID of the assessment form template to add the section to",
+                "type": "string"
+              },
+              "title": {
+                "description": "Title of the new section",
+                "type": "string"
+              }
+            },
+            "required": ["templateId","title"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "327d143ea8bcbb34d6adf86b35d5b69e5732e0a368eec48dd2cc99c511eea486",
+          "schemaHash": "d2c13e909da9b8a3775047664e3ef3a9ca093e1997c8d33776d5a4572aa855b4"
+        },
+        "assessments_answer_question": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Answer an assessment question by selecting existing answer options or providing free-text values. For SINGLE_SELECT/MULTI_SELECT questions, provide assessmentAnswerIds from the answerOptions. For SHORT_ANSWER_TEXT/LONG_ANSWER_TEXT, provide assessmentAnswerValues with {value, isUserCreated: true}.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "e463cc319e4c03e3f0d84588e479ecf755970589797d66b788648459e0131539",
+          "inputSchema": {
+            "properties": {
+              "assessmentAnswerIds": {
+                "description": "IDs of existing answer options to select (for SINGLE_SELECT/MULTI_SELECT questions)",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "assessmentAnswerValues": {
+                "description": "Free-text answer values to create and select (for text questions). Each item: {value: string, isUserCreated: boolean}",
+                "items": {
+                  "properties": {
+                    "isUserCreated": {
+                      "description": "True when this value is newly authored by the caller (rather than an existing option). Use true for free-text answers.",
+                      "type": "boolean"
+                    },
+                    "value": {
+                      "description": "The free-text answer content to record for the question.",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["value","isUserCreated"],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "assessmentQuestionId": {
+                "description": "ID of the assessment question to answer",
+                "type": "string"
+              }
+            },
+            "required": ["assessmentQuestionId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "256963c3e438e7d13ecc05e640f78efaae5d8a5b4af31089f495b9d64a29eac1",
+          "schemaHash": "3e173e4f2d1b548c2137d2c883c204469c6027dcc44e68a2e1692adb2e2a0916"
+        },
+        "assessments_create": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create a new privacy assessment inside an assessment group, resolved by name through assessments_list_groups. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
+          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "hash": "5b4b21ea07dc784f6ed65bbfff8dcfcf990232d4122d6517260ce9159124b113",
+          "inputSchema": {
+            "properties": {
+              "assessmentGroupId": {
+                "description": "Group to create the assessment in. Find it by name with assessments_list_groups. If no group is built from the template you want, create one with assessments_create_group rather than guessing at an existing group.",
+                "type": "string"
+              },
+              "assigneeIds": {
+                "description": "User IDs to assign the assessment to. Assign here rather than later: a new form is DRAFT, and a DRAFT form rejects answers. Assigning it moves it to SHARED, where it can be answered.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "title": {
+                "description": "Title of the assessment",
+                "type": "string"
+              }
+            },
+            "required": ["title","assessmentGroupId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:17:13.334Z",
+          "proseHash": "d04390a2438c6d8393d6a4272a67d6b850a0d37040b02fe725ead03adf6e7617",
+          "schemaHash": "d531d17298d72278c7f93cf0b4aa80d2d9ba6a99a77a77fcb9602ae0ba140f71"
+        },
+        "assessments_create_group": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create a new assessment group linked to a template. Assessment groups are containers for assessments. Surface the returned `groupUrl` verbatim.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "f036dbe21da9dbf635f1a2774370c316ffa1b403ba670601a54f5a21f573f06c",
+          "inputSchema": {
+            "properties": {
+              "description": {
+                "description": "Description of the assessment group (optional)",
+                "type": "string"
+              },
+              "reviewerIds": {
+                "description": "IDs of users assigned to review new assessments in this group (optional)",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "templateId": {
+                "description": "ID of the assessment template to link this group to",
+                "type": "string"
+              },
+              "title": {
+                "description": "Title of the assessment group",
+                "type": "string"
+              }
+            },
+            "required": ["title","templateId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "04ed7f34d61b06d71287d6ad07f9b0ce7e3840b557a308ab9f420b3ff1868262",
+          "schemaHash": "7c0427789a1f7ab823b66037f5a754d720b0f2e33886b7675da2451a4d32eb87"
+        },
+        "assessments_create_template": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create a new assessment form template with sections and questions inline. This is the \"import\" side of the JSON import/export workflow. You can provide the full template structure (sections with questions and answer options) in a single call. Question types: LONG_ANSWER_TEXT, SHORT_ANSWER_TEXT, SINGLE_SELECT, MULTI_SELECT, FILE. SubTypes: NONE, CUSTOM, USER, TEAM, DATA_SUB_CATEGORY, HAS_PERSONAL_DATA, ATTRIBUTE_KEY, SENSITIVE_CATEGORY. Auto-corrections: referenceId is auto-generated as UUID if missing or not UUID format; subType is auto-set to CUSTOM when allowSelectOther is true; requireRiskEvaluation is ignored when no riskFrameworkId is provided.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "a6f484dd60420573ef5293e631535ca756c0cbecad87ba4b336b2cb612d3a531",
+          "inputSchema": {
+            "properties": {
+              "description": {
+                "description": "Description of the template",
+                "type": "string"
+              },
+              "sections": {
+                "description": "Array of section objects with title and optional questions array",
+                "items": {
+                  "additionalProperties": {
+
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "status": {
+                "description": "Template status: DRAFT or PUBLISHED (default: DRAFT)",
+                "enum": ["DRAFT","PUBLISHED"],
+                "type": "string"
+              },
+              "title": {
+                "description": "Title of the assessment form template",
+                "type": "string"
+              }
+            },
+            "required": ["title"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "5265018fdd767941e3d556ce715f1abb8a19f7cd39dc7274fa2afb2176ca28e5",
+          "schemaHash": "90f188efba866ada5fe75a22674070ab01f1f31325366d6841c0207bf4a4c9b5"
+        },
+        "assessments_export_template": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Export a full assessment form template as JSON, including all sections, questions, answer options, and configuration. This is the \"export\" side of the JSON import/export workflow. The output can be used as input for assessments_create_template to recreate the template elsewhere.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "59b0105879035179cfc22c6b8dd5942075db409791b942e9e8a8106525b31f9d",
+          "inputSchema": {
+            "properties": {
+              "templateId": {
+                "description": "ID of the assessment form template to export",
+                "type": "string"
+              }
+            },
+            "required": ["templateId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "09460efbe07b2feb6d91cc2d4504a515140d1a6bb64b61725982ee88dca40774",
+          "schemaHash": "4f601b9a26ab35da94c6ce8854648e95a878b255ce68138109a13232d0506f97"
+        },
+        "assessments_get": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read one filled-in assessment and the answers submitted to it. Given only assessmentId it returns the section list with a question count each, NOT the question text. To read the questions, either pass questionText to get just the ones on a topic wherever they sit, or sectionIds to expand whole sections; every sectionId must exist or the call fails, and reading the form in full means passing every one of them. Reviewer feedback is counted here but read with assessments_list_comments. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
+          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "hash": "829d813a3239b49be4d003f2862915a998506cf5f6e1b7a89832757199853f20",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "ID of the assessment form to read. Call assessments_list to look one up by title or status.",
+                "type": "string"
+              },
+              "questionText": {
+                "description": "Return only the questions whose text matches this, with their answers, instead of whole sections. Use it to answer whether a form covers a topic — \"retention\", \"third party\" — without guessing which section holds it. Combine with sectionIds to search inside those sections.",
+                "type": "string"
+              },
+              "sectionIds": {
+                "description": "Expand these sections, returning their questions, answer options and submitted answers in full. Omit on the first call: you get the section list back and pick from it. A whole form can run to hundreds of questions, far more than fits in one response.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["assessmentId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.487Z",
+          "proseHash": "1f7df3f837ee86f93641fa88d01bf5f1a1def4a4eaab4efedf8ce47477e30557",
+          "schemaHash": "643a31001456b15c98a2cd1364664946fcc5b4367110dad5939479b2a62e51f5"
+        },
+        "assessments_list": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List all assessments in your organization. Surface the `url` on each row verbatim; never build assessment URLs from IDs.",
+          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "hash": "1db9c2a51c31449e99d1a29c5d7253f7005c2af8594c83ce837ef289a847e467",
+          "inputSchema": {
+            "properties": {
+              "assessmentGroupIds": {
+                "description": "Groups the forms belong to; see `assessments_list_groups`",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "assigneeIds": {
+                "description": "Transcend user IDs the form is assigned to. Resolve names with `admin_list_users`.",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "createdAfter": {
+                "description": "Only forms created strictly after this date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}([T ].*)?$",
+                "type": "string"
+              },
+              "createdBefore": {
+                "description": "Only forms created on or before this date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}([T ].*)?$",
+                "type": "string"
+              },
+              "dueAfter": {
+                "description": "Only forms due strictly after this date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}([T ].*)?$",
+                "type": "string"
+              },
+              "dueBefore": {
+                "description": "Only forms due on or before this date. Use for overdue.",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}([T ].*)?$",
+                "type": "string"
+              },
+              "externalAssigneeEmails": {
+                "description": "Email addresses of external (vendor) assignees",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "ids": {
+                "description": "Specific assessment form IDs to fetch",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "includeDetails": {
+                "default": false,
+                "description": "Also return assignees, reviewers, due/updated/submitted dates and lock state.",
+                "type": "boolean"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "reviewerIds": {
+                "description": "Transcend user IDs reviewing the form. Resolve names with `admin_list_users`.",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "sortBy": {
+                "description": "Column to sort on; the API offers no creation-date sort. Omit for its default order.",
+                "enum": ["title","status","submittedAt"],
+                "type": "string"
+              },
+              "sortDirection": {
+                "default": "ASC",
+                "description": "Sort direction. Only applied alongside `sortBy`.",
+                "enum": ["ASC","DESC"],
+                "type": "string"
+              },
+              "statuses": {
+                "description": "Lifecycle statuses to include. Omit for every status.",
+                "items": {
+                  "enum": ["DRAFT","SHARED","IN_PROGRESS","IN_REVIEW","CHANGES_REQUESTED","REJECTED","APPROVED"],
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "text": {
+                "description": "Free-text match on the assessment title",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.487Z",
+          "proseHash": "caef7bf3f6ad59d9ea20079a6552147913ce05052ec81b3ca8fea68038be0966",
+          "schemaHash": "a61f2e7057ba59feeb775c47e798226dc29e9a3dfbed45db78ce4a8da1006d0d"
+        },
+        "assessments_list_comments": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "Read the reviewer feedback on one assessment — the comments left on it during review. Returns feedback from all three levels at once, whether it was left on the form as a whole, on a section, or on a single question, each row naming what it sits on. Resolution is per thread on the root comment (no parentCommentId); replies close when that root is resolved. Narrow with levels, authorIds, and resolution (OPEN/RESOLVED/ALL). Use this rather than assessments_get, which only counts feedback. To reply or resolve a thread, call assessments_write_comment with the root id, level, and targetId.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "35620f1d987e405c85314c4a183fda84c04c4aa2b1ac4d5b7927d37f7b46f373",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "ID of the assessment form whose feedback you want. Call assessments_list to look one up by title or status.",
+                "type": "string"
+              },
+              "authorIds": {
+                "description": "Only comments written by these people. Call admin_list_users to turn a name or email into an id, or assessments_list with includeDetails to see who is reviewing a form. Omit for every author.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "levels": {
+                "description": "Only feedback left at these levels: FORM for the assessment as a whole, SECTION for one of its sections, QUESTION for a single question. Use QUESTION for \"what did reviewers say about the answers\". Omit for every level.",
+                "items": {
+                  "enum": ["FORM","SECTION","QUESTION"],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "resolution": {
+                "default": "OPEN",
+                "description": "OPEN / RESOLVED filter by the root of each thread (the row with no parentCommentId). A reply is open only while its root is unresolved — replies are not resolved on their own. ALL returns both. Default OPEN.",
+                "enum": ["OPEN","RESOLVED","ALL"],
+                "type": "string"
+              }
+            },
+            "required": ["assessmentId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "f2409f9192859d633c861de585f4013fe89c483967309c3184d28a24088fdcdc",
+          "schemaHash": "5722479101d319bf48d7dfe94bc25732af6e2e2eca4703cdd1cc3dcc2b531ade"
+        },
+        "assessments_list_groups": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List all assessment groups. Groups are containers for assessments and are linked to templates. Use this to find the right group ID for creating assessments. To reach the template behind a form, pass its `assessmentGroupId` as `ids` and read `assessmentFormTemplate`. Surface the `groupUrl` on each row verbatim.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "34c3c7354b5b1b86f2dc6d2fc8045a5fa17593c8547ebfa22b4d0b27c4a9bc8a",
+          "inputSchema": {
+            "properties": {
+              "ids": {
+                "description": "Specific group IDs, e.g. the `assessmentGroupId` on an `assessments_list` row",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "templateIds": {
+                "description": "Groups built from these templates; see `assessments_list_templates`",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "text": {
+                "description": "Free-text match on the group title and description",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "6461be414d4292c575c02b005a165e76aea827e38b211a6669c8c01f7a2ced5a",
+          "schemaHash": "0e8d9a50edc1babca0ed7ea2648ecf17a6bcf6050b947b8648791a75dfbe8ae8"
+        },
+        "assessments_list_templates": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": true
+          },
+          "approved": true,
+          "description": "List the blank assessment templates. Only `PUBLISHED` ones can build new assessments.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "0d12e502ae8df89116dd143c6c7d40fa45fa23b869b57dc77ffd3ae08d2378cb",
+          "inputSchema": {
+            "properties": {
+              "ids": {
+                "description": "Specific template IDs to fetch",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "limit": {
+                "default": 50,
+                "description": "Results per page (1-100, default 50).",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "description": "Results to skip (default 0).",
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "statuses": {
+                "description": "Publication statuses to include. Omit for both.",
+                "items": {
+                  "enum": ["DRAFT","PUBLISHED"],
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "text": {
+                "description": "Free-text match on the template title and description",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "17704dffd4a6f5d63a5e70d1f0de38b07fd17b09c3321823b6917a513ed1047c",
+          "schemaHash": "89cc6e68eb89ca1506390795ca1d986f50b5e2cf156fd0b95d7951dfacd7e2d9"
+        },
+        "assessments_prefill": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Create an assessment form, fill in the answers you supply, and assign it for review in one call. Combines: create form → assign it → read its questions → answer each → optionally submit. Requires assigneeIds or assigneeEmails: a form accepts no answers until it is assigned. The answers are yours to provide; nothing is generated for you. Surface the returned `url` verbatim.",
+          "firstSeen": "2026-10-29T18:08:55.489Z",
+          "hash": "ea79d83238e943138afade636f09037e4ff61c1944a11c95b38c8e98f5ab85b1",
+          "inputSchema": {
+            "properties": {
+              "answers": {
+                "additionalProperties": {
+                  "anyOf": [{
+                      "type": "string"
+                    },{
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }]
+                },
+                "description": "Map of answers keyed by question title or referenceId, both of which come from assessments_export_template on the template you are creating from. Prefer referenceId; it survives rewording. A string for text and single-select, an array for multi-select. Select values are matched against the question answerOptions, so copy those exactly where they fit. A question holds at most one written-in answer, so values matching no option are joined into a single one and are stored together rather than separately selectable. Where a question allows no written-in answer they are not stored at all and come back under missedOptionValues. Prefilling never edits the shared template. Keep SHORT_ANSWER_TEXT under 255 characters.",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "assessmentGroupId": {
+                "description": "Group to create the form in. Find it by name with assessments_list_groups. If no group is built from the template you want, create one with assessments_create_group rather than guessing at an existing group.",
+                "type": "string"
+              },
+              "assigneeEmails": {
+                "description": "External email addresses to assign before prefilling. Provide this or assigneeIds so the form can leave DRAFT. They can answer but cannot submit, so submitForReview also needs assigneeIds.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "assigneeIds": {
+                "description": "Internal user IDs to assign before prefilling. Provide this or assigneeEmails so the form can leave DRAFT.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "includeDetails": {
+                "default": false,
+                "description": "When true, include one result row per question. Default false returns compact counts.",
+                "type": "boolean"
+              },
+              "reviewerIds": {
+                "description": "User IDs to set as reviewers (optional)",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "submitForReview": {
+                "description": "Whether to automatically submit the form for review after prefilling (default: false)",
+                "type": "boolean"
+              },
+              "title": {
+                "description": "Title for the new assessment form",
+                "type": "string"
+              }
+            },
+            "required": ["title","assessmentGroupId","answers"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:17:13.336Z",
+          "proseHash": "5000f8a1ee07d5624dd352173d4e6b1f70a64c3d4b6fc89a5e5a9d718f1f830b",
+          "schemaHash": "bd94d91119e012417bbc5848160e6f0d5e0a3928be201915f2c5b12a9381f93e"
+        },
+        "assessments_submit_response": {
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Submit an assessment form for review. Optionally specify which sections to submit. This transitions the assessment toward the IN_REVIEW status. The returned `url` points at the assessment-group page where reviewers find the submitted form — surface it verbatim; never build assessment URLs from IDs.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "cdd2e1bccc0c30759fa5809947470da54ddb7536887844763059e0cceb71ceff",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "ID of the assessment to submit for review",
+                "type": "string"
+              },
+              "assessmentSectionIds": {
+                "description": "Array of section IDs to submit for review. Required by the API.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["assessmentId","assessmentSectionIds"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "2397b5c019a42b427b8093712c7423586c67d466774ed07ddb7e67c7d641878e",
+          "schemaHash": "4bf12fee114daa3bac2040285b2c4ace39eea8e7456ad775d0e7f60309bc3904"
+        },
+        "assessments_update": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Update an existing assessment. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "454383580636fe242d1076e18e73c0a236312d5d510cad07e873a4cfeb3b2ff2",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "ID of the assessment to update",
+                "type": "string"
+              },
+              "description": {
+                "description": "New description",
+                "type": "string"
+              },
+              "dueDate": {
+                "description": "New due date (ISO format)",
+                "type": "string"
+              },
+              "reviewerIds": {
+                "description": "IDs of users assigned to review this assessment",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "status": {
+                "description": "New status",
+                "enum": ["DRAFT","SHARED","IN_PROGRESS","IN_REVIEW","CHANGES_REQUESTED","REJECTED","APPROVED"],
+                "type": "string"
+              },
+              "title": {
+                "description": "New title for the assessment",
+                "type": "string"
+              }
+            },
+            "required": ["assessmentId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "1b958355d6ad04a3d30852e6a2120b2f93d3d674b09413900df13531d081092a",
+          "schemaHash": "9fe26ab043cdd37e4405fe36020a987ce38c35f1788481d8adf6aaa80068ebf9"
+        },
+        "assessments_update_assignees": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Assign internal users (by ID) or external users (by email) to an assessment form. This also transitions DRAFT assessments to SHARED status.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "9290184e34321c4b0e06ba9d102efecf9680e88c29ee223da984f9eae0ff8a82",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "ID of the assessment form to update assignees for",
+                "type": "string"
+              },
+              "assigneeIds": {
+                "description": "Array of internal user IDs to assign to the assessment",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "externalAssigneeEmails": {
+                "description": "Array of external email addresses to assign to the assessment",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": ["assessmentId"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "d36147032b150b104090e5350877490581d4bdd4f812a00b62bbd2d0a068cb97",
+          "schemaHash": "d80ca1b8e3d5c5fc76cbcb6dabe1128f3f63a3742aee2f2c5a7f98cc5aa20db6"
+        },
+        "assessments_write_comment": {
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "readOnlyHint": false
+          },
+          "approved": true,
+          "description": "Leave, reply to, edit, or resolve reviewer feedback on an assessment — form, section, or question. Resolution is per thread on the root comment (no parentCommentId); replies close when that root is resolved. Pass parentCommentId to reply, commentId to edit or resolve a root, or reply with resolved true to close the parent thread. Needs the comment id, level, and target id from existing reviewer feedback on the assessment.",
+          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "hash": "c464029c8ba77ed288618d00fd3f1f9e4e1ff7270bdca49219c003eb0571e882",
+          "inputSchema": {
+            "properties": {
+              "assessmentId": {
+                "description": "Assessment form id (from assessments_list). Dashboard link; FORM edit/resolve defaults targetId to this when omitted.",
+                "type": "string"
+              },
+              "commentId": {
+                "description": "Existing comment to edit and/or resolve (id from assessments_list_comments). To resolve a thread, pass the root id (the row with no parentCommentId), not a reply.",
+                "type": "string"
+              },
+              "content": {
+                "description": "Comment body. Required to create or reply; omit when only resolving via commentId.",
+                "type": "string"
+              },
+              "level": {
+                "description": "FORM, SECTION, or QUESTION — from the assessments_list_comments row.",
+                "enum": ["FORM","SECTION","QUESTION"],
+                "type": "string"
+              },
+              "parentCommentId": {
+                "description": "Root comment to reply to. Not with commentId. With resolved true, closes that parent thread after the reply (replies are not resolved on their own).",
+                "type": "string"
+              },
+              "resolved": {
+                "description": "true to resolve the thread, false to reopen. Needs the root commentId, or parentCommentId when replying (closes that parent). Replies are not resolved alone.",
+                "type": "boolean"
+              },
+              "targetId": {
+                "description": "Form, section, or question id (list row targetId). Required to create/reply; required for QUESTION edit/resolve; FORM defaults to assessmentId.",
+                "type": "string"
+              }
+            },
+            "required": ["assessmentId","level"],
+            "type": "object"
+          },
+          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "proseHash": "709c9af9d8774fdd2b1621ddee6e0aacef05aa614ab862fe5201175c6db915e3",
+          "schemaHash": "bbeeb350599287046a80c581e18da1dee39de2a3646aae9021fbeb1cbd256ed6"
+        }
+      }
+    }
+  },
+  "version": 1
+}
