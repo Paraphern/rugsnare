@@ -1,0 +1,35 @@
+name: registry-publish
+
+# Publishes server.json to the OFFICIAL MCP Registry
+# (registry.modelcontextprotocol.io) using GitHub Actions OIDC - the workflow
+# itself proves ownership of the io.github.Paraphern namespace, no
+# interactive login, no stored tokens. server.json is validated first;
+# a failure blocks the publish.
+#
+# Manual dispatch only (deliberate act), or on version tags.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write   # OIDC for mcp-publisher github-oidc auth
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download mcp-publisher
+        run: |
+          curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+      - name: Validate server.json
+        run: mcp-publisher validate server.json
+      - name: Authenticate (repo OIDC)
+        run: mcp-publisher login github-oidc
+      - name: Publish to the MCP Registry
+        run: mcp-publisher publish server.json
