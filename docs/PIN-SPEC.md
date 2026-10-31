@@ -267,6 +267,22 @@ Rules specific to `surfaceHash`:
    that disagrees with the store's own per-tool hashes indicates a corrupted
    or hand-edited store (the signed-store check, §7, is the enforcement).
 
+**Golden test vector** (for byte-agreement between independent
+implementations; fixture by kimjooyoon, issue #6):
+
+```
+tools: [{ name: "echo", description: "Echo a message.",
+          inputSchema: { type: "object",
+                         properties: { msg: { type: "string" } },
+                         required: ["msg"] } }]
+canonical bytes (139):
+[{"description":"Echo a message.","inputSchema":{"properties":{"msg":{"type":"string"}},"required":["msg"],"type":"object"},"name":"echo"}]
+sha-256 = 79552f1dac6cae1d9a3c2bc22c5c3cebfc9d06370a4afaa56d0a37bcdb6cfe3a
+```
+
+The same vector ships in `product/test/pinv11.test.js`, so a conforming
+implementation can be checked against both this text and the test suite.
+
 ## 4. Drift classification
 
 | driftType | meaning | exit code |
