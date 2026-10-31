@@ -22,7 +22,44 @@ const BADGE_STYLES = {
   none: { right: '#9f9f9f', label: 'not pinned' },
   invalid: { right: '#e05d44', label: 'invalid' },
   error: { right: '#e05d44', label: 'error' },
+  verified: { right: '#4c1' },
+  drift: { right: '#e05d44' },
 };
+
+// humanize age for the badge right-text: "2h", "3d", "2w", ">1mo"
+export function humanizeAge(isoTimestamp) {
+  const then = new Date(isoTimestamp).getTime();
+  if (Number.isNaN(then)) return '?';
+  const diffMs = Date.now() - then;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 14) return `${days}d`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks}w`;
+  return '>1mo';
+}
+
+/**
+ * Fetch the rugsnare/status branch and return the parsed status.json,
+ * or null when the branch doesn't exist / JSON is broken / fetch failed.
+ * The branch is optional: absence = fall back to the pin-state badge.
+ */
+async function fetchStatus(owner, repo) {
+  const url = `https://raw.githubusercontent.com/${owner}/${repo}/rugsnare/status/status.json`;
+  try {
+    const res = await fetch(url, { headers: { 'User-Agent': 'rugsnare-badge' } });
+    if (!res.ok) return null;
+    const status = await res.json();
+    if (typeof status.verdict !== 'string') return null;
+    return status;
+  } catch {
+    return null;
+  }
+}
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -163,6 +200,24 @@ export async function handleBadge(request) {
       // attack the signatures exist for. Red, with the count as evidence.
       return badgeResponse(svg('rugsnare', `SIG BROKEN · ${parts.join(' · ')}`, BADGE_STYLES.error.right));
     }
+
+    // status branch (optional): when present, the badge shows the live
+    // verdict with age instead of just the pin-state
+    const status = await fetchStatus(owner, repo);
+    if (status) {
+      const age = humanizeAge(status.timestamp);
+      if (status.verdict === 'clean') {
+        return badgeResponse(svg('rugsnare', `verified · ${parts.join(' · ')} · ${age}`, BADGE_STYLES.verified.right));
+      }
+      if (status.verdict === 'drift') {
+        return badgeResponse(svg('rugsnare', `DRIFT · ${status.findings ?? '?'} finding(s) · ${age}`, BADGE_STYLES.drift.right));
+      }
+      if (status.verdict === 'error') {
+        return badgeResponse(svg('rugsnare', `check error · ${age}`, BADGE_STYLES.invalid.right));
+      }
+      // unknown verdict in status.json - ignore, fall through to pin-state
+    }
+
     const signed = sigState === 'verified';
     const prefix = signed ? 'signed · ' : sigState === 'fingerprint-matched' ? 'signed(fp) · ' : 'unsigned · ';
     return badgeResponse(svg('rugsnare', prefix + parts.join(' · '), signed ? BADGE_STYLES.signed.right : BADGE_STYLES.unsigned.right));

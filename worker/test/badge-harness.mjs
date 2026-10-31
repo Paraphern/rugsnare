@@ -37,6 +37,56 @@ try {
   console.log('6. fixture tampered pins.json (expect: SIG BROKEN · …):', JSON.stringify(await render('/badge/x/y.svg')));
   stub(PINS.replace('version', 'VERSION')); // content edit, same length class
   console.log('7. fixture edited pins.json (expect: SIG BROKEN · …):', JSON.stringify(await render('/badge/x/y.svg')));
+
+  // 8-13: status-branch fixtures (stubbed fetch, no network)
+  const STATUS_VERIFIED = JSON.stringify({
+    verdict: 'clean', findings: 0, config: '.mcp.json',
+    timestamp: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+    runId: '123', repo: 'x/y', branch: 'main', summary: 'Contracts clean'
+  });
+  const STATUS_DRIFT = JSON.stringify({
+    verdict: 'drift', findings: 3, config: '.mcp.json',
+    timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
+    runId: '124', repo: 'x/y', branch: 'main', summary: 'DRIFT DETECTED'
+  });
+  const STATUS_ERROR = JSON.stringify({
+    verdict: 'error', findings: 0, config: '.mcp.json',
+    timestamp: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString(),
+    runId: '125', repo: 'x/y', branch: 'main', summary: 'Check failed'
+  });
+  const STATUS_BAD_JSON = '{"verdict": broken';
+  const STATUS_NO_VERDICT = JSON.stringify({ findings: 0 });
+
+  function stubWithStatus(pinsBody, statusBody) {
+    globalThis.fetch = (u) => {
+      const url = String(u);
+      if (url.includes('/rugsnare/status/status.json')) {
+        if (statusBody === null) return Promise.resolve(new Response('nf', { status: 404 }));
+        return Promise.resolve(new Response(statusBody, { status: 200 }));
+      }
+      const file = url.endsWith('pins.json') ? pinsBody : url.endsWith('pins.sig') ? SIG : url.endsWith('pins.pub.pem') ? PUB : null;
+      return Promise.resolve(new Response(file ?? 'nf', { status: file ? 200 : 404 }));
+    };
+  }
+
+  stubWithStatus(PINS, STATUS_VERIFIED);
+  console.log('8. status=clean 2h ago (expect: verified · 2 tools · 1 skill · 1 prompt · 1 resource · 2h):', JSON.stringify(await render('/badge/x/y.svg')));
+  stubWithStatus(PINS, STATUS_DRIFT);
+  console.log('9. status=drift 3 findings 45m ago (expect: DRIFT · 3 finding(s) · 45m):', JSON.stringify(await render('/badge/x/y.svg')));
+  stubWithStatus(PINS, STATUS_ERROR);
+  console.log('10. status=error 5d ago (expect: check error · 5d):', JSON.stringify(await render('/badge/x/y.svg')));
+  stubWithStatus(PINS, STATUS_BAD_JSON);
+  console.log('11. status broken JSON (expect: fallthrough to signed · …):', JSON.stringify(await render('/badge/x/y.svg')));
+  stubWithStatus(PINS, STATUS_NO_VERDICT);
+  console.log('12. status no verdict field (expect: fallthrough to signed · …):', JSON.stringify(await render('/badge/x/y.svg')));
+  stubWithStatus(PINS, null);
+  console.log('13. no status branch (expect: fallthrough to signed · …):', JSON.stringify(await render('/badge/x/y.svg')));
+
+  // 14-16: humanizeAge edge cases
+  const { humanizeAge } = await import('../badge.js');
+  console.log('14. humanizeAge(now):', humanizeAge(new Date().toISOString()), '(expect: now)');
+  console.log('15. humanizeAge(3d ago):', humanizeAge(new Date(Date.now() - 3 * 86400000).toISOString()), '(expect: 3d)');
+  console.log('16. humanizeAge(45d ago):', humanizeAge(new Date(Date.now() - 45 * 86400000).toISOString()), '(expect: >1mo)');
 } finally {
   globalThis.fetch = realFetch;
 }

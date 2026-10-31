@@ -29,6 +29,10 @@ inputs:
     description: 'Also emit a SARIF report for GitHub code scanning (uploads as artifact)'
     required: false
     default: 'false'
+  publish-status:
+    description: 'Publish diff verdict to the rugsnare/status branch (powers the live badge). Requires permissions: contents: write in your workflow.'
+    required: false
+    default: 'false'
 
 outputs:
   verdict:
@@ -104,3 +108,13 @@ runs:
         name: rugsnare-sarif
         path: rugsnare.sarif
         retention-days: 7
+
+    - name: Publish status to rugsnare/status branch (badge)
+      id: status
+      if: always() && inputs.publish-status == 'true'
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/publish-status.sh" \
+          "${{ steps.diff.outputs.verdict || 'error' }}" \
+          "${{ steps.diff.outputs.findings || '0' }}" \
+          "${{ inputs.config }}"
