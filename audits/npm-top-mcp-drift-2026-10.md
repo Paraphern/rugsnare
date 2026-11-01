@@ -12,7 +12,7 @@ This report documents *what changed* and *whether the publisher announced it*. I
 |---|---|---|---|---|
 | [@azure-devops/mcp](https://www.npmjs.com/package/@azure-devops/mcp) (Microsoft) | 120,379 | 2.5.0 → 2.10.0 (6 months of minors) | **110**: 75 tools GONE, 29 NEW, 6 BREAKING drifts | warning shipped one version *after* the change |
 | [chrome-devtools-mcp](https://www.npmjs.com/package/chrome-devtools-mcp) (Chrome DevTools team) | 1,731,154 | 1.8.0 → 1.10.1 (5 weeks) | **30**: 28 schema changes (re-graded 2026-10-08: **all notation, 0 parameter-level**) + 1 cosmetic + 1 new tool; **file-write security story inconsistent across changelog/blog/behavior since 1.9.0** | changelog + blog + docs mutually inconsistent |
-| [@currents/mcp](https://www.npmjs.com/package/@currents/mcp) | 102,850 | 2.3.3 → 2.6.1 (minors) | **45**: 37 drifts (mostly BREAKING), 7 new, 1 gone | changelog never says "breaking" |
+| [@currents/mcp](https://www.npmjs.com/package/@currents/mcp) | 102,850 | 2.3.3 → 2.6.1 (minors) | **45**: 37 drifts (32 BREAKING after the 2026-10-12 re-grade, see docs/servers/currents.md), 7 new, 1 gone | changelog never says "breaking" |
 | [hostinger-api-mcp](https://www.npmjs.com/package/hostinger-api-mcp) | 264,539 | 2.4.0 → 2.9.0 (one week, 6 releases) | **6**: agent-skill (SKILL.md) resources injected | not mentioned in docs or changelog |
 | [@hubspot/mcp-server](https://www.npmjs.com/package/@hubspot/mcp-server) | 37,206 | 0.1.0 → 0.4.0 (2025, pre-1.0) | 23: 15 drifts, 6 new, 2 gone | old window; package dormant since Jun 2025 |
 | [@pandacss/mcp](https://www.npmjs.com/package/@pandacss/mcp) | 299,268 | 1.12.0 → 2.1.2 (**major**) | 4 BREAKING | legitimate - this is semver compliance, kept as control |
@@ -108,7 +108,7 @@ The tool schemas did not change at all - schema-only gates see nothing. The inst
 
 ## Case 4: @currents/mcp - 45 findings, zero "breaking" in the changelog
 
-CI tooling. Every action tool drifted across minors 2.3.3 → 2.6.1 (2026-06-15 → 2026-09-23): quarantine/skip/tag actions, webhooks, jira actions, run management - 37 drifts (mostly BREAKING schema changes), 7 new tools, 1 removed. The [changelog](https://currents.dev/changelog) is cheerful and never says "breaking". An agent driving CI quarantines against a stale schema is a 3 a.m. failure with no humans in the room.
+CI tooling. Every action tool drifted across minors 2.3.3 → 2.6.1 (2026-06-15 → 2026-09-23): quarantine/skip/tag actions, webhooks, jira actions, run management - 37 drifts (re-graded 2026-10-12: 32 BREAKING + 5 other, docs/servers/currents.md), 7 new tools, 1 removed. The [changelog](https://currents.dev/changelog) is cheerful and never says "breaking". An agent driving CI quarantines against a stale schema is a 3 a.m. failure with no humans in the room.
 
 **Repro:** `@currents/mcp@2.3.3` → `@2.6.1`, entry `node_modules/@currents/mcp/dist/index.mjs`, env `CURRENTS_API_KEY=dummy_for_scan`, `CURRENTS_PROJECT_ID=dummy`. Result: DRIFT DETECTED (45 findings), exit 1. Single-command alternative: `rugsnare history @currents/mcp --stub-env` (the same flag unblocks `@hubspot/mcp-server` above).
 
