@@ -12,7 +12,7 @@ inputs:
   version:
     description: 'RugSnare npm version to use (pin it! floating = the exact rug-pull vector rugsnare flags)'
     required: false
-    default: '1.5.0'
+    default: '1.5.1'
   node-version:
     description: 'Node.js version for the runner'
     required: false

@@ -1,6 +1,39 @@
 # Changelog
 
-## [Unreleased]
+## [1.5.1] - 2026-11-01
+
+### CI badge phase 2: verified/DRIFT with age (T-001, three-round review)
+
+The badge now shows what the last CI check actually said, not just what is
+pinned. The composite Action can publish a verdict JSON to a `rugsnare/status`
+branch (orphan commit, `[skip ci]`, rerun-guarded, deduplicated; opt-in via
+`publish-status: 'true'` + `permissions: contents: write` - documented in
+the Action README), and the badge worker renders it: green `verified · N
+tools · 2h`, red `DRIFT · 3 finding(s) · 45m`, red `check error · age`,
+humanized age (now/45m/2h/3d/2w/>1mo). Missing/broken status falls back to
+the pin-state; a broken pins.sig still wins over any status. Fingerprintless
+pins.sig entries are now `SIG BROKEN` instead of silently degrading to
+`signed(fp)`. 21 harness cases.
+
+### 1.5.1 polish batch (T-003 review findings, all seven)
+
+- `pins_report` (the MCP self-server) no longer lies "No pin store yet"
+  about a CORRUPT store - it returns the real load error with the
+  restore-from-git hint (the PR #15 class, closed in the agent-facing
+  surface too).
+- The PR-comment renderer's POLICY branch computes its summary line via
+  `summarizeVerdicts` instead of a hardcoded string.
+- receipts.js canonical() replaced by the hash.js `canonicalJson` import -
+  one JCS owner, cross-version digests verified byte-identical both ways;
+  `canonicalJson` now guards `undefined` (serializes as null).
+- native-build workflow: least-privilege permissions (write only on the
+  release job). registry-publish: mcp-publisher pinned to v1.8.7 with a
+  sha256 checksum instead of `releases/latest` (the workflow carries
+  `id-token: write`).
+- `rugsnare scan` warns when it rewrites a signed store without a local
+  key ("pins.sig will go stale") - and stays silent on byte-identical
+  no-op scans (savePins now reports whether it wrote).
+- Stale-sig warning regression-tested; suite 398 -> 404.
 
 ### JCS-true canonicalization for integer-like property names (kimjooyoon, issue #6)
 
