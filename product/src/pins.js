@@ -99,6 +99,12 @@ export function summarizeVerdicts(report) {
   return order.map((k) => `${c[k]} ${k}`).join(' / ');
 }
 
+/**
+ * Persist the pin store. Returns true when the file was (re)written, false
+ * when the serialized bytes were identical and the write was skipped - the
+ * byte-stability skip is also what tells callers (e.g. the scan stale-sig
+ * warning) that pins.sig still covers the store on disk.
+ */
 export function savePins(pins, cwd = process.cwd()) {
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
   pins.policyVersion = policyVersionFor();
@@ -107,7 +113,7 @@ export function savePins(pins, cwd = process.cwd()) {
   // byte-stability: a re-scan that changed nothing must not even touch the
   // file (mtime churn would break third-party JCS-hash watchers too)
   try {
-    if (fs.readFileSync(file, 'utf8') === serialized) return;
+    if (fs.readFileSync(file, 'utf8') === serialized) return false;
   } catch (e) {
     // only a genuinely missing file may be created here; an unreadable one
     // (permission, transient IO, a directory on the path - PR #15 class)
@@ -115,6 +121,7 @@ export function savePins(pins, cwd = process.cwd()) {
     if (e?.code !== 'ENOENT') throw new Error(`refusing to rewrite unreadable pins.json (${e.message})`);
   }
   fs.writeFileSync(file, serialized);
+  return true;
 }
 
 /**

@@ -450,16 +450,15 @@ async function cmdScan(flags) {
       failed++;
     }
   }
-  savePins(pins);
+  const storeRewritten = savePins(pins);
   // pins signing happens at the human-review points (scan/approve/unpin);
   // best-effort: machines without a receipts key simply skip the signature
   const { signPinsFile, pinsSigPath } = await import('./receipts.js');
   const signedNow = signPinsFile();
-  // S-3: this machine just rewrote the pin store but holds no signing key,
-  // while a pins.sig is committed - that signature no longer covers the new
-  // bytes and the next diff (on any machine) will fail it as TAMPERED.
-  // Say so now, at the moment the staleness is created, not later.
-  if (!signedNow && fs.existsSync(pinsSigPath())) {
+  // S-3/F-6: warn only when this scan ACTUALLY rewrote the store bytes - a
+  // byte-identical re-scan hits the savePins skip-branch, the file on disk
+  // is untouched and the committed pins.sig still covers it
+  if (storeRewritten && !signedNow && fs.existsSync(pinsSigPath())) {
     console.error('  [WARN] pins.sig will go stale: no local signing key, but this scan rewrote the pin store - re-sign on the key machine (`rugsnare scan` there) before the next diff');
   }
   const shadows = detectShadows(pins);
