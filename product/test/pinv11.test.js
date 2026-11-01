@@ -313,6 +313,17 @@ test('JCS: promptHash routes through the same canonicalizer (integer-like argume
   assert.notEqual(a, b, 'arguments are part of the digest');
 });
 
+test('canonicalJson: undefined serializes as null, never an invalid JSON token', async () => {
+  const { canonicalJson } = await import('../src/hash.js');
+  // { a: undefined }: JSON.stringify would return undefined for the token and
+  // corrupt the document ('{"a":undefined}' is not JSON) - the guard the
+  // receipts lineage always had, now the single canonicalizer's too
+  assert.equal(canonicalJson({ a: undefined }), '{"a":null}');
+  assert.equal(canonicalJson(undefined), 'null');
+  assert.equal(canonicalJson([undefined, 1]), '[null,1]');
+  assert.deepEqual(JSON.parse(canonicalJson({ a: undefined, b: 1 })), { a: null, b: 1 });
+});
+
 test('v3.2: surfaceHash golden fixture - byte-exact interop value', async () => {
   const { surfaceHash } = await import('../src/hash.js');
   // The Dominion cross-impl test vector: one tool, canonical three fields.

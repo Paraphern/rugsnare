@@ -216,3 +216,29 @@ test('scan --json: machine-readable baseline inventory, exit codes preserved', a
     await close(remote.server);
   }
 });
+
+test('F-6: stale-sig warning fires only when the scan actually rewrites the store', async () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    // the scanned server is the repo's own read-only MCP server: boots fast,
+    // serves exactly two tools, needs no credentials
+    fs.writeFileSync(path.join(dir, '.mcp.json'), JSON.stringify({
+      mcpServers: { rug: { command: 'node', args: [path.join(path.dirname(CLI), 'mcp-server.js')] } },
+    }));
+    // a committed pins.sig exists, but this machine holds no signing key
+    fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.sig'), JSON.stringify({
+      algo: 'sha256+ed25519', hash: '00', sig: '00', keyFingerprint: '00', signedAt: '2026-10-01T00:00:00Z',
+    }));
+
+    const first = await runCli(dir, ['scan', '--config', '.mcp.json']);
+    assert.equal(first.code, 0, first.stderr);
+    assert.match(first.stderr, /pins\.sig will go stale/, 'first scan creates the store -> warning');
+
+    const second = await runCli(dir, ['scan', '--config', '.mcp.json']);
+    assert.equal(second.code, 0, second.stderr);
+    assert.doesNotMatch(second.stderr, /pins\.sig will go stale/, 'byte-identical re-scan skips the write - the committed sig still covers the store');
+  } finally {
+    cleanup();
+  }
+});

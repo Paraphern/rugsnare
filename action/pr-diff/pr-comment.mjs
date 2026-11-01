@@ -45,12 +45,17 @@ const pins = loadPins(cwd);
 // drift violates §3.1 and confuses reviewers with stale BREAKING classes.
 const currentPolicy = policyVersionFor();
 if ((pins.policyVersion ?? null) !== currentPolicy) {
+  // affordance (apify#1514): the class-count headline is computed by the
+  // real counter (summarizeVerdicts) on a synthetic POLICY verdict - never
+  // hardcoded, so the summary stays honest if the policy stop-rule ever
+  // reports more (or fewer) than one finding
+  const policySummary = summarizeVerdicts([{ verdicts: [{ status: 'DRIFT', driftType: 'POLICY' }] }]);
   const body = [
     '<!-- rugsnare-pr-diff -->',
     '## 🪤 RugSnare - MCP tool contract diff',
     '',
     // affordance (apify#1514): the class counts headline, before anything else
-    '**summary:** 0 breaking / 0 loosened / 0 expanded / 0 mirrored / 0 notation / 0 cosmetic / 0 annotation / 0 identity / 1 policy / 0 prompt / 0 resource / 0 new / 0 gone',
+    `**summary:** ${policySummary}`,
     '',
     '### ⛔ POLICY - pins graded under a different verifier policy',
     '',

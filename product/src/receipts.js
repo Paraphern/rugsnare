@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { rugsnareDir } from './pins.js';
+import { canonicalJson } from './hash.js';
 
 /**
  * Signed receipts (Phase B - see extensions-verdict.md).
@@ -179,12 +180,11 @@ export function readReceipts(cwd = process.cwd()) {
   return out;
 }
 
-// canonical json: sorted keys, no whitespace - same discipline as hash.js stable()
-function canonical(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null';
-  if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
-  return '{' + Object.keys(value).sort().map((k) => JSON.stringify(k) + ':' + canonical(value[k])).join(',') + '}';
-}
+// canonical json: single owner - hash.js canonicalJson (JCS-true, RFC 8785
+// §3.2.3, integer-like keys lexicographic). The local copy this replaces
+// diverged only on the undefined edge, which canonicalJson now guards the
+// same way (undefined -> null); digests of real events are byte-identical.
+const canonical = canonicalJson;
 
 function entryHashOf(seq, prevHash, event) {
   return crypto.createHash('sha256').update(`${seq}|${prevHash}|${canonical(event)}`).digest('hex');

@@ -23,9 +23,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download mcp-publisher
+      - name: Download mcp-publisher (pinned)
         run: |
-          curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          # supply-chain pin: this workflow carries id-token:write, so the
+          # publisher binary is never taken from a moving releases/latest
+          # mcp-publisher v1.8.7 (published 2026-10-30)
+          # sha256(mcp-publisher_linux_amd64.tar.gz) =
+          #   00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579
+          set -euo pipefail
+          curl -sL -o mcp-publisher.tar.gz \
+            "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.7/mcp-publisher_linux_amd64.tar.gz"
+          echo "00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579  mcp-publisher.tar.gz" | sha256sum -c -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
           sudo mv mcp-publisher /usr/local/bin/
       - name: Validate server.json
         run: mcp-publisher validate server.json
