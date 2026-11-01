@@ -28,3 +28,8 @@ npm i @sap-ux/fiori-mcp-server@1.15.9 && npx rugsnare@1.3.0 diff --config mcp.js
 ```
 
 Baseline captured 2026-10-12 (rugsnare 1.3.0). Part of the [drift watch](../../audits/drift-watch/2026-10-12.md).
+
+
+## 2026-10-31 window
+
+1.13.0 -> 1.15.20: 4 findings (stable; the same 2 BREAKING generators - `project.enableTypeScript` now required - plus 2 COSMETIC; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/sap-fiori@1.15.20.json. See audits/drift-watch/2026-10-31.md.

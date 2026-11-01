@@ -14,3 +14,5 @@ npx rugsnare history trading-mcp --last 4                          # gate visibl
 ```
 
 Last verified 2026-10-09 (issue open, no vendor response).
+
+**Delisted from npm.** 2026-10-31: the `trading-mcp` registry document returns 404 (`npm view trading-mcp` fails; second consecutive drift-watch run). The boot-gated watch policy is unchanged, but there is currently nothing on npm to watch under this name. If the package returns or reappears under a new name, the corpus entry gets re-pointed.
