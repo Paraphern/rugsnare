@@ -453,7 +453,15 @@ async function cmdScan(flags) {
   savePins(pins);
   // pins signing happens at the human-review points (scan/approve/unpin);
   // best-effort: machines without a receipts key simply skip the signature
-  (await import('./receipts.js')).signPinsFile();
+  const { signPinsFile, pinsSigPath } = await import('./receipts.js');
+  const signedNow = signPinsFile();
+  // S-3: this machine just rewrote the pin store but holds no signing key,
+  // while a pins.sig is committed - that signature no longer covers the new
+  // bytes and the next diff (on any machine) will fail it as TAMPERED.
+  // Say so now, at the moment the staleness is created, not later.
+  if (!signedNow && fs.existsSync(pinsSigPath())) {
+    console.error('  [WARN] pins.sig will go stale: no local signing key, but this scan rewrote the pin store - re-sign on the key machine (`rugsnare scan` there) before the next diff');
+  }
   const shadows = detectShadows(pins);
   for (const s of shadows) {
     if (!flags.json) console.error(`  [SHADOW] tool "${s.tool}" is exposed by multiple servers: ${s.servers.join(', ')} - the client's resolution order decides which one runs`);

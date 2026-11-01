@@ -91,6 +91,23 @@ test('mcp server: pins_report without a pin store gives a helpful answer, not an
   }
 });
 
+test('mcp server: pins_report on a corrupted store reports load diagnostics, not "no store"', async () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+    // truncated mid-JSON: unreadable, but the file exists - never "absent"
+    fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.json'), '{"version":1,"servers":{"s":{"tools":{"x"');
+    const res = await callTool({ name: 'pins_report', arguments: {} }, dir);
+    assert.ok(!res.error, JSON.stringify(res.error));
+    const text = res.result.content[0].text;
+    assert.match(text, /unreadable or corrupt/);
+    assert.match(text, /restore it from git/);
+    assert.ok(!/No pin store/.test(text), 'a corrupt store must not be reported as absence');
+  } finally {
+    cleanup();
+  }
+});
+
 test('mcp server: unknown tool answers with a JSON-RPC error', async () => {
   const { dir, cleanup } = tmpCwd();
   try {

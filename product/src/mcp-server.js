@@ -112,7 +112,11 @@ async function driftFeedStatus(args) {
 
 function pinsReport() {
   let pins;
-  try { pins = loadPins(process.cwd()); } catch { pins = null; }
+  try { pins = loadPins(process.cwd()); } catch (e) {
+    // a corrupted/unreadable store is NOT absence (PR #15 class): surface
+    // the loadPins diagnostics verbatim instead of claiming there is no store
+    return { content: [{ type: 'text', text: e.message }] };
+  }
   if (!pins || Object.keys(pins.servers ?? {}).length === 0) {
     return { content: [{ type: 'text', text: 'No pin store in this project yet. Run `rugsnare scan` to baseline the MCP servers in use.' }] };
   }

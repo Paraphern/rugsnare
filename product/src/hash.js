@@ -30,7 +30,11 @@ export function canonicalJson(value) {
     const keys = Object.keys(value).sort(); // default sort = UTF-16 code unit order = JCS
     return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalJson(value[k])}`).join(',')}}`;
   }
-  return JSON.stringify(value); // primitives; numbers follow JCS §3.2.2.3 (ECMAScript ToString) de facto
+  // primitives; numbers follow JCS §3.2.2.3 (ECMAScript ToString) de facto.
+  // undefined has no JSON form - JSON.stringify returns undefined and the
+  // raw token would corrupt the document ({a:undefined} is not JSON), so
+  // serialize it as null, the guard the receipts lineage always had.
+  return JSON.stringify(value) ?? 'null';
 }
 
 /**
