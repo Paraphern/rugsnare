@@ -112,6 +112,8 @@ runs:
     - name: Publish status to rugsnare/status branch (badge)
       id: status
       if: always() && inputs.publish-status == 'true'
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       shell: bash
       run: |
         bash "${{ github.action_path }}/publish-status.sh" \

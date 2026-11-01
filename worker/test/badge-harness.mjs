@@ -87,6 +87,31 @@ try {
   console.log('14. humanizeAge(now):', humanizeAge(new Date().toISOString()), '(expect: now)');
   console.log('15. humanizeAge(3d ago):', humanizeAge(new Date(Date.now() - 3 * 86400000).toISOString()), '(expect: 3d)');
   console.log('16. humanizeAge(45d ago):', humanizeAge(new Date(Date.now() - 45 * 86400000).toISOString()), '(expect: >1mo)');
+
+  // 17-19: humanizeAge bucket boundaries (T-013 F-3) - deltas sit just past
+  // each edge so a few ms of harness runtime cannot flip the bucket
+  console.log('17. humanizeAge(59m59s ago):', humanizeAge(new Date(Date.now() - (59 * 60000 + 59000)).toISOString()), '(expect: 59m)');
+  console.log('18. humanizeAge(60m01s ago):', humanizeAge(new Date(Date.now() - (60 * 60000 + 1000)).toISOString()), '(expect: 1h)');
+  console.log('19. humanizeAge(14d01m ago):', humanizeAge(new Date(Date.now() - (14 * 86400000 + 60000)).toISOString()), '(expect: 2w)');
+
+  // 20: unknown verdict in status.json - fall through to the pin-state (T-013 F-5)
+  const STATUS_UNKNOWN = JSON.stringify({
+    verdict: 'banana', findings: 0, config: '.mcp.json',
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+    runId: '126', repo: 'x/y', branch: 'main', summary: '?'
+  });
+  stubWithStatus(PINS, STATUS_UNKNOWN);
+  console.log('20. status unknown verdict (expect: fallthrough to signed · …):', JSON.stringify(await render('/badge/x/y.svg')));
+
+  // 21: pins.sig without keyFingerprint - incomplete signature material is
+  // signature-invalid, never signed()/verified() (T-013 S-5)
+  const { keyFingerprint: _fp, ...sigRest } = JSON.parse(SIG);
+  globalThis.fetch = (u) => {
+    const url = String(u);
+    const file = url.endsWith('pins.json') ? PINS : url.endsWith('pins.sig') ? JSON.stringify(sigRest) : url.endsWith('pins.pub.pem') ? PUB : null;
+    return Promise.resolve(new Response(file ?? 'nf', { status: file ? 200 : 404 }));
+  };
+  console.log('21. pins.sig without keyFingerprint (expect: SIG BROKEN · …):', JSON.stringify(await render('/badge/x/y.svg')));
 } finally {
   globalThis.fetch = realFetch;
 }

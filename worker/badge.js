@@ -121,9 +121,11 @@ async function signatureState(pinsBytes, sigRes, pubRes) {
     const sig = JSON.parse(sigText);
     if (sig?.algo !== 'sha256+ed25519' || typeof sig.sig !== 'string') return 'signature-invalid';
     const der = pemToDer(pubPem);
-    // receipts.keyFingerprint = sha256 over the SPKI DER - checkable everywhere
+    // receipts.keyFingerprint = sha256 over the SPKI DER - checkable everywhere.
+    // Absent fingerprint = incomplete signature material: never fall through
+    // to signed(fp)/verified on it (S-5).
     const fingerprint = await sha256Hex(der);
-    if (sig.keyFingerprint && sig.keyFingerprint !== fingerprint) return 'signature-invalid';
+    if (typeof sig.keyFingerprint !== 'string' || sig.keyFingerprint !== fingerprint) return 'signature-invalid';
     try {
       // Ed25519 raw public key = last 32 bytes of the SPKI
       const key = await crypto.subtle.importKey('raw', der.slice(-32), { name: 'Ed25519' }, false, ['verify']);
