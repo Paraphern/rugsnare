@@ -1,5 +1,5 @@
 {
-  "comment": "RugSnare drift-watch corpus (research chat, 3-day cadence). 'pinned' = approved baseline contract; 'lastSeen' = latest version already graded; 'lastFindings' = findings count at last diff (for delta tracking). Each run: npm view latest; if > lastSeen -> install pinned, rugsnare scan, install latest, rugsnare diff; update docs/servers/<name>.md + this manifest. Dummy env values are for contract capture only, never call real APIs. Advance a pin deliberately, never silently. 2026-10-24 run: 14 servers re-diffed (mongodb/sap-fiori latest installs retried ok), skills superpowers@7.0.1 (303 files) + vercel-skills@a80e4c9 (226 files) re-pinned. 2026-10-25 run: 6 movers (hostinger 3.10.3, netlify 1.21.0, browserstack 2.2.8, sap-fiori 1.15.16, reference everything/filesystem 2.0.1); skills unchanged. 2026-10-30 run: 13 movers (busiest window); launchdarkly opened up 1->16; notion control lost its zero (1 identity finding); supabase pinned-scan failed on the 0.8.3 entry (queued for manual fix); bybit trading-mcp not found on npm from the history scanner (investigating); vercel-skills re-pinned at 92a9a34 (257 files).",
+  "comment": "RugSnare drift-watch corpus (research chat, 3-day cadence). 'pinned' = approved baseline contract; 'lastSeen' = latest version already graded; 'lastFindings' = findings count at last diff (for delta tracking). Each run: npm view latest; if > lastSeen -> install pinned, rugsnare scan, install latest, rugsnare diff; update docs/servers/<name>.md + this manifest. Dummy env values are for contract capture only, never call real APIs. Advance a pin deliberately, never silently. 2026-10-24 run: 14 servers re-diffed (mongodb/sap-fiori latest installs retried ok), skills superpowers@7.0.1 (303 files) + vercel-skills@a80e4c9 (226 files) re-pinned. 2026-10-25 run: 6 movers (hostinger 3.10.3, netlify 1.21.0, browserstack 2.2.8, sap-fiori 1.15.16, reference everything/filesystem 2.0.1); skills unchanged. 2026-10-30 run: 13 movers (busiest window); launchdarkly opened up 1->16; notion control lost its zero (1 identity finding); supabase pinned-scan failed on the 0.8.3 entry (queued for manual fix); bybit trading-mcp not found on npm from the history scanner (investigating); vercel-skills re-pinned at 92a9a34 (257 files). 2026-10-31 run: 5 movers; heroku control broke 1->33 (patch 1.2.13 drops additionalProperties:false from all 33 tool schemas); browserstack 33->42 (BREAKING accessibility pair; 46->52 tools); supabase 0.8.3 pinned scan recovered on a fresh stand (29 tools), 9->11; hostinger stable 40 through 3.24.1; sap-fiori stable 4 through 1.15.20; bybit trading-mcp confirmed delisted from npm (registry document 404).",
   "cadence": "every 3 days",
   "tool": "npx rugsnare@1.4.3",
   "reports": "audits/drift-watch/YYYY-MM-DD.md",
@@ -46,7 +46,7 @@
       "name": "hostinger",
       "package": "hostinger-api-mcp",
       "pinned": "2.4.0",
-      "lastSeen": "3.22.3",
+      "lastSeen": "3.24.1",
       "lastFindings": 40,
       "entry": "node_modules/hostinger-api-mcp/src/servers/all.js",
       "env": {
@@ -70,13 +70,13 @@
       "name": "heroku",
       "package": "@heroku/mcp-server",
       "pinned": "1.2.5",
-      "lastSeen": "1.2.12",
-      "lastFindings": 1,
+      "lastSeen": "1.2.13",
+      "lastFindings": 33,
       "entry": "node_modules/@heroku/mcp-server/bin/heroku-mcp-server.mjs",
       "env": {
         "HEROKU_API_KEY": "dummy_for_scan"
       },
-      "note": "control group, expect 0"
+      "note": "control group BROKE 2026-10-31: patch 1.2.13 drops additionalProperties:false from all 33 tool schemas in one release (1 -> 33, all LOOSENED)"
     },
     {
       "name": "context7",
@@ -150,20 +150,20 @@
       "lastFindings": 9,
       "entry": "n/a",
       "env": {},
-      "note": "BOOT-GATED: server exits at boot (remote manifest kill-switch). Never scan/diff; only npm view version + rugsnare history. Vendor thread open"
+      "note": "BOOT-GATED: server exits at boot (remote manifest kill-switch). Never scan/diff; only npm view version + rugsnare history. Vendor thread open. DELISTED from npm 2026-10-31: registry document 404, npm view fails (2nd consecutive run); re-point the entry if it returns or reappears under a new name"
     },
     {
       "name": "browserstack",
       "package": "@browserstack/mcp-server",
       "pinned": "1.4.1",
-      "lastSeen": "2.4.1",
-      "lastFindings": 33,
+      "lastSeen": "2.4.5",
+      "lastFindings": 42,
       "entry": "auto",
       "env": {
         "BROWSERSTACK_USERNAME": "dummy_for_scan",
         "BROWSERSTACK_ACCESS_KEY": "dummy_for_scan"
       },
-      "note": "0.18.0-correction n/a; npm latest 2.2.2 released after window - next cron run diffs it; server exits 0 without credentials"
+      "note": "accessibility suite is the fastest mover in the corpus (42 at 2.4.5: 5 BREAKING incl. fetchAccessibilityIssues + setupBrowserStackAutomateTests, 46->52 tools); vendor thread #476 open; server exits 0 without credentials"
     },
     {
       "name": "apify",
@@ -193,7 +193,7 @@
       "name": "sap-fiori",
       "package": "@sap-ux/fiori-mcp-server",
       "pinned": "1.13.0",
-      "lastSeen": "1.15.19",
+      "lastSeen": "1.15.20",
       "lastFindings": 4,
       "entry": "node_modules/@sap-ux/fiori-mcp-server/dist/index.js",
       "env": {},
@@ -235,13 +235,13 @@
       "name": "supabase",
       "package": "@supabase/mcp-server-supabase",
       "pinned": "0.8.3",
-      "lastSeen": "0.14.0",
-      "lastFindings": 9,
+      "lastSeen": "0.15.0",
+      "lastFindings": 11,
       "entry": "node_modules/@supabase/mcp-server-supabase/dist/cli.js",
       "env": {
         "SUPABASE_ACCESS_TOKEN": "dummy_for_scan"
       },
-      "note": "0.8.3 entry dist/transports/stdio.js REMOVED in newer versions (moved to dist/cli.js) - packaging-level drift recorded on page; GONE get_logs -> NEW query_logs; baseline 2026-10-12"
+      "note": "0.8.3 entry dist/transports/stdio.js REMOVED in newer versions (moved to dist/cli.js) - packaging-level drift recorded on page; GONE get_logs -> NEW query_logs; baseline 2026-10-12; 0.8.3 pinned scan recovered 2026-10-31 on a fresh stand (manual-fix queue closed)"
     },
     {
       "name": "figma",

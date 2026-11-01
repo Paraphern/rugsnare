@@ -30,3 +30,8 @@ npx rugsnare@1.4.3 diff --config mcp.json --timeout 60000   # 3 findings, exit 1
 ```
 
 Last verified 2026-10-17 (rugsnare 1.4.3, clean stand; corrected from the original 2026-10-12 scan). Part of the [drift watch](../../audits/drift-watch/2026-10-17.md).
+
+
+## 2026-10-31 window
+
+0.8.3 -> 0.15.0: 11 findings (was 9 at the 0.14.0 window; 3 COSMETIC + 3 NOTATION + 1 LOOSENED + 3 NEW + 1 GONE; tool count 29 -> 32). The 0.8.3 pinned scan recovered on a fresh stand this run (29 tools via the historical `dist/transports/stdio.js` entry) - the 2026-10-30 boot failure did not reproduce; the queued manual fix is closed. Pins: audits/drift-watch/pins/supabase@0.15.0.json. See audits/drift-watch/2026-10-31.md.

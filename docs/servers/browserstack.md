@@ -26,3 +26,8 @@ Last verified 2026-10-13 (re-graded on rugsnare 1.3.0; issue #476 open, no vendo
 ## 2026-10-30 window
 
 1.4.1 -> 2.4.1: 33 findings (accessibility suite keeps moving; vendor thread #476 now further behind the corpus).
+
+
+## 2026-10-31 window
+
+1.4.1 -> 2.4.5: 42 findings (was 33; 5 BREAKING - fetchAccessibilityIssues, setupBrowserStackAutomateTests among them - + 17 COSMETIC + 13 NOTATION + 1 EXPANDED + 6 NEW; tool count 46 -> 52). The accessibility surface is now the fastest-moving target in the corpus; #476 still open. Pins: audits/drift-watch/pins/browserstack@2.4.5.json. See audits/drift-watch/2026-10-31.md.
