@@ -1,20 +1,20 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-10-26 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-11-02 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
-**Total findings since baselines: 247**
+**Total findings since baselines: 294**
 
 | server | package | pinned -> latest | findings | status |
 |---|---|---|---|---|
 | chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.12.0 | 32 | ok |
 | azure-devops | @azure-devops/mcp | 2.5.0 -> 2.11.0 | 119 | ok |
 | currents | @currents/mcp | 2.3.3 -> 2.7.0 | 51 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 3.10.3 | 41 | ok |
-| notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.5.2 | 1 | ok |
-| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.12 | 1 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 3.24.1 | 41 | ok |
+| notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.6.1 | 1 | ok |
+| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.13 | 33 | ok |
 | context7 | @upstash/context7-mcp | 4.0.4 -> 4.4.4 | 1 | ok |
 | sentry | @sentry/mcp-server | 0.42.0 -> 0.42.0 | 0 | clean |
-| launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.1 | 1 | ok |
+| launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.2 | 16 | ok |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
 
@@ -95,7 +95,18 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
 ## heroku - drift excerpt
 
 ```
-  [DRIFT] (identity) (IDENTITY)
+  [DRIFT] list_apps (LOOSENED) ece815b5aa8564e1 -> b79f04decf65996c
+  [DRIFT] get_app_info (LOOSENED) 35dab0520d88276d -> eaf6e2824a792635
+  [DRIFT] create_app (LOOSENED) d3562895736705cd -> f8d8a7033c52e4f4
+  [DRIFT] rename_app (LOOSENED) a62b015cff2c4548 -> d8a1f3089e2c38d4
+  [DRIFT] maintenance_on (LOOSENED) 0769ff6fae6a743e -> b5e6fd9687b83925
+  [DRIFT] maintenance_off (LOOSENED) d0c1d0f6cc7ccd2d -> 0b3a2d6dd9ceca0d
+  [DRIFT] get_app_logs (LOOSENED) 213d2848b1d5b3a5 -> ae834d7e3a619c36
+  [DRIFT] list_private_spaces (LOOSENED) 36e63fce5ccbf8af -> 04e76cfe86561d0e
+  [DRIFT] list_teams (LOOSENED) dca82d220f77c0c7 -> 411a6d3a4717f519
+  [DRIFT] list_addons (LOOSENED) f1881fb4d6acccad -> 8028b561960b72c6
+  [DRIFT] get_addon_info (LOOSENED) d2b27b0c58eb0d28 -> 0d6b9ab1f5edd583
+  [DRIFT] create_addon (LOOSENED) 905b74fcbd1a31e6 -> 19da0d9d8c6e3e9a
 ```
 
 ## context7 - drift excerpt
@@ -107,5 +118,16 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
 ## launchdarkly - drift excerpt
 
 ```
-  [DRIFT] (identity) (IDENTITY)
+  [DRIFT] get-audit-log-entries (EXPANDED) b94f0dedfd785cac -> 43f3761b2bac4d76
+  [DRIFT] create-feature-flag (EXPANDED) 0dd921a1c28c610b -> 413a9da09106d59a
+  [NEW ] list-metrics 295e42ca0f080a2d
+  [NEW ] create-metric 64173c079ac0e990
+  [NEW ] get-metric 84cdf6706dc6e59f
+  [NEW ] update-metric cbb97ce6b198835c
+  [NEW ] list-experiments 10bae8ce998e8e15
+  [NEW ] create-experiment 6d74b501ac332500
+  [NEW ] get-experiment b3a9d494411a9390
+  [NEW ] update-experiment dce3158562c35b16
+  [NEW ] create-experiment-iteration 706dcef8a4e5cbc6
+  [NEW ] list-experiments-any-environment 0937f7eec2db3ce7
 ```
