@@ -86,3 +86,6 @@
 {"ts":"2026-10-29T11:50:08.038Z","server":"server-memory","type":"VERSION","detail":"2.0.0 → 2.0.1"}
 {"ts":"2026-10-29T11:50:11.951Z","server":"server-everything","type":"VERSION","detail":"2.0.1 → 2.1.0"}
 {"ts":"2026-10-29T11:50:11.951Z","server":"server-everything","type":"DRIFT","tool":"get-env","oldHash":"4a12c3402c7e4587","newHash":"664968c5a5d2403c"}
+{"ts":"2026-11-03T13:04:20.957Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"ask_wiki_question","oldHash":"a0e84ac0ba0fb203","newHash":"8d4f8d5b1bd8264f"}
+{"ts":"2026-11-03T13:04:20.958Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"read_wiki_contents","oldHash":"edd10a5345e00356","newHash":"8168f2c9f08912d1"}
+{"ts":"2026-11-03T13:04:20.958Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"read_wiki_structure","oldHash":"056c8b05f637c216","newHash":"6f7a82d053238878"}

@@ -356,19 +356,19 @@
     "tools": [
       {
         "name": "ask_wiki_question",
-        "hash": "a0e84ac0ba0fb203a7fb1d9c39beef099a99c984baf21f26d52a3bf5c571576a",
+        "hash": "8d4f8d5b1bd8264f55d55949e347c3a2fe5baae3351a12064f1269fc73013508",
         "description": "Ask any question about a GitHub repository's codebase and get an AI-powered answer\ngrounded in its DeepWiki.",
         "advisory": false
       },
       {
         "name": "read_wiki_contents",
-        "hash": "edd10a5345e00356ff6991d286aaae2d6123d638c31abb1e79a95a438bb15db8",
+        "hash": "8168f2c9f08912d1bd7470ffa2a401e2a6fcd9ff8e66773123f0b2fc04219d29",
         "description": "View documentation about a GitHub repository.",
         "advisory": false
       },
       {
         "name": "read_wiki_structure",
-        "hash": "056c8b05f637c216dea0ff991c256510c3d840c4fd19006a86ae5364937bb1a6",
+        "hash": "6f7a82d053238878993e57d504418bcf0ebb8d235eea0e7732491275b2908b6b",
         "description": "Get a list of documentation topics for a GitHub repository.",
         "advisory": false
       }
