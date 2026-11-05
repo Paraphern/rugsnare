@@ -51,6 +51,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
   // Undeclared tool detection (same as stdio proxy): tools called but never
   // listed in tools/list = progressive-discovery surface outside user approval.
   // Activated only after the first tools/list response.
+  const quarantinedTools = new Set();
   const declaredTools = new Set();
   const undeclaredAlerted = new Set();
   let hasSeenToolsList = false;
@@ -104,10 +105,12 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 if (parsed.id === wantId) return settle(resolve, parsed);
                 if (fallback === null) fallback = parsed;
               }
-              if (fallback !== null) return settle(resolve, fallback);
-              return settle(reject, new Error('SSE: no data lines'));
+              if (wantId === undefined && fallback !== null) return settle(resolve, fallback);
+              return settle(reject, new Error('SSE: no matching response id'));
             }
-            settle(resolve, JSON.parse(raw));
+            const parsed = JSON.parse(raw);
+            if (body?.id !== undefined && parsed?.id !== body.id) throw new Error('JSON-RPC response id mismatch');
+            settle(resolve, parsed);
           } catch (e) { settle(reject, e); }
         });
       });
@@ -171,6 +174,13 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         // Call policies + loop detector - same enforcement as the stdio proxy.
         // A blocked call is answered directly to the client; the remote never sees it.
         if (msg.method === 'tools/call' && msg.params) {
+          if (mode === 'enforce' && (quarantinedTools.has(msg.params.name) || serverPin.tools[msg.params.name]?.approved === false)) {
+            logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name }, cwd);
+            clientRes.writeHead(200, { 'content-type': 'application/json' });
+            clientRes.end(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
+            return;
+          }
+
           if (LOOP_THRESHOLD > 0) {
             const fingerprint = crypto.createHash('sha256')
               .update(msg.params.name + '|' + canonicalJson(msg.params.arguments ?? {}))
@@ -335,7 +345,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           if (mode === 'enforce') {
             const allowed = new Set(
               verdicts
-                .filter((v) => v.status === 'UNCHANGED' || (v.status === 'NEW' && serverPin.tools[v.tool]?.approved))
+                .filter((v) => v.status === 'UNCHANGED' && serverPin.tools[v.tool]?.approved === true)
                 .map((v) => v.tool)
             );
             const blocked = verdicts.filter((v) => tools.some((t) => t.name === v.tool) && !allowed.has(v.tool));
@@ -345,6 +355,10 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 allowed.delete(t.name);
                 blocked.push({ tool: t.name, status: 'DISABLED' });
               }
+            }
+            for (const t of tools) {
+              if (allowed.has(t.name)) quarantinedTools.delete(t.name);
+              else quarantinedTools.add(t.name);
             }
             if (blocked.length > 0) {
               response.result.tools = [

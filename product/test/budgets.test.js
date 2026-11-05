@@ -154,11 +154,11 @@ test('budgets + kill-switch (HTTP proxy): parity with stdio', async () => {
   const remote = await mockRemote();
   try {
     writePolicies(dir, { budgets: { deploy: 1 }, disabled: ['danger_tool'] });
+    approveTool(dir);
     const proxy = createHttpProxy({ name: 'svc', targetUrl: `http://127.0.0.1:${remote.port}`, mode: 'enforce', cwd: dir });
     const port = await new Promise((resolve) => proxy.server.listen(0, '127.0.0.1', () => resolve(proxy.server.address().port)));
     try {
-      await rpc(port, 'tools/list'); // pin + approve baseline
-      proxy.serverPin.tools.deploy.approved = true;
+      await rpc(port, 'tools/list'); // approved baseline loaded before startup
 
       const r1 = await rpc(port, 'tools/call', { name: 'deploy', arguments: {} });
       const r2 = await rpc(port, 'tools/call', { name: 'deploy', arguments: {} });

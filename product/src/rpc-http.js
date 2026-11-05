@@ -120,7 +120,7 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
                   return;
                 }
                 // if no id match, take the last parseable one as fallback
-                if (i === 0 || lines.length === 1) {
+                if (wantId === undefined && (i === 0 || lines.length === 1)) {
                   settle(resolve, { ...parsed, sessionId: sid });
                   return;
                 }
@@ -129,7 +129,9 @@ export function httpRpc({ url, headers = {}, message, timeoutMs = DEFAULT_TIMEOU
             settle(reject, new Error('SSE response contained no matching data lines'));
           } else {
             // Plain JSON
-            settle(resolve, { ...JSON.parse(raw), sessionId: sid });
+            const parsed = JSON.parse(raw);
+            if (message.id !== undefined && parsed?.id !== message.id) throw new Error('JSON-RPC response id mismatch');
+            settle(resolve, { ...parsed, sessionId: sid });
           }
         } catch (e) {
           settle(reject, new Error(`parse error: ${e.message}`));
