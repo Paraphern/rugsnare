@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "state": "idle",
-  "owner": null,
-  "generation": 1,
-  "acquiredAt": null,
-  "completedAt": "2026-11-05T13:51:16.331Z",
+  "state": "busy",
+  "owner": "root-runtime-mode-validation-20261105",
+  "generation": 2,
+  "acquiredAt": "2026-11-05T15:00:41.401Z",
+  "completedAt": null,
   "lastResult": {
     "task": "signature-validation",
     "draftPr": "https://github.com/Paraphern/rugsnare/pull/20",
