@@ -1,8 +1,17 @@
 {
   "schema": 1,
-  "state": "busy",
-  "owner": "root-signature-validation-20261105",
+  "state": "idle",
+  "owner": null,
   "generation": 1,
-  "acquiredAt": "2026-11-05T13:42:04.181Z",
-  "lastResult": null
+  "acquiredAt": null,
+  "completedAt": "2026-11-05T13:51:16.331Z",
+  "lastResult": {
+    "task": "signature-validation",
+    "draftPr": "https://github.com/Paraphern/rugsnare/pull/20",
+    "standaloneTestsPassed": 445,
+    "combinedTestsPassed": 497,
+    "codeHead": "624af2ddfbf33ba7f7c3d99e5e1ceca4286507a3",
+    "codeCi": "success",
+    "note": "Current documentation head checks should be read from the PR."
+  }
 }
