@@ -21,3 +21,10 @@
 - Runtime targeted checks: 72 passed, 0 failed. Full runtime branch npm test: 429 passed, 0 failed on Linux / Node 24.22.1. Runtime validation now includes 25 top-level adversarial tests.
 - Existing CI logs confirm that the added validation files execute in the automatic test job. Prior current heads passed all six Node/OS matrix jobs, Go, dogfood, field-repro, and CodeQL; this follow-up requires a new CI run.
 - Next: check CI on the follow-up head, retain Draft status, and wait for explicit owner authorization before any merge. Audit remaining integrity/fail-closed questions privately; do not disclose unresolved details in this journal.
+
+### Follow-up verification
+
+- Reviewed runtime code head `d580ab93a7b65fffb248bc966c3f5502512faa50`: [CI success](https://github.com/Paraphern/rugsnare/actions/runs/42035616856) and [CodeQL success](https://github.com/Paraphern/rugsnare/actions/runs/42035606474). All nine CI jobs passed, including Node 18/20/22 on Linux and Windows.
+- Combined local validation after review: 456 tests passed, 0 failed; 52 top-level adversarial tests across the two validation files. A subsequent documentation-only commit does not change the tested product tree.
+- Next audit priorities: signature verification integrity and fail-closed behavior. Sensitive findings stay private until an agreed fix/disclosure path is ready.
+- Automation is enabled, but its last recorded run predates restored GitHub access. Confirm a successful post-recovery run and its actual environment before claiming the autonomous development loop is operational.
