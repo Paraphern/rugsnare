@@ -112,7 +112,11 @@ function resolveVerifyKey(cwd) {
   try {
     const pem = fs.readFileSync(pinsPubPath(cwd), 'utf8');
     return { publicKey: crypto.createPublicKey(pem), fingerprint: keyFingerprint(pem), source: 'committed' };
-  } catch { /* not committed here */ }
+  } catch (err) {
+    // An absent committed key may use the legacy local fallback. A present
+    // but unreadable/invalid key must not silently change the trust source.
+    if (err?.code !== 'ENOENT') throw err;
+  }
   const local = loadPublicKey(cwd);
   return local ? { ...local, source: 'local' } : null;
 }
@@ -129,29 +133,69 @@ function resolveVerifyKey(cwd) {
  */
 export function verifyPinsFile(cwd = process.cwd()) {
   const pinsFile = path.join(rugsnareDir(cwd), 'pins.json');
-  if (!fs.existsSync(pinsFile)) return { status: 'nopins' };
+  let bytes;
+  try {
+    bytes = fs.readFileSync(pinsFile);
+  } catch (err) {
+    if (err?.code === 'ENOENT') return { status: 'nopins' };
+    return { status: 'tampered', reason: 'pins.json cannot be read for verification' };
+  }
   const sigFile = pinsSigPath(cwd);
-  if (!fs.existsSync(sigFile)) {
-    return resolveVerifyKey(cwd) ? { status: 'unsigned' } : { status: 'nokey' };
+  let signatureText;
+  let key;
+  try {
+    key = resolveVerifyKey(cwd);
+  } catch {
+    return { status: 'tampered', reason: 'verification key is unreadable or invalid' };
+  }
+  try {
+    signatureText = fs.readFileSync(sigFile, 'utf8');
+  } catch (err) {
+    if (err?.code === 'ENOENT') return key ? { status: 'unsigned' } : { status: 'nokey' };
+    return { status: 'tampered', reason: 'pins.sig cannot be read' };
   }
   let payload;
   try {
-    payload = JSON.parse(fs.readFileSync(sigFile, 'utf8'));
+    payload = JSON.parse(signatureText);
   } catch {
     return { status: 'tampered', reason: 'pins.sig is not valid JSON' };
   }
-  const key = resolveVerifyKey(cwd);
+  // Buffer.from(hex, 'hex') accepts valid prefixes and silently discards junk.
+  // Validate the cryptographic fields before decoding; optional metadata from
+  // older signatures remains optional and is not part of the signed message.
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)
+    || typeof payload.hash !== 'string' || typeof payload.sig !== 'string'
+    || !/^[0-9a-f]{128}$/i.test(payload.sig)) {
+    return { status: 'tampered', reason: 'pins.sig contains malformed hash or signature fields' };
+  }
   if (!key) {
     return {
-      status: 'nokey',
-      note: 'pins.sig exists but no verification key (neither committed pins.pub.pem nor local keys/) - commit .rugsnare/pins.pub.pem, or re-run `rugsnare scan` on the machine that holds the key',
+      status: 'tampered',
+      reason: 'pins.sig exists but no verification key (neither committed pins.pub.pem nor local keys/) - restore the trusted verification key before continuing',
     };
   }
-  const hash = crypto.createHash('sha256').update(fs.readFileSync(pinsFile)).digest('hex');
+  const hash = crypto.createHash('sha256').update(bytes).digest('hex');
   if (hash !== payload.hash) return { status: 'tampered', reason: 'pins.json was modified after signing' };
-  const sigOk = crypto.verify(null, Buffer.from(payload.hash, 'hex'), key.publicKey, Buffer.from(payload.sig, 'hex'));
+  let sigOk;
+  try {
+    sigOk = crypto.verify(null, Buffer.from(hash, 'hex'), key.publicKey, Buffer.from(payload.sig, 'hex'));
+  } catch {
+    return { status: 'tampered', reason: 'pins.sig signature cannot be verified with this key' };
+  }
   if (!sigOk) return { status: 'tampered', reason: 'pins.sig signature does not verify' };
-  return { status: 'ok', signedAt: payload.signedAt, fingerprint: payload.keyFingerprint, keySource: key.source };
+  return { status: 'ok', signedAt: payload.signedAt, fingerprint: key.fingerprint, keySource: key.source };
+}
+
+/** Reject compromised stores before runtime startup; unsigned override is explicit. */
+export function assertPinsIntegrity(cwd = process.cwd(), { allowUnsignedPins = false } = {}) {
+  const verdict = verifyPinsFile(cwd);
+  if (verdict.status === 'tampered') {
+    throw new Error(`pins.sig TAMPERED - ${verdict.reason}. Refusing to use an unverified pin store.`);
+  }
+  if (verdict.status === 'unsigned' && !allowUnsignedPins) {
+    throw new Error('pins.json is unsigned while a verification key exists. Re-sign the store before continuing.');
+  }
+  return verdict;
 }
 
 export function receiptsPath(cwd = process.cwd()) {

@@ -10,6 +10,7 @@ import { resolveAuth } from './auth.js';
 import { canaryEnabled, appendTrace, capPayload } from './canary.js';
 import { evaluateCall, loadPolicies } from './policies.js';
 import { loadVault, substituteArgs, redactResult } from './vault.js';
+import { assertPinsIntegrity } from './receipts.js';
 
 /**
  * HTTP-based live proxy: sits between an MCP client and a remote HTTP MCP
@@ -25,7 +26,8 @@ import { loadVault, substituteArgs, redactResult } from './vault.js';
  * The proxy listens on a local port; point your MCP client at it.
  */
 
-export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'observe', config, cwd = process.cwd() }) {
+export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'observe', config, cwd = process.cwd(), allowUnsignedPins = false }) {
+  assertPinsIntegrity(cwd, { allowUnsignedPins });
   const pins = loadPins(cwd);
   const serverPin = ensureServer(pins, name, { url: targetUrl });
   let pinsDirty = false;

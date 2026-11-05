@@ -8,6 +8,7 @@ import { evaluateCall, loadPolicies as loadPoliciesForProxy } from './policies.j
 import { canaryEnabled, appendTrace, capPayload, MAX_PENDING } from './canary.js';
 import { scanResult, resultSummary } from './results.js';
 import { loadVault, substituteArgs, redactResult } from './vault.js';
+import { assertPinsIntegrity } from './receipts.js';
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
@@ -22,7 +23,8 @@ import { loadVault, substituteArgs, redactResult } from './vault.js';
  * Every tools/call is logged (tool name + timestamp; args only if opted in).
  */
 
-export function createProxy({ name, server, streams, mode = 'observe', config, cwd = process.cwd(), writeOut = (s) => process.stdout.write(s + '\n'), writeErr = (s) => process.stderr.write(s + '\n') }) {
+export function createProxy({ name, server, streams, mode = 'observe', config, cwd = process.cwd(), allowUnsignedPins = false, writeOut = (s) => process.stdout.write(s + '\n'), writeErr = (s) => process.stderr.write(s + '\n') }) {
+  assertPinsIntegrity(cwd, { allowUnsignedPins });
   const pins = loadPins(cwd);
   const serverPin = ensureServer(pins, name, null);
   const activePolicies = loadPoliciesForProxy(cwd);

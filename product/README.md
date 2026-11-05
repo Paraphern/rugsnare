@@ -136,6 +136,10 @@ A runaway agent burns its per-session budget (observe: one advisory past the cap
 
 `scan`/`approve`/`unpin` sign `pins.json` (Ed25519 over the exact bytes) into `.rugsnare/pins.sig` and publish the verification key next to it (`.rugsnare/pins.pub.pem`). Commit all three files together: the committed public key is what lets CI verify - runners hold no keys, and the private key never leaves your machine. `diff` then refuses **tampered** pins always (exit 2) - an attacker editing the pin store in your repo/CI gets caught. Unsigned pins with a verification key available fail too (`--allow-unsigned-pins` to bootstrap); `doctor` reports the signature state.
 
+`run`, `canary record`, and `canary replay` also verify the pin store before starting a server or opening a listener. A signed store that cannot be verified stops startup in both observe and enforce modes, regardless of `failMode`. Restore the trusted verification key when it is missing or damaged. `--allow-unsigned-pins` permits an unsigned store for that invocation; it never overrides an invalid signature. A legacy store with no signature or verification key remains supported.
+
+Runtime discovery can add unapproved tools and change the pin file during a session. Review those changes and deliberately approve or re-sign the store before the next signed startup; runtime does not silently re-sign it. Protect the verification key and the repository that supplies it: a signature alone does not provide an external trust anchor or prove that a completely removed store used to exist. Verification is a startup check, not continuous filesystem monitoring.
+
 ### 2. Live proxy - `run`
 
 Sits between your agent and the server, inspecting every message in both directions.
