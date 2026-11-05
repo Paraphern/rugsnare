@@ -28,3 +28,13 @@
 - Combined local validation after review: 456 tests passed, 0 failed; 52 top-level adversarial tests across the two validation files. A subsequent documentation-only commit does not change the tested product tree.
 - Next audit priorities: signature verification integrity and fail-closed behavior. Sensitive findings stay private until an agreed fix/disclosure path is ready.
 - Automation is enabled, but its last recorded run predates restored GitHub access. Confirm a successful post-recovery run and its actual environment before claiming the autonomous development loop is operational.
+
+## 2026-11-05 — Runtime mode configuration
+
+- Updated the existing [Draft PR #17](https://github.com/Paraphern/rugsnare/pull/17); no new audit PR.
+- `run` and `canary record` resolve explicit CLI mode before saved mode, with the existing observe default. Invalid selected modes stop before server startup. Canary recording keeps an explicit fail-closed choice for the session without rewriting config.json.
+- Added 27 CLI end-to-end regressions across stdio/loopback HTTP and both commands. Tests verify quarantine, actual upstream tool effects, mode precedence, invalid startup, canary capture and unchanged configuration bytes.
+- Baseline: 14 passed / 13 failed; after correction: 27/27 passed; neighbouring compatibility checks: 11/11 passed.
+- Full runtime branch: 456 passed, 0 failed. Combined locally with #16 and #20: 524 passed, 0 failed. Linux / Node 24.22.1.
+- The new runtime-mode test is included in both test and prepack. [Current-head CI and CodeQL checks](https://github.com/Paraphern/rugsnare/pull/17/checks) must validate the published revision; local results do not stand in for that matrix.
+- Discovery compatibility changes remain a separate private design review. Preserve all validation files when combining the three existing Draft PRs; no main write, merge, release, secret or access changes were performed.

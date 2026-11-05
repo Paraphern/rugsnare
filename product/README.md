@@ -100,6 +100,8 @@ rugsnare config set alertWebhook https://hooks.slack.com/services/...   # or "no
 rugsnare config set loopThreshold 5       # identical-call loop advisory (0 disables)
 ```
 
+`run` and `canary record` use an explicit `--mode` first, then the saved `mode`, and default to `observe` when no setting exists. An unsupported selected mode stops startup. `--fail-closed` applies to either command for that session; neither it nor Canary recording rewrites the saved configuration.
+
 The event log is append-only and local; when it grows large, trim it explicitly (signed receipts are a separate hash-chained file and stay intact): `rugsnare events trim --keep-last 5000`.
 
 ## AI Security Audit (0.6) - did you leak secrets into a chat?

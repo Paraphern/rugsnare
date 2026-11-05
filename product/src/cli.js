@@ -891,15 +891,26 @@ async function httpAuthConfig(name, flags) {
     : { auth: process.env.MCP_AUTH_TOKEN ? { type: 'bearer', token: process.env.MCP_AUTH_TOKEN } : null };
 }
 
+// Resolve once for both transports. A typo must never silently downgrade an
+// operator's intended enforcement; the supported modes are observe/enforce.
+function runtimeOptions(flags, { canaryRecord = false } = {}) {
+  const config = loadConfig();
+  const mode = flags.mode !== undefined ? flags.mode : config.mode;
+  if (!['observe', 'enforce'].includes(mode)) {
+    throw new Error('Invalid runtime mode: expected observe or enforce');
+  }
+  if (flags.failClosed) config.failMode = 'closed';
+  if (canaryRecord) config.canaryRecord = true;
+  return { config, mode };
+}
+
 async function cmdRun(flags) {
   const name = flags.name;
-  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const { config, mode } = runtimeOptions(flags);
 
   // HTTP proxy mode: rugsnare run --name X --url https://remote/mcp
   if (flags.url) {
     const { startHttpProxy } = await import('./proxy-http.js');
-    const config = loadConfig();
-    if (flags.failClosed) config.failMode = 'closed';
     // Auth from the server's own config entry (headers / auth block), with
     // MCP_AUTH_TOKEN as the env fallback when the entry has neither.
     // NOTE: no adhocServerEntry here - in `run`, --url IS the target, not an
@@ -936,8 +947,6 @@ async function cmdRun(flags) {
     console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
-  const config = loadConfig();
-  if (flags.failClosed) config.failMode = 'closed';
   const child = spawnServer({
     command, args, env: {}, cwd: process.cwd(),
     onStdout: () => {},
@@ -961,7 +970,7 @@ async function cmdRun(flags) {
  */
 async function cmdCanaryRecord(flags) {
   const name = flags.name;
-  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const { config, mode } = runtimeOptions(flags, { canaryRecord: true });
   const rest = flags._.slice(1); // drop the 'record' positional
   const dashdash = rest.indexOf('--');
   const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
@@ -972,7 +981,6 @@ async function cmdCanaryRecord(flags) {
   // format as stdio - the replay engine takes either corpus)
   if (flags.url) {
     if (!name) { console.error('Usage: rugsnare canary record --name <server> --url <https://...>'); process.exit(2); }
-    const config = { ...loadConfig(), canaryRecord: true }; // session-only override
     const authConfig = await httpAuthConfig(name, flags);
     const { startHttpProxy } = await import('./proxy-http.js');
     let started;
@@ -998,7 +1006,6 @@ async function cmdCanaryRecord(flags) {
     console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
-  const config = { ...loadConfig(), canaryRecord: true }; // session-only override
   const child = spawnServer({
     command, args, env: {}, cwd: process.cwd(),
     onStdout: () => {},
