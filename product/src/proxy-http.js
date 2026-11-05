@@ -348,6 +348,11 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 .filter((v) => v.status === 'UNCHANGED' && serverPin.tools[v.tool]?.approved === true)
                 .map((v) => v.tool)
             );
+            // Quarantine by name if ANY definition is disallowed, so an
+            // unchanged duplicate cannot override a conflicting definition.
+            for (const v of verdicts) {
+              if (v.status !== 'UNCHANGED' || serverPin.tools[v.tool]?.approved !== true) allowed.delete(v.tool);
+            }
             const blocked = verdicts.filter((v) => tools.some((t) => t.name === v.tool) && !allowed.has(v.tool));
             // kill-switch: disabled tools are hidden from the contract too
             for (const t of tools) {

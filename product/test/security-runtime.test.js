@@ -86,3 +86,107 @@ for(const transport of ['client','proxy']) for(const encoding of ['json','sse'])
   }
   check(t,true,rejected);
 });
+
+test('ADV stdio: combined drift retains schema and annotation severity', t => {
+  const cases = [
+    {
+      name: 'required input plus output schema addition',
+      live: {
+        ...base,
+        inputSchema: { type: 'object', properties: { token: { type: 'string' } }, required: ['token'] },
+        outputSchema: { type: 'object' },
+      },
+      expected: 'BREAKING',
+    },
+    {
+      name: 'annotation flip plus output schema addition',
+      live: { ...base, annotations: { readOnlyHint: false }, outputSchema: { type: 'object' } },
+      expected: 'ANNOTATION',
+    },
+  ];
+  for (const { name, live, expected } of cases) {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-mixed-drift-'));
+    const clientIn = new PassThrough();
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    try {
+      const pins = { version: 1, servers: {} };
+      pinTool(ensureServer(pins, 'svc', null), base, toolHash(base));
+      savePins(pins, cwd);
+      const alerts = [];
+      createProxy({
+        name: 'svc', mode: 'observe', cwd, config: {},
+        streams: { clientIn, server: { stdin, stdout, on: () => {} } },
+        writeOut: () => {}, writeErr: message => alerts.push(message),
+      });
+      stdout.write(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { tools: [live] } }) + '\n');
+      const actual = alerts.find(message => message.includes('DRIFT:'))?.match(/\(([^)]+)\)/)?.[1];
+      t.diagnostic(JSON.stringify({ scenario: name, expected, actual }));
+      assert.equal(actual, expected, name);
+    } finally {
+      clientIn.end(); stdin.end(); stdout.end();
+      fs.rmSync(cwd, { recursive: true, force: true });
+    }
+  }
+});
+
+for (const transport of ['stdio', 'http']) test(`ADV ${transport}: conflicting duplicate tool names remain quarantined`, async t => {
+  const changed = { ...base, description: 'Changed contract.' };
+  for (const tools of [[base, changed], [changed, base]]) {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-duplicate-tools-'));
+    let remote;
+    let proxyServer;
+    let streams;
+    try {
+      const pins = { version: 1, servers: {} };
+      pinTool(ensureServer(pins, 'svc', null), base, toolHash(base));
+      savePins(pins, cwd);
+      const call = { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: base.name, arguments: {} } };
+      let received = 0;
+      let listed;
+      let response;
+      if (transport === 'stdio') {
+        const clientIn = new PassThrough();
+        const stdin = new PassThrough();
+        const stdout = new PassThrough();
+        streams = [clientIn, stdin, stdout];
+        const output = [];
+        stdin.on('data', () => received++);
+        createProxy({
+          name: 'svc', mode: 'enforce', cwd, config: {},
+          streams: { clientIn, server: { stdin, stdout, on: () => {} } },
+          writeOut: message => output.push(JSON.parse(message)), writeErr: () => {},
+        });
+        stdout.write(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { tools } }) + '\n');
+        listed = output[0];
+        clientIn.write(JSON.stringify(call) + '\n');
+        response = output[1];
+      } else {
+        remote = http.createServer((req, res) => {
+          let raw = '';
+          req.on('data', chunk => { raw += chunk; });
+          req.on('end', () => {
+            const message = JSON.parse(raw);
+            if (message.method === 'tools/call') received++;
+            res.end(JSON.stringify({ jsonrpc: '2.0', id: message.id, result: message.method === 'tools/list' ? { tools } : { content: [] } }));
+          });
+        });
+        await new Promise(resolve => remote.listen(0, '127.0.0.1', resolve));
+        const proxy = createHttpProxy({ name: 'svc', mode: 'enforce', cwd, config: {}, targetUrl: `http://127.0.0.1:${remote.address().port}` });
+        proxyServer = proxy.server;
+        await new Promise(resolve => proxyServer.listen(0, '127.0.0.1', resolve));
+        const port = proxyServer.address().port;
+        listed = await rpc(port, { jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} });
+        response = await rpc(port, call);
+      }
+      const actual = received === 0 && Boolean(response?.error) && !listed.result.tools.some(tool => tool.name === base.name);
+      t.diagnostic(JSON.stringify({ scenario: tools[0] === base ? 'unchanged then drifted' : 'drifted then unchanged', expected: true, actual }));
+      assert.equal(actual, true, 'every conflicting variant must be hidden and direct calls blocked');
+    } finally {
+      for (const stream of streams ?? []) stream.end();
+      if (proxyServer) await new Promise(resolve => proxyServer.close(resolve));
+      if (remote) await new Promise(resolve => remote.close(resolve));
+      fs.rmSync(cwd, { recursive: true, force: true });
+    }
+  }
+});

@@ -362,7 +362,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           pinsDirty = true;
           alert('NEW', v.tool.name, { hash: v.hash }); // alert in every mode: enforce quarantines, but the human must still hear it
         } else if (v.status === 'DRIFT') {
-          if (v.outputFlip) {
+          if (v.outputFlip && v.pin.hash === v.hash && !v.annFlip) {
             alert('DRIFT', v.tool.name, { driftType: v.pin.outputHash == null ? 'NOTATION' : 'BREAKING', oldHash: v.pin.hash, hash: v.hash, outputSchemaChanged: true });
           } else if (v.annFlip) {
             alert('DRIFT', v.tool.name, { driftType: 'ANNOTATION', oldHash: v.pin.hash, hash: v.hash, oldAnnotations: v.pin.annotations ?? null, newAnnotations: v.tool.annotations ?? null });
@@ -391,6 +391,11 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
             .filter((v) => v.status === 'UNCHANGED' && v.pin?.approved === true)
             .map((v) => v.tool.name)
         );
+        // A conflicting definition must quarantine the whole name: an
+        // unchanged duplicate cannot grant access to its drifted sibling.
+        for (const v of verdicts) {
+          if (v.status !== 'UNCHANGED' || v.pin?.approved !== true) allowed.delete(v.tool.name);
+        }
         const blocked = verdicts.filter((v) => !allowed.has(v.tool.name));
         // kill-switch: a disabled tool is hidden from the contract in enforce
         for (const v of verdicts) {

@@ -13,3 +13,11 @@
 - Public evidence covers completed changes only. Unresolved sensitive findings and reproduction details remain private.
 - Constraints: separate branches and Draft PRs only; no main writes, merge, auto-merge, release, or access/secret changes.
 - Next: inspect CI and CodeQL on both current heads, fix confirmed regressions in the existing branches. Preserve both test paths when combining the PRs. Reuse these PRs instead of opening duplicates. Further sensitive work requires a private disclosure path before public publication.
+
+## 2026-11-05 — Independent review follow-up
+
+- Canary PR #16: independent review found no material defect; targeted local checks 42 passed, 0 failed.
+- Runtime PR #17: corrected combined-drift severity precedence and conflicting-name quarantine in both transports. Three new regression tests failed before correction and now pass; they exercise both duplicate orders and schema/annotation combinations.
+- Runtime targeted checks: 72 passed, 0 failed. Full runtime branch npm test: 429 passed, 0 failed on Linux / Node 24.22.1. Runtime validation now includes 25 top-level adversarial tests.
+- Existing CI logs confirm that the added validation files execute in the automatic test job. Prior current heads passed all six Node/OS matrix jobs, Go, dogfood, field-repro, and CodeQL; this follow-up requires a new CI run.
+- Next: check CI on the follow-up head, retain Draft status, and wait for explicit owner authorization before any merge. Audit remaining integrity/fail-closed questions privately; do not disclose unresolved details in this journal.
