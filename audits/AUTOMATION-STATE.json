@@ -1,17 +1,17 @@
 {
   "schema": 1,
-  "state": "busy",
-  "owner": "root-runtime-mode-validation-20261105",
+  "state": "idle",
+  "owner": null,
   "generation": 2,
-  "acquiredAt": "2026-11-05T15:00:41.401Z",
-  "completedAt": null,
+  "acquiredAt": null,
+  "completedAt": "2026-11-05T15:13:57.455Z",
   "lastResult": {
-    "task": "signature-validation",
-    "draftPr": "https://github.com/Paraphern/rugsnare/pull/20",
-    "standaloneTestsPassed": 445,
-    "combinedTestsPassed": 497,
-    "codeHead": "624af2ddfbf33ba7f7c3d99e5e1ceca4286507a3",
-    "codeCi": "success",
-    "note": "Current documentation head checks should be read from the PR."
+    "task": "runtime-mode-validation",
+    "draftPr": "https://github.com/Paraphern/rugsnare/pull/17",
+    "codeHead": "4abed78b8a16e4001f78df06b81b7e14a7035153",
+    "standaloneTestsPassed": 456,
+    "combinedTestsPassed": 524,
+    "ci": "success",
+    "codeql": "success"
   }
 }
