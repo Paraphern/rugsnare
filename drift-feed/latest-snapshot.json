@@ -2,17 +2,17 @@
   "server-filesystem": {
     "server": "server-filesystem",
     "package": "@modelcontextprotocol/server-filesystem",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "tools": [
       {
         "name": "read_file",
-        "hash": "1b6cbebfad62822e4c52531ec35979bafbb4541726961526bd8cb9e83d8631f3",
+        "hash": "503c4edebfa25ecf74e785aa19d01d1789b095676073106cd4ab41ca0d440a8e",
         "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
         "advisory": false
       },
       {
         "name": "read_text_file",
-        "hash": "449c5a47aaa51eae91bca10052a55cfcf67bd6a12ed37c222b3197a4f0bfff99",
+        "hash": "da5363dc16304e71badfe80a2ec842a0662365567cfcd2c43d7f71b056fd6d53",
         "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
         "advisory": false
       },
@@ -35,9 +35,15 @@
         "advisory": false
       },
       {
+        "name": "append_file",
+        "hash": "5b3594c75f58e2e324e95e5b3b4d91e52892779f8f28eda57aa26025d5dce62b",
+        "description": "Append text to the end of a file, creating the file if it does not exist. The existing content is never changed or replaced. The text is appended exactly as given, with no newline added before or after it, so end it with a newline if the next append should start on a new line. Only works within allowed directories.",
+        "advisory": false
+      },
+      {
         "name": "edit_file",
-        "hash": "b40ddcbb3584bbcd94c28576ede83e9868553496d9b1b73feed638a4be0568b8",
-        "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+        "hash": "0f0e02f4f4b173569f1729e1d4e6af4c2025a87c81707a2a51f4b158030fc8a7",
+        "description": "Make line-based edits to a text file. Edits apply in order, each to the result of the ones before it, and each replaces the first match of its oldText with newText. oldText must match the file's text exactly, except that line endings (LF or CRLF) never matter and, when there is no exact match, a run of whole lines matches if each line is equal once leading and trailing whitespace is ignored (newText then takes the file's indentation). Whitespace inside a line must match. If any edit has no match, nothing is written and the error shows the closest lines of the file, numbered, to copy oldText from. Returns a git-style diff showing the changes made. Only works within allowed directories.",
         "advisory": false
       },
       {
@@ -60,8 +66,8 @@
       },
       {
         "name": "directory_tree",
-        "hash": "7ff58eaf416795af389886d15c21d3e6a2780857aa5bc37777d1d78063343d18",
-        "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+        "hash": "d83a92c9f5cd52846e5be608898d34c99ffc4231c64da18acad6c62b06d357e8",
+        "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty), except at the last level when 'depth' limits the tree: those directories are not read and have no children array. The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
         "advisory": false
       },
       {
@@ -71,9 +77,15 @@
         "advisory": false
       },
       {
+        "name": "copy_file",
+        "hash": "489cdc51c501d89c28a6244d8e68b969bdfe6dd6d87a49ebbdea118b9bfa5230",
+        "description": "Copy a file to a new location, without reading its content into the conversation. Copies one regular file, keeping its permissions and modification time; directories are not copied. If the destination exists, the operation will fail: it never overwrites. Both source and destination must be within allowed directories.",
+        "advisory": false
+      },
+      {
         "name": "search_files",
-        "hash": "48925b5da256d04b96d6429e39eb654e8c6893d813e888e513eeb891716586cd",
-        "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+        "hash": "3747c21057a82566d0fbcc9fcb1821923d4a78f048f7470da73e4edab87a8e70",
+        "description": "Find files and directories by NAME, not by content: this tool never reads or searches inside files. It walks the tree under 'path' and matches a glob pattern against each entry's path relative to 'path' (case-sensitive). Use '*.ext' to match entries directly under 'path', and '**/*.ext' or '**/name' to match at any depth. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
         "advisory": false
       },
       {
@@ -95,7 +107,7 @@
   "server-memory": {
     "server": "server-memory",
     "package": "@modelcontextprotocol/server-memory",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "tools": [
       {
         "name": "create_entities",
@@ -135,20 +147,20 @@
       },
       {
         "name": "read_graph",
-        "hash": "0e6ccd9fba8ad9d6912db23b925341fe6580465ce5f8a42c07746f998adb5c90",
-        "description": "Read the entire knowledge graph",
+        "hash": "4df5c59ac91a428397b77fe487e655cd2766a1fffa5dc250ade73c25b493cdd7",
+        "description": "Read the entire knowledge graph: every entity with its observations, and every relation. The result grows with the graph, so use this only when you need everything; prefer search_nodes to find entities by keyword and open_nodes to read entities whose names you know.",
         "advisory": false
       },
       {
         "name": "search_nodes",
-        "hash": "dd1096124c4af3e9411c7491751f4f576797eb7edbfc275e83d86583f8fca801",
-        "description": "Search for nodes in the knowledge graph based on a query",
+        "hash": "33d7b07f4c07bd1a6cad6250b3803116923ce1e4ed935520d8b97ec8fdd4ca1c",
+        "description": "Search the knowledge graph for entities whose name, type or observations contain the query (case-insensitive). Use this when you have a keyword, a topic or part of a name but not the exact entity names. Prefer open_nodes when you already know the exact names, and use read_graph only when you need the whole graph. Returns the matching entities and every relation that touches one of them.",
         "advisory": false
       },
       {
         "name": "open_nodes",
-        "hash": "e5bf3c72115f13726fef2b7e92e379735808e4b1c0ecd25d5ef5044b17350682",
-        "description": "Open specific nodes in the knowledge graph by their names",
+        "hash": "fa4a840da16095ffd2fb1f1683fd5ad1b359b52304addc536749de064ad51e0f",
+        "description": "Retrieve specific entities by their exact names, with every relation that touches one of them. Use this when you already know the names (from the conversation, or from an earlier search_nodes or read_graph result); it is the cheapest way to read entities you can name. Prefer search_nodes when you only have a keyword or part of a name. Names that do not exist are skipped.",
         "advisory": false
       }
     ],
@@ -163,101 +175,101 @@
   "server-everything": {
     "server": "server-everything",
     "package": "@modelcontextprotocol/server-everything",
-    "version": "2.1.0",
+    "version": "2.2.1",
     "tools": [
       {
         "name": "echo",
-        "hash": "717ad4cdba610bf0b85adb9f53ae09cd20e3baa23c24938673c849599323b5b8",
+        "hash": "4c7fa236e6a0bbfea936b97badac84474163b36001f567de57c1c5fd50f9b5e4",
         "description": "Echoes back the input string",
         "advisory": false
       },
       {
         "name": "get-annotated-message",
-        "hash": "62d74c882d8bc36470690d8187b38f98810e186ccc25b621065163cada482dba",
+        "hash": "305342fb2c6ef39d4be7ab0402e2d8a1893a9bebea39aa5f62c007cb66e913b1",
         "description": "Demonstrates how annotations can be used to provide metadata about content.",
         "advisory": false
       },
       {
         "name": "get-env",
-        "hash": "664968c5a5d2403cf9d66f3667515f79d3316824bad66fc80c85725bc044a12a",
+        "hash": "acf24962856e8290a5882515983fc998ef88631510084eab090629e73a256ed0",
         "description": "Returns all environment variables, helpful for debugging MCP server configuration. Values of credential-like names (a KEY, TOKEN, SECRET, PASSWORD, PASSWD, CREDENTIAL, AUTH or COOKIE name segment) are masked as \"<redacted>\" unless GET_ENV_INCLUDE_SECRETS is set to 1 or true in the server's environment.",
         "advisory": false
       },
       {
         "name": "get-header-params",
-        "hash": "e6451e2a1a13a7814611996b7e60fd5a54939729819ab9617b73f4e9cddfc10c",
+        "hash": "41f48f327b2e2e0bce6c9cd68c9510a58cc6e0ff344f4ceb709daaf807b8c476",
         "description": "Returns its region argument and the Mcp-Param-Region HTTP header it arrived in. Demonstrates x-mcp-header (a 2026-07-28 Streamable HTTP client mirrors the argument into the header) and JSON Schema 2020-12 input and output schemas.",
         "advisory": false
       },
       {
         "name": "get-resource-links",
-        "hash": "9fd98ff61b6152599e02dcc900f10fceec09b97e14702fa1566d0c68db395d6c",
+        "hash": "211f11996e13ba88e365278a438c644194d69af35a125998637da503ee84952a",
         "description": "Returns up to ten resource links that reference different types of resources",
         "advisory": false
       },
       {
         "name": "get-resource-reference",
-        "hash": "40d5c4d645a88501af5f76f89181b1ca8b04ba142c852bdce619420903439430",
+        "hash": "25f6ac43ad0e0ad937662ed6bf88601c729c8665e9aeb13affeea1675432099f",
         "description": "Returns a resource reference that can be used by MCP clients",
         "advisory": false
       },
       {
         "name": "get-structured-content",
-        "hash": "ee1b73a92526a156bd867696e3d45c912c07036377c234f8821b601fc14bcde9",
+        "hash": "2c881c7f4683f5d6b8a16c9a8f82ac27780f9cffc16f687e5bd17adf60e38be7",
         "description": "Returns structured content along with an output schema for client data validation",
         "advisory": false
       },
       {
         "name": "get-sum",
-        "hash": "bedcfee056db90a8391c37fefc58bbcb891ad9e7b34317cc5330c77fbb0a232f",
+        "hash": "4ecaaee42d7b7309546286766e548c1e34422cdd989dbbda36fb21282e5bd5e0",
         "description": "Returns the sum of two numbers",
         "advisory": false
       },
       {
         "name": "get-tiny-image",
-        "hash": "e1b1ffc3c0a0599aa3b5c98ce2ce1af7bb80c6f5d8ddc1b23396c5f8844df2fb",
+        "hash": "b3011d993a975236270f4772af1f14d82181feef543f95815f6f0977a7bc0274",
         "description": "Returns a tiny MCP logo image.",
         "advisory": false
       },
       {
         "name": "gzip-file-as-resource",
-        "hash": "3a32b347b8564994d47cccc70cd21c985327ef5f6628ce7c55da64a69d5002a7",
+        "hash": "55fd3f7ed93b9ac2698de62c7d4cf6d6dae55350dbb2a1642794d686865c08b3",
         "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request: during the current session for a 2025-era client, or for ten minutes at a minted URI on protocol version 2026-07-28.",
         "advisory": false
       },
       {
         "name": "trigger-list-changed",
-        "hash": "87575cd3825d9f60e7280ff1045fcac7cb36196be944a71f209337fcb996a12b",
+        "hash": "bcc79515d47c573c41e1d94748b311ee6ec328bf053cd852eb6ddd018b46a5a3",
         "description": "Sends a notifications/<list>/list_changed for the tool, prompt or resource list. On protocol version 2026-07-28 it is delivered on each subscriptions/listen stream that asked for that list; a 2025-era client receives it unsolicited.",
         "advisory": false
       },
       {
         "name": "trigger-log-messages",
-        "hash": "b58263b8f36b69e980659054ce9ff1a89b298d86e7715bcd96a899b5ab41f9d6",
+        "hash": "078ff2c11dea05c68fcea37adf03ae240fad519a9ce73c03714a2cae6952a46a",
         "description": "Sends one log message at each logging level during the call. On protocol version 2026-07-28 only the messages at or above the level the request names in _meta (io.modelcontextprotocol/logLevel) are sent, and none if it names no level; a 2025-era client gets those at or above the level it set with logging/setLevel. Deprecated: logging is deprecated as of protocol version 2026-07-28.",
         "advisory": false
       },
       {
         "name": "trigger-long-running-operation",
-        "hash": "e0d7e0bb855e23173ddbf3ef0ba6db9a04a7442e9d52b56e556ac633ce704638",
+        "hash": "dbd60aa6d28211d259698c94039334f557bcafc33414e5f537e4b430923f1bc4",
         "description": "Demonstrates a long running operation with progress updates.",
         "advisory": false
       },
       {
         "name": "trigger-resource-update",
-        "hash": "48d076a6dc1064250ce8b875524e25c8b9cc11653607e640e80087798ded23f8",
+        "hash": "3d9d3b9118d7e87fd7d8ae3a7a3136f3d10dfb4fe024ff78324014be2ac04e32",
         "description": "Sends a notifications/resources/updated for a resource URI. On protocol version 2026-07-28 it is delivered on each subscriptions/listen stream whose resourceSubscriptions name the URI; a 2025-era client receives it once it has called resources/subscribe for the URI.",
         "advisory": false
       },
       {
         "name": "toggle-simulated-logging",
-        "hash": "fc3d444cc6f1f199de3743118a3c01a6311a813ae7199ad5c23b480eec7b2728",
+        "hash": "f42eb3fd6370cb5bc1657858489056dbb43c74e3d8b7e41fcf0169541a195a35",
         "description": "Toggles simulated, random-leveled logging on or off. Deprecated: 2025-era clients only, since protocol version 2026-07-28 removes logging/setLevel; use trigger-log-messages with a per-request log level instead.",
         "advisory": false
       },
       {
         "name": "toggle-subscriber-updates",
-        "hash": "313f8433554c1ddc607742d6c08217cacfcb7f961b28fa310392f13347519a41",
+        "hash": "b53179f3e5e4e95a0847e6024a4e3eb9473873ce7de30b0c56047b89562375ca",
         "description": "Toggles simulated resource subscription updates on or off. Deprecated: 2025-era clients only, since protocol version 2026-07-28 removes resources/subscribe; use trigger-resource-update with a subscriptions/listen stream instead.",
         "advisory": false
       }
@@ -277,7 +289,7 @@
       },
       {
         "name": "resource-prompt",
-        "hash": "f12d0e2427f3c67f7d04efefd3547708d1f3164c9ba962bdcb2085deb898750a"
+        "hash": "1b11624cfee7fa5f4a64c364154612787198749051e2fb60dcb5e2a527885f12"
       }
     ],
     "resources": [
@@ -308,18 +320,22 @@
       {
         "name": "structure.md",
         "hash": "85cf6cdfbb158db69d51a7a9af2b3611828145416ddaadf9dffe2a96d2d7868f"
+      },
+      {
+        "name": "summer-specials",
+        "hash": "9f685cd883b50e8af273fc9daef7f7bfac144237195c363ca4f2454abbbf060e"
       }
     ]
   },
   "server-sequential-thinking": {
     "server": "server-sequential-thinking",
     "package": "@modelcontextprotocol/server-sequential-thinking",
-    "version": "2.0.0",
+    "version": "2.1.1",
     "tools": [
       {
         "name": "sequentialthinking",
-        "hash": "433e72ec24d80d9e93d3bdee3553d589971ae5116e02b068343c48fc329b6a09",
-        "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations where irrelevant information needs to be filtered out\n\nKey features:\n- You can adjust total_thoughts up or down as you progress\n- You can question or revise previous thoughts\n- You can add more thoughts even after reaching what seemed like the end\n- You can express uncertainty and explore alternative approaches\n- Not every thought needs to build linearly - you can branch or backtrack\n- Generates a solution hypothesis\n- Verifies the hypothesis based on the Chain of Thought steps\n- Repeats the process until satisfied\n- Provides a correct answer\n\nParameters explained:\n- thought: Your current thinking step, which can include:\n  * Regular analytical steps\n  * Revisions of previous thoughts\n  * Questions about previous decisions\n  * Realizations about needing more analysis\n  * Changes in approach\n  * Hypothesis generation\n  * Hypothesis verification\n- nextThoughtNeeded: True if you need more thinking, even if at what seemed like the end\n- thoughtNumber: Current number in sequence (can go beyond initial total if needed)\n- totalThoughts: Current estimate of thoughts needed (can be adjusted up/down)\n- isRevision: A boolean indicating if this thought revises previous thinking\n- revisesThought: If is_revision is true, which thought number is being reconsidered\n- branchFromThought: If branching, which thought number is the branching point\n- branchId: Identifier for the current branch (if any)\n- needsMoreThoughts: If reaching end but realizing more thoughts needed\n\nYou should:\n1. Start with an initial estimate of needed thoughts, but be ready to adjust\n2. Feel free to question or revise previous thoughts\n3. Don't hesitate to add more thoughts if needed, even at the \"end\"\n4. Express uncertainty when present\n5. Mark thoughts that revise previous thinking or branch into new paths\n6. Ignore information that is irrelevant to the current step\n7. Generate a solution hypothesis when appropriate\n8. Verify the hypothesis based on the Chain of Thought steps\n9. Repeat the process until satisfied with the solution\n10. Provide a single, ideally correct answer as the final output\n11. Only set nextThoughtNeeded to false when truly done and a satisfactory answer is reached",
+        "hash": "38650d73e23ee70a2e5aede2c3503642d55d2c2d921ab837c8879242c8eb8666",
+        "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Tasks that need to maintain context over multiple steps\n- Situations where irrelevant information needs to be filtered out\n\nYou should:\n1. Estimate totalThoughts up front and adjust it up or down as you go; thoughtNumber may exceed it\n2. Question or revise earlier thoughts (isRevision with revisesThought), or branch (branchFromThought with branchId)\n3. Express uncertainty, and ignore information irrelevant to the current step\n4. Generate a solution hypothesis, verify it against the earlier steps, and repeat until satisfied\n5. Set nextThoughtNeeded to false only when truly done and a satisfactory answer is reached",
         "advisory": false
       }
     ],

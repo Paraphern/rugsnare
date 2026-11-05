@@ -89,3 +89,34 @@
 {"ts":"2026-11-03T13:04:20.957Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"ask_wiki_question","oldHash":"a0e84ac0ba0fb203","newHash":"8d4f8d5b1bd8264f"}
 {"ts":"2026-11-03T13:04:20.958Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"read_wiki_contents","oldHash":"edd10a5345e00356","newHash":"8168f2c9f08912d1"}
 {"ts":"2026-11-03T13:04:20.958Z","server":"deepwiki-hosted","transport":"http","type":"DRIFT","tool":"read_wiki_structure","oldHash":"056c8b05f637c216","newHash":"6f7a82d053238878"}
+{"ts":"2026-11-05T13:32:58.632Z","server":"server-filesystem","type":"VERSION","detail":"2.1.0 → 2.2.0"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"DRIFT","tool":"read_file","oldHash":"1b6cbebfad62822e","newHash":"503c4edebfa25ecf"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"DRIFT","tool":"read_text_file","oldHash":"449c5a47aaa51eae","newHash":"da5363dc16304e71"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"NEW_TOOL","tool":"append_file"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"DRIFT","tool":"edit_file","oldHash":"b40ddcbb3584bbcd","newHash":"0f0e02f4f4b17356"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"DRIFT","tool":"directory_tree","oldHash":"7ff58eaf416795af","newHash":"d83a92c9f5cd5284"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"NEW_TOOL","tool":"copy_file"}
+{"ts":"2026-11-05T13:32:58.633Z","server":"server-filesystem","type":"DRIFT","tool":"search_files","oldHash":"48925b5da256d04b","newHash":"3747c21057a82566"}
+{"ts":"2026-11-05T13:32:59.950Z","server":"server-memory","type":"VERSION","detail":"2.0.1 → 2.1.0"}
+{"ts":"2026-11-05T13:32:59.951Z","server":"server-memory","type":"DRIFT","tool":"read_graph","oldHash":"0e6ccd9fba8ad9d6","newHash":"4df5c59ac91a4283"}
+{"ts":"2026-11-05T13:32:59.951Z","server":"server-memory","type":"DRIFT","tool":"search_nodes","oldHash":"dd1096124c4af3e9","newHash":"33d7b07f4c07bd1a"}
+{"ts":"2026-11-05T13:32:59.951Z","server":"server-memory","type":"DRIFT","tool":"open_nodes","oldHash":"e5bf3c72115f1372","newHash":"fa4a840da16095ff"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"VERSION","detail":"2.1.0 → 2.2.1"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"echo","oldHash":"717ad4cdba610bf0","newHash":"4c7fa236e6a0bbfe"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-annotated-message","oldHash":"62d74c882d8bc364","newHash":"305342fb2c6ef39d"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-env","oldHash":"664968c5a5d2403c","newHash":"acf24962856e8290"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-header-params","oldHash":"e6451e2a1a13a781","newHash":"41f48f327b2e2e0b"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-resource-links","oldHash":"9fd98ff61b615259","newHash":"211f11996e13ba88"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-resource-reference","oldHash":"40d5c4d645a88501","newHash":"25f6ac43ad0e0ad9"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-structured-content","oldHash":"ee1b73a92526a156","newHash":"2c881c7f4683f5d6"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-sum","oldHash":"bedcfee056db90a8","newHash":"4ecaaee42d7b7309"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"get-tiny-image","oldHash":"e1b1ffc3c0a0599a","newHash":"b3011d993a975236"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"gzip-file-as-resource","oldHash":"3a32b347b8564994","newHash":"55fd3f7ed93b9ac2"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"trigger-list-changed","oldHash":"87575cd3825d9f60","newHash":"bcc79515d47c573c"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"trigger-log-messages","oldHash":"b58263b8f36b69e9","newHash":"078ff2c11dea05c6"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"trigger-long-running-operation","oldHash":"e0d7e0bb855e2317","newHash":"dbd60aa6d28211d2"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"trigger-resource-update","oldHash":"48d076a6dc106425","newHash":"3d9d3b9118d7e87f"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"toggle-simulated-logging","oldHash":"fc3d444cc6f1f199","newHash":"f42eb3fd6370cb5b"}
+{"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"toggle-subscriber-updates","oldHash":"313f8433554c1ddc","newHash":"b53179f3e5e4e95a"}
+{"ts":"2026-11-05T13:33:04.504Z","server":"server-sequential-thinking","type":"VERSION","detail":"2.0.0 → 2.1.1"}
+{"ts":"2026-11-05T13:33:04.504Z","server":"server-sequential-thinking","type":"DRIFT","tool":"sequentialthinking","oldHash":"433e72ec24d80d9e","newHash":"38650d73e23ee70a"}
