@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "state": "idle",
-  "owner": null,
-  "generation": 2,
-  "acquiredAt": null,
-  "completedAt": "2026-11-05T15:13:57.455Z",
+  "state": "busy",
+  "owner": "root-launch-readiness-20261106",
+  "generation": 3,
+  "acquiredAt": "2026-11-06T05:39:44.963Z",
+  "completedAt": null,
   "lastResult": {
     "task": "runtime-mode-validation",
     "draftPr": "https://github.com/Paraphern/rugsnare/pull/17",
