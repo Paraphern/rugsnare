@@ -1,6 +1,6 @@
 import readline from 'node:readline';
 import crypto from 'node:crypto';
-import {toolHash, schemaHash as computeSchemaHash, short, canonicalJson} from './hash.js';
+import {toolHash, schemaHash as computeSchemaHash, outputHash as computeOutputHash, short, canonicalJson} from './hash.js';
 import { loadPins, pinTool, savePins, ensureServer, detectShadows, annotationsEqual } from './pins.js';
 import { logEvent } from './events.js';
 import { sendAlert, queueAlert } from './alerts.js';
@@ -8,6 +8,7 @@ import { evaluateCall, loadPolicies as loadPoliciesForProxy } from './policies.j
 import { canaryEnabled, appendTrace, capPayload, MAX_PENDING } from './canary.js';
 import { scanResult, resultSummary } from './results.js';
 import { loadVault, substituteArgs, redactResult } from './vault.js';
+import { assertPinsIntegrity } from './receipts.js';
 
 /**
  * The RugSnare live proxy (v0.2): the integrity gate between an MCP client
@@ -22,7 +23,8 @@ import { loadVault, substituteArgs, redactResult } from './vault.js';
  * Every tools/call is logged (tool name + timestamp; args only if opted in).
  */
 
-export function createProxy({ name, server, streams, mode = 'observe', config, cwd = process.cwd(), writeOut = (s) => process.stdout.write(s + '\n'), writeErr = (s) => process.stderr.write(s + '\n') }) {
+export function createProxy({ name, server, streams, mode = 'observe', config, cwd = process.cwd(), allowUnsignedPins = false, writeOut = (s) => process.stdout.write(s + '\n'), writeErr = (s) => process.stderr.write(s + '\n') }) {
+  assertPinsIntegrity(cwd, { allowUnsignedPins });
   const pins = loadPins(cwd);
   const serverPin = ensureServer(pins, name, null);
   const activePolicies = loadPoliciesForProxy(cwd);
@@ -40,6 +42,7 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
   // calls tools the user never saw or approved. This catches that gap.
   // Activated only AFTER the first tools/list response (before that we don't
   // know what's declared, so we can't judge).
+  const quarantinedTools = new Set();
   const declaredTools = new Set(); // tool names seen in tools/list responses
   const undeclaredAlerted = new Set(); // one advisory per undeclared tool name
   let hasSeenToolsList = false;
@@ -92,6 +95,12 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     }
     try {
       if (msg.method === 'tools/call' && msg.params) {
+        if (mode === 'enforce' && (quarantinedTools.has(msg.params.name) || serverPin.tools[msg.params.name]?.approved === false)) {
+          writeOut(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
+          logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name }, cwd);
+          return;
+        }
+
         const call = {
           kind: 'call',
           server: name,
@@ -344,8 +353,9 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         const pin = serverPin.tools[tool.name];
         // annotation flip with an identical hash: text+schema unchanged, but the
         // behavioral hints changed (e.g. readOnlyHint:true -> destructive) - still drift
+        const outputFlip = Boolean(pin) && (pin.outputHash ?? null) !== computeOutputHash(tool);
         const annFlip = Boolean(pin) && pin.hash === hash && pin.annotations !== undefined && !annotationsEqual(pin.annotations, tool.annotations);
-        return { tool, hash, pin, annFlip, status: !pin ? 'NEW' : pin.hash !== hash ? 'DRIFT' : annFlip ? 'DRIFT' : 'UNCHANGED' };
+        return { tool, hash, pin, annFlip, outputFlip, status: !pin ? 'NEW' : pin.hash !== hash || outputFlip ? 'DRIFT' : annFlip ? 'DRIFT' : 'UNCHANGED' };
       });
 
       for (const v of verdicts) {
@@ -354,7 +364,9 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
           pinsDirty = true;
           alert('NEW', v.tool.name, { hash: v.hash }); // alert in every mode: enforce quarantines, but the human must still hear it
         } else if (v.status === 'DRIFT') {
-          if (v.annFlip) {
+          if (v.outputFlip && v.pin.hash === v.hash && !v.annFlip) {
+            alert('DRIFT', v.tool.name, { driftType: v.pin.outputHash == null ? 'NOTATION' : 'BREAKING', oldHash: v.pin.hash, hash: v.hash, outputSchemaChanged: true });
+          } else if (v.annFlip) {
             alert('DRIFT', v.tool.name, { driftType: 'ANNOTATION', oldHash: v.pin.hash, hash: v.hash, oldAnnotations: v.pin.annotations ?? null, newAnnotations: v.tool.annotations ?? null });
           } else {
             const liveSchemaHash = computeSchemaHash(v.tool);
@@ -378,9 +390,14 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
       if (mode === 'enforce') {
         const allowed = new Set(
           verdicts
-            .filter((v) => v.status === 'UNCHANGED' || (v.status === 'NEW' && v.pin?.approved))
+            .filter((v) => v.status === 'UNCHANGED' && v.pin?.approved === true)
             .map((v) => v.tool.name)
         );
+        // A conflicting definition must quarantine the whole name: an
+        // unchanged duplicate cannot grant access to its drifted sibling.
+        for (const v of verdicts) {
+          if (v.status !== 'UNCHANGED' || v.pin?.approved !== true) allowed.delete(v.tool.name);
+        }
         const blocked = verdicts.filter((v) => !allowed.has(v.tool.name));
         // kill-switch: a disabled tool is hidden from the contract in enforce
         for (const v of verdicts) {
@@ -388,6 +405,10 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
             allowed.delete(v.tool.name);
             blocked.push({ ...v, status: 'DISABLED' });
           }
+        }
+        for (const v of verdicts) {
+          if (allowed.has(v.tool.name)) quarantinedTools.delete(v.tool.name);
+          else quarantinedTools.add(v.tool.name);
         }
         if (blocked.length > 0) {
           msg.result.tools = [

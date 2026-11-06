@@ -54,7 +54,7 @@ test('sha256File hashes file content correctly (vs independent crypto)', () => {
 // 1.0.1 promised "verify defaults to Base Mainnet"; the default was left on
 // sepolia, so a bare `verify` queried the TEST chain and every real release
 // answered "not pinned" (found verifying 1.3.0 itself). Discriminator: 0.5.1
-// is pinned ONLY on sepolia - on mainnet the answer must be "not pinned",
+// is modeled as pinned ONLY on sepolia - on mainnet the answer must be "not pinned",
 // while a sepolia default would return VERIFIED or a hash MISMATCH.
 test('bare verify defaults to Base Mainnet, not sepolia (1.0.1 contract)', async () => {
   const { execFile } = await import('node:child_process');
@@ -66,9 +66,20 @@ test('bare verify defaults to Base Mainnet, not sepolia (1.0.1 contract)', async
     fs.writeFileSync(file, 'not the real artifact - message is what matters');
     const { fileURLToPath } = await import('node:url');
     const cli = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
+    // Exercise the real CLI defaults without depending on a live RPC or its
+    // mutable state. A wrong sepolia default still produces MISMATCH.
+    const preload = path.join(dir, 'mock-rpc.cjs');
+    fs.writeFileSync(preload, `
+      globalThis.fetch = async (url) => {
+        const host = new URL(url).hostname;
+        if (!['mainnet.base.org', 'sepolia.base.org'].includes(host)) throw new Error('unexpected RPC host');
+        const result = host === 'mainnet.base.org' ? '0'.repeat(128) : '1'.repeat(128);
+        return { ok: true, json: async () => ({ result: '0x' + result }) };
+      };
+    `);
     let out = '';
     try {
-      const r = await run(process.execPath, [cli, 'verify', file, '--version', '0.5.1'], { timeout: 30000 });
+      const r = await run(process.execPath, ['--require', preload, cli, 'verify', file, '--version', '0.5.1'], { timeout: 30000 });
       out = r.stdout + r.stderr;
     } catch (e) {
       // exit 2 = "not pinned" is a legitimate CLI outcome; capture its output
