@@ -1,17 +1,17 @@
 {
   "schema": 1,
-  "state": "busy",
-  "owner": "root-launch-readiness-20261106",
+  "state": "idle",
+  "owner": null,
   "generation": 3,
-  "acquiredAt": "2026-11-06T05:39:44.963Z",
-  "completedAt": null,
+  "acquiredAt": null,
+  "completedAt": "2026-11-06T05:43:21.203Z",
   "lastResult": {
-    "task": "runtime-mode-validation",
-    "draftPr": "https://github.com/Paraphern/rugsnare/pull/17",
-    "codeHead": "4abed78b8a16e4001f78df06b81b7e14a7035153",
-    "standaloneTestsPassed": 456,
-    "combinedTestsPassed": 524,
+    "task": "launch-readiness",
+    "draftPr": "https://github.com/Paraphern/rugsnare/pull/21",
+    "head": "26b0d1b2cf207205bf934de8bdda6885419593a4",
     "ci": "success",
-    "codeql": "success"
+    "codeql": "success",
+    "launchRecommendation": "HOLD",
+    "automation": "paused"
   }
 }
