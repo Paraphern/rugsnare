@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signPinsFile, verifyPinsFile, ensureKeys } from '../src/receipts.js';
+import { signPinsFile, verifyPinsFile, ensureKeys, assertPinsIntegrity } from '../src/receipts.js';
 
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'cli.js');
 
@@ -130,4 +130,133 @@ test('CLI scan re-signs pins: approve flow keeps the signature valid', async () 
   } finally {
     cleanup();
   }
+});
+
+function signedFixture() {
+  const fixture = tmpCwd();
+  ensureKeys(fixture.dir);
+  writePins(fixture.dir);
+  signPinsFile(fixture.dir);
+  return { ...fixture, state: path.join(fixture.dir, '.rugsnare') };
+}
+
+test('signed pins without any verification key fail closed, including CLI override', async () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    fs.unlinkSync(path.join(state, 'pins.pub.pem'));
+    fs.rmSync(path.join(state, 'keys'), { recursive: true });
+    const verdict = verifyPinsFile(dir);
+    assert.equal(verdict.status, 'tampered');
+    assert.match(verdict.reason, /verification key/i);
+    for (const args of [['diff'], ['diff', '--allow-unsigned-pins']]) {
+      const result = await runCli(dir, [...args, '--timeout', '500']);
+      assert.equal(result.code, 2);
+      assert.match(result.stderr, /TAMPERED/);
+    }
+  } finally { cleanup(); }
+});
+
+test('present invalid committed key cannot fall back to the valid local key', () => {
+  for (const invalid of ['malformed PEM', 'directory']) {
+    const { dir, state, cleanup } = signedFixture();
+    try {
+      const publicFile = path.join(state, 'pins.pub.pem');
+      fs.unlinkSync(publicFile);
+      if (invalid === 'directory') fs.mkdirSync(publicFile);
+      else fs.writeFileSync(publicFile, 'not a public key');
+      assert.equal(verifyPinsFile(dir).status, 'tampered', invalid);
+    } finally { cleanup(); }
+  }
+});
+
+test('invalid local fallback key is a structured integrity failure', () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    fs.unlinkSync(path.join(state, 'pins.pub.pem'));
+    fs.writeFileSync(path.join(state, 'keys', 'ed25519.pub.pem'), 'not a public key');
+    assert.equal(verifyPinsFile(dir).status, 'tampered');
+  } finally { cleanup(); }
+});
+
+test('malformed signature payloads return tampered instead of throwing or accepting truncated hex', () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    const file = path.join(state, 'pins.sig');
+    const original = JSON.parse(fs.readFileSync(file, 'utf8'));
+    for (const payload of [null, [], { ...original, sig: null }, { ...original, sig: {} }, { ...original, sig: original.sig + 'zz' }]) {
+      fs.writeFileSync(file, JSON.stringify(payload));
+      assert.equal(verifyPinsFile(dir).status, 'tampered', JSON.stringify(payload));
+    }
+  } finally { cleanup(); }
+});
+
+test('CLI rejects invalid committed key even with --allow-unsigned-pins', async () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    fs.writeFileSync(path.join(state, 'pins.pub.pem'), 'not a public key');
+    const result = await runCli(dir, ['diff', '--allow-unsigned-pins', '--timeout', '500']);
+    assert.equal(result.code, 2);
+    assert.match(result.stderr, /TAMPERED/);
+  } finally { cleanup(); }
+});
+
+test('legacy absence, committed CI verification and genuine local fallback remain compatible', () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    assert.equal(verifyPinsFile(dir).keySource, 'committed');
+    fs.unlinkSync(path.join(state, 'pins.pub.pem'));
+    assert.equal(verifyPinsFile(dir).keySource, 'local', 'actual absence allows local fallback');
+    fs.unlinkSync(path.join(state, 'pins.sig'));
+    assert.equal(verifyPinsFile(dir).status, 'unsigned');
+    fs.rmSync(path.join(state, 'keys'), { recursive: true });
+    assert.equal(verifyPinsFile(dir).status, 'nokey');
+    fs.unlinkSync(path.join(state, 'pins.json'));
+    assert.equal(verifyPinsFile(dir).status, 'nopins');
+  } finally { cleanup(); }
+});
+
+test('signature verification does not require optional metadata or trust a supplied fingerprint', () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    const file = path.join(state, 'pins.sig');
+    const payload = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const fingerprint = payload.keyFingerprint;
+    delete payload.algo;
+    delete payload.signedAt;
+    payload.keyFingerprint = 'spoofed metadata';
+    fs.writeFileSync(file, JSON.stringify(payload));
+    const verdict = verifyPinsFile(dir);
+    assert.equal(verdict.status, 'ok');
+    assert.equal(verdict.fingerprint, fingerprint);
+  } finally { cleanup(); }
+});
+
+test('non-hex suffixes cannot be silently discarded from an otherwise valid signature', () => {
+  const { dir, state, cleanup } = signedFixture();
+  try {
+    const file = path.join(state, 'pins.sig');
+    const payload = JSON.parse(fs.readFileSync(file, 'utf8'));
+    payload.sig += 'zz';
+    fs.writeFileSync(file, JSON.stringify(payload));
+    assert.equal(verifyPinsFile(dir).status, 'tampered');
+  } finally { cleanup(); }
+});
+
+test('runtime integrity guard preserves legacy bootstrap but never overrides corruption', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    assert.equal(assertPinsIntegrity(dir).status, 'nopins');
+    writePins(dir);
+    assert.equal(assertPinsIntegrity(dir).status, 'nokey');
+    assert.equal(fs.existsSync(path.join(dir, '.rugsnare', 'keys')), false, 'verification never generates keys');
+    ensureKeys(dir);
+    assert.throws(() => assertPinsIntegrity(dir), /unsigned/i);
+    assert.equal(assertPinsIntegrity(dir, { allowUnsignedPins: true }).status, 'unsigned');
+    signPinsFile(dir);
+    assert.equal(assertPinsIntegrity(dir).status, 'ok');
+    fs.unlinkSync(path.join(dir, '.rugsnare', 'pins.pub.pem'));
+    fs.rmSync(path.join(dir, '.rugsnare', 'keys'), { recursive: true });
+    assert.throws(() => assertPinsIntegrity(dir), /TAMPERED/);
+    assert.throws(() => assertPinsIntegrity(dir, { allowUnsignedPins: true }), /TAMPERED/);
+  } finally { cleanup(); }
 });

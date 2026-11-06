@@ -22,10 +22,18 @@ import { toolHash } from './hash.js';
 
 export function shape(v) {
   if (v === null) return 'null';
-  if (Array.isArray(v)) return v.length ? [shape(v[0])] : [];
+  if (Array.isArray(v)) {
+    // Arrays are collections: compare every distinct element structure, while
+    // ignoring order and multiplicity just as homogeneous lengths were ignored.
+    const variants = new Map(v.map((item) => {
+      const fingerprint = shape(item);
+      return [JSON.stringify(fingerprint), fingerprint];
+    }));
+    return [...variants.keys()].sort().map((key) => variants.get(key));
+  }
   if (typeof v === 'object') {
     const out = {};
-    for (const k of Object.keys(v).sort()) out[k] = shape(v[k]);
+    for (const k of Object.keys(v).sort()) Object.defineProperty(out, k, { value: shape(v[k]), enumerable: true });
     return out;
   }
   return typeof v;
@@ -245,8 +253,9 @@ export function classifyReplay({ serverPin, liveTools, replayCalls, maxMs = 0 })
       findings.push({ severity: 'SLOW', where: 'call', tool: entry.tool, reason: `latency regression: ${ms}ms > ${maxMs}ms budget` });
     }
 
-    const wasOk = entry.ok;
-    const isOk = !live.error;
+    // Legacy traces record JSON-RPC success even for MCP tool errors.
+    const wasOk = entry.ok && entry.result?.isError !== true;
+    const isOk = !live.error && live.result?.isError !== true;
     if (wasOk && !isOk) findings.push({ severity: 'BREAKING', where: 'call', tool: entry.tool, reason: `was ok, now error: ${live.error?.message ?? 'unknown'}` });
     else if (!wasOk && isOk) findings.push({ severity: 'FIXED', where: 'call', tool: entry.tool, reason: 'was error, now ok' });
     else if (wasOk && isOk) {

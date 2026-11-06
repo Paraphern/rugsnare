@@ -12,6 +12,7 @@ import { loadConfig, saveConfig } from './alerts.js';
 import { logEvent, eventsPath } from './events.js';
 import { verifyArtifact, DEFAULT_RPCS, DEFAULT_CONTRACTS } from './onchain.js';
 import { createProxy } from './proxy.js';
+import { assertPinsIntegrity } from './receipts.js';
 import { readJsonFile } from './jsonfile.js';
 import { buildSarif } from './sarif.js';
 import { scanToolsForAdvisories, scanToolDescription, atrRuleIds } from './advisory.js';
@@ -85,6 +86,7 @@ Usage:
   rugsnare canary replay --name <server> [--strict] [--include <tool>]... [--all-calls] [--url <https://...>] -- <command>
                                                          replay corpus vs new version (stdio or HTTP); read-only calls by default;
                                                          --include/--all-calls replay write-class (sandbox only); exit 1 = breaking
+  run/canary: --allow-unsigned-pins                        allow an unsigned store once; tampered signatures always fail
   rugsnare wrap <server-name>                            insert the RugSnare proxy into your MCP config
   rugsnare unwrap <server-name>                          restore the original (undo wrap)
   rugsnare receipts sign                                 Ed25519 hash-chain over the event log
@@ -891,15 +893,29 @@ async function httpAuthConfig(name, flags) {
     : { auth: process.env.MCP_AUTH_TOKEN ? { type: 'bearer', token: process.env.MCP_AUTH_TOKEN } : null };
 }
 
+// Resolve once for both transports. A typo must never silently downgrade an
+// operator's intended enforcement; the supported modes are observe/enforce.
+function runtimeOptions(flags, { canaryRecord = false } = {}) {
+  const config = loadConfig();
+  const mode = flags.mode !== undefined ? flags.mode : config.mode;
+  if (!['observe', 'enforce'].includes(mode)) {
+    throw new Error('Invalid runtime mode: expected observe or enforce');
+  }
+  if (flags.failClosed) config.failMode = 'closed';
+  if (canaryRecord) config.canaryRecord = true;
+  return { config, mode };
+}
+
 async function cmdRun(flags) {
   const name = flags.name;
-  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const { config, mode } = runtimeOptions(flags);
+  // Reject untrusted pins before starting a child or opening a local listener.
+  // Constructors also check, so callers outside this CLI get the same gate.
+  assertPinsIntegrity(process.cwd(), { allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
 
   // HTTP proxy mode: rugsnare run --name X --url https://remote/mcp
   if (flags.url) {
     const { startHttpProxy } = await import('./proxy-http.js');
-    const config = loadConfig();
-    if (flags.failClosed) config.failMode = 'closed';
     // Auth from the server's own config entry (headers / auth block), with
     // MCP_AUTH_TOKEN as the env fallback when the entry has neither.
     // NOTE: no adhocServerEntry here - in `run`, --url IS the target, not an
@@ -909,6 +925,7 @@ async function cmdRun(flags) {
     try {
       started = await startHttpProxy({
         name, targetUrl: flags.url, mode, config, cwd: process.cwd(), authConfig, port: flags.port,
+        allowUnsignedPins: Boolean(flags.allowUnsignedPins),
       });
     } catch (startErr) {
       console.error(`[rugsnare] ${startErr.message}`);
@@ -936,8 +953,6 @@ async function cmdRun(flags) {
     console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
-  const config = loadConfig();
-  if (flags.failClosed) config.failMode = 'closed';
   const child = spawnServer({
     command, args, env: {}, cwd: process.cwd(),
     onStdout: () => {},
@@ -948,7 +963,7 @@ async function cmdRun(flags) {
   // and exit/error handlers - the proxy consumes exactly that shape
   const streams = { clientIn: process.stdin, server: child };
   console.error(`[rugsnare] proxying "${name}" in ${mode} mode${config.failMode === 'closed' ? ' (fail-closed)' : ''} (Ctrl+C to stop)`);
-  createProxy({ name, streams, mode, config, cwd: process.cwd() });
+  createProxy({ name, streams, mode, config, cwd: process.cwd(), allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
 }
 
 /**
@@ -961,7 +976,8 @@ async function cmdRun(flags) {
  */
 async function cmdCanaryRecord(flags) {
   const name = flags.name;
-  const mode = flags.mode === 'enforce' ? 'enforce' : 'observe';
+  const { config, mode } = runtimeOptions(flags, { canaryRecord: true });
+  assertPinsIntegrity(process.cwd(), { allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
   const rest = flags._.slice(1); // drop the 'record' positional
   const dashdash = rest.indexOf('--');
   const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
@@ -972,12 +988,12 @@ async function cmdCanaryRecord(flags) {
   // format as stdio - the replay engine takes either corpus)
   if (flags.url) {
     if (!name) { console.error('Usage: rugsnare canary record --name <server> --url <https://...>'); process.exit(2); }
-    const config = { ...loadConfig(), canaryRecord: true }; // session-only override
     const authConfig = await httpAuthConfig(name, flags);
     const { startHttpProxy } = await import('./proxy-http.js');
     let started;
     try {
-      started = await startHttpProxy({ name, targetUrl: flags.url, mode, config, cwd: process.cwd(), authConfig, port: flags.port });
+      started = await startHttpProxy({ name, targetUrl: flags.url, mode, config, cwd: process.cwd(), authConfig, port: flags.port,
+        allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
     } catch (startErr) {
       console.error(`[rugsnare] ${startErr.message}`);
       process.exit(2);
@@ -998,7 +1014,6 @@ async function cmdCanaryRecord(flags) {
     console.error('Missing src/spawn-server.js - the repo owner creates this file once (see README, "What\'s inside").');
     process.exit(2);
   }
-  const config = { ...loadConfig(), canaryRecord: true }; // session-only override
   const child = spawnServer({
     command, args, env: {}, cwd: process.cwd(),
     onStdout: () => {},
@@ -1008,7 +1023,7 @@ async function cmdCanaryRecord(flags) {
   const streams = { clientIn: process.stdin, server: child };
   console.error(`[rugsnare] recording "${name}" to .rugsnare/canary/calls.jsonl (${mode} mode, Ctrl+C to stop)`);
   console.error('[rugsnare] the corpus stays on this machine - delete the file any time');
-  createProxy({ name, streams, mode, config, cwd: process.cwd() });
+  createProxy({ name, streams, mode, config, cwd: process.cwd(), allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
 }
 
 /**
@@ -1021,6 +1036,8 @@ async function cmdCanaryRecord(flags) {
  */
 async function cmdCanaryReplay(flags) {
   const name = flags.name;
+  // The pinned command/url is executable input as well as a comparison baseline.
+  assertPinsIntegrity(process.cwd(), { allowUnsignedPins: Boolean(flags.allowUnsignedPins) });
   const rest = flags._.slice(1);
   const dashdash = rest.indexOf('--');
   const argv = dashdash >= 0 ? rest.slice(dashdash + 1) : rest;
