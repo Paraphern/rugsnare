@@ -1,0 +1,90 @@
+{
+  "version": "1.5.0",
+  "elapsed_seconds": 0.636,
+  "checks": [
+    {
+      "label": "version",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "--version"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "rugsnare 1.5.0\n",
+      "stderr": ""
+    },
+    {
+      "label": "scan",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "scan",
+        "--config",
+        "mcp.json"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "Scanning 1 server(s) from: mcp.json\n  pinned local-demo: 1 tool(s) -> read_demo\n\n  \u2705 Pinned. Next steps:\n     1. Commit .rugsnare/pins.json to your repo (this is your baseline)\n     2. Add to CI:  rugsnare diff --config <your-config>  (exit 1 = build fails)\n     3. Optional: use the PR-diff Action for human-readable contract review:\n        https://github.com/Paraphern/rugsnare#pr-contract-review\n",
+      "stderr": ""
+    },
+    {
+      "label": "unchanged",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "diff",
+        "--config",
+        "mcp.json"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "local-demo  (node /tmp/rugsnare-launch-demo-_w18y7lt/fixture.cjs)\n  [ok ] read_demo 17e37f58c868f9f3\n",
+      "stderr": "rugsnare diff: clean\nrugsnare 1.5.0\n"
+    },
+    {
+      "label": "changed description",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "diff",
+        "--config",
+        "mcp.json"
+      ],
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "stdout": "local-demo  (node /tmp/rugsnare-launch-demo-_w18y7lt/fixture.cjs)\n  [DRIFT] read_demo (COSMETIC) 17e37f58c868f9f3 -> 9aa57e4729689fc7\n      WAS: Read the local demo record.\n      NOW: Read the local demo record with an additional field.\n",
+      "stderr": "rugsnare diff: DRIFT DETECTED (1 finding(s))\nrugsnare 1.5.0\n"
+    },
+    {
+      "label": "invalid config",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "scan",
+        "--config",
+        "missing.json"
+      ],
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "stdout": "",
+      "stderr": "rugsnare: ENOENT: no such file or directory, open 'missing.json'\n"
+    },
+    {
+      "label": "unavailable fixture",
+      "command": [
+        "node",
+        "/workspace/launch-verification/install/node_modules/rugsnare/src/cli.js",
+        "diff",
+        "--config",
+        "mcp.json",
+        "--timeout",
+        "1000"
+      ],
+      "expected_exit": 3,
+      "actual_exit": 3,
+      "stdout": "",
+      "stderr": "local-demo: FAILED to reach server: MCP server exited early (code 1)\nrugsnare diff: clean (+1 infra error(s))\nrugsnare 1.5.0\n"
+    }
+  ]
+}
