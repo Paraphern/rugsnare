@@ -1,5 +1,53 @@
 # Changelog
 
+## [1.6.0] - 2026-11-07
+
+### Runtime protection: auto-quarantine, startup verification, canary response shapes
+
+Three security layers from an external ChatGPT-agent contribution
+(PR #16/#17/#20, integrated as #22), independently verified by REVIEW
+across three passes (T-021 + T-031 + T-035, including a P2 race
+condition found and fixed before merge).
+
+**Startup pin verification (PR #20)**: before any proxy or CLI runtime
+spawns a server, `assertPinsIntegrity` verifies the Ed25519 signature
+of pins.json against pins.sig. A tampered store throws at startup
+(«pins.sig TAMPERED - Refusing to use an unverified pin store»). The
+`--allow-unsigned-pins` flag overrides 'unsigned' but never 'tampered'.
+Hex validation of signature fields prevents silent Buffer.from
+truncation. An invalid committed pins.pub.pem key no longer silently
+falls back to a local key. `scan` now exports pins.pub.pem alongside
+the signature. Semantic change: orphan-sig (committed sig + no key
+anywhere) is now 'tampered' (was 'nokey'), strict fail-closed; recovery
+path documented.
+
+**Runtime quarantine (PR #17)**: in enforce mode, drifted tools are
+blocked at CALL time (JSON-RPC error -32603), not just stripped from
+tools/list. Quarantine is per-tool, not per-server: clean neighbours
+remain available. HTTP responses are correlated by request-ID (strict
+`===` match; mismatch = explicit reject). Mode resolution: explicit
+`--mode` overrides saved config; invalid mode values now throw instead
+of silently downgrading to observe. The P2-1 race (pipelined call
+before first tools/list) is closed fail-closed: unknown tool names
+before the first list response are blocked in enforce mode. Semantic
+change: UNCHANGED tools that were never explicitly approved
+(`approved: false`) are now quarantined in enforce mode (previously
+passed through).
+
+**Canary response shapes (PR #16)**: replay validation now compares
+every distinct array element structure (not just `[0]`), preserves JSON
+property names, and accounts for MCP `isError` outcomes in both legacy
+and current traces. `Object.defineProperty` prevents `__proto__`
+pollution from shape keys. Array order and repeated structures remain
+intentionally irrelevant.
+
+Also in this release:
+- DEPLOY.md header corrected: Base Mainnet live since 2026-10-04
+  (Sepolia was initial test only)
+- llms-install.ja.md and .zh.md caught up from 1.5.0
+- 526 tests (was 404; +120 from the three PRs + cleanup retry + race fix)
+- CI green on all platforms (ubuntu/windows × Node 18/20/22 × go/dogfood/CodeQL)
+
 ## [1.5.1] - 2026-11-01
 
 ### CI badge phase 2: verified/DRIFT with age (T-001, three-round review)
