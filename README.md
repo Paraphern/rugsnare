@@ -62,7 +62,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.5.0; 1.6.0 pending publish):**
+**npm (latest: rugsnare@1.6.0):**
 
 ```bash
 npx rugsnare init
