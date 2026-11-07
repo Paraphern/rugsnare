@@ -37,9 +37,23 @@ function jsonRpcErr(id, message) {
   return { jsonrpc: '2.0', id, error: { code: -32000, message } };
 }
 
+// Outbound guard (parity with product/src/mcp-server.js assertSafeUrl): the only outbound
+// target is a constant; the guard exists so any future edit keeps that invariant.
+function assertSafeUrl(url) {
+  let u;
+  try { u = new URL(url); } catch { return false; }
+  if (u.protocol !== 'https:') return false;
+  const h = u.hostname.toLowerCase();
+  if (h === 'localhost' || h.endsWith('.localhost') || h === '::1' || h === '[::1]') return false;
+  if (/^(127\.|10\.|192\.168\.|169\.254\.|0\.)/.test(h)) return false;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return false;
+  return true;
+}
+
 async function driftFeedStatus(args) {
   let data = null;
   try {
+    if (!assertSafeUrl(DRIFT_FEED_URL)) throw new Error('drift-feed URL failed the outbound guard');
     const res = await fetch(DRIFT_FEED_URL, { headers: { 'user-agent': 'rugsnare-mcp-worker/' + VERSION } });
     if (res.ok) data = await res.json();
   } catch { /* offline upstream - same wording as the local server */ }

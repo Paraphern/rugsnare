@@ -53,7 +53,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 | Path | What |
 |---|---|
-| `product/` | the `rugsnare` CLI (npm: 1.5.1): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
+| `product/` | the `rugsnare` CLI (npm: 1.6.0): `init` / `scan` / `diff` / `approve` / `verify` / `run` / `canary` / `wrap` / `skills` / `history` - hash pinning, drift detection (BREAKING/LOOSENED/EXPANDED/NOTATION + paywall-introduction flags), live proxies (stdio + HTTP), whole-history scanning (with schema-dep provenance), CI gate, on-chain release verification. **Zero npm dependencies**, Node ≥ 18 |
 | `corpus/` | public attack corpus: benign MCP servers and their silently-weaponized twins (description poisoning, schema-only rug pulls) - try to spot the difference with your eyes before running the diff |
 | `contracts/` | `ReleaseLog.sol` - we pin our own release hashes on-chain exactly the way we pin tool descriptions |
 | `site/` | landing page source |
@@ -282,4 +282,4 @@ The public [drift-feed](drift-feed/README.md) watches hosted (remote HTTP) endpo
 | **v1.5.1** | ✅ shipped | **CI badge phase 2**: the composite Action publishes a verdict JSON to a `rugsnare/status` branch (opt-in, rerun-guarded) and the badge renders `verified · 2h` / `DRIFT · 3 findings · 45m` / `check error` with humanized age; broken signatures still outrank any status · **honesty polish**: corrupt pin stores get real diagnostics everywhere (incl. the MCP self-server), POLICY summaries are computed not hardcoded, one JCS canonicalizer across all digests (receipts included, cross-version byte-identical), mcp-publisher pinned v1.8.7+sha256 in the registry workflow, scan warns about stale pins.sig only on real rewrites · JCS-true integer-key canonicalization (kimjooyoon #6) and PR#15-class read-failure fixes from 1.5.0-main · 404 tests |
 | **Later** | 💭 | Hosted policy panel · Agent payment guardrails · resource/skill drift in history scans (see `docs/future.md`) |
 
-*404 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*
+*526 tests · CI on ubuntu+windows × Node 18/20/22 · CodeQL · field-tested on real packages · on-chain verified · zero dependencies · no telemetry.*

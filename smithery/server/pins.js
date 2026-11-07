@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { readJsonFile } from './jsonfile.js';
-import { schemaHash as computeSchemaHash, proseHash as computeProseHash } from './hash.js';
+import { schemaHash as computeSchemaHash, proseHash as computeProseHash, outputHash as computeOutputHash } from './hash.js';
 import { getVersion } from './version.js';
 
 /**
@@ -27,8 +27,14 @@ export function pinsPath(cwd = process.cwd()) {
 export function loadPins(cwd = process.cwd()) {
   try {
     return readJsonFile(pinsPath(cwd));
-  } catch {
-    return { version: 1, servers: {} };
+  } catch (e) {
+    if (e?.code === 'ENOENT') return { version: 1, servers: {} }; // no store yet - fine
+    // PR #15 class (found in the Go port, kimjooyoon): a failed read is NOT
+    // an absent store. Treating permission/IO/parse failures as "no store"
+    // let the next save overwrite an intact pin document - silent loss of
+    // every pin from a transient error. Fail loudly instead; pins.json is
+    // meant to be committed, so "restore from git" is always actionable.
+    throw new Error(`pins.json unreadable or corrupt (${e.message}) - restore it from git or move it aside deliberately; treating this as absence would overwrite the store`);
   }
 }
 
@@ -66,6 +72,39 @@ export function policyVersionFor() {
   return `rugsnare-${getVersion()}`;
 }
 
+/**
+ * Campaign affordance (the apify#1514 lesson): a fixed-order, one-line count
+ * of every drift class. A prose-only window was once retold in public as
+ * "silent breaking change" by a human skimming per-line output - the grader
+ * was right on both ends, the retelling was not. This line makes the
+ * headline numbers impossible to misread: "0 breaking" is stated, not
+ * implied by absence. Shared by the CLI (stderr, all modes) and the
+ * PR-comment renderer (first content line).
+ */
+export function summarizeVerdicts(report) {
+  const order = ['breaking', 'loosened', 'expanded', 'mirrored', 'notation', 'cosmetic', 'annotation', 'identity', 'policy', 'prompt', 'resource', 'new', 'gone'];
+  const c = Object.fromEntries(order.map((k) => [k, 0]));
+  for (const r of report ?? []) {
+    for (const v of r.verdicts ?? []) {
+      if (v.status === 'NEW') { c.new++; continue; }
+      if (v.status === 'REMOVED') { c.gone++; continue; }
+      if (v.status !== 'DRIFT') continue;
+      if (v.kind === 'prompt') { c.prompt++; continue; }
+      if (v.kind === 'resource') { c.resource++; continue; }
+      const k = String(v.driftType ?? 'drift').toLowerCase();
+      c[k] = (c[k] ?? 0) + 1;
+      if (!order.includes(k)) order.push(k); // unknown future class: counted, never hidden
+    }
+  }
+  return order.map((k) => `${c[k]} ${k}`).join(' / ');
+}
+
+/**
+ * Persist the pin store. Returns true when the file was (re)written, false
+ * when the serialized bytes were identical and the write was skipped - the
+ * byte-stability skip is also what tells callers (e.g. the scan stale-sig
+ * warning) that pins.sig still covers the store on disk.
+ */
 export function savePins(pins, cwd = process.cwd()) {
   fs.mkdirSync(rugsnareDir(cwd), { recursive: true });
   pins.policyVersion = policyVersionFor();
@@ -74,9 +113,15 @@ export function savePins(pins, cwd = process.cwd()) {
   // byte-stability: a re-scan that changed nothing must not even touch the
   // file (mtime churn would break third-party JCS-hash watchers too)
   try {
-    if (fs.readFileSync(file, 'utf8') === serialized) return;
-  } catch { /* first write */ }
+    if (fs.readFileSync(file, 'utf8') === serialized) return false;
+  } catch (e) {
+    // only a genuinely missing file may be created here; an unreadable one
+    // (permission, transient IO, a directory on the path - PR #15 class)
+    // must abort the write, never be silently replaced
+    if (e?.code !== 'ENOENT') throw new Error(`refusing to rewrite unreadable pins.json (${e.message})`);
+  }
   fs.writeFileSync(file, serialized);
+  return true;
 }
 
 /**
@@ -230,6 +275,11 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     && existing.schemaHash === computeSchemaHash(tool)
     && existing.proseHash === computeProseHash(tool)
     && existing.approved === true
+    // P1 (preverification): outputHash must be in the skip-guard too -
+    // toolHash does NOT include outputSchema, so an output-only change
+    // keeps toolHash identical and the guard silently preserves the old
+    // outputHash (found by the 1.5.0 preverification P1)
+    && (existing.outputHash ?? null) === computeOutputHash(tool)
     // canonical compare: the stored annotations come from the file with
     // SORTED keys (stableStringify), the live object has wire order - a raw
     // JSON.stringify compare fails on every multi-key annotation set
@@ -246,6 +296,9 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     // Canonical inputSchema for human-readable diffs ("added required param mode"
     // instead of just "schema changed") - from the DescriptorPin learning
     inputSchema: tool.inputSchema ?? null,
+    // R14: pin the output side too - null when the tool declares no
+    // outputSchema (absence is the pin; appearing later = outputSchema added)
+    outputHash: computeOutputHash(tool),
     firstSeen: existing?.firstSeen ?? now,
     pinnedAt: now,
     approved,
@@ -255,12 +308,21 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
 
 /**
  * Compare behavioral annotations through their SPEC DEFAULTS, not raw values
- * (official schema, modelcontextprotocol/schema 2025-06-18, ~lines 890-925):
+ * (official schema, modelcontextprotocol/schema 2026-06-18, ~lines 890-925):
  *   readOnlyHint    absent = false
  *   destructiveHint absent = TRUE  - tools are assumed destructive unless they
  *                     explicitly opt out with destructiveHint:false
  *   idempotentHint  absent = false
  *   openWorldHint   absent = true
+ *   title           absent = null (display prose, social-engineering vector)
+ *
+ * Excluded by design (v1.2 decision, from the autogen#7353 thread):
+ *   icons           SVG can contain scripts (spec warning) - NOT YET PINNED.
+ *                   Adding icons to toolHash changes every tool's hash, so
+ *                   it ships with 1.5.0 where policyVersion bump triggers
+ *                   POLICY stop for legacy pins (not a silent re-grade).
+ *   _meta           client-specific metadata, not behavioral
+ *
  * A server spelling out a hint it was already relying on changes nothing
  * behaviorally and must NOT be flagged; a silent downgrade (e.g. dropping an
  * explicit `destructiveHint:false` after approval) IS a change and must be.
@@ -271,6 +333,10 @@ function effectiveAnnotations(a) {
     destructive: a?.destructiveHint ?? true,
     idempotent: a?.idempotentHint ?? false,
     openWorld: a?.openWorldHint ?? true,
+    // v1.2: title is display prose, not a behavioral hint - but a silent
+    // rename from "Safe Reader" to "Data Exporter" is social engineering
+    // on the user's trust, so it belongs in annotation comparison
+    title: a?.title ?? null,
   };
 }
 
@@ -611,8 +677,18 @@ export function gradeSchemaDrift(paramChanges, notationChanges) {
   // keyword swap) by the 1.3.0 release re-run.
   const real = paramChanges.filter((c) => !c.notationOnly);
   const hasTighten = real.some((c) => c.direction === 'tighten');
+  const hasMirrored = real.some((c) => c.direction === 'mirrored');
   const hasExpand = real.some((c) => c.direction === 'expand');
   const hasLoosen = real.some((c) => c.direction === 'loosen');
+  // R35: if ALL tighten-or-mirrored changes are mirrored (direction='mirrored',
+  // meaning they existed in the backend/OpenAPI before the schema documented
+  // them), the operational definition of BREAKING ("a previously-successful
+  // call starts failing") is not met - grade MIRRORED instead
+  const tightenOrMirrored = real.filter((c) => c.direction === 'tighten' || c.direction === 'mirrored');
+  if (tightenOrMirrored.length > 0 && !hasExpand) {
+    const nonMirrored = tightenOrMirrored.filter((c) => c.direction === 'tighten');
+    if (nonMirrored.length === 0) return 'MIRRORED';
+  }
   if (hasTighten) return 'BREAKING';
   if (hasExpand) return hasLoosen ? 'BREAKING' : 'EXPANDED';
   if (hasLoosen) return 'LOOSENED';
@@ -704,7 +780,7 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
   for (const tool of liveTools) {
     const pin = serverPin.tools[tool.name];
     const hash = toolHashFn(tool);
-    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash });
+    if (!pin) result.push({ tool: tool.name, status: 'NEW', hash, description: tool.description ?? '' });
     else if (pin.hash !== hash) {
       const liveSchemaHash = computeSchemaHash(tool);
       const liveProseHash = computeProseHash(tool);
@@ -755,7 +831,38 @@ export function compareTools(serverPin, liveTools, toolHashFn) {
         newDescription: tool.description ?? '',
       });
     }
-    else result.push({ tool: tool.name, status: 'UNCHANGED', hash });
+    // R14: outputSchema-only drift - toolHash does NOT include outputSchema,
+    // so a change on the response side alone lands here (after annotations,
+    // before UNCHANGED). GitHub: 123/131 tool changes were outputSchema-only.
+    else {
+      const liveOutput = computeOutputHash(tool);
+      const pinOutput = pin.outputHash ?? null;
+      if (pinOutput !== liveOutput) {
+        const outputChanges = [];
+        if (liveOutput === null) {
+          outputChanges.push({ text: 'outputSchema removed (response shape no longer declared)', direction: 'loosen' });
+        } else if (pinOutput === null) {
+          outputChanges.push({ text: 'outputSchema added (response shape now declared)', direction: 'notationOnly', notationOnly: true });
+        } else {
+          outputChanges.push({ text: 'outputSchema changed (response shape differs)', direction: 'tighten' });
+        }
+        result.push({
+          tool: tool.name,
+          status: 'DRIFT',
+          driftType: gradeSchemaDrift(outputChanges, []),
+          schemaChanged: false,
+          proseChanged: false,
+          outputSchemaChanged: true,
+          schemaChanges: outputChanges,
+          oldHash: pin.hash,
+          hash,
+          oldDescription: pin.description ?? '',
+          newDescription: tool.description ?? '',
+        });
+      } else {
+        result.push({ tool: tool.name, status: 'UNCHANGED', hash });
+      }
+    }
   }
   const liveNames = new Set(liveTools.map((t) => t.name));
   for (const name of Object.keys(serverPin.tools)) {

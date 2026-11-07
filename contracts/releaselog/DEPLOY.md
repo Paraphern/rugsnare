@@ -1,6 +1,6 @@
 # ReleaseLog: deployment & operations
 
-## Status: DEPLOYED ✅ (2026-09-29, Base Sepolia)
+## Status: MAINNET LIVE since 2026-10-04 (chainId 8453, contract 0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e); Sepolia 2026-09-29 = initial contract test only
 
 | Parameter | Value |
 |---|---|

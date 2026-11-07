@@ -2,7 +2,7 @@
   "mcpServers": {
     "rugsnare": {
       "command": "npx",
-      "args": ["rugsnare@1.5.1", "mcp"]
+      "args": ["rugsnare@1.6.0", "mcp"]
     }
   }
 }

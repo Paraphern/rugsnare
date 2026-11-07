@@ -218,3 +218,30 @@
 
 ## 2026-10-25 — Диагностический ответ в mini-swe-agent#1003 (батч E-2)
 - [SWE-agent/mini-swe-agent#1003] коммент 6401470600 — реплай на maxsoldev «persists after the upstream fix»: чистая диагностика без питча — проверить фактическую резолвнутую litellm (плавающий диапазон = фикс доезжает только со свежим резолвом; uv tool venv ≠ shell venv); если версия новее фикса и всё равно ломается — другой путь триггера, нужен trace и отдельный issue. Нулевой раунд: полный заголовок issue выверен (ошибка дословная), дата мержа #45961 (Oct 20) из комментария Ehsan-hash, litellm.__version__ — штатный атрибут. https://github.com/SWE-agent/mini-swe-agent/issues/1003#issuecomment-6401470600
+
+## 2026-10-28 (вечер) — Дельта 28.10: 2 входа + грейдеры #7/#8
+- [omnigent-ai/omnigent#12030] коммент 6476897924 - 11.1k★, дизайн-нота к per-harness allowlist: имя - слабейший хендл (managed-push меняет поверхность под разрешённым именем; 218 + HISTOR 45%/мес; dead-names), предложение - fingerprint в allow-entry + verify на spawn (hold+event); --forbid-tool для write-класса. https://github.com/omnigent-ai/omnigent/issues/12030#issuecomment-6476897924
+- [jangtrinh/design-os-studio#1294] коммент 6476900288 - trust tiers: tier = утверждение о контенте; tier_assigned_at_hash + сравнение при attach (дрифт контента → unverified до ревью); skills scan/diff. https://github.com/jangtrinh/design-os-studio/issues/1294#issuecomment-6476900288
+- SkillSpector#925 (LGD-Eval, грейдер #8) - ПРОПУЩЕН по решению юзера (одиночный питч, не carpet-bomb).
+- Разведка: грейдер #7 The Agent Forge (theagentforge.io; 9,930 SKILL.md; анонимный листинг до 2 ноября + апелляция - образцовый этикет; lawve#42); copilot-intellij#2131 (allowlist-обход, живой баг - watch); pi#11522 (CR-only SSE framing - транспортный интел).
+
+## 2026-10-28 - Mimosa L2 (SSRF) на воркере: разобрано как FP + захарднено
+- Срабатывание: .wrangler/tmp/deploy-*/index.js:120 (эфемерный бандл, к моменту проверки уже удален wrangler). Основа FP: единственный исходящий fetch в воркере - константный DRIFT_FEED_URL (raw.githubusercontent), пользовательский ввод до него не доходит.
+- Несмотря на FP, добавлен assertSafeUrl-гард (парити с локальным mcp-server.js, где он существует именно как инвариант на будущие правки) + редеплой (версия 26dd6612). Контракты НЕ изменились: surfaceHash живого tools/list после редеплоя = a7f60d0b...7fb2e (в точности пин/Dominion baseline) - join-pair цел.
+
+## 2026-10-29 - mcp/servers#5218: ответ на триаж cliffhall
+- Коммент (см. payload): your-#4860-кредит + скоуп-нота без спора о приоритете: changesets/PR-дифф служат репо, потребитель ставит пакет и не может запустить чужой CI, changelog = проза; release-pin как верифицируемая поверхность; оффер workflow-скетча. Нулевой раунд: 2 правки (changesets-in-artifact -> prose-not-surface; снят инференс replacing). Уведомления: 4 вчерашних помечены прочитанными, канал чист.
+
+## 2026-10-29 - Дельта 29.10: 1 вход
+- [anomalyco/opencode#60253] коммент (см. payload) - enforcement-gap для client-attached MCP (220.5k-репо): код-цитата policy.ts (mcp:+name - имя как ключ решения), пин-хэш как ключ вердикта, один choke-point для обоих путей, параллель к бот-фразе про revocation. Нулевой раунд: читал их policy.ts (строки 38-41 подтверждены), бот-коммент процитирован дословно. Упоминания rugsnare x2 - наши же вчерашние (фильтр свипа снова не применён).
+
+## 2026-10-29 (вечер) - rug#6: подтверждён баг канонизации kimjooyoon (integer-like ключи)
+- Коммент (см. payload): баг подтверждён живым прогоном (stable() сортирует лексикографически, но JS-объект ре-упорядочивает integer-like ключи числовым порядком при enum => JSON.stringify отдаёт числовой порядок); a40da845 на index-фикстуре, a3760c19825c8b60 на исправленной - оба воспроизведены; вердикт: versioned correction (не документируемое отклонение); свип корпуса 87 пинов = 0 затронутых; фикстуры - в регресс-тесты с кредитом.
+- Хендофф продуктовому чату: tools/hashjs-numeric-keys-handoff.md (механизм OrdinaryOwnPropertyKeys, форма фикса - сериализатор эмитит из отсортированного списка без материализации, совместимость хирургическая, свип 0/87).
+
+## 2026-10-30 21:00 - КРОН ДРИФТ-ВОТЧ (3-дневный): самый насыщенный прогон
+- 13 муверов из 30 (рекорд окна). Прогнаны все: launchdarkly 0.5.0→0.7.2 = 16 (было 1! Speakeasy-линия открылась: NEW get-audit-log-entries/list-metrics/create-metric + EXPANDED); browserstack →2.4.1 = 33; apify →0.20.0 = 8 (fetch-actor-details эскалировал до BREAKING); notion →2.6.1 = 1 (КОНТРОЛЬ ПОТЕРЯЛ НОЛЬ - identity-класс); hostinger →3.22.3 = 40; mongodb →3.2.2 = 20; transcend →2.1.14 = 2; sap-fiori →1.15.19 = 4; shopify →1.18.0 = 6 (NEW feedback+validate); everything/filesystem →2.1.0 = 43/14; dsr →2.0.14 = 15.
+- Провалы: supabase pinned-scan (0.8.3 entry age, exit 1 - в очередь на ручной фикс); bybit history: trading-mcp NOT FOUND на npm (расследуем - делист/переимен?).
+- Skills: vercel-skills a80e4c9→92a9a34 (v1.7.5-era), re-pin 257 файлов; superpowers v7.0.1 без изменений.
+- npm-реестр флапал: 5 latest-инсталлов пали и восстановлены ретраями с видимым выводом.
+- Корпус: 22-серверный = 373 (+21), полный 28 = 536 (+22). 25 пин-снапов. Отчёт audits/drift-watch/2026-10-30.md; REST-коммит be0eb97 (31 файл; первый заход упал на сетевом флапе GitHub API - второй прошёл). rugsnare 1.4.3 (текущий 1.5.0). Без вендор-постов (правило).

@@ -1,6 +1,6 @@
 {
   "name": "rugsnare-mcpb",
-  "version": "1.4.3",
+  "version": "1.6.0",
   "description": "RugSnare MCP server (MCPB bundle): read-only drift-feed status + pin store report",
   "license": "Apache-2.0",
   "type": "module",
