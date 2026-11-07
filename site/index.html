@@ -241,6 +241,21 @@
   </div>
 </section>
 
+<section id="new16">
+  <div class="shell">
+    <div class="sec-head">
+      <h2>What’s new in 1.6</h2>
+      <p>Detect AND protect: drifted tools are now blocked at call time, and the pin store is verified before your server even starts.</p>
+    </div>
+    <div class="pledges">
+      <div class="pledge"><b>Runtime Auto-Quarantine</b><p>In enforce mode, a tool whose contract drifted is <b>blocked at call time</b> with a clear JSON-RPC error – not just hidden from the list. Per-tool, not per-server: clean neighbours keep working. The race where a call slips through before the first tools/list is closed fail-closed.</p></div>
+      <div class="pledge"><b>Startup Pin Verification</b><p>Before any proxy or CLI runtime spawns a server, the Ed25519 signature of pins.json is verified against pins.sig. A tampered store throws at startup – the CI-attacker scenario is now a boot-time failure. <code>--allow-unsigned-pins</code> cannot bypass an invalid signature.</p></div>
+      <div class="pledge"><b>Canary Response Shapes</b><p>Replay tests now validate the <b>structure of responses</b> – every distinct array element shape, JSON property names, MCP <code>isError</code> outcomes. Not just “did it return 200” but “did it return what the agent was approved to parse.”</p></div>
+      <div class="pledge"><b>526 tests, zero dependencies</b><p>+120 since 1.5.0, independently verified across three review passes. CI green on ubuntu+windows × Node 18/20/22. On-chain verified on Base Mainnet.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="new14">
   <div class="shell">
     <div class="sec-head">

@@ -3,7 +3,9 @@
   "displayName": "RugSnare",
   "description": "Pin MCP tool contracts by sha-256, catch silent drift after approval. Read-only: public drift-feed status + local pin store report.",
   "version": "1.6.0",
-  "author": { "name": "Paraphern" },
+  "author": {
+    "name": "Paraphern"
+  },
   "license": "Apache-2.0",
   "user_config": {},
   "server": {
