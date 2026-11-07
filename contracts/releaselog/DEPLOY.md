@@ -2,6 +2,30 @@
 
 ## Status: MAINNET LIVE since 2026-10-04 (chainId 8453, contract 0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e); Sepolia 2026-09-29 = initial contract test only
 
+## Пин 1.6.0 (2026-11-07) - ОПУБЛИКОВАНО И ЗАПИНЕНО
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `0x7aa9ed7742a70279bce9836c48cb2699e5e4478edcc4a8584c704fc0324e5e93` (block 54415625) |
+| Event check | topics[1]=versionKey `0x89e9e294...` ✓, data=artifactHash `0xb698fff6...` + "1.6.0" ✓ (Basescan Write Contract; логи через publicnode RPC) |
+| artifact sha256 | `b698fff607f015e10309c005452f4c3a864752d496f2bde9b0010e4387269d2e` (коммит 8ca5fd95 = тег v1.6.0; 43 файла, без mimosa/ключей) |
+| versionKey | keccak256("1.6.0") = `0x89e9e2942a3a0ae264f9fc69cc446d8ed0f2be17b1e0b46fb3d7388eff1f1ab9` |
+| npm | rugsnare@1.6.0 published 2026-11-07; dist.shasum `f6239ad501b45c6afe361465368bf62033c756e1`, integrity `sha512-pwLhwCw42MPjk...Gmg==`; CDN byte-identical (sha256 совпадает) |
+| Проверка | `rugsnare verify <CDN-tarball> --version 1.6.0 --chain base` -> **VERIFIED** (pinned at 2026-11-07T17:45:00Z) |
+
+Состав релиза: runtime protection из внешнего ChatGPT-вклада (PR #16/#17/#20,
+integration #22): startup pin verification (Ed25519 pins.sig до спавна сервера),
+per-tool auto-quarantine в enforce (call-time блокировка, P2-1 race fix),
+canary response shapes (структура массивов, MCP isError, __proto__-защита).
+Семантические ужесточения: UNCHANGED-неутверждённые под карантином (F-1);
+orphan-sig = TAMPERED (F-3). 526/526 тестов, CI зелёная на всех платформах.
+Ревью: три прохода REVIEW (T-021, T-031, T-035) + T-037 npm-gate.
+Отдельно: CHANGELOG [1.6.0] датирован 2026-11-07; twitter @Muddlethwack;
+README npm-latest честно менялся после publish (16177674); DEPLOY.md header
+MAINNET LIVE. GitHub Release: v1.6.0 с нотами. MCP Registry auto-publish on
+tag (OIDC workflow). Autogen #7353 ответ запощен (now on npm). Cline #15148
+ответ запощен (published features only). Smithery закрыт (Arcade.dev).
+
 | Parameter | Value |
 |---|---|
 | Contract | `0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e` |
