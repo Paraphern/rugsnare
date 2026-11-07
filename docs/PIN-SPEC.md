@@ -267,8 +267,11 @@ Rules specific to `surfaceHash`:
    that disagrees with the store's own per-tool hashes indicates a corrupted
    or hand-edited store (the signed-store check, §7, is the enforcement).
 
-**Golden test vector** (for byte-agreement between independent
-implementations; fixture by kimjooyoon, issue #6):
+**Golden test vectors** (for byte-agreement between independent
+implementations):
+
+**Vector 1: simple tool** (no integer-like keys — old and new
+canonicalizers agree):
 
 ```
 tools: [{ name: "echo", description: "Echo a message.",
@@ -277,10 +280,26 @@ tools: [{ name: "echo", description: "Echo a message.",
                          required: ["msg"] } }]
 canonical bytes (139):
 [{"description":"Echo a message.","inputSchema":{"properties":{"msg":{"type":"string"}},"required":["msg"],"type":"object"},"name":"echo"}]
+sha-256 = cf54e2b84cf6ee8e50a7749d9a423f41800b7219c097c8c84dacf40208d60f6c
+```
+
+**Vector 2: integer-like property names** (fixture by kimjooyoon, issue #6 —
+exercises the JCS §3.2.3 lexicographic ordering of "10" < "2"):
+
+```
+tools: [{ name: "lookup", description: "",
+          inputSchema: { type: "object",
+                         properties: { "10": { type: "string" },
+                                        "2": { type: "integer" } } } }]
+canonical bytes (129):
+[{"description":"","inputSchema":{"properties":{"10":{"type":"string"},"2":{"type":"integer"}},"type":"object"},"name":"lookup"}]
 sha-256 = 79552f1dac6cae1d9a3c2bc22c5c3cebfc9d06370a4afaa56d0a37bcdb6cfe3a
 ```
 
-The same vector ships in `product/test/pinv11.test.js`, so a conforming
+The pre-fix digest (numeric order, "2" before "10") was `a40da845...`;
+a conforming implementation must produce the lexicographic result above.
+
+Both vectors ship in `product/test/pinv11.test.js`, so a conforming
 implementation can be checked against both this text and the test suite.
 
 ## 4. Drift classification
