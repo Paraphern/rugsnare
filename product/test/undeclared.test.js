@@ -93,6 +93,42 @@ test('stdio enforce: undeclared tool blocked, declared tool passes', () => {
   }
 });
 
+// ---- call-before-list race (T-034 / REVIEW T-031) ---------------------------
+// In enforce, a tools/call arriving BEFORE the first tools/list has no
+// allowed-cache to check against: an unpinned name is unknown and must be
+// blocked (fail-closed), a pinned+approved name still passes.
+
+test('stdio enforce: NEW tool call BEFORE tools/list is blocked (fail-closed); pinned tool passes', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.json'), JSON.stringify({
+      version: 1,
+      servers: { svc: { tools: { approved_tool: { hash: 'h', approved: true } } } },
+    }));
+    const h = stdioHarness({ cwd: dir, mode: 'enforce' });
+
+    // no tools/list yet - the session has no allowed-cache
+    h.call(1, 'never_seen_new_tool');
+    assert.equal(h.serverSide.join('').includes('never_seen_new_tool'), false, 'NEW tool call NOT forwarded before first tools/list');
+    const resp = JSON.parse(h.out.find((s) => s.includes('"error"')));
+    assert.match(resp.error.message, /quarantined or has not been approved/);
+    assert.ok(readEvents(dir).some((e) => e.kind === 'quarantine-call-block' && e.tool === 'never_seen_new_tool'), 'race block recorded');
+
+    // pinned+approved tool before the first list: the pin IS the approved surface
+    h.call(2, 'approved_tool');
+    assert.ok(h.serverSide.join('').includes('approved_tool'), 'pinned tool forwarded even before first tools/list');
+
+    // after tools/list the normal logic takes over: undeclared still blocked
+    h.toolsList([{ name: 'approved_tool', description: 'A.', inputSchema: { type: 'object' } }]);
+    h.call(3, 'other_hidden');
+    assert.equal(h.serverSide.join('').includes('other_hidden'), false, 'post-list undeclared still blocked');
+    assert.ok(h.err.join('\n').includes('UNDECLARED TOOL'), 'stderr says UNDECLARED after list');
+  } finally {
+    cleanup();
+  }
+});
+
 // ---- HTTP proxy ---------------------------------------------------------------
 
 function mockRemote() {
@@ -189,6 +225,51 @@ test('HTTP enforce: undeclared tool blocked, error returned', async () => {
       assert.match(r.error.message, /never listed in tools\/list/);
       assert.ok(!remote.state.callsReceived.includes('hidden_order'), 'remote never sees the blocked call');
       assert.ok(readEvents(dir).some((e) => e.kind === 'undeclared-tool-block'));
+    } finally {
+      process.stderr.write = origWrite;
+      await new Promise((r) => proxy.server.close(r));
+    }
+  } finally {
+    cleanup();
+    await new Promise((r) => remote.server.close(r));
+  }
+});
+
+// ---- call-before-list race, HTTP half (T-034) ----
+
+test('HTTP enforce: call BEFORE tools/list to an unpinned name is blocked (fail-closed)', async () => {
+  const { dir, cleanup } = tmpCwd();
+  const remote = await mockRemote();
+  try {
+    fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.json'), JSON.stringify({
+      version: 1,
+      servers: { svc: { tools: { discover: { hash: 'h', approved: true }, raw: { hash: 'h', approved: true } } } },
+    }));
+    const proxy = createHttpProxy({ name: 'svc', targetUrl: `http://127.0.0.1:${remote.port}`, mode: 'enforce', cwd: dir });
+    const port = await new Promise((resolve) => proxy.server.listen(0, '127.0.0.1', () => resolve(proxy.server.address().port)));
+    const origWrite = process.stderr.write.bind(process.stderr);
+    process.stderr.write = () => true;
+    try {
+      await rpc(port, 'initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 't', version: '1' } });
+      // deliberately NO tools/list: the session has no allowed-cache yet
+
+      const r = await rpc(port, 'tools/call', { name: 'shadow_new_tool', arguments: {} });
+      assert.ok(r.error, 'unpinned name before first tools/list is blocked');
+      assert.match(r.error.message, /quarantined or has not been approved/);
+      assert.ok(!remote.state.callsReceived.includes('shadow_new_tool'), 'remote never sees the race call');
+      assert.ok(readEvents(dir).some((e) => e.kind === 'quarantine-call-block' && e.tool === 'shadow_new_tool'));
+
+      // pinned+approved tool before the list: the pin IS the approved surface
+      const r2 = await rpc(port, 'tools/call', { name: 'discover', arguments: {} });
+      assert.ok(r2.result, 'pinned tool forwarded before first tools/list');
+      assert.ok(remote.state.callsReceived.includes('discover'));
+
+      // after the list the normal undeclared logic takes over
+      await rpc(port, 'tools/list');
+      const r3 = await rpc(port, 'tools/call', { name: 'hidden_order', arguments: {} });
+      assert.ok(r3.error, 'post-list undeclared still blocked');
+      assert.match(r3.error.message, /never listed in tools\/list/);
     } finally {
       process.stderr.write = origWrite;
       await new Promise((r) => proxy.server.close(r));

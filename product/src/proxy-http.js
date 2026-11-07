@@ -10,6 +10,7 @@ import { resolveAuth } from './auth.js';
 import { canaryEnabled, appendTrace, capPayload } from './canary.js';
 import { evaluateCall, loadPolicies } from './policies.js';
 import { loadVault, substituteArgs, redactResult } from './vault.js';
+import { assertPinsIntegrity } from './receipts.js';
 
 /**
  * HTTP-based live proxy: sits between an MCP client and a remote HTTP MCP
@@ -25,7 +26,8 @@ import { loadVault, substituteArgs, redactResult } from './vault.js';
  * The proxy listens on a local port; point your MCP client at it.
  */
 
-export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'observe', config, cwd = process.cwd() }) {
+export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'observe', config, cwd = process.cwd(), allowUnsignedPins = false }) {
+  assertPinsIntegrity(cwd, { allowUnsignedPins });
   const pins = loadPins(cwd);
   const serverPin = ensureServer(pins, name, { url: targetUrl });
   let pinsDirty = false;
@@ -51,6 +53,7 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
   // Undeclared tool detection (same as stdio proxy): tools called but never
   // listed in tools/list = progressive-discovery surface outside user approval.
   // Activated only after the first tools/list response.
+  const quarantinedTools = new Set();
   const declaredTools = new Set();
   const undeclaredAlerted = new Set();
   let hasSeenToolsList = false;
@@ -104,10 +107,12 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 if (parsed.id === wantId) return settle(resolve, parsed);
                 if (fallback === null) fallback = parsed;
               }
-              if (fallback !== null) return settle(resolve, fallback);
-              return settle(reject, new Error('SSE: no data lines'));
+              if (wantId === undefined && fallback !== null) return settle(resolve, fallback);
+              return settle(reject, new Error('SSE: no matching response id'));
             }
-            settle(resolve, JSON.parse(raw));
+            const parsed = JSON.parse(raw);
+            if (body?.id !== undefined && parsed?.id !== body.id) throw new Error('JSON-RPC response id mismatch');
+            settle(resolve, parsed);
           } catch (e) { settle(reject, e); }
         });
       });
@@ -171,6 +176,20 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         // Call policies + loop detector - same enforcement as the stdio proxy.
         // A blocked call is answered directly to the client; the remote never sees it.
         if (msg.method === 'tools/call' && msg.params) {
+          // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034):
+          // before the first tools/list there is no allowed-cache, so in
+          // enforce a call to a name not in the pin is unknown - block it.
+          if (mode === 'enforce' && (
+            quarantinedTools.has(msg.params.name)
+            || serverPin.tools[msg.params.name]?.approved === false
+            || (!hasSeenToolsList && serverPin.tools[msg.params.name] === undefined)
+          )) {
+            logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name, ...(hasSeenToolsList ? {} : { note: 'call before first tools/list; name not in pin (fail-closed)' }) }, cwd);
+            clientRes.writeHead(200, { 'content-type': 'application/json' });
+            clientRes.end(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
+            return;
+          }
+
           if (LOOP_THRESHOLD > 0) {
             const fingerprint = crypto.createHash('sha256')
               .update(msg.params.name + '|' + canonicalJson(msg.params.arguments ?? {}))
@@ -335,9 +354,14 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
           if (mode === 'enforce') {
             const allowed = new Set(
               verdicts
-                .filter((v) => v.status === 'UNCHANGED' || (v.status === 'NEW' && serverPin.tools[v.tool]?.approved))
+                .filter((v) => v.status === 'UNCHANGED' && serverPin.tools[v.tool]?.approved === true)
                 .map((v) => v.tool)
             );
+            // Quarantine by name if ANY definition is disallowed, so an
+            // unchanged duplicate cannot override a conflicting definition.
+            for (const v of verdicts) {
+              if (v.status !== 'UNCHANGED' || serverPin.tools[v.tool]?.approved !== true) allowed.delete(v.tool);
+            }
             const blocked = verdicts.filter((v) => tools.some((t) => t.name === v.tool) && !allowed.has(v.tool));
             // kill-switch: disabled tools are hidden from the contract too
             for (const t of tools) {
@@ -345,6 +369,10 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
                 allowed.delete(t.name);
                 blocked.push({ tool: t.name, status: 'DISABLED' });
               }
+            }
+            for (const t of tools) {
+              if (allowed.has(t.name)) quarantinedTools.delete(t.name);
+              else quarantinedTools.add(t.name);
             }
             if (blocked.length > 0) {
               response.result.tools = [
