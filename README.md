@@ -62,7 +62,7 @@ MCP tool descriptions are instructions your agent obeys but nobody reads. They c
 
 ## Install
 
-**npm (latest: rugsnare@1.5.1):**
+**npm (latest: rugsnare@1.5.0; 1.6.0 pending publish):**
 
 ```bash
 npx rugsnare init
@@ -197,7 +197,7 @@ We take our own medicine:
 - **On-chain `ReleaseLog`** - release hashes pinned append-only on Base mainnet (live since v1.0.0); `rugsnare verify` checks your install against a hash that has been in the ledger since release day.
 - **Apache-2.0.** If we ever go rogue - fork us. That's the license working as intended.
 
-Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) - 7 short questions, findings published. Author: [@SergeyDruzhba on X](https://x.com/SergeyDruzhba).
+Ongoing research on how teams vet MCP servers: [discussions/1](https://github.com/Paraphern/rugsnare/discussions/1) - 7 short questions, findings published. Author: [@Muddlethwack on X](https://x.com/Muddlethwack).
 
 ## FAQ
 
