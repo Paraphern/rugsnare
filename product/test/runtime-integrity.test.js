@@ -14,7 +14,13 @@ const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 
 function fixture(t, { signed = true, keys = true } = {}) {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rugsnare-runtime-integrity-'));
-  t.after(() => fs.rmSync(cwd, { recursive: true, force: true }));
+  // Windows: a just-exited spawn can hold the temp dir past any retry budget
+  // (EPERM on rm) - cleanup is best-effort, a leftover tmp dir is harmless
+  // while a failed TEST because of cleanup is not (patterns: pinv11.test.js
+  // RM, mcp-server.test.js tmpCwd)
+  t.after(() => {
+    try { fs.rmSync(cwd, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* dir still held - harmless */ }
+  });
   const state = path.join(cwd, '.rugsnare');
   fs.mkdirSync(state, { recursive: true });
   const pinsFile = path.join(state, 'pins.json');
