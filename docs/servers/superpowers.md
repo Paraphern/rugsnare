@@ -33,3 +33,8 @@ cp -r a/.rugsnare b/ && cd b && npx rugsnare skills diff   # 6 findings, 1 dange
 ```
 
 Last verified 2026-10-12 (cross-checked against a raw diff of both tags).
+
+
+## 2026-11-07 window
+
+7.0.1 -> 7.0.2: **15 findings, 7 DANGEROUS** (graded rugsnare 1.4.3 skills scan/diff). The `subagent-driven-development` suite is rewritten wholesale - SKILL.md, re-review-prompt.md, task-reviewer-prompt.md, references/final-review.md, references/fix-loop.md all DANGEROUS - plus `brainstorming/SKILL.md` rewritten AGAIN and `executing-plans/SKILL.md` new-rewrite; 5 systematic-debugging test files GONE; opencode plugin files REVIEW. Pin snapshot: audits/drift-watch/pins/superpowers@7.0.2.json. See audits/drift-watch/2026-11-07.md.

@@ -14,3 +14,8 @@ npm i @apify/actors-mcp-server@0.17.4 && npx rugsnare@1.3.0 diff --config mcp.js
 ```
 
 Last verified 2026-10-13 (re-graded on rugsnare 1.3.0, package name corrected to `@apify/actors-mcp-server`; issue #1514 open, no vendor response).
+
+
+## 2026-11-07 window
+
+0.16.0 -> 0.21.4: 9 findings (was 8; 1 BREAKING fetch-actor-details + 1 EXPANDED search-actors + 3 NOTATION + 1 COSMETIC + 3 NEW - the actor-MCP bridge tools `fetch-actor-mcp-tool-list` / `call-actor-mcp-tool` / `send-server-actor-request`; 10 -> 13 tools). Pins: audits/drift-watch/pins/apify@0.21.4.json. See audits/drift-watch/2026-11-07.md.

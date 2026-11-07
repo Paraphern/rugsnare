@@ -25,3 +25,8 @@ npm i @transcend-io/mcp-server-assessment@2.1.13 && npx rugsnare@1.3.0 diff --co
 ```
 
 Baseline captured 2026-10-12 (rugsnare 1.3.0). Part of the [drift watch](../../audits/drift-watch/2026-10-12.md).
+
+
+## 2026-11-07 window
+
+2.1.2 -> 2.1.15: 2 findings (stable; the same `assessments_create` BREAKING pair - templateId removed, assessmentGroupId required; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/transcend@2.1.15.json. See audits/drift-watch/2026-11-07.md.

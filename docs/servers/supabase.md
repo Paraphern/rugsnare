@@ -35,3 +35,8 @@ Last verified 2026-10-17 (rugsnare 1.4.3, clean stand; corrected from the origin
 ## 2026-10-31 window
 
 0.8.3 -> 0.15.0: 11 findings (was 9 at the 0.14.0 window; 3 COSMETIC + 3 NOTATION + 1 LOOSENED + 3 NEW + 1 GONE; tool count 29 -> 32). The 0.8.3 pinned scan recovered on a fresh stand this run (29 tools via the historical `dist/transports/stdio.js` entry) - the 2026-10-30 boot failure did not reproduce; the queued manual fix is closed. Pins: audits/drift-watch/pins/supabase@0.15.0.json. See audits/drift-watch/2026-10-31.md.
+
+
+## 2026-11-07 window
+
+0.8.3 -> 0.16.1: 16 findings (was 11; 3 COSMETIC + 3 NOTATION + 1 LOOSENED + 8 NEW + 1 GONE; tool count 29 -> 37 - the 0.16.x line keeps adding management tools). Pins: audits/drift-watch/pins/supabase@0.16.1.json. See audits/drift-watch/2026-11-07.md.

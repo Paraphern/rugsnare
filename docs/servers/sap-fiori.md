@@ -33,3 +33,8 @@ Baseline captured 2026-10-12 (rugsnare 1.3.0). Part of the [drift watch](../../a
 ## 2026-10-31 window
 
 1.13.0 -> 1.15.20: 4 findings (stable; the same 2 BREAKING generators - `project.enableTypeScript` now required - plus 2 COSMETIC; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/sap-fiori@1.15.20.json. See audits/drift-watch/2026-10-31.md.
+
+
+## 2026-11-07 window
+
+1.13.0 -> 1.15.24: 4 findings (stable through 1.15.20 -> 1.15.24; same 2 BREAKING generators + 2 COSMETIC; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/sap-fiori@1.15.24.json. See audits/drift-watch/2026-11-07.md.

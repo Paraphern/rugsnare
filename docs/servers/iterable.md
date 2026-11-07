@@ -23,3 +23,8 @@ npm i @iterable/mcp@1.9.0 && npx rugsnare diff --config mcp.json   # exit 1
 ```
 
 Last verified 2026-10-18 (rugsnare 1.4.3).
+
+
+## 2026-11-07 window
+
+1.0.0 -> 1.9.1: **19 findings, RE-GRADED from 62** on a fresh stand (4 BREAKING + 1 EXPANDED + 10 NEW + 4 graded; both endpoints re-pinned; the 62 was the 2026-10-18 first-contact grading of the same window). The BREAKING-inside-1.x semver violation stands. Pins: audits/drift-watch/pins/iterable@1.9.1.json. See audits/drift-watch/2026-11-07.md.

@@ -25,3 +25,8 @@ npm i @modelcontextprotocol/server-everything@2.0.0 && npx rugsnare diff --confi
 ```
 
 Last verified 2026-10-20 (rugsnare 1.5.0, window extended to 2.0.0).
+
+
+## 2026-11-07 window
+
+0.1.0 -> 2.2.1: 44 findings (was 43 at 2.1.0; 1 LOOSENED echo + 27 NEW + 16 GONE - the reference server keeps churning prompts/resources plumbing; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/everything@2.2.1.json. See audits/drift-watch/2026-11-07.md.

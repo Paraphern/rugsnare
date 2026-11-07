@@ -18,3 +18,8 @@ npm i @upstash/context7-mcp@4.3.0 && npx rugsnare diff --config mcp.json   # 1 f
 ```
 
 Watched weekly (npm baseline 4.0.4) + daily hosted (mcp.context7.com). Last verified 2026-10-13 (live hosted re-scan).
+
+
+## 2026-11-07 window
+
+4.0.4 -> 4.5.1: 1 finding (still the single `query-docs` EXPANDED; the whole 4.4.x -> 4.5.1 line is contract-quiet otherwise). Pins: audits/drift-watch/pins/context7@4.5.1.json. See audits/drift-watch/2026-11-07.md.

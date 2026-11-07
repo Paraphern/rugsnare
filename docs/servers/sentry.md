@@ -20,3 +20,8 @@ npm i @sentry/mcp-server@0.40.0 && npx rugsnare diff --config mcp.json   # 2 fin
 ```
 
 Watched weekly (baseline 0.42.0). Last verified 2026-10-11.
+
+
+## 2026-11-07 window
+
+0.38.0 -> 0.49.0: **76 findings - the #1374 wave shipped** (3 BREAKING + 1 EXPANDED + 1 LOOSENED + 1 NOTATION + 67 NEW + 3 GONE). The direct tool surface grew 9 -> 76: monitors/dashboards/releases/teams suites appeared wholesale, `find_projects` went BREAKING, and `search_events` callers now face the split predicted in October - with still no release-notes channel (empty GitHub bodies, repo in getsentry/toolkit). Entry moved to `dist/sentry-mcp.cjs`. Pins: audits/drift-watch/pins/sentry@0.49.0.json. See audits/drift-watch/2026-11-07.md.

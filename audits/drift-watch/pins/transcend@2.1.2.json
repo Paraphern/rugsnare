@@ -13,7 +13,7 @@
         "resolvedVersion": "2.1.2",
         "url": null
       },
-      "pinnedAt": "2026-10-29T18:08:55.484Z",
+      "pinnedAt": "2026-11-07T04:51:36.355Z",
       "prompts": {
 
       },
@@ -30,7 +30,7 @@
           },
           "approved": true,
           "description": "Add a new section (with optional inline questions) to an existing assessment form template. Useful for building templates incrementally or adding sections to imported templates. Same auto-corrections as assessments_create_template apply to questions.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "509748e6b125f85405121c52da0bd2e33bb7c80ff2865c2b5a5f1c4efdbdbe12",
           "inputSchema": {
             "properties": {
@@ -59,7 +59,7 @@
             "required": ["templateId","title"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "327d143ea8bcbb34d6adf86b35d5b69e5732e0a368eec48dd2cc99c511eea486",
           "schemaHash": "d2c13e909da9b8a3775047664e3ef3a9ca093e1997c8d33776d5a4572aa855b4"
         },
@@ -71,7 +71,7 @@
           },
           "approved": true,
           "description": "Answer an assessment question by selecting existing answer options or providing free-text values. For SINGLE_SELECT/MULTI_SELECT questions, provide assessmentAnswerIds from the answerOptions. For SHORT_ANSWER_TEXT/LONG_ANSWER_TEXT, provide assessmentAnswerValues with {value, isUserCreated: true}.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "e463cc319e4c03e3f0d84588e479ecf755970589797d66b788648459e0131539",
           "inputSchema": {
             "properties": {
@@ -108,7 +108,7 @@
             "required": ["assessmentQuestionId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "256963c3e438e7d13ecc05e640f78efaae5d8a5b4af31089f495b9d64a29eac1",
           "schemaHash": "3e173e4f2d1b548c2137d2c883c204469c6027dcc44e68a2e1692adb2e2a0916"
         },
@@ -120,7 +120,7 @@
           },
           "approved": true,
           "description": "Create a new privacy assessment inside an assessment group. Prefer assessmentGroupId, resolved by name through assessments_list_groups. templateId is a fallback that lands in whichever group happens to be first among those built from that template, so never use it when the user named a particular group. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
-          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "2bd42eb112eb6b12c975669a342aafac11141a133edcd5203986f9f0b0673e1d",
           "inputSchema": {
             "properties": {
@@ -147,7 +147,7 @@
             "required": ["title"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.487Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "60c56d805d3dd158359aa7e68c569ab5bbc64fbb08114ae7a6942ce1c424b3f6",
           "schemaHash": "7283a12e6141e32e7e4f767783172060f57850a32d18f5cf123a579303407f20"
         },
@@ -159,7 +159,7 @@
           },
           "approved": true,
           "description": "Create a new assessment group linked to a template. Assessment groups are containers for assessments. Surface the returned `groupUrl` verbatim.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "f036dbe21da9dbf635f1a2774370c316ffa1b403ba670601a54f5a21f573f06c",
           "inputSchema": {
             "properties": {
@@ -186,7 +186,7 @@
             "required": ["title","templateId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "04ed7f34d61b06d71287d6ad07f9b0ce7e3840b557a308ab9f420b3ff1868262",
           "schemaHash": "7c0427789a1f7ab823b66037f5a754d720b0f2e33886b7675da2451a4d32eb87"
         },
@@ -198,7 +198,7 @@
           },
           "approved": true,
           "description": "Create a new assessment form template with sections and questions inline. This is the \"import\" side of the JSON import/export workflow. You can provide the full template structure (sections with questions and answer options) in a single call. Question types: LONG_ANSWER_TEXT, SHORT_ANSWER_TEXT, SINGLE_SELECT, MULTI_SELECT, FILE. SubTypes: NONE, CUSTOM, USER, TEAM, DATA_SUB_CATEGORY, HAS_PERSONAL_DATA, ATTRIBUTE_KEY, SENSITIVE_CATEGORY. Auto-corrections: referenceId is auto-generated as UUID if missing or not UUID format; subType is auto-set to CUSTOM when allowSelectOther is true; requireRiskEvaluation is ignored when no riskFrameworkId is provided.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "a6f484dd60420573ef5293e631535ca756c0cbecad87ba4b336b2cb612d3a531",
           "inputSchema": {
             "properties": {
@@ -232,7 +232,7 @@
             "required": ["title"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "5265018fdd767941e3d556ce715f1abb8a19f7cd39dc7274fa2afb2176ca28e5",
           "schemaHash": "90f188efba866ada5fe75a22674070ab01f1f31325366d6841c0207bf4a4c9b5"
         },
@@ -244,7 +244,7 @@
           },
           "approved": true,
           "description": "Export a full assessment form template as JSON, including all sections, questions, answer options, and configuration. This is the \"export\" side of the JSON import/export workflow. The output can be used as input for assessments_create_template to recreate the template elsewhere.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "59b0105879035179cfc22c6b8dd5942075db409791b942e9e8a8106525b31f9d",
           "inputSchema": {
             "properties": {
@@ -256,7 +256,7 @@
             "required": ["templateId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "09460efbe07b2feb6d91cc2d4504a515140d1a6bb64b61725982ee88dca40774",
           "schemaHash": "4f601b9a26ab35da94c6ce8854648e95a878b255ce68138109a13232d0506f97"
         },
@@ -268,7 +268,7 @@
           },
           "approved": true,
           "description": "Read one filled-in assessment and the answers submitted to it. Given only assessmentId it returns the section list with a question count each, NOT the question text. To read the questions, either pass questionText to get just the ones on a topic wherever they sit, or sectionIds to expand whole sections; every sectionId must exist or the call fails, and reading the form in full means passing every one of them. Reviewer feedback is counted here but read with assessments_list_comments. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
-          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "829d813a3239b49be4d003f2862915a998506cf5f6e1b7a89832757199853f20",
           "inputSchema": {
             "properties": {
@@ -291,7 +291,7 @@
             "required": ["assessmentId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.487Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "1f7df3f837ee86f93641fa88d01bf5f1a1def4a4eaab4efedf8ce47477e30557",
           "schemaHash": "643a31001456b15c98a2cd1364664946fcc5b4367110dad5939479b2a62e51f5"
         },
@@ -303,7 +303,7 @@
           },
           "approved": true,
           "description": "List all assessments in your organization. Surface the `url` on each row verbatim; never build assessment URLs from IDs.",
-          "firstSeen": "2026-10-29T18:08:55.487Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "1db9c2a51c31449e99d1a29c5d7253f7005c2af8594c83ce837ef289a847e467",
           "inputSchema": {
             "properties": {
@@ -413,7 +413,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.487Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "caef7bf3f6ad59d9ea20079a6552147913ce05052ec81b3ca8fea68038be0966",
           "schemaHash": "a61f2e7057ba59feeb775c47e798226dc29e9a3dfbed45db78ce4a8da1006d0d"
         },
@@ -425,7 +425,7 @@
           },
           "approved": true,
           "description": "Read the reviewer feedback on one assessment — the comments left on it during review. Returns feedback from all three levels at once, whether it was left on the form as a whole, on a section, or on a single question, each row naming what it sits on. Resolution is per thread on the root comment (no parentCommentId); replies close when that root is resolved. Narrow with levels, authorIds, and resolution (OPEN/RESOLVED/ALL). Use this rather than assessments_get, which only counts feedback. To reply or resolve a thread, call assessments_write_comment with the root id, level, and targetId.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "35620f1d987e405c85314c4a183fda84c04c4aa2b1ac4d5b7927d37f7b46f373",
           "inputSchema": {
             "properties": {
@@ -472,7 +472,7 @@
             "required": ["assessmentId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "f2409f9192859d633c861de585f4013fe89c483967309c3184d28a24088fdcdc",
           "schemaHash": "5722479101d319bf48d7dfe94bc25732af6e2e2eca4703cdd1cc3dcc2b531ade"
         },
@@ -484,7 +484,7 @@
           },
           "approved": true,
           "description": "List all assessment groups. Groups are containers for assessments and are linked to templates. Use this to find the right group ID for creating assessments. To reach the template behind a form, pass its `assessmentGroupId` as `ids` and read `assessmentFormTemplate`. Surface the `groupUrl` on each row verbatim.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "34c3c7354b5b1b86f2dc6d2fc8045a5fa17593c8547ebfa22b4d0b27c4a9bc8a",
           "inputSchema": {
             "properties": {
@@ -525,7 +525,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "6461be414d4292c575c02b005a165e76aea827e38b211a6669c8c01f7a2ced5a",
           "schemaHash": "0e8d9a50edc1babca0ed7ea2648ecf17a6bcf6050b947b8648791a75dfbe8ae8"
         },
@@ -537,7 +537,7 @@
           },
           "approved": true,
           "description": "List the blank assessment templates. Only `PUBLISHED` ones can build new assessments.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "0d12e502ae8df89116dd143c6c7d40fa45fa23b869b57dc77ffd3ae08d2378cb",
           "inputSchema": {
             "properties": {
@@ -579,7 +579,7 @@
             },
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "17704dffd4a6f5d63a5e70d1f0de38b07fd17b09c3321823b6917a513ed1047c",
           "schemaHash": "89cc6e68eb89ca1506390795ca1d986f50b5e2cf156fd0b95d7951dfacd7e2d9"
         },
@@ -591,7 +591,7 @@
           },
           "approved": true,
           "description": "Create an assessment form, fill in the answers you supply, and assign it for review in one call. Combines: create form → assign it → read its questions → answer each → optionally submit. Requires assigneeIds or assigneeEmails: a form accepts no answers until it is assigned. The answers are yours to provide; nothing is generated for you. Surface the returned `url` verbatim.",
-          "firstSeen": "2026-10-29T18:08:55.489Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "989a258d180eb688ad01db892bc4aa084f8bb0e71b8092df799030b41ec8def2",
           "inputSchema": {
             "properties": {
@@ -658,7 +658,7 @@
             "required": ["title","answers"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.489Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "5000f8a1ee07d5624dd352173d4e6b1f70a64c3d4b6fc89a5e5a9d718f1f830b",
           "schemaHash": "36e3d4530221533d4a50c0cc14e08054e5c514acd7ecc3d652e3aa3702a986d8"
         },
@@ -670,7 +670,7 @@
           },
           "approved": true,
           "description": "Submit an assessment form for review. Optionally specify which sections to submit. This transitions the assessment toward the IN_REVIEW status. The returned `url` points at the assessment-group page where reviewers find the submitted form — surface it verbatim; never build assessment URLs from IDs.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "cdd2e1bccc0c30759fa5809947470da54ddb7536887844763059e0cceb71ceff",
           "inputSchema": {
             "properties": {
@@ -689,7 +689,7 @@
             "required": ["assessmentId","assessmentSectionIds"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "2397b5c019a42b427b8093712c7423586c67d466774ed07ddb7e67c7d641878e",
           "schemaHash": "4bf12fee114daa3bac2040285b2c4ace39eea8e7456ad775d0e7f60309bc3904"
         },
@@ -701,7 +701,7 @@
           },
           "approved": true,
           "description": "Update an existing assessment. Surface the returned `url` verbatim; never build assessment URLs from IDs.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "454383580636fe242d1076e18e73c0a236312d5d510cad07e873a4cfeb3b2ff2",
           "inputSchema": {
             "properties": {
@@ -737,7 +737,7 @@
             "required": ["assessmentId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "1b958355d6ad04a3d30852e6a2120b2f93d3d674b09413900df13531d081092a",
           "schemaHash": "9fe26ab043cdd37e4405fe36020a987ce38c35f1788481d8adf6aaa80068ebf9"
         },
@@ -749,7 +749,7 @@
           },
           "approved": true,
           "description": "Assign internal users (by ID) or external users (by email) to an assessment form. This also transitions DRAFT assessments to SHARED status.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.360Z",
           "hash": "9290184e34321c4b0e06ba9d102efecf9680e88c29ee223da984f9eae0ff8a82",
           "inputSchema": {
             "properties": {
@@ -775,7 +775,7 @@
             "required": ["assessmentId"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.360Z",
           "proseHash": "d36147032b150b104090e5350877490581d4bdd4f812a00b62bbd2d0a068cb97",
           "schemaHash": "d80ca1b8e3d5c5fc76cbcb6dabe1128f3f63a3742aee2f2c5a7f98cc5aa20db6"
         },
@@ -787,7 +787,7 @@
           },
           "approved": true,
           "description": "Leave, reply to, edit, or resolve reviewer feedback on an assessment — form, section, or question. Resolution is per thread on the root comment (no parentCommentId); replies close when that root is resolved. Pass parentCommentId to reply, commentId to edit or resolve a root, or reply with resolved true to close the parent thread. Needs the comment id, level, and target id from existing reviewer feedback on the assessment.",
-          "firstSeen": "2026-10-29T18:08:55.488Z",
+          "firstSeen": "2026-11-07T04:51:36.359Z",
           "hash": "c464029c8ba77ed288618d00fd3f1f9e4e1ff7270bdca49219c003eb0571e882",
           "inputSchema": {
             "properties": {
@@ -824,7 +824,7 @@
             "required": ["assessmentId","level"],
             "type": "object"
           },
-          "pinnedAt": "2026-10-29T18:08:55.488Z",
+          "pinnedAt": "2026-11-07T04:51:36.359Z",
           "proseHash": "709c9af9d8774fdd2b1621ddee6e0aacef05aa614ab862fe5201175c6db915e3",
           "schemaHash": "bbeeb350599287046a80c581e18da1dee39de2a3646aae9021fbeb1cbd256ed6"
         }

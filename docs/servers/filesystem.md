@@ -23,3 +23,8 @@ npm i @modelcontextprotocol/server-filesystem@2.0.0 && npx rugsnare diff --confi
 ```
 
 Last verified 2026-10-20 (rugsnare 1.5.0, window extended to 2.0.0).
+
+
+## 2026-11-07 window
+
+0.2.0 -> 2.2.0: 16 findings (was 14 at 2.1.0; 8 BREAKING - read_file split into read_text_file/read_media_file, write_file split with append_file/edit_file NEW - + 1 NOTATION + 7 NEW; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/filesystem@2.2.0.json. See audits/drift-watch/2026-11-07.md.

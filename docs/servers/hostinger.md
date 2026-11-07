@@ -36,3 +36,8 @@ Watched weekly (baseline 2.4.0). Last verified 2026-10-12 (2.4.0/2.11.0/2.13.0 r
 ## 2026-10-31 window
 
 2.4.0 -> 3.24.1: 40 findings (count stable across the whole 3.x line; 1 IDENTITY + 34 NEW agent-skill resources - now including per-client connect instructions for antigravity/claude-code/codex/cursor and a bootstrap.mjs - plus 5 GONE skill files; the tool surface itself stays at 3).
+
+
+## 2026-11-07 window
+
+2.4.0 -> 3.31.1: 46 findings (was 40; 1 IDENTITY + 40 NEW agent-skill resources - connect/ now also ships launch.mjs and launch.sh launchers - + 5 GONE; tools still at 3). Pins: audits/drift-watch/pins/hostinger@3.31.1.json. See audits/drift-watch/2026-11-07.md.

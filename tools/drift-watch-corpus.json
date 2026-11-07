@@ -1,5 +1,5 @@
 {
-  "comment": "RugSnare drift-watch corpus (research chat, 3-day cadence). 'pinned' = approved baseline contract; 'lastSeen' = latest version already graded; 'lastFindings' = findings count at last diff (for delta tracking). Each run: npm view latest; if > lastSeen -> install pinned, rugsnare scan, install latest, rugsnare diff; update docs/servers/<name>.md + this manifest. Dummy env values are for contract capture only, never call real APIs. Advance a pin deliberately, never silently. 2026-10-24 run: 14 servers re-diffed (mongodb/sap-fiori latest installs retried ok), skills superpowers@7.0.1 (303 files) + vercel-skills@a80e4c9 (226 files) re-pinned. 2026-10-25 run: 6 movers (hostinger 3.10.3, netlify 1.21.0, browserstack 2.2.8, sap-fiori 1.15.16, reference everything/filesystem 2.0.1); skills unchanged. 2026-10-30 run: 13 movers (busiest window); launchdarkly opened up 1->16; notion control lost its zero (1 identity finding); supabase pinned-scan failed on the 0.8.3 entry (queued for manual fix); bybit trading-mcp not found on npm from the history scanner (investigating); vercel-skills re-pinned at 92a9a34 (257 files). 2026-10-31 run: 5 movers; heroku control broke 1->33 (patch 1.2.13 drops additionalProperties:false from all 33 tool schemas); browserstack 33->42 (BREAKING accessibility pair; 46->52 tools); supabase 0.8.3 pinned scan recovered on a fresh stand (29 tools), 9->11; hostinger stable 40 through 3.24.1; sap-fiori stable 4 through 1.15.20; bybit trading-mcp confirmed delisted from npm (registry document 404).",
+  "comment": "RugSnare drift-watch corpus (research chat, 3-day cadence). 'pinned' = approved baseline contract; 'lastSeen' = latest version already graded; 'lastFindings' = findings count at last diff (for delta tracking). Each run: npm view latest; if > lastSeen -> install pinned, rugsnare scan, install latest, rugsnare diff; update docs/servers/<name>.md + this manifest. Dummy env values are for contract capture only, never call real APIs. Advance a pin deliberately, never silently. 2026-10-24 run: 14 servers re-diffed (mongodb/sap-fiori latest installs retried ok), skills superpowers@7.0.1 (303 files) + vercel-skills@a80e4c9 (226 files) re-pinned. 2026-10-25 run: 6 movers (hostinger 3.10.3, netlify 1.21.0, browserstack 2.2.8, sap-fiori 1.15.16, reference everything/filesystem 2.0.1); skills unchanged. 2026-10-30 run: 13 movers (busiest window); launchdarkly opened up 1->16; notion control lost its zero (1 identity finding); supabase pinned-scan failed on the 0.8.3 entry (queued for manual fix); bybit trading-mcp not found on npm from the history scanner (investigating); vercel-skills re-pinned at 92a9a34 (257 files). 2026-10-31 run: 5 movers; heroku control broke 1->33 (patch 1.2.13 drops additionalProperties:false from all 33 tool schemas); browserstack 33->42 (BREAKING accessibility pair; 46->52 tools); supabase 0.8.3 pinned scan recovered on a fresh stand (29 tools), 9->11; hostinger stable 40 through 3.24.1; sap-fiori stable 4 through 1.15.20; bybit trading-mcp confirmed delisted from npm (registry document 404). 2026-11-07 run (6-day window, quiet bus): 12 npm movers - busiest yet; sentry exploded 3->76 (toolkit #1374 split shipped: 9->76 tools); iterable re-graded 62->19 on a fresh stand; superpowers v7.0.2 = 15 findings, 7 DANGEROUS (subagent-driven-development suite rewritten); vercel-skills moved 92a9a34->d3701c1 but skills tree clean; bybit still delisted.",
   "cadence": "every 3 days",
   "tool": "npx rugsnare@1.4.3",
   "reports": "audits/drift-watch/YYYY-MM-DD.md",
@@ -46,8 +46,8 @@
       "name": "hostinger",
       "package": "hostinger-api-mcp",
       "pinned": "2.4.0",
-      "lastSeen": "3.24.1",
-      "lastFindings": 40,
+      "lastSeen": "3.31.1",
+      "lastFindings": 46,
       "entry": "node_modules/hostinger-api-mcp/src/servers/all.js",
       "env": {
         "HOSTINGER_API_KEY": "dummy_for_scan"
@@ -82,7 +82,7 @@
       "name": "context7",
       "package": "@upstash/context7-mcp",
       "pinned": "4.0.4",
-      "lastSeen": "4.4.4",
+      "lastSeen": "4.5.1",
       "lastFindings": 1,
       "entry": "node_modules/@upstash/context7-mcp/dist/index.js",
       "env": {}
@@ -91,14 +91,14 @@
       "name": "sentry",
       "package": "@sentry/mcp-server",
       "pinned": "0.38.0",
-      "lastSeen": "0.42.0",
-      "lastFindings": 3,
+      "lastSeen": "0.49.0",
+      "lastFindings": 76,
       "entry": "node_modules/@sentry/mcp-server/dist/index.js",
       "args": [
         "--access-token=dummy_for_scan"
       ],
       "env": {},
-      "note": "repo moved to getsentry/toolkit; toolkit #1374 splits search_events into dataset tools - when it ships as 0.43+ every search_events caller breaks"
+      "note": "toolkit #1374 SPLIT SHIPPED (graded 2026-11-07): 0.42->0.49 grew 9->76 tools (67 NEW incl. monitors/dashboards/releases suites, find_projects BREAKING); entry moved to dist/sentry-mcp.cjs in newer versions"
     },
     {
       "name": "launchdarkly",
@@ -156,8 +156,8 @@
       "name": "browserstack",
       "package": "@browserstack/mcp-server",
       "pinned": "1.4.1",
-      "lastSeen": "2.4.5",
-      "lastFindings": 42,
+      "lastSeen": "2.6.5",
+      "lastFindings": 45,
       "entry": "auto",
       "env": {
         "BROWSERSTACK_USERNAME": "dummy_for_scan",
@@ -169,8 +169,8 @@
       "name": "apify",
       "package": "@apify/actors-mcp-server",
       "pinned": "0.16.0",
-      "lastSeen": "0.20.0",
-      "lastFindings": 8,
+      "lastSeen": "0.21.4",
+      "lastFindings": 9,
       "entry": "auto",
       "env": {
         "APIFY_TOKEN": "dummy_for_scan"
@@ -181,7 +181,7 @@
       "name": "transcend",
       "package": "@transcend-io/mcp-server-assessment",
       "pinned": "2.1.2",
-      "lastSeen": "2.1.14",
+      "lastSeen": "2.1.15",
       "lastFindings": 2,
       "entry": "node_modules/@transcend-io/mcp-server-assessment/dist/cli.mjs",
       "env": {
@@ -193,7 +193,7 @@
       "name": "sap-fiori",
       "package": "@sap-ux/fiori-mcp-server",
       "pinned": "1.13.0",
-      "lastSeen": "1.15.20",
+      "lastSeen": "1.15.24",
       "lastFindings": 4,
       "entry": "node_modules/@sap-ux/fiori-mcp-server/dist/index.js",
       "env": {},
@@ -235,8 +235,8 @@
       "name": "supabase",
       "package": "@supabase/mcp-server-supabase",
       "pinned": "0.8.3",
-      "lastSeen": "0.15.0",
-      "lastFindings": 11,
+      "lastSeen": "0.16.1",
+      "lastFindings": 16,
       "entry": "node_modules/@supabase/mcp-server-supabase/dist/cli.js",
       "env": {
         "SUPABASE_ACCESS_TOKEN": "dummy_for_scan"
@@ -275,16 +275,16 @@
       "kind": "skills",
       "package": "obra/superpowers",
       "pinned": "6.4.2",
-      "lastSeen": "7.0.1",
-      "lastFindings": 6,
-      "note": "skills corpus; follow repro in docs/servers/superpowers.md (git clone, skills scan)"
+      "lastSeen": "7.0.2",
+      "lastFindings": 15,
+      "note": "skills corpus; follow repro in docs/servers/superpowers.md (git clone, skills scan); v7.0.2 (graded 2026-11-07): 15 findings, 7 DANGEROUS - subagent-driven-development suite rewritten (SKILL.md + 4 prompt/reference files), brainstorming rewritten AGAIN, executing-plans rewritten; pin snapshot superpowers@7.0.2.json"
     },
     {
       "name": "vercel-skills",
       "kind": "skills",
       "package": "vercel-labs/skills",
       "pinned": "13e4063",
-      "lastSeen": "92a9a34",
+      "lastSeen": "d3701c1",
       "lastFindings": 0,
       "note": "skills corpus; we are in their #2359; baseline 2026-10-12: 226 files pinned, 3 skills (find-skills + 2 factory workflow-embedded)"
     },
@@ -292,8 +292,8 @@
       "name": "everything",
       "package": "@modelcontextprotocol/server-everything",
       "pinned": "0.1.0",
-      "lastSeen": "2.1.0",
-      "lastFindings": 43,
+      "lastSeen": "2.2.1",
+      "lastFindings": 44,
       "entry": "node_modules/@modelcontextprotocol/server-everything/dist/index.js",
       "env": {},
       "note": "Anthropic reference server; calver 2026.x untagged, latest tag stays 1.0.0; 1.0.0 (2026-10-11, latest tag) is the true endpoint - calver 2026.8.31 is semver-higher but older, diff identical"
@@ -302,8 +302,8 @@
       "name": "filesystem",
       "package": "@modelcontextprotocol/server-filesystem",
       "pinned": "0.2.0",
-      "lastSeen": "2.1.0",
-      "lastFindings": 14,
+      "lastSeen": "2.2.0",
+      "lastFindings": 16,
       "entry": "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
       "args": [
         "C:/tmp/new5/fs-root"
@@ -315,7 +315,7 @@
       "name": "dsr",
       "package": "@transcend-io/mcp-server-dsr",
       "pinned": "0.2.0",
-      "lastSeen": "2.0.14",
+      "lastSeen": "2.0.15",
       "lastFindings": 15,
       "entry": "node_modules/@transcend-io/mcp-server-dsr/dist/cli.mjs",
       "env": {
@@ -327,13 +327,13 @@
       "name": "iterable",
       "package": "@iterable/mcp",
       "pinned": "1.0.0",
-      "lastSeen": "1.9.0",
-      "lastFindings": 62,
+      "lastSeen": "1.9.1",
+      "lastFindings": 19,
       "entry": "node_modules/@iterable/mcp/dist/index.js",
       "env": {
         "ITERABLE_API_KEY": "dummy_for_scan"
       },
-      "note": "BREAKING inside 1.x range (semver violation)"
+      "note": "BREAKING inside 1.x range (semver violation); RE-GRADED 2026-11-07 on a fresh stand: 62 -> 19 (4 BREAKING + 1 EXPANDED + 10 NEW + 4 graded; both endpoints re-pinned; the 62 was the 2026-10-18 first-contact grading)"
     },
     {
       "name": "browserbase",

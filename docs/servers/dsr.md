@@ -23,3 +23,8 @@ npm i @transcend-io/mcp-server-dsr@2.0.13 && npx rugsnare diff --config mcp.json
 ```
 
 Last verified 2026-10-18 (rugsnare 1.4.3).
+
+
+## 2026-11-07 window
+
+0.2.0 -> 2.0.15: 15 findings (stable count through 2.0.14 -> 2.0.15; the submission-tool BREAKING set + GONE dsr_download_keys/dsr_employee_submit; graded rugsnare 1.4.3). Pins: audits/drift-watch/pins/dsr@2.0.15.json. See audits/drift-watch/2026-11-07.md.

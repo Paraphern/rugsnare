@@ -31,3 +31,8 @@ Last verified 2026-10-13 (re-graded on rugsnare 1.3.0; issue #476 open, no vendo
 ## 2026-10-31 window
 
 1.4.1 -> 2.4.5: 42 findings (was 33; 5 BREAKING - fetchAccessibilityIssues, setupBrowserStackAutomateTests among them - + 17 COSMETIC + 13 NOTATION + 1 EXPANDED + 6 NEW; tool count 46 -> 52). The accessibility surface is now the fastest-moving target in the corpus; #476 still open. Pins: audits/drift-watch/pins/browserstack@2.4.5.json. See audits/drift-watch/2026-10-31.md.
+
+
+## 2026-11-07 window
+
+1.4.1 -> 2.6.5: 45 findings (was 42; 7 BREAKING + 15 COSMETIC + 15 NOTATION + 1 EXPANDED + 1 LOOSENED + 6 NEW; 46 -> 52 tools). The accessibility suite keeps compounding; #476 still open. Pins: audits/drift-watch/pins/browserstack@2.6.5.json. See audits/drift-watch/2026-11-07.md.
