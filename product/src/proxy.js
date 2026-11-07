@@ -95,9 +95,18 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
     }
     try {
       if (msg.method === 'tools/call' && msg.params) {
-        if (mode === 'enforce' && (quarantinedTools.has(msg.params.name) || serverPin.tools[msg.params.name]?.approved === false)) {
+        // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034):
+        // before the first tools/list there is no allowed-cache, so in enforce
+        // a call to a name that is not even in the pin is unknown - block it.
+        // Pinned (approved) tools still pass; after the first list the normal
+        // quarantine/undeclared logic takes over.
+        if (mode === 'enforce' && (
+          quarantinedTools.has(msg.params.name)
+          || serverPin.tools[msg.params.name]?.approved === false
+          || (!hasSeenToolsList && serverPin.tools[msg.params.name] === undefined)
+        )) {
           writeOut(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
-          logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name }, cwd);
+          logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name, ...(hasSeenToolsList ? {} : { note: 'call before first tools/list; name not in pin (fail-closed)' }) }, cwd);
           return;
         }
 

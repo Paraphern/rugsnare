@@ -176,8 +176,15 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
         // Call policies + loop detector - same enforcement as the stdio proxy.
         // A blocked call is answered directly to the client; the remote never sees it.
         if (msg.method === 'tools/call' && msg.params) {
-          if (mode === 'enforce' && (quarantinedTools.has(msg.params.name) || serverPin.tools[msg.params.name]?.approved === false)) {
-            logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name }, cwd);
+          // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034):
+          // before the first tools/list there is no allowed-cache, so in
+          // enforce a call to a name not in the pin is unknown - block it.
+          if (mode === 'enforce' && (
+            quarantinedTools.has(msg.params.name)
+            || serverPin.tools[msg.params.name]?.approved === false
+            || (!hasSeenToolsList && serverPin.tools[msg.params.name] === undefined)
+          )) {
+            logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name, ...(hasSeenToolsList ? {} : { note: 'call before first tools/list; name not in pin (fail-closed)' }) }, cwd);
             clientRes.writeHead(200, { 'content-type': 'application/json' });
             clientRes.end(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
             return;
