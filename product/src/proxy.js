@@ -94,16 +94,30 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
       return;
     }
     try {
+      // JSON-RPC batch (array of messages) is an enforcement blind spot
+      // (T-039 F-1): the per-message gates below never see inside it, so an
+      // unapproved tool could ride a batch. Reject batches outright in
+      // enforce; forward (with a log line) in observe.
+      if (Array.isArray(msg)) {
+        if (mode === 'enforce') {
+          writeOut(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32600, message: '[RUGSNARE] JSON-RPC batch requests are not supported in enforce mode.' } }));
+          logEvent({ kind: 'batch-reject', server: name, entries: msg.length }, cwd);
+          return;
+        }
+        logEvent({ kind: 'batch-forward', server: name, entries: msg.length }, cwd);
+      }
       if (msg.method === 'tools/call' && msg.params) {
         // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034):
         // before the first tools/list there is no allowed-cache, so in enforce
         // a call to a name that is not even in the pin is unknown - block it.
         // Pinned (approved) tools still pass; after the first list the normal
         // quarantine/undeclared logic takes over.
+        // T-039 F-2: own-property lookups only - 'constructor'/'toString'/
+        // '__proto__' must not resolve through Object.prototype.
         if (mode === 'enforce' && (
           quarantinedTools.has(msg.params.name)
-          || serverPin.tools[msg.params.name]?.approved === false
-          || (!hasSeenToolsList && serverPin.tools[msg.params.name] === undefined)
+          || (Object.hasOwn(serverPin.tools, msg.params.name) && serverPin.tools[msg.params.name].approved === false)
+          || (!hasSeenToolsList && !Object.hasOwn(serverPin.tools, msg.params.name))
         )) {
           writeOut(JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: '[RUGSNARE] Tool is quarantined or has not been approved.' } }));
           logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name, ...(hasSeenToolsList ? {} : { note: 'call before first tools/list; name not in pin (fail-closed)' }) }, cwd);
@@ -164,7 +178,9 @@ export function createProxy({ name, server, streams, mode = 'observe', config, c
         }
 
         // Policy evaluation: check arguments against rules
-        const toolPin = serverPin.tools[msg.params.name];
+        // (own-property lookup only - a proto name must not resolve to
+        // Object.prototype members as a phantom "pin")
+        const toolPin = Object.hasOwn(serverPin.tools, msg.params.name) ? serverPin.tools[msg.params.name] : undefined;
         const policyResult = evaluateCall(
           { toolName: msg.params.name, arguments: msg.params.arguments, description: toolPin?.description ?? '' },
           activePolicies

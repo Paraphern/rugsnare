@@ -260,7 +260,8 @@ export function detectShadows(pins) {
 
 export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan' } = {}) {
   const now = new Date().toISOString();
-  const existing = serverPin.tools[tool.name];
+  // own-property only (T-039 F-2): proto names must not surface phantom entries
+  const existing = Object.hasOwn(serverPin.tools, tool.name) ? serverPin.tools[tool.name] : undefined;
   // PIN-SPEC v1.1 byte-stability: a ROUTINE SCAN that sees the SAME contract
   // of an ALREADY-APPROVED tool must not touch the entry - pinnedAt churn
   // would change pins.json bytes on every re-scan and break third-party
@@ -303,7 +304,9 @@ export function pinTool(serverPin, tool, hash, { approved = true, reason = 'scan
     pinnedAt: now,
     approved,
   };
-  return serverPin.tools[tool.name];
+  // own-property lookups only (T-039 F-2): 'constructor'/'toString' names
+  // must never resolve through Object.prototype as phantom pins
+  return Object.hasOwn(serverPin.tools, tool.name) ? serverPin.tools[tool.name] : undefined;
 }
 
 /**
@@ -778,7 +781,9 @@ export function detectPaywallIntroduction(oldDescription, newDescription) {
 export function compareTools(serverPin, liveTools, toolHashFn) {
   const result = [];
   for (const tool of liveTools) {
-    const pin = serverPin.tools[tool.name];
+    // own-property only (T-039 F-2): 'constructor' et al. must compare as
+    // absent (NEW), never as a phantom inherited pin
+    const pin = Object.hasOwn(serverPin.tools, tool.name) ? serverPin.tools[tool.name] : undefined;
     const hash = toolHashFn(tool);
     if (!pin) result.push({ tool: tool.name, status: 'NEW', hash, description: tool.description ?? '' });
     else if (pin.hash !== hash) {

@@ -201,7 +201,9 @@ export function pinAllSkills(pins, cwd = process.cwd(), home = os.homedir(), { p
   let pinnedCount = 0;
   for (const skill of skills) {
     const key = `${skill.app}/${skill.scope}/${skill.relative}`;
-    const existing = pins.skills[key];
+    // own-property only (T-039 F-2 discipline): never resolve through
+    // Object.prototype even for adversarial key shapes
+    const existing = Object.hasOwn(pins.skills, key) ? pins.skills[key] : undefined;
     const entry = pinSkillFile(skill, cwd);
     // §7 byte-stability: a scan that sees the SAME content must not touch
     // the entry - pinnedAt churn changes pins.json bytes on every re-scan
