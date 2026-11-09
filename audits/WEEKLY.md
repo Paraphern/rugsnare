@@ -1,19 +1,19 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-11-02 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-11-09 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
-**Total findings since baselines: 294**
+**Total findings since baselines: 300**
 
 | server | package | pinned -> latest | findings | status |
 |---|---|---|---|---|
 | chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.12.0 | 32 | ok |
 | azure-devops | @azure-devops/mcp | 2.5.0 -> 2.11.0 | 119 | ok |
 | currents | @currents/mcp | 2.3.3 -> 2.7.0 | 51 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 3.24.1 | 41 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 3.32.1 | 47 | ok |
 | notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.6.1 | 1 | ok |
 | heroku | @heroku/mcp-server | 1.2.5 -> 1.2.13 | 33 | ok |
-| context7 | @upstash/context7-mcp | 4.0.4 -> 4.4.4 | 1 | ok |
-| sentry | @sentry/mcp-server | 0.42.0 -> 0.42.0 | 0 | clean |
+| context7 | @upstash/context7-mcp | 4.0.4 -> 4.6.0 | 1 | ok |
+| sentry | @sentry/mcp-server | 0.42.0 -> 0.49.0 | 0 | clean |
 | launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.2 | 16 | ok |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
@@ -79,11 +79,11 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
   [DRIFT] hostinger-headless/SKILL.md (resource) a58a5d028a799a8a -> a58a5d028a799a8a
   [NEW ] hostinger-headless/connect/SKILL.md (resource) e9083a01dbddfbb8
   [NEW ] hostinger-headless/connect/bootstrap.mjs (resource) b44166da80115afd
+  [NEW ] hostinger-headless/connect/launch.mjs (resource) 9bf2122178fc711a
+  [NEW ] hostinger-headless/connect/launch.sh (resource) 4301d2ca698549b5
   [NEW ] hostinger-headless/connect/tools/antigravity.md (resource) 16e46cad0defcd81
   [NEW ] hostinger-headless/connect/tools/claude-code.md (resource) a265d426b926b01d
   [NEW ] hostinger-headless/connect/tools/codex.md (resource) 24ee36b9b0a7d83c
-  [NEW ] hostinger-headless/connect/tools/cursor.md (resource) dcc2206146400a11
-  [NEW ] hostinger-headless/connect/tools/devin.md (resource) 06e658882ba4dd71
 ```
 
 ## notion - drift excerpt
