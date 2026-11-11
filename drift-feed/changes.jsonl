@@ -120,3 +120,26 @@
 {"ts":"2026-11-05T13:33:03.102Z","server":"server-everything","type":"DRIFT","tool":"toggle-subscriber-updates","oldHash":"313f8433554c1ddc","newHash":"b53179f3e5e4e95a"}
 {"ts":"2026-11-05T13:33:04.504Z","server":"server-sequential-thinking","type":"VERSION","detail":"2.0.0 → 2.1.1"}
 {"ts":"2026-11-05T13:33:04.504Z","server":"server-sequential-thinking","type":"DRIFT","tool":"sequentialthinking","oldHash":"433e72ec24d80d9e","newHash":"38650d73e23ee70a"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"VERSION","detail":"2.2.0 → 2.3.0"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"read_file","oldHash":"503c4edebfa25ecf","newHash":"559b0683364f6007"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"read_text_file","oldHash":"da5363dc16304e71","newHash":"455e2560430bff20"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"read_media_file","oldHash":"68abe84802222910","newHash":"fdea9939d2675392"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"write_file","oldHash":"55caa0db50bcca14","newHash":"763bf39b7c0de56d"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"append_file","oldHash":"5b3594c75f58e2e3","newHash":"6b63ee9e7dbc1174"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"edit_file","oldHash":"0f0e02f4f4b17356","newHash":"8d9a02b4826d5cac"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"create_directory","oldHash":"d54c4fb852d1adff","newHash":"6744efec6e599f97"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"list_directory","oldHash":"194b355d803179a0","newHash":"7b16fb768ebd131d"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"list_directory_with_sizes","oldHash":"df50f63740ff3c8c","newHash":"d60e2f2b145e141c"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"directory_tree","oldHash":"d83a92c9f5cd5284","newHash":"959f89de81be743b"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"move_file","oldHash":"33c9436ab871f5a2","newHash":"1aae7d628ef0acbd"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"search_files","oldHash":"3747c21057a82566","newHash":"a65b90abfb214a85"}
+{"ts":"2026-11-11T13:00:08.414Z","server":"server-filesystem","type":"DRIFT","tool":"get_file_info","oldHash":"3c5609ae1a113fa3","newHash":"a8441e4e5df16813"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"VERSION","detail":"2.1.0 → 2.1.1"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"create_entities","oldHash":"fa026b13946aaddb","newHash":"37978ecfd8085574"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"create_relations","oldHash":"3a92d05a58683397","newHash":"d9798eabb67432f0"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"add_observations","oldHash":"61f193150900a1ea","newHash":"d627a9070fa743ca"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"delete_entities","oldHash":"92d053c5d9d08914","newHash":"4e5cb7d007d3eab9"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"delete_observations","oldHash":"968d693df10791bf","newHash":"886fbab6d76ea4bd"}
+{"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"delete_relations","oldHash":"ce415094eea8ee5f","newHash":"b23abdd604e18185"}
+{"ts":"2026-11-11T13:00:13.370Z","server":"server-everything","type":"VERSION","detail":"2.2.1 → 2.3.0"}
+{"ts":"2026-11-11T13:00:13.370Z","server":"server-everything","type":"DRIFT","tool":"get-resource-reference","oldHash":"25f6ac43ad0e0ad9","newHash":"66d8476822a253a4"}

@@ -2,23 +2,23 @@
   "server-filesystem": {
     "server": "server-filesystem",
     "package": "@modelcontextprotocol/server-filesystem",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "tools": [
       {
         "name": "read_file",
-        "hash": "503c4edebfa25ecf74e785aa19d01d1789b095676073106cd4ab41ca0d440a8e",
+        "hash": "559b0683364f6007549e9ffda5fb74cf93628538b650062f100f821412a936e8",
         "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
         "advisory": false
       },
       {
         "name": "read_text_file",
-        "hash": "da5363dc16304e71badfe80a2ec842a0662365567cfcd2c43d7f71b056fd6d53",
+        "hash": "455e2560430bff207725d07e92590d8b64762f92205aac65916fdf83a7981a31",
         "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "read_media_file",
-        "hash": "68abe8480222291044599dde837bf92f7cfb17d024f0e17b448e442b851460d1",
+        "hash": "fdea9939d267539266b82996adc1a9d61f081d3d565bf65e00857c508d009eb4",
         "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
         "advisory": false
       },
@@ -30,49 +30,49 @@
       },
       {
         "name": "write_file",
-        "hash": "55caa0db50bcca14d571a61565c6d6ae837bdb3f0d0321cb21c28bfab71b3632",
+        "hash": "763bf39b7c0de56d12d33f1e63b9ad39c723838a489d53aca4388b936b59f234",
         "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "append_file",
-        "hash": "5b3594c75f58e2e324e95e5b3b4d91e52892779f8f28eda57aa26025d5dce62b",
+        "hash": "6b63ee9e7dbc11747d33808b6d39494187ee53b7473a9bef041ebbd574ba6a8d",
         "description": "Append text to the end of a file, creating the file if it does not exist. The existing content is never changed or replaced. The text is appended exactly as given, with no newline added before or after it, so end it with a newline if the next append should start on a new line. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "edit_file",
-        "hash": "0f0e02f4f4b173569f1729e1d4e6af4c2025a87c81707a2a51f4b158030fc8a7",
+        "hash": "8d9a02b4826d5cac70d42dd55777f7550aa4e483efbcaac2735897db2ea11b51",
         "description": "Make line-based edits to a text file. Edits apply in order, each to the result of the ones before it, and each replaces the first match of its oldText with newText. oldText must match the file's text exactly, except that line endings (LF or CRLF) never matter and, when there is no exact match, a run of whole lines matches if each line is equal once leading and trailing whitespace is ignored (newText then takes the file's indentation). Whitespace inside a line must match. If any edit has no match, nothing is written and the error shows the closest lines of the file, numbered, to copy oldText from. Returns a git-style diff showing the changes made. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "create_directory",
-        "hash": "d54c4fb852d1adffc0730343075c870d25238a93d3559925343ea92887d2eda3",
+        "hash": "6744efec6e599f97265bf9f917878c07c842b5905a3463a883b75c7fe6642af3",
         "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "list_directory",
-        "hash": "194b355d803179a052504760c96acd705d4a2a846c2775e359817e7786154bb6",
-        "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+        "hash": "7b16fb768ebd131d8bad728cb0e97a6a847c7f25dec6d57b45e398efc1310c45",
+        "description": "List the files and directories directly inside a path, each marked [FILE] or [DIR]. Use it to see what a directory contains; when you also need each entry's size or want entries sorted by size, use list_directory_with_sizes instead, and for a recursive view use directory_tree. Returns one line per entry. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "list_directory_with_sizes",
-        "hash": "df50f63740ff3c8ccc05bb8869b8f790f329e9e8d3210000082d16f5cb74603d",
-        "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+        "hash": "d60e2f2b145e141c832ec2f4726b288fe5ea16b8952107eb1b8fd8bf69f21c49",
+        "description": "List the files and directories directly inside a path with each file's size, marked [FILE] or [DIR], sorted by name or by size, largest first (sortBy). Use it when sizes matter, such as finding the largest files; for names only, use list_directory, which returns less text. Returns one line per entry, followed by the totals. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "directory_tree",
-        "hash": "d83a92c9f5cd52846e5be608898d34c99ffc4231c64da18acad6c62b06d357e8",
+        "hash": "959f89de81be743b4350d5ec5c54c74b6128a126963989f8c19fd5a36297fa61",
         "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty), except at the last level when 'depth' limits the tree: those directories are not read and have no children array. The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
         "advisory": false
       },
       {
         "name": "move_file",
-        "hash": "33c9436ab871f5a24530542fe95d1e2992d0a168166979f8b66100da819f1737",
+        "hash": "1aae7d628ef0acbdb7cb3b118e2338bef18d6a50773ecb3d3df9160c46fb6304",
         "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
         "advisory": false
       },
@@ -84,13 +84,13 @@
       },
       {
         "name": "search_files",
-        "hash": "3747c21057a82566d0fbcc9fcb1821923d4a78f048f7470da73e4edab87a8e70",
+        "hash": "a65b90abfb214a85aab9daaa1e5c408f0c191e955e6c73ae33900076bac0e20b",
         "description": "Find files and directories by NAME, not by content: this tool never reads or searches inside files. It walks the tree under 'path' and matches a glob pattern against each entry's path relative to 'path' (case-sensitive). Use '*.ext' to match entries directly under 'path', and '**/*.ext' or '**/name' to match at any depth. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
         "advisory": false
       },
       {
         "name": "get_file_info",
-        "hash": "3c5609ae1a113fa312da476d8cb5473f4ba5c6fa77291c81101780b35df23835",
+        "hash": "a8441e4e5df16813d5068b8de4fad818e07086fb8f087a95788c0f0a6f4c2d50",
         "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, type and hard-link count. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
         "advisory": false
       },
@@ -107,42 +107,42 @@
   "server-memory": {
     "server": "server-memory",
     "package": "@modelcontextprotocol/server-memory",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "tools": [
       {
         "name": "create_entities",
-        "hash": "fa026b13946aaddb39a7317984d11b5e74779d033a172e76f37b8180d4d0e7ff",
+        "hash": "37978ecfd808557475f1b4a90bbc7e69120d4b31d9ce3bc2bc6cc28d031d1e4c",
         "description": "Create multiple new entities in the knowledge graph. An entity whose name already exists, or repeats an earlier entity in the same call, is skipped and its observations are not added; the result lists the skipped names in `skipped`. Use add_observations to add observations to an existing entity.",
         "advisory": false
       },
       {
         "name": "create_relations",
-        "hash": "3a92d05a5868339725893a3f4c256b5d4f70d22bae057b19ca4cf2fd2ab6511d",
+        "hash": "d9798eabb67432f091c4198de597f2ed15bbc7d883f7e4d758c8b7c09e92ea67",
         "description": "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice",
         "advisory": false
       },
       {
         "name": "add_observations",
-        "hash": "61f193150900a1eaedf41e14d7d4db967edf6977e2d22e46ea369c592c59de99",
+        "hash": "d627a9070fa743caabfc0baec45fc7f949c2a5cb161ad45b1e017048482c5332",
         "description": "Add new observations to existing entities in the knowledge graph",
         "advisory": false
       },
       {
         "name": "delete_entities",
-        "hash": "92d053c5d9d08914ed60e9b9214a66968a4099aa3c41da4b6bc1d88eeaeb09c9",
-        "description": "Delete multiple entities and their associated relations from the knowledge graph",
+        "hash": "4e5cb7d007d3eab9847bab6d16cab23aa4ab50f0028e5dae8e6fc99c169b5cab",
+        "description": "Delete whole entities from the knowledge graph, together with every relation that points to or from them and all their observations. Use it only to remove an entity entirely; to remove a link between two entities and keep both, use delete_relations, and to remove facts from an entity, use delete_observations. Cannot be undone.",
         "advisory": false
       },
       {
         "name": "delete_observations",
-        "hash": "968d693df10791bf09a714ea909eacc213ca172562caa20fa74f0d07771e4764",
+        "hash": "886fbab6d76ea4bddda95d0b2db7d5f99d7b71d009376503f8c3f5027f68cffc",
         "description": "Delete specific observations from entities in the knowledge graph",
         "advisory": false
       },
       {
         "name": "delete_relations",
-        "hash": "ce415094eea8ee5f223a5c91a81661d2ba580c1cb3df59f7e6500258253cf5a0",
-        "description": "Delete multiple relations from the knowledge graph",
+        "hash": "b23abdd604e181852e74b7f20c13cd4878d5f9433693e089e09849ad166594a8",
+        "description": "Delete specific relations (from, to, relationType) from the knowledge graph and keep the entities they connect. Each relation must match an existing one exactly on all three fields; if unsure, call open_nodes (or search_nodes) first to read the stored relationType. Use it to remove a link between two entities; to remove an entity itself, use delete_entities. Cannot be undone.",
         "advisory": false
       },
       {
@@ -175,7 +175,7 @@
   "server-everything": {
     "server": "server-everything",
     "package": "@modelcontextprotocol/server-everything",
-    "version": "2.2.1",
+    "version": "2.3.0",
     "tools": [
       {
         "name": "echo",
@@ -209,7 +209,7 @@
       },
       {
         "name": "get-resource-reference",
-        "hash": "25f6ac43ad0e0ad937662ed6bf88601c729c8665e9aeb13affeea1675432099f",
+        "hash": "66d8476822a253a4a786892545ca7c7ce453979c9b74cd104e983ff019460fc0",
         "description": "Returns a resource reference that can be used by MCP clients",
         "advisory": false
       },
