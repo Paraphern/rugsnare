@@ -273,6 +273,28 @@ ${mcpFindings.join('\n')}`;
 }
 
 /**
+ * Machine-readable version of the same report data the HTML report uses.
+ * Returned as a plain object so callers can JSON.stringify it to stdout
+ * for CI pipelines and other tools.
+ */
+export function buildSkillsReportJson(results, { generatedAt, mcpResults = [], currentAudit = [] } = {}) {
+  const { counts } = generateSkillsReport(results, { generatedAt, mcpResults, currentAudit });
+  return {
+    generatedAt: new Date(generatedAt ?? Date.now()).toISOString(),
+    counts,
+    skills: results.map((r) => ({
+      key: r.key,
+      status: r.status,
+      severity: r.severity ?? null,
+      changes: r.changes ?? null,
+      advisory: r.advisory ? { score: r.advisory.score, signals: r.advisory.signals } : null,
+    })),
+    mcp: mcpResults,
+    currentAudit,
+  };
+}
+
+/**
  * Write the report to a file and return the path.
  */
 export function writeSkillsReport(results, cwd = process.cwd(), mcpResults = [], currentAudit = []) {
