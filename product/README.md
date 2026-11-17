@@ -171,6 +171,7 @@ The same binary runs as a read-only MCP server (`drift_feed_status`, `pins_repor
 rugsnare skills scan     # pin all skill files (SKILL.md, .mdc, etc.)
 rugsnare skills diff     # exit 1 if anything changed
 rugsnare skills report   # visual report in your browser
+rugsnare skills report --json   # same report data as JSON to stdout, for CI and other tools
 ```
 
 Discovers skill files across Claude Code, Cursor, Windsurf, Continue, ZCode, Copilot, Codex, and Cline. When a skill changes after you approved it, the HTML report shows what was added/removed, classifies severity (DANGEROUS / REVIEW / SAFE), and explains in plain language why it matters.
