@@ -143,3 +143,7 @@
 {"ts":"2026-11-11T13:00:09.936Z","server":"server-memory","type":"DRIFT","tool":"delete_relations","oldHash":"ce415094eea8ee5f","newHash":"b23abdd604e18185"}
 {"ts":"2026-11-11T13:00:13.370Z","server":"server-everything","type":"VERSION","detail":"2.2.1 → 2.3.0"}
 {"ts":"2026-11-11T13:00:13.370Z","server":"server-everything","type":"DRIFT","tool":"get-resource-reference","oldHash":"25f6ac43ad0e0ad9","newHash":"66d8476822a253a4"}
+{"ts":"2026-11-18T14:38:31.591Z","server":"server-filesystem","type":"VERSION","detail":"2.3.0 → 2.4.0"}
+{"ts":"2026-11-18T14:38:33.250Z","server":"server-memory","type":"VERSION","detail":"2.1.1 → 2.2.1"}
+{"ts":"2026-11-18T14:38:36.394Z","server":"server-everything","type":"VERSION","detail":"2.3.0 → 2.3.1"}
+{"ts":"2026-11-18T14:38:38.057Z","server":"server-sequential-thinking","type":"VERSION","detail":"2.1.1 → 2.2.0"}

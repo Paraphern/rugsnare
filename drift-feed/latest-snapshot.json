@@ -2,7 +2,7 @@
   "server-filesystem": {
     "server": "server-filesystem",
     "package": "@modelcontextprotocol/server-filesystem",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "tools": [
       {
         "name": "read_file",
@@ -107,7 +107,7 @@
   "server-memory": {
     "server": "server-memory",
     "package": "@modelcontextprotocol/server-memory",
-    "version": "2.1.1",
+    "version": "2.2.1",
     "tools": [
       {
         "name": "create_entities",
@@ -175,7 +175,7 @@
   "server-everything": {
     "server": "server-everything",
     "package": "@modelcontextprotocol/server-everything",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "tools": [
       {
         "name": "echo",
@@ -330,7 +330,7 @@
   "server-sequential-thinking": {
     "server": "server-sequential-thinking",
     "package": "@modelcontextprotocol/server-sequential-thinking",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "tools": [
       {
         "name": "sequentialthinking",
