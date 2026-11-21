@@ -160,6 +160,20 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
    * Create the local HTTP server that the MCP client connects to.
    */
   const server = http.createServer((clientReq, clientRes) => {
+    // CSRF guard (T-039 F-3): a browser page must not be able to drive the
+    // local proxy. Same-origin loopback only; non-browser clients send no
+    // Origin header at all and are unaffected.
+    const origin = clientReq.headers.origin;
+    if (origin) {
+      const localPort = clientReq.socket.localPort;
+      const allowed = new Set([`http://localhost:${localPort}`, `http://127.0.0.1:${localPort}`]);
+      if (!allowed.has(origin)) {
+        logEvent({ kind: 'cross-origin-reject', server: name, origin: String(origin).slice(0, 100) }, cwd);
+        clientRes.writeHead(403, { 'content-type': 'application/json' });
+        clientRes.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32000, message: '[RUGSNARE] Cross-origin requests are not permitted.' } }));
+        return;
+      }
+    }
     if (clientReq.method === 'GET') {
       // Health check / SSE endpoint - just 200
       clientRes.writeHead(200, { 'content-type': 'text/event-stream' });
@@ -173,16 +187,28 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
       try {
         const msg = JSON.parse(body);
 
+        // JSON-RPC batch (T-039 F-1): the per-message gates never see inside
+        // an array - reject outright in enforce, forward with a log in observe.
+        if (Array.isArray(msg)) {
+          if (mode === 'enforce') {
+            logEvent({ kind: 'batch-reject', server: name, entries: msg.length }, cwd);
+            clientRes.writeHead(200, { 'content-type': 'application/json' });
+            clientRes.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32600, message: '[RUGSNARE] JSON-RPC batch requests are not supported in enforce mode.' } }));
+            return;
+          }
+          logEvent({ kind: 'batch-forward', server: name, entries: msg.length }, cwd);
+        }
+
         // Call policies + loop detector - same enforcement as the stdio proxy.
         // A blocked call is answered directly to the client; the remote never sees it.
         if (msg.method === 'tools/call' && msg.params) {
-          // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034):
-          // before the first tools/list there is no allowed-cache, so in
-          // enforce a call to a name not in the pin is unknown - block it.
+          // Fail-closed for unknown-in-session names (REVIEW T-031 / T-034);
+          // T-039 F-2: own-property lookups only - proto names must not
+          // resolve through Object.prototype.
           if (mode === 'enforce' && (
             quarantinedTools.has(msg.params.name)
-            || serverPin.tools[msg.params.name]?.approved === false
-            || (!hasSeenToolsList && serverPin.tools[msg.params.name] === undefined)
+            || (Object.hasOwn(serverPin.tools, msg.params.name) && serverPin.tools[msg.params.name].approved === false)
+            || (!hasSeenToolsList && !Object.hasOwn(serverPin.tools, msg.params.name))
           )) {
             logEvent({ kind: 'quarantine-call-block', server: name, tool: msg.params.name, ...(hasSeenToolsList ? {} : { note: 'call before first tools/list; name not in pin (fail-closed)' }) }, cwd);
             clientRes.writeHead(200, { 'content-type': 'application/json' });
@@ -206,7 +232,8 @@ export function createHttpProxy({ name, targetUrl, authConfig = {}, mode = 'obse
             }
           }
 
-          const toolPin = serverPin.tools[msg.params.name];
+          // own-property only (T-039 F-2): proto names must not resolve
+          const toolPin = Object.hasOwn(serverPin.tools, msg.params.name) ? serverPin.tools[msg.params.name] : undefined;
           const policyResult = evaluateCall(
             { toolName: msg.params.name, arguments: msg.params.arguments, description: toolPin?.description ?? '' },
             activePolicies

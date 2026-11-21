@@ -51,13 +51,13 @@ git fetch origin rugsnare/status --depth=1 2>/dev/null || true
 if git show origin/rugsnare/status:status.json >/dev/null 2>&1; then
   EXISTING_RAW=$(git show origin/rugsnare/status:status.json)
   EXISTING=$(printf '%s' "$EXISTING_RAW" | node -e "
-    const d = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+    const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
     // compare everything except timestamp/runId (they change every run)
     delete d.timestamp; delete d.runId;
     console.log(JSON.stringify(d));
   " 2>/dev/null || echo "{}")
   NEW=$(printf '%s' "$STATUS_JSON" | node -e "
-    const d = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+    const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
     delete d.timestamp; delete d.runId;
     console.log(JSON.stringify(d));
   ")
@@ -67,11 +67,23 @@ if git show origin/rugsnare/status:status.json >/dev/null 2>&1; then
   fi
   # ISO-8601 UTC timestamps compare correctly as strings
   EXISTING_TS=$(printf '%s' "$EXISTING_RAW" | node -e "
-    const d = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+    const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
     console.log(typeof d.timestamp === 'string' ? d.timestamp : '');
   " 2>/dev/null || echo "")
   if [ -n "$EXISTING_TS" ] && [ "$EXISTING_TS" \> "$TIMESTAMP" ]; then
     echo "::notice::Status branch already has a newer run ($EXISTING_TS > $TIMESTAMP) - skipping stale re-run"
+    exit 0
+  fi
+  # T-039 F-4: runId is the authoritative recency signal - a re-run of an OLD
+  # run finishes later (newer timestamp) but must never overwrite the status
+  # of a newer run. Existing runId >= ours -> skip.
+  EXISTING_RUN=$(printf '%s' "$EXISTING_RAW" | node -e "
+    const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+    console.log(Number.isFinite(Number(d.runId)) ? String(Number(d.runId)) : '');
+  " 2>/dev/null || echo "")
+  OUR_RUN=$(node -e "console.log(Number.isFinite(Number(process.env.GITHUB_RUN_ID)) ? String(Number(process.env.GITHUB_RUN_ID)) : '')" 2>/dev/null || echo "")
+  if [ -n "$EXISTING_RUN" ] && [ -n "$OUR_RUN" ] && [ "$EXISTING_RUN" -ge "$OUR_RUN" ]; then
+    echo "::notice::Status branch already has run $EXISTING_RUN >= our $OUR_RUN - skipping stale re-run"
     exit 0
   fi
 fi

@@ -129,6 +129,55 @@ test('stdio enforce: NEW tool call BEFORE tools/list is blocked (fail-closed); p
   }
 });
 
+// ---- T-039 security fixes ----------------------------------------------------
+
+const PINNED_STORE = (tools) => JSON.stringify({ version: 1, servers: { svc: { tools } } });
+function pinFixture(dir, tools) {
+  fs.mkdirSync(path.join(dir, '.rugsnare'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.rugsnare', 'pins.json'), PINNED_STORE(tools));
+}
+
+test('T-039 F-1 stdio: JSON-RPC batch rejected in enforce, nothing forwarded', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    pinFixture(dir, { approved_tool: { hash: 'h', approved: true } });
+    const h = stdioHarness({ cwd: dir, mode: 'enforce' });
+    // batch: one innocent call + one call to an unpinned name, before any tools/list
+    h.streams.clientIn.write(JSON.stringify([
+      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'approved_tool', arguments: {} } },
+      { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'shadow_tool', arguments: {} } },
+    ]) + '\n');
+    const out = h.out.join('\n');
+    assert.match(out, /JSON-RPC batch requests are not supported in enforce mode/, 'batch rejected with -32600 message');
+    assert.equal(h.serverSide.join('').includes('shadow_tool'), false, 'batch NOT forwarded to the server');
+    assert.equal(h.serverSide.join('').includes('approved_tool'), false, 'whole batch dropped, not just the bad entry');
+    assert.ok(readEvents(dir).some((e) => e.kind === 'batch-reject'), 'batch-reject event recorded');
+  } finally {
+    cleanup();
+  }
+});
+
+test('T-039 F-2 stdio: prototype names (constructor/toString) are blocked pre-list, pinned passes', () => {
+  const { dir, cleanup } = tmpCwd();
+  try {
+    pinFixture(dir, { approved_tool: { hash: 'h', approved: true } });
+    const h = stdioHarness({ cwd: dir, mode: 'enforce' });
+    // no tools/list: pre-list fail-closed must treat proto names as unknown
+    h.call(1, 'constructor');
+    h.call(2, 'toString');
+    h.call(3, '__proto__');
+    assert.equal(h.serverSide.join('').includes('constructor'), false, 'constructor NOT forwarded');
+    assert.equal(h.serverSide.join('').includes('toString'), false, 'toString NOT forwarded');
+    assert.equal(h.serverSide.join('').includes('__proto__'), false, '__proto__ NOT forwarded');
+    const blocked = h.out.filter((s) => s.includes('"error"')).length;
+    assert.equal(blocked, 3, 'all three proto names blocked');
+    h.call(4, 'approved_tool');
+    assert.ok(h.serverSide.join('').includes('approved_tool'), 'pinned tool still passes');
+  } finally {
+    cleanup();
+  }
+});
+
 // ---- HTTP proxy ---------------------------------------------------------------
 
 function mockRemote() {
@@ -272,6 +321,92 @@ test('HTTP enforce: call BEFORE tools/list to an unpinned name is blocked (fail-
       assert.match(r3.error.message, /never listed in tools\/list/);
     } finally {
       process.stderr.write = origWrite;
+      await new Promise((r) => proxy.server.close(r));
+    }
+  } finally {
+    cleanup();
+    await new Promise((r) => remote.server.close(r));
+  }
+});
+
+// ---- T-039 security fixes, HTTP half ----
+
+test('T-039 F-1/F-2 HTTP: batch rejected in enforce; proto name blocked pre-list', async () => {
+  const { dir, cleanup } = tmpCwd();
+  const remote = await mockRemote();
+  try {
+    pinFixture(dir, { discover: { hash: 'h', approved: true }, raw: { hash: 'h', approved: true } });
+    const proxy = createHttpProxy({ name: 'svc', targetUrl: `http://127.0.0.1:${remote.port}`, mode: 'enforce', cwd: dir });
+    const port = await new Promise((resolve) => proxy.server.listen(0, '127.0.0.1', () => resolve(proxy.server.address().port)));
+    const origWrite = process.stderr.write.bind(process.stderr);
+    process.stderr.write = () => true;
+    try {
+      await rpc(port, 'initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 't', version: '1' } });
+      // no tools/list yet
+
+      // batch carrying an unpinned call: whole array must be rejected
+      const batch = await new Promise((resolve, reject) => {
+        const req = http.request({ host: '127.0.0.1', port, method: 'POST', headers: { 'content-type': 'application/json' } }, (res) => {
+          let body = '';
+          res.on('data', (c) => { body += c; });
+          res.on('end', () => resolve(JSON.parse(body)));
+        });
+        req.on('error', reject);
+        req.end(JSON.stringify([
+          { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'discover', arguments: {} } },
+          { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'shadow_tool', arguments: {} } },
+        ]));
+      });
+      assert.ok(batch.error, 'batch rejected');
+      assert.match(batch.error.message, /batch requests are not supported in enforce mode/);
+      assert.ok(!remote.state.callsReceived.includes('discover'), 'nothing from the batch reached the remote');
+      assert.ok(readEvents(dir).some((e) => e.kind === 'batch-reject'), 'batch-reject event');
+
+      // proto name pre-list: blocked, not resolved through Object.prototype
+      const proto = await rpc(port, 'tools/call', { name: 'constructor', arguments: {} });
+      assert.ok(proto.error, 'proto name blocked');
+      assert.match(proto.error.message, /quarantined or has not been approved/);
+      assert.ok(!remote.state.callsReceived.includes('constructor'), 'proto name never forwarded');
+    } finally {
+      process.stderr.write = origWrite;
+      await new Promise((r) => proxy.server.close(r));
+    }
+  } finally {
+    cleanup();
+    await new Promise((r) => remote.server.close(r));
+  }
+});
+
+test('T-039 F-3 HTTP: foreign Origin gets 403, loopback Origin passes', async () => {
+  const { dir, cleanup } = tmpCwd();
+  const remote = await mockRemote();
+  try {
+    const proxy = createHttpProxy({ name: 'svc', targetUrl: `http://127.0.0.1:${remote.port}`, mode: 'observe', cwd: dir });
+    const port = await new Promise((resolve) => proxy.server.listen(0, '127.0.0.1', () => resolve(proxy.server.address().port)));
+    const post = (headers) => new Promise((resolve) => {
+      const req = http.request({ host: '127.0.0.1', port, method: 'POST', headers: { 'content-type': 'application/json', ...headers } }, (res) => {
+        let body = '';
+        res.on('data', (c) => { body += c; });
+        res.on('end', () => resolve({ status: res.statusCode, body }));
+      });
+      req.on('error', () => resolve({ status: 0, body: '' }));
+      req.end(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }));
+    });
+    try {
+      const evil = await post({ origin: 'https://evil.example' });
+      assert.equal(evil.status, 403, 'foreign Origin rejected');
+      assert.match(evil.body, /Cross-origin requests are not permitted/);
+      assert.ok(!remote.state.declaredTools.length || true, 'sanity');
+      assert.ok(readEvents(dir).some((e) => e.kind === 'cross-origin-reject'), 'cross-origin-reject event');
+
+      // no Origin header (regular MCP client): unaffected
+      const noOrigin = await post({});
+      assert.equal(noOrigin.status, 200, 'no-Origin request passes');
+
+      // exact loopback origin: allowed
+      const loopback = await post({ origin: `http://localhost:${port}` });
+      assert.equal(loopback.status, 200, 'loopback Origin passes');
+    } finally {
       await new Promise((r) => proxy.server.close(r));
     }
   } finally {
