@@ -105,7 +105,7 @@
         <div class="flow-k">GATE</div>
         <div>
           <h3>Gate your CI</h3>
-          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.6.0 diff --config .mcp.json</span>
+          <pre class="term" style="margin:8px 0;font-size:13px"><span class="l f"><span class="dim">$</span> npx --yes rugsnare@1.6.1 diff --config .mcp.json</span>
 <span class="l f">github  (npx -y @modelcontextprotocol/server-github)</span>
 <span class="l f">  [ok ] create_issue</span>
 <span class="l f">  [ok ] search_code</span>
@@ -241,6 +241,21 @@
   </div>
 </section>
 
+<section id="new161">
+  <div class="shell">
+    <div class="sec-head">
+      <h2>What’s new in 1.6.1</h2>
+      <p>Security hardening: four fixes from an external report, each confirmed, fixed and verified live.</p>
+    </div>
+    <div class="pledges">
+      <div class="pledge"><b>Batch Requests Can’t Ride Along</b><p>A JSON-RPC batch array used to skip every per-message gate. Enforce mode now rejects batches outright with <code>-32600</code>; observe forwards them, logged. Both transports.</p></div>
+      <div class="pledge"><b>No More Phantom Pins</b><p>Calling a tool named <code>constructor</code> used to resolve through the prototype chain and dodge the unknown-name block. Every pin-store lookup is now own-property only, across the proxies, pin and skills engines. NEW/undeclared semantics unchanged.</p></div>
+      <div class="pledge"><b>Localhost CSRF Closed</b><p>A web page could POST to your local HTTP proxy and the request would execute. A foreign <code>Origin</code> now gets <code>403</code> before any other gate; plain MCP clients are unaffected.</p></div>
+      <div class="pledge"><b>Honest Status, 531 Tests</b><p>A stale CI re-run can no longer overwrite a fresher verdict (runId is the recency signal now), and the status script no longer breaks on Windows. Full suite: 531 passing, five new tests covering each fix.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="new16">
   <div class="shell">
     <div class="sec-head">
@@ -314,7 +329,7 @@
       <a href="https://github.com/Paraphern/rugsnare/releases" target="_blank" rel="noopener" style="color:var(--ink-2)">Releases</a>
     </div>
   </div>
-  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.6.0 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
+  <div class="shell foot-note" style="margin-top:18px">RugSnare 1.6.1 &#183; <a href="https://github.com/Paraphern/rugsnare/blob/main/product/CHANGELOG.md" target="_blank" rel="noopener" style="color:#6F654E">Changelog</a> &#183; The attack corpus is educational and sends nothing anywhere.</div>
 </footer>
 
 <script>

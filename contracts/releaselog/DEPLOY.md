@@ -2,6 +2,22 @@
 
 ## Status: MAINNET LIVE since 2026-10-04 (chainId 8453, contract 0x78406c32F2054C7DF91aD0A2C258Ad0936838B1e); Sepolia 2026-09-29 = initial contract test only
 
+## Пин 1.6.1 (2026-11-21) - ОПУБЛИКОВАНО, ПИН ОЖИДАЕТ ТРАНЗАКЦИИ
+
+| Parameter | Value |
+|---|---|
+| Pin tx | `PENDING` (setRelease на Basescan, юзер) |
+| artifact sha256 | `652466da528a604aaa60d819085e1662ab4084bfe5adc317c236008d251da187` (CDN tarball rugsnare-1.6.1.tgz, 162203 bytes; локальный pack shasum `97895e2ba0384e5f9de858bd88201b47095edc46`, integrity `sha512-4JTFEw9wfH5LH[...]Rsahl6c0iOk0Q==`) |
+| versionKey | keccak256("1.6.1") = `0x2e885c8209486966b909ff487b49d8e217e9c3e807115a144af9325bb6303635` |
+| npm | rugsnare@1.6.1 published 2026-11-21; latest подтвердился в реестре; npx smoke `rugsnare 1.6.1` OK |
+| Проверка | `npx rugsnare@1.6.1 verify --chain base` -> после пина ждём VERIFIED |
+| git | merge PR #23 = `b6f681bb`, бамп+CHANGELOG = `f3ebe0c9` = тег `v1.6.1`; сьют 531/531 на main и в prepack |
+
+Состав релиза: security hardening из внешнего отчёта (4 находки: batch P1,
+prototype P1, Origin P2, runId P2 + бонус переносимости stdin). Ревью: DEV T-039,
+REVIEW T-040 APPROVE (живые проверки), COORD-спотчек. .mcpb: rugsnare-1.6.1.mcpb
+(бандл синхронизирован с src, F-2-фиксы в бандловом pins.js подтверждены grep 3x hasOwn).
+
 ## Пин 1.6.0 (2026-11-07) - ОПУБЛИКОВАНО И ЗАПИНЕНО
 
 | Parameter | Value |
