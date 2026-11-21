@@ -1,5 +1,43 @@
 # Changelog
 
+## [1.6.1] - 2026-11-21
+
+### Security hardening: four fixes from an external report
+
+All four findings were independently confirmed, fixed on
+`dev/161-security-fixes` (PR #23), and verified live by REVIEW plus a
+531-test suite (5 new tests).
+
+- **[P1] JSON-RPC batch bypass**: a batch array (JSON-RPC 2.0 permits
+  arrays of requests) bypassed every per-message gate - the quarantine,
+  approval and policy checks only inspected `msg.method`, which an array
+  does not have - so an unapproved tool could ride a batch to the server.
+  Enforce mode now rejects batch requests outright with `-32600`
+  («JSON-RPC batch requests are not supported in enforce mode», event
+  `batch-reject`); observe mode forwards them with a `batch-forward` log
+  event. Both transports (stdio and HTTP).
+- **[P1] Prototype-name bypass**: pre-list fail-closed used
+  `serverPin.tools[name] === undefined`, but `tools["constructor"]` (or
+  `toString`, `__proto__`, any Object.prototype member) resolves through
+  the prototype chain and is not undefined - so such names skipped the
+  unknown-name block before the first `tools/list`. Every pin-store
+  lookup is now own-property only (`Object.hasOwn`) across proxy.js,
+  proxy-http.js, pins.js and skills-pin.js; NEW/undeclared semantics are
+  unchanged.
+- **[P2] HTTP proxy Origin check**: proxy-http accepted POSTs regardless
+  of the `Origin` header, letting any web page drive the local proxy
+  (CSRF against localhost - the request executes even when the response
+  is unreadable). A foreign `Origin` now gets `403` (event
+  `cross-origin-reject`) before any other gate; `localhost`/`127.0.0.1`
+  on the actual listening port pass; MCP clients that send no `Origin`
+  are unaffected.
+- **[P2] Status-branch runId guard**: `publish-status.sh` compared only
+  wall-clock timestamps, so an old re-run finishing late could overwrite
+  a newer run's status. The guard now skips when
+  `existing.runId >= ours` (runId is the authoritative recency signal).
+  Bonus portability fix found by the new test: `readFileSync('/dev/stdin')`
+  fails on Windows (ENOENT) - replaced with `readFileSync(0)`.
+
 ## [1.6.0] - 2026-11-07
 
 ### Runtime protection: auto-quarantine, startup verification, canary response shapes
