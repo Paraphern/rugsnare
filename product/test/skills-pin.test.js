@@ -277,6 +277,30 @@ test('CLI: scan -> diff clean -> report', async () => {
   } finally { cleanup(); }
 });
 
+test('CLI: skills report --json outputs valid JSON to stdout', async () => {
+  const { dir, cleanup } = tmp();
+  try {
+    mkdeploy(dir, CLEAN);
+    const s = await cli(dir, ['skills', 'scan']);
+    assert.equal(s.code, 0, s.stderr);
+    const r = await cli(dir, ['skills', 'report', '--json']);
+    assert.equal(r.code, 0, r.stderr);
+    const parsed = JSON.parse(r.stdout);
+    assert.equal(typeof parsed.generatedAt, 'string');
+    assert.ok(!Number.isNaN(Date.parse(parsed.generatedAt)));
+    assert.equal(parsed.counts.total, parsed.skills.length);
+    assert.ok(parsed.skills.length >= 1);
+    for (const skill of parsed.skills) {
+      assert.equal(typeof skill.key, 'string');
+      assert.ok(['UNCHANGED', 'DRIFT', 'NEW', 'REMOVED'].includes(skill.status));
+      assert.ok('severity' in skill && 'changes' in skill && 'advisory' in skill);
+    }
+    assert.ok(Array.isArray(parsed.mcp));
+    assert.ok(Array.isArray(parsed.currentAudit));
+    assert.ok(!fs.existsSync(path.join(dir, '.rugsnare', 'skills-report.html')));
+  } finally { cleanup(); }
+});
+
 test('CLI: diff exit 1 on DANGEROUS', async () => {
   const { dir, cleanup } = tmp();
   try {

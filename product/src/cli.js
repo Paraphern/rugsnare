@@ -1329,8 +1329,13 @@ async function cmdSkills(flags) {
         } catch { /* MCP fetch failed - skills report still works */ }
       }
 
-      const { auditCurrentSkills } = await import('./skills-pin.js');
+            const { auditCurrentSkills } = await import('./skills-pin.js');
       const currentAudit = auditCurrentSkills(cwd, home);
+      if (flags.json) {
+        const { buildSkillsReportJson } = await import('./skills-report.js');
+        console.log(JSON.stringify(buildSkillsReportJson(results, { mcpResults, currentAudit }), null, 2));
+        return;
+      }
       const { reportPath, counts } = writeSkillsReport(results, cwd, mcpResults, currentAudit);
       console.log(`Report: ${reportPath}`);
       const totalBad = counts.dangerous + mcpResults.reduce((n, r) => n + r.verdicts.length, 0);
