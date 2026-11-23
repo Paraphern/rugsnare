@@ -1,19 +1,19 @@
 # MCP Drift Watch - weekly report
 
-**Run:** 2026-11-16 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
+**Run:** 2026-11-23 · pinned baselines from `audits/watch-list.json` (advance a pin deliberately, via PR, when you accept a new contract). Method: pin -> install latest -> `rugsnare diff`.
 
-**Total findings since baselines: 273**
+**Total findings since baselines: 294**
 
 | server | package | pinned -> latest | findings | status |
 |---|---|---|---|---|
 | chrome-devtools | chrome-devtools-mcp | 1.8.0 -> 1.13.0 | 0 | clean |
 | azure-devops | @azure-devops/mcp | 2.5.0 -> 2.11.0 | 119 | ok |
-| currents | @currents/mcp | 2.3.3 -> 2.7.0 | 51 | ok |
-| hostinger | hostinger-api-mcp | 2.4.0 -> 4.3.0 | 52 | ok |
+| currents | @currents/mcp | 2.3.3 -> 2.8.0 | 52 | ok |
+| hostinger | hostinger-api-mcp | 2.4.0 -> 4.20.0 | 72 | ok |
 | notion | @notionhq/notion-mcp-server | 2.4.1 -> 2.6.1 | 1 | ok |
-| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.14 | 33 | ok |
-| context7 | @upstash/context7-mcp | 4.0.4 -> 4.7.1 | 1 | ok |
-| sentry | @sentry/mcp-server | 0.42.0 -> 0.49.0 | 0 | clean |
+| heroku | @heroku/mcp-server | 1.2.5 -> 1.2.15 | 33 | ok |
+| context7 | @upstash/context7-mcp | 4.0.4 -> 4.7.3 | 1 | ok |
+| sentry | @sentry/mcp-server | 0.42.0 -> 0.50.0 | 0 | clean |
 | launchdarkly | @launchdarkly/mcp-server | 0.7.0 -> 0.7.2 | 16 | ok |
 
 Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-10.md). Tool: [rugsnare](https://www.npmjs.com/package/rugsnare).
@@ -57,16 +57,16 @@ Full audit with receipts: [npm-top-mcp-drift-2026-10.md](npm-top-mcp-drift-2026-
 ```
   [DRIFT] (identity) (IDENTITY)
   [NEW ] audit-hosting/SKILL.md (resource) 721bd0a5b0db0549
+  [NEW ] audit-vps/SKILL.md (resource) e0a00f1412fb7982
   [NEW ] connect-domain/SKILL.md (resource) fb06ea81ec871578
   [NEW ] deploy-to-hosting/SKILL.md (resource) 5f0ed3a42707c09d
+  [NEW ] deploy-to-vps/SKILL.md (resource) bc5c21a5ff1357cb
   [DRIFT] hostinger-headless/SKILL.md (resource) a58a5d028a799a8a -> a58a5d028a799a8a
   [NEW ] hostinger-headless/connect/SKILL.md (resource) e9083a01dbddfbb8
   [NEW ] hostinger-headless/connect/bootstrap.mjs (resource) b44166da80115afd
   [NEW ] hostinger-headless/connect/launch.mjs (resource) 9bf2122178fc711a
   [NEW ] hostinger-headless/connect/launch.sh (resource) 4301d2ca698549b5
   [NEW ] hostinger-headless/connect/tools/antigravity.md (resource) 16e46cad0defcd81
-  [NEW ] hostinger-headless/connect/tools/claude-code.md (resource) a265d426b926b01d
-  [NEW ] hostinger-headless/connect/tools/codex.md (resource) 24ee36b9b0a7d83c
 ```
 
 ## notion - drift excerpt
