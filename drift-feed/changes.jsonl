@@ -147,3 +147,8 @@
 {"ts":"2026-11-18T14:38:33.250Z","server":"server-memory","type":"VERSION","detail":"2.1.1 → 2.2.1"}
 {"ts":"2026-11-18T14:38:36.394Z","server":"server-everything","type":"VERSION","detail":"2.3.0 → 2.3.1"}
 {"ts":"2026-11-18T14:38:38.057Z","server":"server-sequential-thinking","type":"VERSION","detail":"2.1.1 → 2.2.0"}
+{"ts":"2026-11-27T15:40:14.315Z","server":"server-filesystem","type":"VERSION","detail":"2.4.0 → 2.4.1"}
+{"ts":"2026-11-27T15:40:16.060Z","server":"server-memory","type":"VERSION","detail":"2.2.1 → 2.2.2"}
+{"ts":"2026-11-27T15:40:19.140Z","server":"server-everything","type":"VERSION","detail":"2.3.1 → 2.4.0"}
+{"ts":"2026-11-27T15:40:21.502Z","server":"context7-hosted","transport":"http","type":"DRIFT","tool":"resolve-library-id","oldHash":"ed9fc7c1ab0004f2","newHash":"0eb8beaf2eaa94d3"}
+{"ts":"2026-11-27T15:40:21.502Z","server":"context7-hosted","transport":"http","type":"DRIFT","tool":"query-docs","oldHash":"001cabe9b73dae93","newHash":"826f4583902e91c2"}
